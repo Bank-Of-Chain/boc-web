@@ -78,7 +78,8 @@
   },
   "scripts": {
     "build": "set REACT_APP_NETWORK_TYPE=mainnet&&react-scripts build",
-    "build:test": "set REACT_APP_NETWORK_TYPE=localhost&&react-scripts build",
+    "build:localhost": "set REACT_APP_NETWORK_TYPE=localhost&&react-scripts build",
+    "build:dev": "set REACT_APP_NETWORK_TYPE=dev&&react-scripts build",
     "eject": "react-scripts eject",
     "start": "react-scripts start",
     "test": "react-scripts test",
