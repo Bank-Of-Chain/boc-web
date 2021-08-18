@@ -17,3 +17,8 @@ jobs:
         uses: borales/actions-yarn@master
         with:
           cmd: build
+      - name: Zip&Upload
+        uses: actions/upload-artifact@v2
+        with:
+          name: admin
+          path: build/
