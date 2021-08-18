@@ -1,4 +1,5 @@
 /* eslint-disable no-return-assign */
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useState } from "react";
 import { Row, Col, Button, Card, Popconfirm, Divider, Input } from "antd";
 import { withRouter, Redirect } from "react-router-dom";

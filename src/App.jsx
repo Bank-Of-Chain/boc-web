@@ -1,8 +1,9 @@
 // forgive me ESLint god for I have sinned
 /* eslint-disable react/jsx-props-no-spreading */
+/* eslint-disable no-extend-native */
 
 import React, { useState, useCallback, useEffect, Suspense, lazy } from "react";
-import { BrowserRouter, Switch, Route, Redirect, HashRouter } from "react-router-dom";
+import { Switch, Route, Redirect, HashRouter } from "react-router-dom";
 import { JsonRpcProvider, Web3Provider } from "@ethersproject/providers";
 import Web3Modal from "web3modal";
 import WalletConnectProvider from "@walletconnect/web3-provider";
@@ -14,24 +15,23 @@ import isEmpty from 'lodash/isEmpty';
 import "antd/dist/antd.css";
 import "./App.css";
 
-Date.prototype.format = function(fmt)
-{ 
-　　var o = {
-　　　　"M+" : this.getMonth()+1, //月份
-　　　　"d+" : this.getDate(), //日
-　　　　"h+" : this.getHours()%12 == 0 ? 12 : this.getHours()%12, //小时
-　　　　"H+" : this.getHours(), //小时
-　　　　"m+" : this.getMinutes(), //分
-　　　　"s+" : this.getSeconds(), //秒
-　　　　"q+" : Math.floor((this.getMonth()+3)/3), //季度
-　　　　"S" : this.getMilliseconds() //毫秒
-　　};
-　　if(/(y+)/.test(fmt))
-　　　　fmt=fmt.replace(RegExp.$1, (this.getFullYear()+"").substr(4 - RegExp.$1.length));
-　　for(var k in o)
-　　　　if(new RegExp("("+ k +")").test(fmt))
-　　fmt = fmt.replace(RegExp.$1, (RegExp.$1.length==1) ? (o[k]) : (("00"+ o[k]).substr((""+ o[k]).length)));
-　　return fmt;
+Date.prototype.format = function (fmt) {
+  var o = {
+    "M+": this.getMonth() + 1, //月份
+    "d+": this.getDate(), //日
+    "h+": this.getHours() % 12 === 0 ? 12 : this.getHours() % 12, //小时
+    "H+": this.getHours(), //小时
+    "m+": this.getMinutes(), //分
+    "s+": this.getSeconds(), //秒
+    "q+": Math.floor((this.getMonth() + 3) / 3), //季度
+    "S": this.getMilliseconds() //毫秒
+  };
+  if (/(y+)/.test(fmt))
+    fmt = fmt.replace(RegExp.$1, (this.getFullYear() + "").substr(4 - RegExp.$1.length));
+  for (var k in o)
+    if (new RegExp("(" + k + ")").test(fmt))
+      fmt = fmt.replace(RegExp.$1, (RegExp.$1.length === 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
+  return fmt;
 }
 
 const Home = lazy(() => import('./pages/Home/index'));
@@ -100,7 +100,7 @@ function App() {
     localProvider,
     tx,
   };
-  
+
   if (isEmpty(nextProps.address)) return <span />;
 
   return (

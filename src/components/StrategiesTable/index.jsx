@@ -1,3 +1,6 @@
+/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable jsx-a11y/anchor-is-valid */
+
 import React, { useState, useEffect } from 'react';
 import { Card, Table, Space, Popconfirm, Input, Button, Tooltip, message, Row, Col } from 'antd';
 import { CloudSyncOutlined } from "@ant-design/icons";

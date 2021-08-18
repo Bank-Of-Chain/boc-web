@@ -1,6 +1,6 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useState } from "react";
 import { Row, Col, Tag, Button, Card, InputNumber, Popconfirm, message } from "antd";
-import { CloudSyncOutlined } from "@ant-design/icons";
 import isEmpty from "lodash/isEmpty";
 import * as ethers from "ethers";
 import { BigNumber } from 'ethers';
@@ -11,14 +11,11 @@ import { VAULT_ADDRESS, VAULT_ABI, STRATEGY_ABI } from "./../../constants";
 // === Utils === //
 import { toFixed } from "./../../helpers/number-format"
 
-// === Hocs === //
-import { useEventListener } from '../../hooks';
-
 export default function Transaction(props) {
-  const { name, from, address, writeContracts, userProvider, localProvider, readContracts } = props;
+  const { name, from, address, userProvider } = props;
   const [fromValue, setFromValue] = useState(0);
   const [toValue, setToValue] = useState(0);
-  const [usdtDecimals, setUsdtDecimals] = useState(BigNumber.from(1e6));
+  const [usdtDecimals] = useState(BigNumber.from(1e6));
 
   const [fromBalance, setFromBalance] = useState(BigNumber.from(0));
   const [toBalance, setToBalance] = useState(BigNumber.from(0));

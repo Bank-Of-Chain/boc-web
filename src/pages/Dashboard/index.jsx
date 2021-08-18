@@ -54,7 +54,7 @@ const blockExplorer = targetNetwork.blockExplorer;
 export default function Dashboard(props) {
   const { address, writeContracts, logoutOfWeb3Modal, web3Modal, userProvider, localProvider, tx, readContracts } = props;
 
-  const [route, setRoute] = useState();
+  const [, setRoute] = useState();
   useEffect(() => {
     setRoute(window.location.pathname);
   }, [setRoute]);
