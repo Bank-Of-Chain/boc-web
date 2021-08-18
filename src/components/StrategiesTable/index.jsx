@@ -2,7 +2,7 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 
 import React, { useState, useEffect } from 'react';
-import { Card, Table, Space, Popconfirm, Input, Button, Tooltip, message, Row, Col } from 'antd';
+import { Card, Table, Space, Popconfirm, Input, Button, Tooltip, message, Row, Col, Switch } from 'antd';
 import { CloudSyncOutlined } from "@ant-design/icons";
 import * as ethers from "ethers";
 
@@ -44,7 +44,7 @@ export default function StrategiesTable(props) {
         name, vaultState, minReturnBps, estimatedTotalAssets, balanceOfLpToken, apy
       ]) => {
         const {
-          debtRatio, enforceChangeLimit, activation, originalDebt, totalGain, totalLoss, lastReport
+          debtRatio, enforceChangeLimit, activation, originalDebt, totalGain, totalLoss, lastReport, totalAsset
         } = vaultState
         return {
           key: item,
@@ -55,6 +55,7 @@ export default function StrategiesTable(props) {
           activation,
           apy,
           totalDebt: originalDebt,
+          totalAsset,
           totalGain,
           totalLoss,
           minReturnBps,
@@ -162,6 +163,14 @@ export default function StrategiesTable(props) {
     loadBanlance();
   }
 
+  const onChange = async (id, value) => {
+    if (isEmpty(id)) return;
+    const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider);
+    const signer = userProvider.getSigner();
+    await vaultContract.connect(signer).setStrategyEnforceChangeLimit(id, value)
+      .then(tx => tx.wait());
+    loadBanlance();
+  }
   /**
    * dohardwork操作
    */
@@ -211,9 +220,17 @@ export default function StrategiesTable(props) {
       }
     },
     {
-      title: '投资估值',
+      title: '稳定币估值',
       dataIndex: 'estimatedTotalAssets',
       key: 'estimatedTotalAssets',
+      render: (value, item, index) => {
+        return <span key={index}>{toFixed(value, 10 ** underlyingUnit)}</span>;
+      }
+    },
+    {
+      title: 'USDT估值',
+      dataIndex: 'totalAsset',
+      key: 'totalAsset',
       render: (value, item, index) => {
         return <span key={index}>{toFixed(value, 10 ** underlyingUnit)}</span>;
       }
@@ -258,6 +275,14 @@ export default function StrategiesTable(props) {
           <span style={{ lineHeight: '32px' }} key={index}>{toFixed(value, 1e2, 2)}%</span>&nbsp;
           <Input.Search onSearch={(v) => setMinReturnBps(item.address, v)} enterButton="set" style={{ width: 120, float: 'right' }} />
         </div>
+      }
+    },
+    {
+      title: '校验开关',
+      dataIndex: 'enforceChangeLimit',
+      key: 'enforceChangeLimit',
+      render: (value, item, index) => {
+        return <Switch size="small" onChange={v => onChange(item.address, v)} checked={value} />
       }
     },
     {

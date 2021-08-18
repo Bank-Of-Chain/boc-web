@@ -901,6 +901,11 @@ export const VAULT_ABI = [{
         "internalType": "uint256",
         "name": "lossLimitRatio",
         "type": "uint256"
+      },
+      {
+        "internalType": "bool",
+        "name": "enforceChangeLimit",
+        "type": "bool"
       }
     ],
     "stateMutability": "view",

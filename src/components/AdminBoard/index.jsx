@@ -81,6 +81,17 @@ function AdminBoard(props) {
         value={toFixed(totalAssets, 10 ** underlyingUnit)}
       />
       <Statistic
+        title={<span style={{ fontWeight: 'bold', color: '#000', fontSize: 'large' }}>池子总成本</span>}
+        style={{
+          marginLeft: 32,
+        }}
+        suffix="(USDT)"
+        valueStyle={{
+          fontWeight: 'bold', color: '#000', fontSize: 'x-large'
+        }}
+        value={toFixed(BigNumber.from(strategyTotalAssetsValue).add(BigNumber.from(bufferTotal)), 10 ** underlyingUnit)}
+      />
+      <Statistic
         title={<span style={{ fontWeight: 'bold', color: '#000', fontSize: 'large' }}>策略总额</span>}
         style={{
           marginLeft: 32,
