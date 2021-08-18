@@ -1,0 +1,19 @@
+name: test-case-success
+on:
+  push:
+    branches:
+      - master
+jobs:
+  lint-and-test:
+    name: Test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install
+        uses: borales/actions-yarn@master
+        with:
+          cmd: install
+      - name: Release
+        uses: borales/actions-yarn@master
+        with:
+          cmd: build

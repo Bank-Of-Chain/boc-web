@@ -1,0 +1,19 @@
+.App {
+  background: linear-gradient(90deg, rgba(255, 203, 114, 0.65) 0%, rgba(255, 103, 94, 0) 100%), #eb756d;
+  height: 100%;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+#root {
+  display: flex;
+  flex-direction: column;
+}
+
+html {
+  min-height: 100vh;
+}
