@@ -92,8 +92,19 @@ export default function StrategiesTable(props) {
     if (isEmpty(id)) return;
     const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider);
     const signer = userProvider.getSigner();
-    await vaultContract.connect(signer).addStrategy(id, 2000, 1000, 1000000, 3000000000000, 100, 100)
-      .then(tx => tx.wait());
+    await vaultContract.connect(signer).addStrategy(
+      [
+        {
+          strategy: id,
+          apy: 2000,
+          debtRatio: 1000,
+          minDebtPerHarvest: 1000,
+          maxDebtPerHarvest: 3000000000000,
+          profitLimitRatio: 100,
+          lossLimitRatio: 100
+        }
+      ]
+    ).then(tx => tx.wait());
     loadBanlance();
     refreshCallBack();
   }
