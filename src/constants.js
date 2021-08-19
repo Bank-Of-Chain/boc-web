@@ -77,24 +77,6 @@ export const VAULT_ABI = [{
   {
     "anonymous": false,
     "inputs": [{
-        "indexed": false,
-        "internalType": "address",
-        "name": "oldVersion",
-        "type": "address"
-      },
-      {
-        "indexed": false,
-        "internalType": "address",
-        "name": "newVersion",
-        "type": "address"
-      }
-    ],
-    "name": "StrategyMigrated",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [{
       "indexed": true,
       "internalType": "address",
       "name": "strategy",
@@ -158,41 +140,46 @@ export const VAULT_ABI = [{
   },
   {
     "inputs": [{
-        "internalType": "address",
-        "name": "strategy",
-        "type": "address"
-      },
-      {
-        "internalType": "int256",
-        "name": "_apy",
-        "type": "int256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "_debtRatio",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "_minDebtPerHarvest",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "_maxDebtPerHarvest",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "_profitLimitRatio",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "_lossLimitRatio",
-        "type": "uint256"
-      }
-    ],
+      "components": [{
+          "internalType": "address",
+          "name": "strategy",
+          "type": "address"
+        },
+        {
+          "internalType": "int256",
+          "name": "apy",
+          "type": "int256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "debtRatio",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "minDebtPerHarvest",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "maxDebtPerHarvest",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "profitLimitRatio",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "lossLimitRatio",
+          "type": "uint256"
+        }
+      ],
+      "internalType": "struct StrategyAdd[]",
+      "name": "strategyAdds",
+      "type": "tuple[]"
+    }],
     "name": "addStrategy",
     "outputs": [],
     "stateMutability": "nonpayable",
@@ -258,6 +245,17 @@ export const VAULT_ABI = [{
       "type": "address"
     }],
     "name": "balanceOf",
+    "outputs": [{
+      "internalType": "uint256",
+      "name": "",
+      "type": "uint256"
+    }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "balanceOfToken",
     "outputs": [{
       "internalType": "uint256",
       "name": "",
@@ -363,21 +361,6 @@ export const VAULT_ABI = [{
       "internalType": "bool",
       "name": "",
       "type": "bool"
-    }],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [{
-      "internalType": "address",
-      "name": "strategy",
-      "type": "address"
-    }],
-    "name": "expectedReturn",
-    "outputs": [{
-      "internalType": "uint256",
-      "name": "",
-      "type": "uint256"
     }],
     "stateMutability": "view",
     "type": "function"
@@ -553,23 +536,6 @@ export const VAULT_ABI = [{
       "type": "uint256"
     }],
     "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [{
-        "internalType": "address",
-        "name": "oldVersion",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "newVersion",
-        "type": "address"
-      }
-    ],
-    "name": "migrateStrategy",
-    "outputs": [],
-    "stateMutability": "nonpayable",
     "type": "function"
   },
   {
@@ -922,21 +888,6 @@ export const VAULT_ABI = [{
       "internalType": "uint256",
       "name": "",
       "type": "uint256"
-    }],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [{
-      "internalType": "address",
-      "name": "",
-      "type": "address"
-    }],
-    "name": "strategyEnforceChangeLimit",
-    "outputs": [{
-      "internalType": "bool",
-      "name": "",
-      "type": "bool"
     }],
     "stateMutability": "view",
     "type": "function"
