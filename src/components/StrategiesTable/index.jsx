@@ -3,7 +3,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Card, Table, Space, Popconfirm, Input, Button, Tooltip, message, Row, Col, Switch } from 'antd';
-import { CloudSyncOutlined } from "@ant-design/icons";
+import { CloudSyncOutlined, SettingOutlined } from "@ant-design/icons";
 import * as ethers from "ethers";
 
 // === constants === //
@@ -312,13 +312,13 @@ export default function StrategiesTable(props) {
       }
     },
     {
-      title: 'apy',
+      title: 'Apy',
       dataIndex: 'apy',
       key: 'apy',
       render: (value, item, index) => {
         return <div>
           <span style={{ lineHeight: '32px' }} key={index}>{toFixed(value, 1e2, 2)}%</span>&nbsp;
-          <Input.Search onSearch={(v) => setApy(item.address, v)} enterButton="set" style={{ width: 120, float: 'right' }} />
+          <Input.Search onSearch={(v) => setApy(item.address, v)} enterButton={<SettingOutlined />} style={{ width: 120, float: 'right' }} />
         </div>
       }
     },
@@ -329,7 +329,7 @@ export default function StrategiesTable(props) {
       render: (value, item, index) => {
         return <div>
           <span style={{ lineHeight: '32px' }} key={index}>{toFixed(value, 1e2, 2)}%</span>&nbsp;
-          <Input.Search onSearch={(v) => setDebtRatio(item.address, v)} enterButton="set" style={{ width: 120, float: 'right' }} />
+          <Input.Search onSearch={(v) => setDebtRatio(item.address, v)} enterButton={<SettingOutlined />} style={{ width: 120, float: 'right' }} />
         </div>
       }
     },
@@ -415,7 +415,6 @@ export default function StrategiesTable(props) {
     <Table columns={columns} rowSelection={rowSelection} dataSource={data} pagination={false}
       expandable={{
         expandedRowRender: record => {
-          // minReportDelay, maxReportDelay, profitFactor, debtThreshold
           const innerColumns = [
             {
               title: '最小汇报间隔 (s)',
@@ -424,7 +423,7 @@ export default function StrategiesTable(props) {
               render: (value, item, index) => {
                 return <div>
                   <span style={{ lineHeight: '32px' }} key={index}>{toFixed(value, 1)}</span>&nbsp;
-                  <Input.Search onSearch={(v) => setMinReportDelay(item.address, v)} enterButton="set" style={{ width: 120, float: 'right' }} />
+                  <Input.Search onSearch={(v) => setMinReportDelay(item.address, v)} enterButton={<SettingOutlined />} style={{ width: 120, float: 'right' }} />
                 </div>
               }
             },
@@ -435,7 +434,7 @@ export default function StrategiesTable(props) {
               render: (value, item, index) => {
                 return <div>
                   <span style={{ lineHeight: '32px' }} key={index}>{toFixed(value, 1)}</span>&nbsp;
-                  <Input.Search onSearch={(v) => setMaxReportDelay(item.address, v)} enterButton="set" style={{ width: 120, float: 'right' }} />
+                  <Input.Search onSearch={(v) => setMaxReportDelay(item.address, v)} enterButton={<SettingOutlined />} style={{ width: 120, float: 'right' }} />
                 </div>
               }
             },
@@ -446,7 +445,7 @@ export default function StrategiesTable(props) {
               render: (value, item, index) => {
                 return <div>
                   <span style={{ lineHeight: '32px' }} key={index}>{toFixed(value, 1)}</span>&nbsp;
-                  <Input.Search onSearch={(v) => setProfitFactor(item.address, v)} enterButton="set" style={{ width: 120, float: 'right' }} />
+                  <Input.Search onSearch={(v) => setProfitFactor(item.address, v)} enterButton={<SettingOutlined />} style={{ width: 120, float: 'right' }} />
                 </div>
               }
             },
@@ -457,7 +456,7 @@ export default function StrategiesTable(props) {
               render: (value, item, index) => {
                 return <div>
                   <span style={{ lineHeight: '32px' }} key={index}>{toFixed(value, 1)}</span>&nbsp;
-                  <Input.Search onSearch={(v) => setDebtThreshold(item.address, v)} enterButton="set" style={{ width: 120, float: 'right' }} />
+                  <Input.Search onSearch={(v) => setDebtThreshold(item.address, v)} enterButton={<SettingOutlined />} style={{ width: 120, float: 'right' }} />
                 </div>
               }
             },
@@ -468,7 +467,7 @@ export default function StrategiesTable(props) {
               render: (value, item, index) => {
                 return <div>
                   <span style={{ lineHeight: '32px' }} key={index}>{toFixed(value, 1e2, 2)}%</span>&nbsp;
-                  <Input.Search onSearch={(v) => setMinReturnBps(item.address, v)} enterButton="set" style={{ width: 120, float: 'right' }} />
+                  <Input.Search onSearch={(v) => setMinReturnBps(item.address, v)} enterButton={<SettingOutlined />} style={{ width: 120, float: 'right' }} />
                 </div>
               }
             },
