@@ -1201,6 +1201,14 @@ export const STRATEGY_ABI = [
   "function transfer(address to, uint amount)",
   "function allowance(address owner, address spender) public returns (uint)",
   "function approve(address owner, uint amount)",
+  "function minReportDelay() view returns (uint256)",
+  "function maxReportDelay() view returns (uint256)",
+  "function profitFactor() view returns (uint256)",
+  "function debtThreshold() view returns (uint256)",
+  "function setMinReportDelay(uint256) external",
+  "function setMaxReportDelay(uint256) external",
+  "function setProfitFactor(uint256) external",
+  "function setDebtThreshold(uint256) external",
 ]
 
 export const NETWORK = chainId => {
