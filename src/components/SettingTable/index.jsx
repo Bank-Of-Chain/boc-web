@@ -43,7 +43,8 @@ export default function SettingTable(props) {
         name, vaultState, minReturnBps, estimatedTotalAssets, balanceOfLpToken, apy, minReportDelay, maxReportDelay, profitFactor, debtThreshold
       ]) => {
         const {
-          debtRatio, enforceChangeLimit, activation, originalDebt, totalGain, totalLoss, lastReport, totalAsset, enableWithdraw
+          debtRatio, enforceChangeLimit, activation, originalDebt, totalGain, totalLoss, lastReport, totalAsset, enableWithdraw,
+          minDebtPerHarvest, maxDebtPerHarvest, profitLimitRatio, lossLimitRatio
         } = vaultState
         return {
           key: item,
@@ -65,7 +66,9 @@ export default function SettingTable(props) {
           maxReportDelay,
           profitFactor,
           debtThreshold,
-          enableWithdraw
+          enableWithdraw,
+          lossLimitRatio,
+          profitLimitRatio
         };
       });
     }));
@@ -89,6 +92,22 @@ export default function SettingTable(props) {
     const signer = userProvider.getSigner();
     const contractWithSigner = contract.connect(signer);
     await contractWithSigner.setMinReturnBps(nextValue)
+      .then(tx => tx.wait());
+    loadBanlance();
+  }
+
+  const setLossLimitRatio = async (id, value, profitLimitRatio) => {
+    debugger
+    if (isEmpty(id) || isEmpty(value))
+      return;
+    const nextValue = parseInt(value * 1e2);
+    if (isNaN(nextValue) || nextValue < 0 || nextValue > 10000) {
+      message.error('请设置合适的数值');
+      return;
+    }
+    const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider);
+    const signer = userProvider.getSigner();
+    await vaultContract.connect(signer).setStrategySetLimitRatio(id, nextValue, profitLimitRatio)
       .then(tx => tx.wait());
     loadBanlance();
   }
@@ -210,6 +229,17 @@ export default function SettingTable(props) {
         return <div>
           <span style={{ lineHeight: '32px' }} key={index}>{toFixed(value, 1)}</span>&nbsp;
           <Input.Search onSearch={(v) => setDebtThreshold(item.address, v)} enterButton={<SettingOutlined />} style={{ width: 120, float: 'right' }} />
+        </div>
+      }
+    },
+    {
+      title: '损失占比阈值',
+      dataIndex: 'lossLimitRatio',
+      key: 'lossLimitRatio',
+      render: (value, item, index) => {
+        return <div>
+          <span style={{ lineHeight: '32px' }} key={index}>{toFixed(value, 1e2, 2)}%</span>&nbsp;
+          <Input.Search onSearch={(v) => setLossLimitRatio(item.address, v, item.profitLimitRatio)} enterButton={<SettingOutlined />} style={{ width: 120, float: 'right' }} />
         </div>
       }
     },
