@@ -2,7 +2,7 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 
 import React, { useState, useEffect } from 'react';
-import { Card, Table, Input, Tooltip, message, Row, Col, Switch } from 'antd';
+import { Card, Table, Input, message, Row, Col, Switch } from 'antd';
 import { CloudSyncOutlined, SettingOutlined } from "@ant-design/icons";
 import * as ethers from "ethers";
 
@@ -14,8 +14,6 @@ import map from 'lodash/map';
 import isNaN from 'lodash/isNaN';
 import isEmpty from 'lodash/isEmpty';
 import { toFixed } from "../../helpers/number-format"
-
-const { BigNumber } = ethers
 
 export default function SettingTable(props) {
   const { userProvider, refreshSymbol } = props;
