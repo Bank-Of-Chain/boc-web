@@ -1199,7 +1199,7 @@ export const STRATEGY_ABI = [
   "function balanceOf(address) view returns (uint)",
   "function symbol() view returns (string)",
   "function transfer(address to, uint amount)",
-  "function allowance(address owner, address spender) public returns (uint)",
+  "function allowance(address owner, address spender) public view returns (uint)",
   "function approve(address owner, uint amount)",
   "function minReportDelay() view returns (uint256)",
   "function maxReportDelay() view returns (uint256)",

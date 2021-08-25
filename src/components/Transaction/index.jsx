@@ -42,15 +42,24 @@ export default function Transaction(props) {
     const signer = userProvider.getSigner();
     const usdtContractWithUser = usdtContract.connect(signer);
     const nVaultWithUser = vaultContract.connect(signer);
-    const nextValue = fromValue * usdtDecimals
-    setFromValue(0);
+    let nextValue = BigNumber.from(fromValue * usdtDecimals);
     try {
-      const firstApproveTx = await usdtContractWithUser.approve(VAULT_ADDRESS, 0);
-      await firstApproveTx.wait();
-      const secondApproveTx = await usdtContractWithUser.approve(VAULT_ADDRESS, nextValue);
-      await secondApproveTx.wait();
+      // 获取当前允许的额度
+      const allowanceAmount = await usdtContractWithUser.allowance(address, VAULT_ADDRESS);
+      // 如果充值金额大于允许的额度，则需要重新设置额度
+      if (nextValue.gt(allowanceAmount)) {
+        // 如果允许的额度为0，则直接设置新的额度。否则，则设置为0后，再设置新的额度。
+        if (allowanceAmount.gt(0)) {
+          const firstApproveTx = await usdtContractWithUser.approve(VAULT_ADDRESS, 0);
+          await firstApproveTx.wait();
+        }
+        console.log('当前授权：', allowanceAmount.toString(), '准备授权：', nextValue.toString());
+        const secondApproveTx = await usdtContractWithUser.approve(VAULT_ADDRESS, nextValue);
+        await secondApproveTx.wait();
+      }
       const depositTx = await nVaultWithUser.deposit(nextValue);
       await depositTx.wait();
+      setFromValue(0);
       message.loading('数据提交中...', 2.5).then(() => message.success('数据提交成功', 2.5))
     } catch (error) {
       if (error && error.data) {
