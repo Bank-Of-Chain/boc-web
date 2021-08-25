@@ -44,7 +44,7 @@ export default function SettingTable(props) {
       ]) => {
         const {
           debtRatio, enforceChangeLimit, activation, originalDebt, totalGain, totalLoss, lastReport, totalAsset, enableWithdraw,
-          minDebtPerHarvest, maxDebtPerHarvest, profitLimitRatio, lossLimitRatio
+          profitLimitRatio, lossLimitRatio
         } = vaultState
         return {
           key: item,
