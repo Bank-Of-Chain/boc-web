@@ -43,7 +43,7 @@ export default function SettingTable(props) {
         name, vaultState, minReturnBps, estimatedTotalAssets, balanceOfLpToken, apy, minReportDelay, maxReportDelay, profitFactor, debtThreshold
       ]) => {
         const {
-          debtRatio, enforceChangeLimit, activation, originalDebt, totalGain, totalLoss, lastReport, totalAsset
+          debtRatio, enforceChangeLimit, activation, originalDebt, totalGain, totalLoss, lastReport, totalAsset, enableWithdraw
         } = vaultState
         return {
           key: item,
@@ -64,7 +64,8 @@ export default function SettingTable(props) {
           minReportDelay,
           maxReportDelay,
           profitFactor,
-          debtThreshold
+          debtThreshold,
+          enableWithdraw
         };
       });
     }));
@@ -149,6 +150,15 @@ export default function SettingTable(props) {
     loadBanlance();
   }
 
+  const setEnableWithdraw = async (id, value) => {
+    if (isEmpty(id)) return;
+    const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider);
+    const signer = userProvider.getSigner();
+    await vaultContract.connect(signer).updateStrategyEnableWithdraw(id, value)
+      .then(tx => tx.wait());
+    loadBanlance();
+  }
+
   const columns = [
     {
       title: '策略名称',
@@ -220,6 +230,14 @@ export default function SettingTable(props) {
       key: 'enforceChangeLimit',
       render: (value, item, index) => {
         return <Switch size="small" onChange={v => onChange(item.address, v)} checked={value} />
+      }
+    },
+    {
+      title: '支持提取',
+      dataIndex: 'enableWithdraw',
+      key: 'enableWithdraw',
+      render: (value, item, index) => {
+        return <Switch size="small" onChange={v => setEnableWithdraw(item.address, v)} checked={value} />
       }
     },
   ]

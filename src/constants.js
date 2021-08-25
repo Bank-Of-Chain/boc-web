@@ -872,6 +872,11 @@ export const VAULT_ABI = [{
         "internalType": "bool",
         "name": "enforceChangeLimit",
         "type": "bool"
+      },
+      {
+        "internalType": "bool",
+        "name": "enableWithdraw",
+        "type": "bool"
       }
     ],
     "stateMutability": "view",
@@ -1112,6 +1117,23 @@ export const VAULT_ABI = [{
         "type": "address"
       },
       {
+        "internalType": "bool",
+        "name": "_enableWithdraw",
+        "type": "bool"
+      }
+    ],
+    "name": "updateStrategyEnableWithdraw",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [{
+        "internalType": "address",
+        "name": "_strategy",
+        "type": "address"
+      },
+      {
         "internalType": "uint256",
         "name": "_maxDebtPerHarvest",
         "type": "uint256"
@@ -1186,7 +1208,7 @@ export const VAULT_ABI = [{
     "stateMutability": "nonpayable",
     "type": "function"
   }
-];
+]
 
 export const STRATEGY_ABI = [
   "function name() view returns (string memory)",
