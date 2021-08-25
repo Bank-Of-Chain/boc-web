@@ -2,7 +2,7 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 
 import React, { useState, useEffect } from 'react';
-import { Card, Table, Space, Popconfirm, Input, Button, Tooltip, message, Row, Col, Switch } from 'antd';
+import { Card, Table, Space, Popconfirm, Input, Button, Tooltip, message, Row, Col } from 'antd';
 import { CloudSyncOutlined, SettingOutlined } from "@ant-design/icons";
 import * as ethers from "ethers";
 
@@ -118,28 +118,6 @@ export default function StrategiesTable(props) {
   }
 
   /**
-   * 设置 apy 的数值
-   * @param {string} id 策略地址
-   * @param {number} value apy的值
-   * @returns 
-   */
-  const setMinReturnBps = async (id, value) => {
-    if (isEmpty(id) || isEmpty(value))
-      return;
-    const nextValue = parseInt(value * 1e2);
-    if (isNaN(nextValue) || nextValue < 0 || nextValue > 10000) {
-      message.error('请设置合适的数值');
-      return;
-    }
-    const contract = new ethers.Contract(id, STRATEGY_ABI, userProvider);
-    const signer = userProvider.getSigner();
-    const contractWithSigner = contract.connect(signer);
-    await contractWithSigner.setMinReturnBps(nextValue)
-      .then(tx => tx.wait());
-    loadBanlance();
-  }
-
-  /**
    * 
    * @param {string} id 策略地址 
    * @param {number} value 设置的指
@@ -178,63 +156,6 @@ export default function StrategiesTable(props) {
     const signer = userProvider.getSigner();
     console.log('updateStrategyApy=', id, nextValue);
     await vaultContract.connect(signer).updateStrategyApy([id], [nextValue])
-      .then(tx => tx.wait());
-    loadBanlance();
-  }
-
-  const setMinReportDelay = async (id, value) => {
-    if (isNaN(value) || value < 0) {
-      message.error('请设置合适的数值');
-      return;
-    }
-    const strategyContract = new ethers.Contract(id, STRATEGY_ABI, userProvider);
-    const signer = userProvider.getSigner();
-    await strategyContract.connect(signer).setMinReportDelay(value)
-      .then(tx => tx.wait());
-    loadBanlance();
-  }
-
-  const setMaxReportDelay = async (id, value) => {
-    if (isNaN(value) || value < 0) {
-      message.error('请设置合适的数值');
-      return;
-    }
-    const strategyContract = new ethers.Contract(id, STRATEGY_ABI, userProvider);
-    const signer = userProvider.getSigner();
-    await strategyContract.connect(signer).setMaxReportDelay(value)
-      .then(tx => tx.wait());
-    loadBanlance();
-  }
-
-  const setProfitFactor = async (id, value) => {
-    if (isNaN(value) || value < 0) {
-      message.error('请设置合适的数值');
-      return;
-    }
-    const strategyContract = new ethers.Contract(id, STRATEGY_ABI, userProvider);
-    const signer = userProvider.getSigner();
-    await strategyContract.connect(signer).setProfitFactor(value)
-      .then(tx => tx.wait());
-    loadBanlance();
-  }
-
-  const setDebtThreshold = async (id, value) => {
-    if (isNaN(value) || value < 0) {
-      message.error('请设置合适的数值');
-      return;
-    }
-    const strategyContract = new ethers.Contract(id, STRATEGY_ABI, userProvider);
-    const signer = userProvider.getSigner();
-    await strategyContract.connect(signer).setDebtThreshold(value)
-      .then(tx => tx.wait());
-    loadBanlance();
-  }
-
-  const onChange = async (id, value) => {
-    if (isEmpty(id)) return;
-    const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider);
-    const signer = userProvider.getSigner();
-    await vaultContract.connect(signer).setStrategyEnforceChangeLimit(id, value)
       .then(tx => tx.wait());
     loadBanlance();
   }
@@ -333,15 +254,6 @@ export default function StrategiesTable(props) {
         </div>
       }
     },
-
-    {
-      title: '校验开关',
-      dataIndex: 'enforceChangeLimit',
-      key: 'enforceChangeLimit',
-      render: (value, item, index) => {
-        return <Switch size="small" onChange={v => onChange(item.address, v)} checked={value} />
-      }
-    },
     {
       title: '操作',
       key: 'action',
@@ -412,70 +324,6 @@ export default function StrategiesTable(props) {
       </Row>
     }
   >
-    <Table columns={columns} rowSelection={rowSelection} dataSource={data} pagination={false}
-      expandable={{
-        expandedRowRender: record => {
-          const innerColumns = [
-            {
-              title: '最小汇报间隔 (s)',
-              dataIndex: 'minReportDelay',
-              key: 'minReportDelay',
-              render: (value, item, index) => {
-                return <div>
-                  <span style={{ lineHeight: '32px' }} key={index}>{toFixed(value, 1)}</span>&nbsp;
-                  <Input.Search onSearch={(v) => setMinReportDelay(item.address, v)} enterButton={<SettingOutlined />} style={{ width: 120, float: 'right' }} />
-                </div>
-              }
-            },
-            {
-              title: '最大汇报间隔 (s)',
-              dataIndex: 'maxReportDelay',
-              key: 'maxReportDelay',
-              render: (value, item, index) => {
-                return <div>
-                  <span style={{ lineHeight: '32px' }} key={index}>{toFixed(value, 1)}</span>&nbsp;
-                  <Input.Search onSearch={(v) => setMaxReportDelay(item.address, v)} enterButton={<SettingOutlined />} style={{ width: 120, float: 'right' }} />
-                </div>
-              }
-            },
-            {
-              title: '成本倍数',
-              dataIndex: 'profitFactor',
-              key: 'profitFactor',
-              render: (value, item, index) => {
-                return <div>
-                  <span style={{ lineHeight: '32px' }} key={index}>{toFixed(value, 1)}</span>&nbsp;
-                  <Input.Search onSearch={(v) => setProfitFactor(item.address, v)} enterButton={<SettingOutlined />} style={{ width: 120, float: 'right' }} />
-                </div>
-              }
-            },
-            {
-              title: '债务阈值',
-              dataIndex: 'debtThreshold',
-              key: 'debtThreshold',
-              render: (value, item, index) => {
-                return <div>
-                  <span style={{ lineHeight: '32px' }} key={index}>{toFixed(value, 1)}</span>&nbsp;
-                  <Input.Search onSearch={(v) => setDebtThreshold(item.address, v)} enterButton={<SettingOutlined />} style={{ width: 120, float: 'right' }} />
-                </div>
-              }
-            },
-            {
-              title: '滑点阈值设置',
-              dataIndex: 'minReturnBps',
-              key: 'minReturnBps',
-              render: (value, item, index) => {
-                return <div>
-                  <span style={{ lineHeight: '32px' }} key={index}>{toFixed(value, 1e2, 2)}%</span>&nbsp;
-                  <Input.Search onSearch={(v) => setMinReturnBps(item.address, v)} enterButton={<SettingOutlined />} style={{ width: 120, float: 'right' }} />
-                </div>
-              }
-            },
-          ];
-          return <Table bordered columns={innerColumns} dataSource={[record]} pagination={false} />
-        },
-        rowExpandable: record => record.key !== 'Not Expandable',
-      }}
-    />
+    <Table bordered columns={columns} rowSelection={rowSelection} dataSource={data} pagination={false} />
   </Card>
 }

@@ -11,6 +11,7 @@ import { VAULT_ADDRESS, VAULT_ABI } from "./../../constants";
 // === Components === //
 import AdminBoard from "../../components/AdminBoard";
 import StrategiesTable from "../../components/StrategiesTable";
+import SettingTable from "../../components/SettingTable";
 
 // === Utils === //
 import isEmpty from "lodash/isEmpty";
@@ -104,6 +105,11 @@ function Admin(props) {
       <Col span={24} style={{ padding: 20 }}>
         {
           address && <StrategiesTable writeContracts={writeContracts} userProvider={userProvider} refreshSymbol={refreshCount} refreshCallBack={() => setRefreshCount(refreshCount + 1)} />
+        }
+      </Col>
+      <Col span={24} style={{ padding: 20 }}>
+        {
+          address && <SettingTable writeContracts={writeContracts} userProvider={userProvider} refreshSymbol={refreshCount} refreshCallBack={() => setRefreshCount(refreshCount + 1)} />
         }
       </Col>
       <Col span={24} style={{ padding: 20 }}>
