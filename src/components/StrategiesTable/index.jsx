@@ -11,6 +11,7 @@ import request from "request";
 import { VAULT_ADDRESS, VAULT_ABI, STRATEGY_ABI } from "./../../constants";
 
 // === Utils === //
+import get from 'lodash/get';
 import map from 'lodash/map';
 import isNaN from 'lodash/isNaN';
 import isEmpty from 'lodash/isEmpty';
@@ -47,8 +48,12 @@ export default function StrategiesTable(props) {
         contract.debtThreshold(),
         new Promise((resolve) => {
           request(`http://192.168.254.27:3000/v3/strategy/${item}/apy/3`, (error, response, body) => {
-            const obj = JSON.parse(body)
-            resolve(obj.data.apy)
+            try {
+              const obj = JSON.parse(body);
+              resolve(get(obj, 'data.apy', 0))
+            } catch (error) {
+              resolve(0)
+            }
           })
         })
       ]).then(([
