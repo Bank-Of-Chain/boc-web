@@ -5,17 +5,18 @@ import React, { useState, useEffect } from 'react';
 import { Card, Table, Space, Popconfirm, Input, Button, Tooltip, message, Row, Col } from 'antd';
 import { CloudSyncOutlined, SettingOutlined } from "@ant-design/icons";
 import * as ethers from "ethers";
-import request from "request";
 
 // === constants === //
 import { VAULT_ADDRESS, VAULT_ABI, STRATEGY_ABI } from "./../../constants";
 
 // === Utils === //
-import get from 'lodash/get';
 import map from 'lodash/map';
 import isNaN from 'lodash/isNaN';
 import isEmpty from 'lodash/isEmpty';
 import { toFixed } from "./../../helpers/number-format"
+
+// === Components === //
+import OriginApy from './OriginApy';
 
 const { BigNumber } = ethers
 
@@ -46,16 +47,6 @@ export default function StrategiesTable(props) {
         contract.maxReportDelay(),
         contract.profitFactor(),
         contract.debtThreshold(),
-        new Promise((resolve) => {
-          request(`http://192.168.254.27:3000/v3/strategy/${item}/apy/3`, (error, response, body) => {
-            try {
-              const obj = JSON.parse(body);
-              resolve(get(obj, 'data.apy', 0))
-            } catch (error) {
-              resolve(0)
-            }
-          })
-        })
       ]).then(([
         name, vaultState, minReturnBps, estimatedTotalAssets, balanceOfLpToken, apy, minReportDelay, maxReportDelay, profitFactor, debtThreshold, originApy
       ]) => {
@@ -81,8 +72,7 @@ export default function StrategiesTable(props) {
           minReportDelay,
           maxReportDelay,
           profitFactor,
-          debtThreshold,
-          originApy
+          debtThreshold
         };
       });
     }));
@@ -251,7 +241,7 @@ export default function StrategiesTable(props) {
       key: 'apy',
       render: (value, item, index) => {
         return <div>
-          <span style={{ lineHeight: '32px' }} key={index}>{toFixed(value, 1e2, 2)}% ({toFixed(BigNumber.from(item.originApy), 1e2, 2)}%)</span>&nbsp;
+          <span style={{ lineHeight: '32px' }} key={index}>{toFixed(value, 1e2, 2)}% (<OriginApy id={item.address} days={3} />)</span>&nbsp;
           <Input.Search onSearch={(v) => setApy(item.address, v)} enterButton={<SettingOutlined />} style={{ width: 120, float: 'right' }} />
         </div>
       }
