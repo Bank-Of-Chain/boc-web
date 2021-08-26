@@ -5,6 +5,7 @@ import React, { useState, useEffect } from 'react';
 import { Card, Table, Space, Popconfirm, Input, Button, Tooltip, message, Row, Col } from 'antd';
 import { CloudSyncOutlined, SettingOutlined } from "@ant-design/icons";
 import * as ethers from "ethers";
+import request from "request";
 
 // === constants === //
 import { VAULT_ADDRESS, VAULT_ABI, STRATEGY_ABI } from "./../../constants";
@@ -44,8 +45,14 @@ export default function StrategiesTable(props) {
         contract.maxReportDelay(),
         contract.profitFactor(),
         contract.debtThreshold(),
+        new Promise((resolve) => {
+          request(`http://192.168.254.27:3000/v3/strategy/${item}/apy/3`, (error, response, body) => {
+            const obj = JSON.parse(body)
+            resolve(obj.data.apy)
+          })
+        })
       ]).then(([
-        name, vaultState, minReturnBps, estimatedTotalAssets, balanceOfLpToken, apy, minReportDelay, maxReportDelay, profitFactor, debtThreshold
+        name, vaultState, minReturnBps, estimatedTotalAssets, balanceOfLpToken, apy, minReportDelay, maxReportDelay, profitFactor, debtThreshold, originApy
       ]) => {
         const {
           debtRatio, enforceChangeLimit, activation, originalDebt, totalGain, totalLoss, lastReport, totalAsset
@@ -69,7 +76,8 @@ export default function StrategiesTable(props) {
           minReportDelay,
           maxReportDelay,
           profitFactor,
-          debtThreshold
+          debtThreshold,
+          originApy
         };
       });
     }));
@@ -233,12 +241,12 @@ export default function StrategiesTable(props) {
       }
     },
     {
-      title: 'Apy',
+      title: 'Apy (实时Apy)',
       dataIndex: 'apy',
       key: 'apy',
       render: (value, item, index) => {
         return <div>
-          <span style={{ lineHeight: '32px' }} key={index}>{toFixed(value, 1e2, 2)}%</span>&nbsp;
+          <span style={{ lineHeight: '32px' }} key={index}>{toFixed(value, 1e2, 2)}% ({toFixed(BigNumber.from(item.originApy), 1e2, 2)}%)</span>&nbsp;
           <Input.Search onSearch={(v) => setApy(item.address, v)} enterButton={<SettingOutlined />} style={{ width: 120, float: 'right' }} />
         </div>
       }
