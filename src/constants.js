@@ -6,8 +6,10 @@ export const ETHERSCAN_KEY = "PSW8C433Q667DVEX5BCRMGNAH9FSGFZ7Q8";
 
 // EXTERNAL CONTRACTS
 const envNetworkType = process.env.REACT_APP_NETWORK_TYPE;
-export const VAULT_ADDRESS = window.config[envNetworkType || 'localhost'].vault_address;
-console.log('VAULT_ADDRESS=', VAULT_ADDRESS);
+const config = window.config[envNetworkType || 'localhost']
+console.log('config=', config);
+export const VAULT_ADDRESS = config.vault_address;
+export const APY_SERVER = config.apy_server;
 export const VAULT_ABI = [{
     "anonymous": false,
     "inputs": [{

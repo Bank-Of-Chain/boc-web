@@ -6,6 +6,9 @@ import { toFixed } from "./../../helpers/number-format";
 import request from "request";
 import get from 'lodash/get';
 
+// === Constants === //
+import { APY_SERVER } from './../../constants';
+
 import * as ethers from "ethers";
 const { BigNumber } = ethers
 
@@ -16,7 +19,7 @@ export default function OriginApy(props) {
 
   useEffect(() => {
     setIsLoading(true)
-    request(`http://192.168.254.27:3000/v3/strategy/${id}/apy/${days}`, (error, response, body) => {
+    request(`${APY_SERVER}/v3/strategy/${id}/apy/${days}`, (error, response, body) => {
       try {
         const obj = JSON.parse(body);
         setApy(get(obj, 'data.apy', 0))
@@ -27,7 +30,7 @@ export default function OriginApy(props) {
         setIsLoading(false)
       }, 200);
     })
-  }, [id])
+  }, [id, days])
 
   if (isLoading) return <SyncOutlined />
   return <span>{toFixed(BigNumber.from(apy), 1e2, 2)}%</span>
