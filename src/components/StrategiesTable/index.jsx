@@ -216,7 +216,7 @@ export default function StrategiesTable(props) {
       }
     },
     {
-      title: '稳定币估值',
+      title: '策略估值',
       dataIndex: 'estimatedTotalAssets',
       key: 'estimatedTotalAssets',
       render: (value, item, index) => {
@@ -224,7 +224,7 @@ export default function StrategiesTable(props) {
       }
     },
     {
-      title: 'USDT估值',
+      title: '上报估值',
       dataIndex: 'totalAsset',
       key: 'totalAsset',
       render: (value, item, index) => {
