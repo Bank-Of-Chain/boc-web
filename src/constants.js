@@ -10,9 +10,11 @@ const config = window.config[envNetworkType || 'localhost']
 console.log('config=', config);
 export const VAULT_ADDRESS = config.vault_address;
 export const APY_SERVER = config.apy_server;
-export const VAULT_ABI = [{
+export const VAULT_ABI = [
+  {
     "anonymous": false,
-    "inputs": [{
+    "inputs": [
+      {
         "indexed": true,
         "internalType": "address",
         "name": "owner",
@@ -36,7 +38,8 @@ export const VAULT_ABI = [{
   },
   {
     "anonymous": false,
-    "inputs": [{
+    "inputs": [
+      {
         "indexed": true,
         "internalType": "address",
         "name": "userAddress",
@@ -54,7 +57,107 @@ export const VAULT_ABI = [{
   },
   {
     "anonymous": false,
-    "inputs": [{
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "fromToken",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "fromAmount",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "toToken",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "exchangeAmount",
+        "type": "uint256"
+      }
+    ],
+    "name": "Exchange",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "strategy",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "fromToken",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "fromAmount",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "toToken",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "toAmount",
+        "type": "uint256"
+      }
+    ],
+    "name": "LendToStrategy",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "strategy",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "redeemValue",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "redeemTokenAmount",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "actualRedeemValue",
+        "type": "uint256"
+      }
+    ],
+    "name": "RedeemFromStrategy",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
         "indexed": true,
         "internalType": "address",
         "name": "strategy",
@@ -78,18 +181,8 @@ export const VAULT_ABI = [{
   },
   {
     "anonymous": false,
-    "inputs": [{
-      "indexed": true,
-      "internalType": "address",
-      "name": "strategy",
-      "type": "address"
-    }],
-    "name": "StrategyRevoked",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [{
+    "inputs": [
+      {
         "indexed": true,
         "internalType": "address",
         "name": "from",
@@ -113,7 +206,8 @@ export const VAULT_ABI = [{
   },
   {
     "anonymous": false,
-    "inputs": [{
+    "inputs": [
+      {
         "indexed": true,
         "internalType": "address",
         "name": "userAddress",
@@ -132,74 +226,90 @@ export const VAULT_ABI = [{
   {
     "inputs": [],
     "name": "activation",
-    "outputs": [{
-      "internalType": "uint256",
-      "name": "",
-      "type": "uint256"
-    }],
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
     "stateMutability": "view",
     "type": "function"
   },
   {
-    "inputs": [{
-      "components": [{
-          "internalType": "address",
-          "name": "strategy",
-          "type": "address"
-        },
-        {
-          "internalType": "int256",
-          "name": "apy",
-          "type": "int256"
-        },
-        {
-          "internalType": "uint256",
-          "name": "debtRatio",
-          "type": "uint256"
-        },
-        {
-          "internalType": "uint256",
-          "name": "minDebtPerHarvest",
-          "type": "uint256"
-        },
-        {
-          "internalType": "uint256",
-          "name": "maxDebtPerHarvest",
-          "type": "uint256"
-        },
-        {
-          "internalType": "uint256",
-          "name": "profitLimitRatio",
-          "type": "uint256"
-        },
-        {
-          "internalType": "uint256",
-          "name": "lossLimitRatio",
-          "type": "uint256"
-        }
-      ],
-      "internalType": "struct StrategyAdd[]",
-      "name": "strategyAdds",
-      "type": "tuple[]"
-    }],
+    "inputs": [
+      {
+        "components": [
+          {
+            "internalType": "address",
+            "name": "strategy",
+            "type": "address"
+          },
+          {
+            "internalType": "int256",
+            "name": "apy",
+            "type": "int256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "minDebtPerHarvest",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "maxDebtPerHarvest",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "profitLimitRatio",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "lossLimitRatio",
+            "type": "uint256"
+          }
+        ],
+        "internalType": "struct StrategyAdd[]",
+        "name": "strategyAdds",
+        "type": "tuple[]"
+      }
+    ],
     "name": "addStrategy",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   },
   {
-    "inputs": [{
-      "internalType": "address",
-      "name": "_target",
-      "type": "address"
-    }],
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_target",
+        "type": "address"
+      }
+    ],
     "name": "addToWhiteList",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   },
   {
-    "inputs": [{
+    "inputs": [],
+    "name": "adjustPositionPeriod",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
         "internalType": "address",
         "name": "owner",
         "type": "address"
@@ -211,16 +321,19 @@ export const VAULT_ABI = [{
       }
     ],
     "name": "allowance",
-    "outputs": [{
-      "internalType": "uint256",
-      "name": "",
-      "type": "uint256"
-    }],
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
     "stateMutability": "view",
     "type": "function"
   },
   {
-    "inputs": [{
+    "inputs": [
+      {
         "internalType": "address",
         "name": "spender",
         "type": "address"
@@ -232,100 +345,64 @@ export const VAULT_ABI = [{
       }
     ],
     "name": "approve",
-    "outputs": [{
-      "internalType": "bool",
-      "name": "",
-      "type": "bool"
-    }],
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
     "stateMutability": "nonpayable",
     "type": "function"
   },
   {
-    "inputs": [{
-      "internalType": "address",
-      "name": "account",
-      "type": "address"
-    }],
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "account",
+        "type": "address"
+      }
+    ],
     "name": "balanceOf",
-    "outputs": [{
-      "internalType": "uint256",
-      "name": "",
-      "type": "uint256"
-    }],
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
     "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [],
     "name": "balanceOfToken",
-    "outputs": [{
-      "internalType": "uint256",
-      "name": "",
-      "type": "uint256"
-    }],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [{
-        "internalType": "address",
-        "name": "strategy",
-        "type": "address"
-      },
+    "outputs": [
       {
         "internalType": "uint256",
-        "name": "gainValue",
+        "name": "",
         "type": "uint256"
       }
     ],
-    "name": "creditAvailable",
-    "outputs": [{
-      "internalType": "uint256",
-      "name": "",
-      "type": "uint256"
-    }],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [{
-      "internalType": "address",
-      "name": "_strategy",
-      "type": "address"
-    }],
-    "name": "debtOutstanding",
-    "outputs": [{
-      "internalType": "uint256",
-      "name": "",
-      "type": "uint256"
-    }],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "debtRatio",
-    "outputs": [{
-      "internalType": "uint256",
-      "name": "",
-      "type": "uint256"
-    }],
     "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [],
     "name": "decimals",
-    "outputs": [{
-      "internalType": "uint8",
-      "name": "",
-      "type": "uint8"
-    }],
+    "outputs": [
+      {
+        "internalType": "uint8",
+        "name": "",
+        "type": "uint8"
+      }
+    ],
     "stateMutability": "view",
     "type": "function"
   },
   {
-    "inputs": [{
+    "inputs": [
+      {
         "internalType": "address",
         "name": "spender",
         "type": "address"
@@ -337,20 +414,24 @@ export const VAULT_ABI = [{
       }
     ],
     "name": "decreaseAllowance",
-    "outputs": [{
-      "internalType": "bool",
-      "name": "",
-      "type": "bool"
-    }],
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
     "stateMutability": "nonpayable",
     "type": "function"
   },
   {
-    "inputs": [{
-      "internalType": "uint256",
-      "name": "_amount",
-      "type": "uint256"
-    }],
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_amount",
+        "type": "uint256"
+      }
+    ],
     "name": "deposit",
     "outputs": [],
     "stateMutability": "nonpayable",
@@ -359,53 +440,141 @@ export const VAULT_ABI = [{
   {
     "inputs": [],
     "name": "emergencyShutdown",
-    "outputs": [{
-      "internalType": "bool",
-      "name": "",
-      "type": "bool"
-    }],
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_fromToken",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "_toToken",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_amount",
+        "type": "uint256"
+      },
+      {
+        "components": [
+          {
+            "internalType": "address",
+            "name": "platform",
+            "type": "address"
+          },
+          {
+            "internalType": "uint8",
+            "name": "method",
+            "type": "uint8"
+          },
+          {
+            "internalType": "bytes",
+            "name": "encodeExchangeArgs",
+            "type": "bytes"
+          }
+        ],
+        "internalType": "struct ExchangeParam",
+        "name": "exchangeParam",
+        "type": "tuple"
+      }
+    ],
+    "name": "exchange",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "exchangeBiasPercent",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "exchangeManager",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getGovernanceOwner",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "owner_",
+        "type": "address"
+      }
+    ],
     "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [],
     "name": "getStrategies",
-    "outputs": [{
-      "internalType": "address[]",
-      "name": "",
-      "type": "address[]"
-    }],
+    "outputs": [
+      {
+        "internalType": "address[]",
+        "name": "",
+        "type": "address[]"
+      }
+    ],
     "stateMutability": "view",
     "type": "function"
   },
   {
-    "inputs": [{
-      "internalType": "address",
-      "name": "_strategy",
-      "type": "address"
-    }],
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_strategy",
+        "type": "address"
+      }
+    ],
     "name": "getStrategyApy",
-    "outputs": [{
-      "internalType": "int256",
-      "name": "",
-      "type": "int256"
-    }],
+    "outputs": [
+      {
+        "internalType": "int256",
+        "name": "",
+        "type": "int256"
+      }
+    ],
     "stateMutability": "view",
     "type": "function"
   },
   {
-    "inputs": [],
-    "name": "governance",
-    "outputs": [{
-      "internalType": "address",
-      "name": "",
-      "type": "address"
-    }],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [{
+    "inputs": [
+      {
         "internalType": "address",
         "name": "spender",
         "type": "address"
@@ -417,16 +586,19 @@ export const VAULT_ABI = [{
       }
     ],
     "name": "increaseAllowance",
-    "outputs": [{
-      "internalType": "bool",
-      "name": "",
-      "type": "bool"
-    }],
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
     "stateMutability": "nonpayable",
     "type": "function"
   },
   {
-    "inputs": [{
+    "inputs": [
+      {
         "internalType": "address",
         "name": "_token",
         "type": "address"
@@ -438,12 +610,22 @@ export const VAULT_ABI = [{
       },
       {
         "internalType": "address",
-        "name": "_keeper",
+        "name": "_governanceProxy",
         "type": "address"
       },
       {
         "internalType": "address",
         "name": "_rewards",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "_exchangeManager",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "_valueInterpreter",
         "type": "address"
       }
     ],
@@ -454,191 +636,225 @@ export const VAULT_ABI = [{
   },
   {
     "inputs": [],
-    "name": "keeper",
-    "outputs": [{
-      "internalType": "address",
-      "name": "",
-      "type": "address"
-    }],
+    "name": "lastReport",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
     "stateMutability": "view",
     "type": "function"
   },
   {
-    "inputs": [],
-    "name": "lastReport",
-    "outputs": [{
-      "internalType": "uint256",
-      "name": "",
-      "type": "uint256"
-    }],
-    "stateMutability": "view",
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_strategy",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "_fromToken",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_amount",
+        "type": "uint256"
+      },
+      {
+        "components": [
+          {
+            "internalType": "address",
+            "name": "platform",
+            "type": "address"
+          },
+          {
+            "internalType": "uint8",
+            "name": "method",
+            "type": "uint8"
+          },
+          {
+            "internalType": "bytes",
+            "name": "encodeExchangeArgs",
+            "type": "bytes"
+          }
+        ],
+        "internalType": "struct ExchangeParam",
+        "name": "exchangeParam",
+        "type": "tuple"
+      }
+    ],
+    "name": "lend",
+    "outputs": [],
+    "stateMutability": "nonpayable",
     "type": "function"
   },
   {
     "inputs": [],
     "name": "lockedProfit",
-    "outputs": [{
-      "internalType": "uint256",
-      "name": "",
-      "type": "uint256"
-    }],
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
     "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [],
     "name": "lockedProfitDegradation",
-    "outputs": [{
-      "internalType": "uint256",
-      "name": "",
-      "type": "uint256"
-    }],
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
     "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [],
     "name": "management",
-    "outputs": [{
-      "internalType": "address",
-      "name": "",
-      "type": "address"
-    }],
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
     "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [],
-    "name": "maxInvestLimit",
-    "outputs": [{
-      "internalType": "uint256",
-      "name": "",
-      "type": "uint256"
-    }],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "maxProtocolLimit",
-    "outputs": [{
-      "internalType": "uint256",
-      "name": "",
-      "type": "uint256"
-    }],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "maxStrategyLimit",
-    "outputs": [{
-      "internalType": "uint256",
-      "name": "",
-      "type": "uint256"
-    }],
+    "name": "minReturnBps",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
     "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [],
     "name": "myDecimals",
-    "outputs": [{
-      "internalType": "uint8",
-      "name": "",
-      "type": "uint8"
-    }],
+    "outputs": [
+      {
+        "internalType": "uint8",
+        "name": "",
+        "type": "uint8"
+      }
+    ],
     "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [],
     "name": "name",
-    "outputs": [{
-      "internalType": "string",
-      "name": "",
-      "type": "string"
-    }],
+    "outputs": [
+      {
+        "internalType": "string",
+        "name": "",
+        "type": "string"
+      }
+    ],
     "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [],
     "name": "pricePerShare",
-    "outputs": [{
-      "internalType": "uint256",
-      "name": "",
-      "type": "uint256"
-    }],
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
     "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [],
     "name": "profitFeePercent",
-    "outputs": [{
-      "internalType": "uint256",
-      "name": "",
-      "type": "uint256"
-    }],
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
     "stateMutability": "view",
     "type": "function"
   },
   {
-    "inputs": [{
-      "internalType": "address",
-      "name": "_target",
-      "type": "address"
-    }],
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_strategy",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_amount",
+        "type": "uint256"
+      }
+    ],
+    "name": "redeem",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_target",
+        "type": "address"
+      }
+    ],
     "name": "removeFromWhiteList",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   },
   {
-    "inputs": [{
-      "internalType": "address",
-      "name": "_strategy",
-      "type": "address"
-    }],
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_strategy",
+        "type": "address"
+      }
+    ],
     "name": "removeStrategy",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   },
   {
-    "inputs": [{
-        "internalType": "uint256",
-        "name": "gain",
-        "type": "uint256"
-      },
+    "inputs": [
       {
         "internalType": "uint256",
-        "name": "loss",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "_debtPayment",
+        "name": "_strategyAsset",
         "type": "uint256"
       }
     ],
     "name": "report",
-    "outputs": [{
-      "internalType": "uint256",
-      "name": "",
-      "type": "uint256"
-    }],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [{
-      "internalType": "address",
-      "name": "_strategy",
-      "type": "address"
-    }],
-    "name": "revokeStrategy",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -646,126 +862,123 @@ export const VAULT_ABI = [{
   {
     "inputs": [],
     "name": "rewards",
-    "outputs": [{
-      "internalType": "address",
-      "name": "",
-      "type": "address"
-    }],
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
     "stateMutability": "view",
     "type": "function"
   },
   {
-    "inputs": [{
-      "internalType": "bool",
-      "name": "active",
-      "type": "bool"
-    }],
+    "inputs": [
+      {
+        "internalType": "bool",
+        "name": "active",
+        "type": "bool"
+      }
+    ],
+    "name": "setAdjustPositionPeriod",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bool",
+        "name": "active",
+        "type": "bool"
+      }
+    ],
     "name": "setEmergencyShutdown",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   },
   {
-    "inputs": [{
-      "internalType": "address",
-      "name": "_governance",
-      "type": "address"
-    }],
-    "name": "setGovernance",
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_exchangeBiasPercent",
+        "type": "uint256"
+      }
+    ],
+    "name": "setExchangeBiasPercent",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   },
   {
-    "inputs": [{
-      "internalType": "address",
-      "name": "keeperAddress",
-      "type": "address"
-    }],
-    "name": "setKeeper",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [{
-      "internalType": "uint256",
-      "name": "degradation",
-      "type": "uint256"
-    }],
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "degradation",
+        "type": "uint256"
+      }
+    ],
     "name": "setLockedProfitDegradation",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   },
   {
-    "inputs": [{
-      "internalType": "address",
-      "name": "_management",
-      "type": "address"
-    }],
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_management",
+        "type": "address"
+      }
+    ],
     "name": "setManagement",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   },
   {
-    "inputs": [{
-      "internalType": "uint256",
-      "name": "_maxInvestLimit",
-      "type": "uint256"
-    }],
-    "name": "setMaxInvestLimit",
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_minReturnBps",
+        "type": "uint256"
+      }
+    ],
+    "name": "setMinReturnBps",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   },
   {
-    "inputs": [{
-      "internalType": "uint256",
-      "name": "_maxProtocolLimit",
-      "type": "uint256"
-    }],
-    "name": "setMaxProtocolLimit",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [{
-      "internalType": "uint256",
-      "name": "_maxStrategyLimit",
-      "type": "uint256"
-    }],
-    "name": "setMaxStrategyLimit",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [{
-      "internalType": "uint256",
-      "name": "_profitFeePercent",
-      "type": "uint256"
-    }],
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_profitFeePercent",
+        "type": "uint256"
+      }
+    ],
     "name": "setProfitFeePercent",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   },
   {
-    "inputs": [{
-      "internalType": "address",
-      "name": "_rewards",
-      "type": "address"
-    }],
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_rewards",
+        "type": "address"
+      }
+    ],
     "name": "setRewards",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   },
   {
-    "inputs": [{
+    "inputs": [
+      {
         "internalType": "address",
         "name": "_strategy",
         "type": "address"
@@ -782,7 +995,8 @@ export const VAULT_ABI = [{
     "type": "function"
   },
   {
-    "inputs": [{
+    "inputs": [
+      {
         "internalType": "address",
         "name": "_strategy",
         "type": "address"
@@ -804,20 +1018,18 @@ export const VAULT_ABI = [{
     "type": "function"
   },
   {
-    "inputs": [{
-      "internalType": "address",
-      "name": "",
-      "type": "address"
-    }],
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
     "name": "strategies",
-    "outputs": [{
-        "internalType": "uint256",
-        "name": "activation",
-        "type": "uint256"
-      },
+    "outputs": [
       {
         "internalType": "uint256",
-        "name": "debtRatio",
+        "name": "activation",
         "type": "uint256"
       },
       {
@@ -833,16 +1045,6 @@ export const VAULT_ABI = [{
       {
         "internalType": "uint256",
         "name": "lastReport",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "originalDebt",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "totalAsset",
         "type": "uint256"
       },
       {
@@ -885,24 +1087,10 @@ export const VAULT_ABI = [{
     "type": "function"
   },
   {
-    "inputs": [{
-      "internalType": "address",
-      "name": "_strategy",
-      "type": "address"
-    }],
-    "name": "strategyDebtOutstanding",
-    "outputs": [{
-      "internalType": "uint256",
-      "name": "",
-      "type": "uint256"
-    }],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
     "inputs": [],
     "name": "strategyRankedList",
-    "outputs": [{
+    "outputs": [
+      {
         "internalType": "uint256",
         "name": "head",
         "type": "uint256"
@@ -922,95 +1110,73 @@ export const VAULT_ABI = [{
     "type": "function"
   },
   {
-    "inputs": [{
-      "internalType": "address",
-      "name": "_token",
-      "type": "address"
-    }],
-    "name": "sweep",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
     "inputs": [],
     "name": "symbol",
-    "outputs": [{
-      "internalType": "string",
-      "name": "",
-      "type": "string"
-    }],
+    "outputs": [
+      {
+        "internalType": "string",
+        "name": "",
+        "type": "string"
+      }
+    ],
     "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [],
     "name": "token",
-    "outputs": [{
-      "internalType": "contract IERC20",
-      "name": "",
-      "type": "address"
-    }],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "totalAsset",
-    "outputs": [{
-      "internalType": "uint256",
-      "name": "",
-      "type": "uint256"
-    }],
+    "outputs": [
+      {
+        "internalType": "contract IERC20",
+        "name": "",
+        "type": "address"
+      }
+    ],
     "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [],
     "name": "totalAssets",
-    "outputs": [{
-      "internalType": "uint256",
-      "name": "",
-      "type": "uint256"
-    }],
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
     "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [],
-    "name": "totalOriginalAssets",
-    "outputs": [{
-      "internalType": "uint256",
-      "name": "",
-      "type": "uint256"
-    }],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "totalOriginalDebt",
-    "outputs": [{
-      "internalType": "uint256",
-      "name": "",
-      "type": "uint256"
-    }],
+    "name": "totalDebt",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
     "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [],
     "name": "totalSupply",
-    "outputs": [{
-      "internalType": "uint256",
-      "name": "",
-      "type": "uint256"
-    }],
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
     "stateMutability": "view",
     "type": "function"
   },
   {
-    "inputs": [{
+    "inputs": [
+      {
         "internalType": "address",
         "name": "recipient",
         "type": "address"
@@ -1022,16 +1188,19 @@ export const VAULT_ABI = [{
       }
     ],
     "name": "transfer",
-    "outputs": [{
-      "internalType": "bool",
-      "name": "",
-      "type": "bool"
-    }],
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
     "stateMutability": "nonpayable",
     "type": "function"
   },
   {
-    "inputs": [{
+    "inputs": [
+      {
         "internalType": "address",
         "name": "sender",
         "type": "address"
@@ -1048,38 +1217,19 @@ export const VAULT_ABI = [{
       }
     ],
     "name": "transferFrom",
-    "outputs": [{
-      "internalType": "bool",
-      "name": "",
-      "type": "bool"
-    }],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [{
-        "internalType": "address[]",
-        "name": "_strategies",
-        "type": "address[]"
-      },
+    "outputs": [
       {
-        "internalType": "int256[]",
-        "name": "_apys",
-        "type": "int256[]"
-      },
-      {
-        "internalType": "uint256[]",
-        "name": "_debtRatios",
-        "type": "uint256[]"
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
       }
     ],
-    "name": "updateApyDebtRadioBatch",
-    "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   },
   {
-    "inputs": [{
+    "inputs": [
+      {
         "internalType": "address[]",
         "name": "_strategies",
         "type": "address[]"
@@ -1096,24 +1246,8 @@ export const VAULT_ABI = [{
     "type": "function"
   },
   {
-    "inputs": [{
-        "internalType": "address[]",
-        "name": "_strategies",
-        "type": "address[]"
-      },
+    "inputs": [
       {
-        "internalType": "uint256[]",
-        "name": "_debtRatios",
-        "type": "uint256[]"
-      }
-    ],
-    "name": "updateStrategyDebtRatio",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [{
         "internalType": "address",
         "name": "_strategy",
         "type": "address"
@@ -1130,7 +1264,8 @@ export const VAULT_ABI = [{
     "type": "function"
   },
   {
-    "inputs": [{
+    "inputs": [
+      {
         "internalType": "address",
         "name": "_strategy",
         "type": "address"
@@ -1147,7 +1282,8 @@ export const VAULT_ABI = [{
     "type": "function"
   },
   {
-    "inputs": [{
+    "inputs": [
+      {
         "internalType": "address",
         "name": "_strategy",
         "type": "address"
@@ -1164,37 +1300,59 @@ export const VAULT_ABI = [{
     "type": "function"
   },
   {
-    "inputs": [{
-      "internalType": "address",
-      "name": "",
-      "type": "address"
-    }],
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
     "name": "userDebts",
-    "outputs": [{
-      "internalType": "uint256",
-      "name": "",
-      "type": "uint256"
-    }],
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
     "stateMutability": "view",
     "type": "function"
   },
   {
-    "inputs": [{
-      "internalType": "address",
-      "name": "",
-      "type": "address"
-    }],
+    "inputs": [],
+    "name": "valueInterpreter",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
     "name": "whiteList",
-    "outputs": [{
-      "internalType": "bool",
-      "name": "",
-      "type": "bool"
-    }],
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
     "stateMutability": "view",
     "type": "function"
   },
   {
-    "inputs": [{
+    "inputs": [
+      {
         "internalType": "uint256",
         "name": "shares",
         "type": "uint256"
@@ -1203,6 +1361,28 @@ export const VAULT_ABI = [{
         "internalType": "uint256",
         "name": "maxLoss",
         "type": "uint256"
+      },
+      {
+        "components": [
+          {
+            "internalType": "address",
+            "name": "platform",
+            "type": "address"
+          },
+          {
+            "internalType": "uint8",
+            "name": "method",
+            "type": "uint8"
+          },
+          {
+            "internalType": "bytes",
+            "name": "encodeExchangeArgs",
+            "type": "bytes"
+          }
+        ],
+        "internalType": "struct ExchangeParam[]",
+        "name": "exchangeParams",
+        "type": "tuple[]"
       }
     ],
     "name": "withdraw",
