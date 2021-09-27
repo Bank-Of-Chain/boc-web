@@ -97,7 +97,6 @@ export default function SettingTable(props) {
   }
 
   const setLossLimitRatio = async (id, value, profitLimitRatio) => {
-    debugger
     if (isEmpty(id) || isEmpty(value))
       return;
     const nextValue = parseInt(value * 1e2);
