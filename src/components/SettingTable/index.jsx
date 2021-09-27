@@ -112,7 +112,7 @@ export default function SettingTable(props) {
   }
 
   const setMinReportDelay = async (id, value) => {
-    if (isNaN(value) || value < 0) {
+    if (isNaN(value) || isEmpty(value) || value < 0) {
       message.error('请设置合适的数值');
       return;
     }
@@ -124,7 +124,7 @@ export default function SettingTable(props) {
   }
 
   const setMaxReportDelay = async (id, value) => {
-    if (isNaN(value) || value < 0) {
+    if (isNaN(value) || isEmpty(value) || value < 0) {
       message.error('请设置合适的数值');
       return;
     }
@@ -136,7 +136,7 @@ export default function SettingTable(props) {
   }
 
   const setProfitFactor = async (id, value) => {
-    if (isNaN(value) || value < 0) {
+    if (isNaN(value) || isEmpty(value) || value < 0) {
       message.error('请设置合适的数值');
       return;
     }
@@ -148,7 +148,7 @@ export default function SettingTable(props) {
   }
 
   const setDebtThreshold = async (id, value) => {
-    if (isNaN(value) || value < 0) {
+    if (isNaN(value) || isEmpty(value) || value < 0) {
       message.error('请设置合适的数值');
       return;
     }
