@@ -39,40 +39,24 @@ export default function StrategiesTable(props) {
       return await Promise.all([
         contract.name(),
         vaultContract.strategies(item),
-        contract.minReturnBps(),
-        contract.estimatedTotalAssetsToVault(),
         contract.balanceOfLpToken(),
-        vaultContract.getStrategyApy(item),
-        contract.minReportDelay(),
-        contract.maxReportDelay(),
-        contract.profitFactor(),
-        contract.debtThreshold(),
       ]).then(([
-        name, vaultState, minReturnBps, estimatedTotalAssets, balanceOfLpToken, apy, minReportDelay, maxReportDelay, profitFactor, debtThreshold, originApy
+        name, vaultState, balanceOfLpToken
       ]) => {
         const {
-          debtRatio, enforceChangeLimit, activation, originalDebt, totalGain, totalLoss, lastReport, totalAsset
+          activation, enableWithdraw, enforceChangeLimit, lastReport, lossLimitRatio, maxDebtPerHarvest, minDebtPerHarvest, profitLimitRatio, totalDebt, totalGain, totalLoss
         } = vaultState
         return {
           key: item,
           name: name,
           address: item,
-          debtRatio,
           enforceChangeLimit,
           activation,
-          apy,
-          totalDebt: originalDebt,
-          totalAsset,
+          totalDebt,
           totalGain,
           totalLoss,
-          minReturnBps,
           lastReport,
-          estimatedTotalAssets,
           balanceOfLpToken,
-          minReportDelay,
-          maxReportDelay,
-          profitFactor,
-          debtThreshold
         };
       });
     }));
@@ -241,7 +225,8 @@ export default function StrategiesTable(props) {
       key: 'apy',
       render: (value, item, index) => {
         return <div>
-          <span style={{ lineHeight: '32px' }} key={index}>{toFixed(value, 1e2, 2)}% (<OriginApy id={item.address} days={3} />)</span>&nbsp;
+          {/* (<OriginApy id={item.address} days={3} />) */}
+          <span style={{ lineHeight: '32px' }} key={index}>{toFixed(value, 1e2, 2)}%</span>&nbsp;
           <Input.Search onSearch={(v) => setApy(item.address, v)} enterButton={<SettingOutlined />} style={{ width: 120, float: 'right' }} />
         </div>
       }

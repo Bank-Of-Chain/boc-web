@@ -30,7 +30,7 @@ function AdminBoard(props) {
     try {
       const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider);
       vaultContract.totalAssets().then(setTotalAssets);
-      vaultContract.totalOriginalDebt().then(setStrategyTotalAssetsValue);
+      vaultContract.totalDebt().then(setStrategyTotalAssetsValue);
       vaultContract.decimals().then(setUnderlyingUnit);
 
       const usdtContract = new ethers.Contract('0xdAC17F958D2ee523a2206206994597C13D831ec7', STRATEGY_ABI, userProvider);
