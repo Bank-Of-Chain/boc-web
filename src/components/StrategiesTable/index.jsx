@@ -7,16 +7,29 @@ import { CloudSyncOutlined, SettingOutlined } from "@ant-design/icons";
 import * as ethers from "ethers";
 
 // === constants === //
-import { VAULT_ADDRESS, VAULT_ABI, STRATEGY_ABI } from "./../../constants";
+import { VAULT_ADDRESS, VAULT_ABI, STRATEGY_ABI, IERC20_ABI, EXCHANGE_AGGREGATOR_ABI } from "./../../constants";
 
 // === Utils === //
 import map from 'lodash/map';
 import isNaN from 'lodash/isNaN';
 import isEmpty from 'lodash/isEmpty';
-import { toFixed } from "./../../helpers/number-format"
+import { toFixed } from "./../../helpers/number-format";
+import { getBestSwapInfo } from 'piggy-finance-utils';
 
 // === Components === //
 import OriginApy from './OriginApy';
+
+const slipper = 30;
+const USDT_ADDRESS = '0xdAC17F958D2ee523a2206206994597C13D831ec7';
+
+const getExchangePlatformAdapters = async (exchangeAggregator) => {
+  const adapters = await exchangeAggregator.getExchangeAdapters();
+  const exchangePlatformAdapters = {};
+  for (let i = 0; i < adapters.identifiers_.length; i++) {
+    exchangePlatformAdapters[adapters.identifiers_[i]] = adapters.exchangeAdapters_[i];
+  }
+  return exchangePlatformAdapters;
+}
 
 const { BigNumber } = ethers
 
@@ -36,13 +49,17 @@ export default function StrategiesTable(props) {
     const strategiesAddress = await vaultContract.getStrategies();
     const nextData = await Promise.all(map(strategiesAddress, async (item) => {
       const contract = new ethers.Contract(item, STRATEGY_ABI, userProvider);
+      const wantAddress = await contract.want();
+      const wantContract = new ethers.Contract(wantAddress, IERC20_ABI, userProvider);
       return await Promise.all([
         contract.name(),
         vaultContract.strategies(item),
         contract.balanceOfLpToken(),
-        vaultContract.getStrategyApy(item)
+        contract.estimatedTotalAssetsToVault(),
+        vaultContract.getStrategyApy(item),
+        wantContract.balanceOf(item)
       ]).then(([
-        name, vaultState, balanceOfLpToken, apy
+        name, vaultState, estimatedTotalAssets, balanceOfLpToken, apy, balanceOfWant
       ]) => {
         const {
           activation, enforceChangeLimit, lastReport, totalDebt, totalGain, totalLoss
@@ -59,6 +76,8 @@ export default function StrategiesTable(props) {
           totalLoss,
           lastReport,
           balanceOfLpToken,
+          balanceOfWant,
+          estimatedTotalAssets
         };
       });
     }));
@@ -122,7 +141,6 @@ export default function StrategiesTable(props) {
     }
     const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider);
     const signer = userProvider.getSigner();
-    console.log('updateStrategyApy=', id, nextValue);
     await vaultContract.connect(signer).updateStrategyApy([id], [nextValue])
       .then(tx => tx.wait());
     loadBanlance();
@@ -155,6 +173,98 @@ export default function StrategiesTable(props) {
     })).then(loadBanlance).then(refreshCallBack);
   }
 
+  /**
+   * 执行策略lend操作
+   */
+  const lend = async (address, value) => {
+    if (isEmpty(address)) return Promise.reject();
+
+    const contract = new ethers.Contract(address, STRATEGY_ABI, userProvider);
+    const wantAddress = await contract.want();
+
+    let exchangeParam = {
+      platform: '0x0000000000000000000000000000000000000000',
+      method: '0',
+      encodeExchangeArgs: '0x'
+    }
+    const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider);
+    // 如果策略稳定币不是USDT，则需要匹配兑换路径
+    if (wantAddress !== USDT_ADDRESS) {
+      const exchangeManager = await vaultContract.exchangeManager();
+      const exchangeManagerContract = await new ethers.Contract(exchangeManager, EXCHANGE_AGGREGATOR_ABI, userProvider);
+      const exchangePlatformAdapters = await getExchangePlatformAdapters(exchangeManagerContract)
+
+      const wantAddressContract = new ethers.Contract(wantAddress, IERC20_ABI, userProvider);
+      const underlyingContract = new ethers.Contract(USDT_ADDRESS, IERC20_ABI, userProvider);
+      exchangeParam = await getBestSwapInfo({
+        decimals: (await underlyingContract.decimals()).toString(),
+        address: USDT_ADDRESS
+      }, {
+        decimals: (await wantAddressContract.decimals()).toString(),
+        address: wantAddress
+      },
+        value,
+        slipper,
+        exchangePlatformAdapters
+      );
+    }
+    const signer = userProvider.getSigner();
+    await vaultContract.connect(signer).lend(address, USDT_ADDRESS, value, exchangeParam);
+  }
+
+  /**
+   * 执行策略redeem操作
+   */
+  const redeem = async (strategyAddress, totalAsset) => {
+    if (isEmpty(strategyAddress) || totalAsset < 0)
+      return;
+
+    const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider);
+    const signer = userProvider.getSigner();
+    await vaultContract.connect(signer).redeem(strategyAddress, totalAsset).then(tx => tx.wait());
+    loadBanlance();
+  }
+
+  /**
+   * 执行策略exchange操作
+   */
+  const exchange = async (address) => {
+    if (isEmpty(address)) return Promise.reject();
+
+    const contract = new ethers.Contract(address, STRATEGY_ABI, userProvider);
+    const wantAddress = await contract.want();
+
+    const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider);
+    const wantContract = new ethers.Contract(wantAddress, IERC20_ABI, userProvider);
+    const underlyingContract = new ethers.Contract(USDT_ADDRESS, IERC20_ABI, userProvider);
+    const value = await wantContract.balanceOf(VAULT_ADDRESS);
+    let exchangeParam = {
+      platform: '0x0000000000000000000000000000000000000000',
+      method: '0',
+      encodeExchangeArgs: '0x'
+    }
+    // 如果策略稳定币不是USDT，则需要匹配兑换路径
+    if (wantAddress !== USDT_ADDRESS) {
+      const exchangeManager = await vaultContract.exchangeManager();
+      const exchangeManagerContract = await new ethers.Contract(exchangeManager, EXCHANGE_AGGREGATOR_ABI, userProvider);
+      const exchangePlatformAdapters = await getExchangePlatformAdapters(exchangeManagerContract)
+      exchangeParam = await getBestSwapInfo({
+        decimals: (await wantContract.decimals()).toString(),
+        address: wantAddress
+      }, {
+        decimals: (await underlyingContract.decimals()).toString(),
+        address: USDT_ADDRESS
+      },
+        value,
+        slipper,
+        exchangePlatformAdapters
+      );
+    }
+
+    const signer = userProvider.getSigner();
+    await vaultContract.connect(signer).exchange(wantAddress, USDT_ADDRESS, value.toString(), exchangeParam);
+  }
+
   const columns = [
     {
       title: '策略名称',
@@ -184,6 +294,14 @@ export default function StrategiesTable(props) {
       }
     },
     {
+      title: '稳定币数量',
+      dataIndex: 'balanceOfWant',
+      key: 'balanceOfWant',
+      render: (value, item, index) => {
+        return <span key={index}>{toFixed(value)}</span>;
+      }
+    },
+    {
       title: '最近dohardwork时间',
       dataIndex: 'lastReport',
       key: 'lastReport',
@@ -198,20 +316,16 @@ export default function StrategiesTable(props) {
       key: 'apy',
       render: (value, item, index) => {
         return <div>
-          {/* (<OriginApy id={item.address} days={3} />) */}
-          <span style={{ lineHeight: '32px' }} key={index}>{toFixed(value, 1e2, 2)}%</span>&nbsp;
+          <span style={{ lineHeight: '32px' }} key={index}>{toFixed(value, 1e2, 2)}% (<OriginApy id={item.address} days={3} />)</span>&nbsp;
           <Input.Search onSearch={(v) => setApy(item.address, v)} enterButton={<SettingOutlined />} style={{ width: 120, float: 'right' }} />
         </div>
       }
     },
     {
-      title: '投资比例',
-      dataIndex: 'debtRatio',
-      key: 'debtRatio',
+      title: '投资',
       render: (value, item, index) => {
         return <div>
-          <span style={{ lineHeight: '32px' }} key={index}>{toFixed(value, 1e2, 2)}%</span>&nbsp;
-          <Input.Search onSearch={(v) => setDebtRatio(item.address, v)} enterButton={<SettingOutlined />} style={{ width: 120, float: 'right' }} />
+          <Input.Search onSearch={(v) => lend(item.address, v).then(loadBanlance).then(refreshCallBack)} enterButton='Lend' style={{ width: 150 }} />
         </div>
       }
     },
@@ -219,16 +333,34 @@ export default function StrategiesTable(props) {
       title: '操作',
       key: 'action',
       render: (value, item) => {
-        const { address } = value;
+        const { address, totalDebt } = value;
         return <Space size="middle">
           <Popconfirm
             placement="topLeft"
-            title={'确认立刻获取盈利？'}
+            title={'确认立刻执行Harvest操作？'}
             onConfirm={() => doHardWork(address).then(loadBanlance).then(refreshCallBack)}
             okText="是"
             cancelText="否"
           >
-            <a>获取盈利</a>
+            <a>Harvest</a>
+          </Popconfirm>
+          <Popconfirm
+            placement="topLeft"
+            title={'确认立刻执行Redeem操作？'}
+            onConfirm={() => redeem(address, totalDebt.toString()).then(loadBanlance).then(refreshCallBack)}
+            okText="是"
+            cancelText="否"
+          >
+            <a>Redeem</a>
+          </Popconfirm>
+          <Popconfirm
+            placement="topLeft"
+            title={'确认立刻执行Exchange操作？'}
+            onConfirm={() => exchange(address).then(loadBanlance).then(refreshCallBack)}
+            okText="是"
+            cancelText="否"
+          >
+            <a>Exchange</a>
           </Popconfirm>
           {
             item.totalDebt.toString() === '0' && item.balanceOfLpToken.toString() === '0' &&
