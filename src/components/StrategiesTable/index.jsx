@@ -40,16 +40,18 @@ export default function StrategiesTable(props) {
         contract.name(),
         vaultContract.strategies(item),
         contract.balanceOfLpToken(),
+        vaultContract.getStrategyApy(item)
       ]).then(([
-        name, vaultState, balanceOfLpToken
+        name, vaultState, balanceOfLpToken, apy
       ]) => {
         const {
-          activation, enableWithdraw, enforceChangeLimit, lastReport, lossLimitRatio, maxDebtPerHarvest, minDebtPerHarvest, profitLimitRatio, totalDebt, totalGain, totalLoss
+          activation, enforceChangeLimit, lastReport, totalDebt, totalGain, totalLoss
         } = vaultState
         return {
           key: item,
           name: name,
           address: item,
+          apy,
           enforceChangeLimit,
           activation,
           totalDebt,
@@ -102,27 +104,6 @@ export default function StrategiesTable(props) {
     ).then(tx => tx.wait());
     loadBanlance();
     refreshCallBack();
-  }
-
-  /**
-   * 
-   * @param {string} id 策略地址 
-   * @param {number} value 设置的指
-   * @returns 
-   */
-  const setDebtRatio = async (id, value) => {
-    if (isEmpty(id) || isEmpty(value))
-      return;
-    const nextValue = parseInt(value * 1e2);
-    if (isNaN(nextValue) || nextValue < 0 || nextValue > 10000) {
-      message.error('请设置合适的数值');
-      return;
-    }
-    const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider);
-    const signer = userProvider.getSigner();
-    await vaultContract.connect(signer).updateStrategyDebtRatio([id], [nextValue])
-      .then(tx => tx.wait());
-    loadBanlance();
   }
 
   /**
@@ -184,14 +165,6 @@ export default function StrategiesTable(props) {
         return <Tooltip placement="topLeft" title={`LPs : ${item.balanceOfLpToken.toString()}`}>
           <a key={index}>{text}</a>
         </Tooltip>
-      }
-    },
-    {
-      title: '成本',
-      dataIndex: 'totalDebt',
-      key: 'totalDebt',
-      render: (value, index) => {
-        return <span key={index}>{toFixed(value, 10 ** underlyingUnit)}</span>;
       }
     },
     {
