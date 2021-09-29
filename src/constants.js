@@ -162,18 +162,6 @@ export const VAULT_ABI = [
         "internalType": "address",
         "name": "strategy",
         "type": "address"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "minDebtPerHarvest",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "maxDebtPerHarvest",
-        "type": "uint256"
       }
     ],
     "name": "StrategyAdded",
@@ -249,16 +237,6 @@ export const VAULT_ABI = [
             "internalType": "int256",
             "name": "apy",
             "type": "int256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "minDebtPerHarvest",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "maxDebtPerHarvest",
-            "type": "uint256"
           },
           {
             "internalType": "uint256",
@@ -533,7 +511,20 @@ export const VAULT_ABI = [
     "outputs": [
       {
         "internalType": "address",
-        "name": "owner_",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getManagement",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
         "type": "address"
       }
     ],
@@ -605,17 +596,12 @@ export const VAULT_ABI = [
       },
       {
         "internalType": "address",
-        "name": "_management",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
         "name": "_governanceProxy",
         "type": "address"
       },
       {
         "internalType": "address",
-        "name": "_rewards",
+        "name": "_treasure",
         "type": "address"
       },
       {
@@ -860,19 +846,6 @@ export const VAULT_ABI = [
     "type": "function"
   },
   {
-    "inputs": [],
-    "name": "rewards",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
     "inputs": [
       {
         "internalType": "bool",
@@ -927,19 +900,6 @@ export const VAULT_ABI = [
   {
     "inputs": [
       {
-        "internalType": "address",
-        "name": "_management",
-        "type": "address"
-      }
-    ],
-    "name": "setManagement",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
         "internalType": "uint256",
         "name": "_minReturnBps",
         "type": "uint256"
@@ -959,19 +919,6 @@ export const VAULT_ABI = [
       }
     ],
     "name": "setProfitFeePercent",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "_rewards",
-        "type": "address"
-      }
-    ],
-    "name": "setRewards",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -1021,6 +968,19 @@ export const VAULT_ABI = [
     "inputs": [
       {
         "internalType": "address",
+        "name": "_treasure",
+        "type": "address"
+      }
+    ],
+    "name": "setTreasure",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
         "name": "",
         "type": "address"
       }
@@ -1030,16 +990,6 @@ export const VAULT_ABI = [
       {
         "internalType": "uint256",
         "name": "activation",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "minDebtPerHarvest",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "maxDebtPerHarvest",
         "type": "uint256"
       },
       {
@@ -1228,6 +1178,19 @@ export const VAULT_ABI = [
     "type": "function"
   },
   {
+    "inputs": [],
+    "name": "treasure",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
     "inputs": [
       {
         "internalType": "address[]",
@@ -1259,42 +1222,6 @@ export const VAULT_ABI = [
       }
     ],
     "name": "updateStrategyEnableWithdraw",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "_strategy",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "_maxDebtPerHarvest",
-        "type": "uint256"
-      }
-    ],
-    "name": "updateStrategyMaxDebtPerHarvest",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "_strategy",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "_minDebtPerHarvest",
-        "type": "uint256"
-      }
-    ],
-    "name": "updateStrategyMinDebtPerHarvest",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -1410,6 +1337,8 @@ export const STRATEGY_ABI = [
   "function setMaxReportDelay(uint256) external",
   "function setProfitFactor(uint256) external",
   "function setDebtThreshold(uint256) external",
+  "function approve(address owner, uint amount)",
+  "function allowance(address owner, address spender) public view returns (uint)",
 ]
 
 export const NETWORK = chainId => {
