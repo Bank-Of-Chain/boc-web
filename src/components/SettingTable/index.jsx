@@ -31,13 +31,12 @@ export default function SettingTable(props) {
       return await Promise.all([
         contract.name(),
         vaultContract.strategies(item),
-        contract.minReturnBps(),
         contract.estimatedTotalAssetsToVault(),
         contract.minReportDelay(),
         contract.maxReportDelay(),
         contract.profitFactor(),
       ]).then(([
-        name, vaultState, minReturnBps, estimatedTotalAssets, minReportDelay, maxReportDelay, profitFactor
+        name, vaultState, estimatedTotalAssets, minReportDelay, maxReportDelay, profitFactor
       ]) => {
         const {
           debtRatio, enforceChangeLimit, activation, originalDebt, totalGain, totalLoss, lastReport, totalAsset, enableWithdraw,
@@ -54,7 +53,6 @@ export default function SettingTable(props) {
           totalAsset,
           totalGain,
           totalLoss,
-          minReturnBps,
           lastReport,
           estimatedTotalAssets,
           minReportDelay,
@@ -67,26 +65,6 @@ export default function SettingTable(props) {
       });
     }));
     setData(nextData);
-  }
-  /**
-   * @param {string} id 策略地址
-   * @param {number} value apy的值
-   * @returns 
-   */
-  const setMinReturnBps = async (id, value) => {
-    if (isEmpty(id) || isEmpty(value))
-      return;
-    const nextValue = parseInt(value * 1e2);
-    if (isNaN(nextValue) || nextValue < 0 || nextValue > 10000) {
-      message.error('请设置合适的数值');
-      return;
-    }
-    const contract = new ethers.Contract(id, STRATEGY_ABI, userProvider);
-    const signer = userProvider.getSigner();
-    const contractWithSigner = contract.connect(signer);
-    await contractWithSigner.setMinReturnBps(nextValue)
-      .then(tx => tx.wait());
-    loadBanlance();
   }
 
   const setLossLimitRatio = async (id, value, profitLimitRatio) => {
@@ -221,17 +199,6 @@ export default function SettingTable(props) {
         return <div>
           <span style={{ lineHeight: '32px' }} key={index}>{toFixed(value, 1e2, 2)}%</span>&nbsp;
           <Input.Search onSearch={(v) => setLossLimitRatio(item.address, v, item.profitLimitRatio)} enterButton={<SettingOutlined />} style={{ width: 120, float: 'right' }} />
-        </div>
-      }
-    },
-    {
-      title: '滑点阈值设置',
-      dataIndex: 'minReturnBps',
-      key: 'minReturnBps',
-      render: (value, item, index) => {
-        return <div>
-          <span style={{ lineHeight: '32px' }} key={index}>{toFixed(value, 1e2, 2)}%</span>&nbsp;
-          <Input.Search onSearch={(v) => setMinReturnBps(item.address, v)} enterButton={<SettingOutlined />} style={{ width: 120, float: 'right' }} />
         </div>
       }
     },
