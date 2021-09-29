@@ -6,7 +6,7 @@ import { withRouter, Redirect } from "react-router-dom";
 import * as ethers from "ethers";
 
 // === constants === //
-import { VAULT_ADDRESS, VAULT_ABI } from "./../../constants";
+import { VAULT_ADDRESS, VAULT_ABI, APY_SERVER } from "./../../constants";
 
 // === Components === //
 import AdminBoard from "../../components/AdminBoard";
@@ -17,6 +17,7 @@ import SettingTable from "../../components/SettingTable";
 import isEmpty from "lodash/isEmpty";
 import isEqual from "lodash/isEqual";
 import isNil from "lodash/isNil";
+import request from "request";
 
 function Admin(props) {
   const { writeContracts, address, history, userProvider } = props;
@@ -72,6 +73,16 @@ function Admin(props) {
     vaultContract.connect(signer).whiteList(value).then(setBlackAddressStatus)
 
   }
+
+  /**
+   * 调用定时器的api服务
+   */
+  const callApi = (method) => {
+    request.get(`${APY_SERVER}/v3/${method}`, (error, response, body) => {
+      console.log('error, response, bod=', error, response, body);
+    })
+  }
+
   useEffect(() => {
     try {
       const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider);
@@ -138,6 +149,50 @@ function Admin(props) {
         <Card title={<span style={{ fontWeight: 'bold' }}>系统管理</span>} bordered>
           <Row gutter={[3, 3]}>
             <Col span={24}>
+              <Popconfirm
+                placement="topLeft"
+                title={'确认立刻进行该操作？'}
+                onConfirm={() => callApi('do-hardwork')}
+                okText="是"
+                cancelText="否"
+              >
+                <Button style={{ marginRight: 20 }} type="primary" >
+                  do hardwork
+                </Button>
+              </Popconfirm>
+              <Popconfirm
+                placement="topLeft"
+                title={'确认立刻进行该操作？'}
+                onConfirm={() => callApi('allocation')}
+                okText="是"
+                cancelText="否"
+              >
+                <Button style={{ marginRight: 20 }} type="primary" >
+                  allocation
+                </Button>
+              </Popconfirm>
+              <Popconfirm
+                placement="topLeft"
+                title={'确认立刻进行该操作？'}
+                onConfirm={() => callApi('update-apy')}
+                okText="是"
+                cancelText="否"
+              >
+                <Button style={{ marginRight: 20 }} type="primary" >
+                  update apy
+                </Button>
+              </Popconfirm>
+              <Popconfirm
+                placement="topLeft"
+                title={'确认立刻进行该操作？'}
+                onConfirm={() => callApi('harvest')}
+                okText="是"
+                cancelText="否"
+              >
+                <Button style={{ marginRight: 20 }} type="primary" >
+                  harvest
+                </Button>
+              </Popconfirm>
               {
                 isNil(status)
                   ? '' : (
