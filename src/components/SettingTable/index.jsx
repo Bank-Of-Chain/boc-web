@@ -33,14 +33,11 @@ export default function SettingTable(props) {
         vaultContract.strategies(item),
         contract.minReturnBps(),
         contract.estimatedTotalAssetsToVault(),
-        contract.balanceOfLpToken(),
-        vaultContract.getStrategyApy(item),
         contract.minReportDelay(),
         contract.maxReportDelay(),
         contract.profitFactor(),
-        contract.debtThreshold(),
       ]).then(([
-        name, vaultState, minReturnBps, estimatedTotalAssets, balanceOfLpToken, apy, minReportDelay, maxReportDelay, profitFactor, debtThreshold
+        name, vaultState, minReturnBps, estimatedTotalAssets, minReportDelay, maxReportDelay, profitFactor
       ]) => {
         const {
           debtRatio, enforceChangeLimit, activation, originalDebt, totalGain, totalLoss, lastReport, totalAsset, enableWithdraw,
@@ -53,7 +50,6 @@ export default function SettingTable(props) {
           debtRatio,
           enforceChangeLimit,
           activation,
-          apy,
           totalDebt: originalDebt,
           totalAsset,
           totalGain,
@@ -61,11 +57,9 @@ export default function SettingTable(props) {
           minReturnBps,
           lastReport,
           estimatedTotalAssets,
-          balanceOfLpToken,
           minReportDelay,
           maxReportDelay,
           profitFactor,
-          debtThreshold,
           enableWithdraw,
           lossLimitRatio,
           profitLimitRatio
@@ -75,7 +69,6 @@ export default function SettingTable(props) {
     setData(nextData);
   }
   /**
-   * 设置 apy 的数值
    * @param {string} id 策略地址
    * @param {number} value apy的值
    * @returns 
@@ -217,17 +210,6 @@ export default function SettingTable(props) {
         return <div>
           <span style={{ lineHeight: '32px' }} key={index}>{toFixed(value, 1)}</span>&nbsp;
           <Input.Search onSearch={(v) => setProfitFactor(item.address, v)} enterButton={<SettingOutlined />} style={{ width: 120, float: 'right' }} />
-        </div>
-      }
-    },
-    {
-      title: '债务阈值',
-      dataIndex: 'debtThreshold',
-      key: 'debtThreshold',
-      render: (value, item, index) => {
-        return <div>
-          <span style={{ lineHeight: '32px' }} key={index}>{toFixed(value, 1)}</span>&nbsp;
-          <Input.Search onSearch={(v) => setDebtThreshold(item.address, v)} enterButton={<SettingOutlined />} style={{ width: 120, float: 'right' }} />
         </div>
       }
     },
