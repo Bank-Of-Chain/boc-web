@@ -6,7 +6,7 @@ import * as ethers from "ethers";
 import { BigNumber } from 'ethers';
 
 // === constants === //
-import { VAULT_ADDRESS, VAULT_ABI, STRATEGY_ABI } from "./../../constants";
+import { VAULT_ADDRESS, VAULT_ABI, STRATEGY_ABI, IERC20_ABI } from "./../../constants";
 
 // === Utils === //
 import { toFixed } from "./../../helpers/number-format"
@@ -37,7 +37,7 @@ export default function Transaction(props) {
 
   const diposit = async () => {
     // 获取usdc的合约
-    const usdtContract = new ethers.Contract(from, STRATEGY_ABI, userProvider);
+    const usdtContract = new ethers.Contract(from, IERC20_ABI, userProvider);
     const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider);
     const signer = userProvider.getSigner();
     const usdtContractWithUser = usdtContract.connect(signer);
@@ -62,6 +62,7 @@ export default function Transaction(props) {
       setFromValue(0);
       message.loading('数据提交中...', 2.5).then(() => message.success('数据提交成功', 2.5))
     } catch (error) {
+      console.log('error=', error);
       if (error && error.data) {
         if (error.data.message === 'Error: VM Exception while processing transaction: reverted with reason string \'vault has been emergency shutdown\'') {
           message.error('服务已关停，请稍后再试！');
