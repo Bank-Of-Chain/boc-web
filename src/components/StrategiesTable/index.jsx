@@ -59,7 +59,7 @@ export default function StrategiesTable(props) {
         vaultContract.getStrategyApy(item),
         wantContract.balanceOf(item)
       ]).then(([
-        name, vaultState, estimatedTotalAssets, balanceOfLpToken, apy, balanceOfWant
+        name, vaultState, balanceOfLpToken, estimatedTotalAssets, apy, balanceOfWant
       ]) => {
         const {
           activation, enforceChangeLimit, lastReport, totalDebt, totalGain, totalLoss
