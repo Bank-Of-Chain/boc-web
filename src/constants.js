@@ -23,6 +23,8 @@ export const IERC20_ABI = ierc20Abi
 
 export const EXCHANGE_AGGREGATOR_ABI = exchangeAggreatorAbi
 
+export const USDT_ADDRESS = '0xdAC17F958D2ee523a2206206994597C13D831ec7'
+
 export const NETWORK = chainId => {
   for (let n in NETWORKS) {
     if (NETWORKS[n].chainId === chainId) {
