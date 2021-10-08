@@ -7,7 +7,7 @@ import { CloudSyncOutlined, SettingOutlined } from "@ant-design/icons";
 import * as ethers from "ethers";
 
 // === constants === //
-import { VAULT_ADDRESS, VAULT_ABI, STRATEGY_ABI, IERC20_ABI, EXCHANGE_AGGREGATOR_ABI } from "./../../constants";
+import { VAULT_ADDRESS, VAULT_ABI, STRATEGY_ABI, IERC20_ABI, EXCHANGE_AGGREGATOR_ABI, APY_SERVER } from "./../../constants";
 
 // === Utils === //
 import map from 'lodash/map';
@@ -15,6 +15,7 @@ import isNaN from 'lodash/isNaN';
 import isEmpty from 'lodash/isEmpty';
 import { toFixed } from "./../../helpers/number-format";
 import { getBestSwapInfo } from 'piggy-finance-utils';
+import request from "request";
 
 // === Components === //
 import OriginApy from './OriginApy';
@@ -108,7 +109,7 @@ export default function StrategiesTable(props) {
     if (isEmpty(id)) return;
     const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider);
     const signer = userProvider.getSigner();
-    await vaultContract.connect(signer).addStrategy(
+    const tx = await vaultContract.connect(signer).addStrategy(
       [
         {
           strategy: id,
@@ -120,9 +121,10 @@ export default function StrategiesTable(props) {
           lossLimitRatio: 100
         }
       ]
-    ).then(tx => tx.wait());
-    loadBanlance();
-    refreshCallBack();
+    );
+    await tx.wait();
+    await loadBanlance();
+    await refreshCallBack();
   }
 
   /**
@@ -141,8 +143,8 @@ export default function StrategiesTable(props) {
     }
     const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider);
     const signer = userProvider.getSigner();
-    await vaultContract.connect(signer).updateStrategyApy([id], [nextValue])
-      .then(tx => tx.wait());
+    const tx = await vaultContract.connect(signer).updateStrategyApy([id], [nextValue])
+    await tx.wait();
     loadBanlance();
   }
   /**
@@ -209,10 +211,10 @@ export default function StrategiesTable(props) {
       );
     }
     const signer = userProvider.getSigner();
-    vaultContract.connect(signer).lend(address, USDT_ADDRESS, value, exchangeParam)
-      .then(tx => tx.wait())
-      .then(loadBanlance)
-      .then(refreshCallBack);
+    const tx = await vaultContract.connect(signer).lend(address, USDT_ADDRESS, value, exchangeParam);
+    await tx.wait()
+    await loadBanlance();
+    refreshCallBack();
   }
 
   /**
@@ -224,10 +226,10 @@ export default function StrategiesTable(props) {
 
     const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider);
     const signer = userProvider.getSigner();
-    vaultContract.connect(signer).redeem(strategyAddress, totalAsset)
-      .then(tx => tx.wait())
-      .then(loadBanlance)
-      .then(refreshCallBack);
+    const tx = await vaultContract.connect(signer).redeem(strategyAddress, totalAsset)
+    await tx.wait();
+    await loadBanlance();
+    refreshCallBack();
   }
 
   /**
@@ -267,10 +269,19 @@ export default function StrategiesTable(props) {
     }
 
     const signer = userProvider.getSigner();
-    vaultContract.connect(signer).exchange(wantAddress, USDT_ADDRESS, value.toString(), exchangeParam)
-      .then(tx => tx.wait())
-      .then(loadBanlance)
-      .then(refreshCallBack);
+    const tx = vaultContract.connect(signer).exchange(wantAddress, USDT_ADDRESS, value.toString(), exchangeParam)
+    await tx.wait();
+    await loadBanlance();
+    refreshCallBack();
+  }
+
+  /**
+   * 调用定时器的api服务
+   */
+  const callApi = (method) => {
+    request.get(`${APY_SERVER}/v3/${method}`, (error, response, body) => {
+      console.log('error, response, bod=', error, response, body);
+    })
   }
 
   const columns = [
@@ -333,7 +344,7 @@ export default function StrategiesTable(props) {
       title: '投资',
       render: (value, item, index) => {
         return <div>
-          <Input.Search onSearch={(v) => lend(item.address, v).then(loadBanlance).then(refreshCallBack)} enterButton='Lend' style={{ width: 150 }} />
+          <Input.Search onSearch={(v) => lend(item.address, v)} enterButton='Lend' style={{ width: 150 }} />
         </div>
       }
     },
@@ -346,7 +357,7 @@ export default function StrategiesTable(props) {
           <Popconfirm
             placement="topLeft"
             title={'确认立刻执行Harvest操作？'}
-            onConfirm={() => doHardWork(address).then(loadBanlance).then(refreshCallBack)}
+            onConfirm={() => doHardWork(address)}
             okText="是"
             cancelText="否"
           >
@@ -355,7 +366,7 @@ export default function StrategiesTable(props) {
           <Popconfirm
             placement="topLeft"
             title={'确认立刻执行Redeem操作？'}
-            onConfirm={() => redeem(address, totalDebt.toString()).then(loadBanlance).then(refreshCallBack)}
+            onConfirm={() => redeem(address, totalDebt.toString())}
             okText="是"
             cancelText="否"
           >
@@ -364,7 +375,7 @@ export default function StrategiesTable(props) {
           <Popconfirm
             placement="topLeft"
             title={'确认立刻执行Exchange操作？'}
-            onConfirm={() => exchange(address).then(loadBanlance).then(refreshCallBack)}
+            onConfirm={() => exchange(address)}
             okText="是"
             cancelText="否"
           >
@@ -401,7 +412,7 @@ export default function StrategiesTable(props) {
   return <Card title={<span style={{ fontWeight: 'bold' }}>各个策略投资详情</span>} bordered
     extra={
       <Row>
-        <Col span={16}>
+        <Col span={6}>
           <Input.Search
             addonBefore={<CloudSyncOutlined title="刷新策略数据" onClick={loadBanlance} />}
             placeholder="请输入合约地址"
@@ -410,7 +421,51 @@ export default function StrategiesTable(props) {
           />
         </Col>
 
-        <Col offset={1} span={5}>
+        <Col offset={1} span={17}>
+          <Popconfirm
+            placement="topLeft"
+            title={'确认立刻进行该操作？'}
+            onConfirm={() => callApi('do-hardwork')}
+            okText="是"
+            cancelText="否"
+          >
+            <Button style={{ marginRight: 20 }} type="primary" >
+              do hardwork
+            </Button>
+          </Popconfirm>
+          <Popconfirm
+            placement="topLeft"
+            title={'确认立刻进行该操作？'}
+            onConfirm={() => callApi('allocation')}
+            okText="是"
+            cancelText="否"
+          >
+            <Button style={{ marginRight: 20 }} type="primary" >
+              allocation
+            </Button>
+          </Popconfirm>
+          <Popconfirm
+            placement="topLeft"
+            title={'确认立刻进行该操作？'}
+            onConfirm={() => callApi('update-apy')}
+            okText="是"
+            cancelText="否"
+          >
+            <Button style={{ marginRight: 20 }} type="primary" >
+              update apy
+            </Button>
+          </Popconfirm>
+          <Popconfirm
+            placement="topLeft"
+            title={'确认立刻进行该操作？'}
+            onConfirm={() => callApi('harvest')}
+            okText="是"
+            cancelText="否"
+          >
+            <Button style={{ marginRight: 20 }} type="primary" >
+              harvest
+            </Button>
+          </Popconfirm>
           <Popconfirm
             placement="topLeft"
             title={'确认批量获取选中策略盈利？'}
@@ -421,7 +476,6 @@ export default function StrategiesTable(props) {
             <Button type="primary">批量获取盈利</Button>
           </Popconfirm>
         </Col>
-
       </Row>
     }
   >
