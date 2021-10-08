@@ -1,10 +1,11 @@
 import {
-  VAULT_ADDRESS
+  VAULT_ADDRESS,
+  USDT_ADDRESS
 } from "./../../constants";
 
 const productList = [{
   name: "USDT",
-  from: "0xdAC17F958D2ee523a2206206994597C13D831ec7",
+  from: USDT_ADDRESS,
   to: VAULT_ADDRESS,
 }, ];
 
