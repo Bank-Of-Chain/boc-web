@@ -10,6 +10,7 @@ import { VAULT_ADDRESS, VAULT_ABI, STRATEGY_ABI, IERC20_ABI } from "./../../cons
 
 // === Utils === //
 import { toFixed } from "./../../helpers/number-format"
+import { withdraw as withdrawInner } from './../../helpers/withdraw-helper';
 
 export default function Transaction(props) {
   const { name, from, address, userProvider } = props;
@@ -76,10 +77,14 @@ export default function Transaction(props) {
     const nextValue = `${toValue * 1e6}`;
     setToValue(0);
     try {
+      const close = message.loading('数据提交中...', 2.5)
+      const signerAddress = await signer.getAddress();
       const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider);
-      const tx = await vaultContract.connect(signer).withdraw(nextValue, allowMaxLoss);
-      message.loading('数据提交中...', 2.5).then(() => message.success('数据提交成功', 2.5));
+      const exchangeParams = await withdrawInner(VAULT_ADDRESS, signerAddress, nextValue, userProvider);
+      const tx = await vaultContract.connect(signer).withdraw(nextValue, allowMaxLoss, exchangeParams);
       await tx.wait();
+      close();
+      message.success('数据提交成功', 2.5)
     } catch (error) {
       if (error && error.data) {
         if (error.data.message === 'Error: VM Exception while processing transaction: reverted with reason string \'vault has been emergency shutdown\'') {
