@@ -209,7 +209,10 @@ export default function StrategiesTable(props) {
       );
     }
     const signer = userProvider.getSigner();
-    await vaultContract.connect(signer).lend(address, USDT_ADDRESS, value, exchangeParam);
+    vaultContract.connect(signer).lend(address, USDT_ADDRESS, value, exchangeParam)
+      .then(tx => tx.wait())
+      .then(loadBanlance)
+      .then(refreshCallBack);
   }
 
   /**
@@ -221,8 +224,10 @@ export default function StrategiesTable(props) {
 
     const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider);
     const signer = userProvider.getSigner();
-    await vaultContract.connect(signer).redeem(strategyAddress, totalAsset).then(tx => tx.wait());
-    loadBanlance();
+    vaultContract.connect(signer).redeem(strategyAddress, totalAsset)
+      .then(tx => tx.wait())
+      .then(loadBanlance)
+      .then(refreshCallBack);
   }
 
   /**
@@ -262,7 +267,10 @@ export default function StrategiesTable(props) {
     }
 
     const signer = userProvider.getSigner();
-    await vaultContract.connect(signer).exchange(wantAddress, USDT_ADDRESS, value.toString(), exchangeParam);
+    vaultContract.connect(signer).exchange(wantAddress, USDT_ADDRESS, value.toString(), exchangeParam)
+      .then(tx => tx.wait())
+      .then(loadBanlance)
+      .then(refreshCallBack);
   }
 
   const columns = [
@@ -278,17 +286,17 @@ export default function StrategiesTable(props) {
       }
     },
     {
-      title: '策略估值',
-      dataIndex: 'estimatedTotalAssets',
-      key: 'estimatedTotalAssets',
+      title: '上报估值',
+      dataIndex: 'totalDebt',
+      key: 'totalDebt',
       render: (value, item, index) => {
         return <span key={index}>{toFixed(value, 10 ** underlyingUnit)}</span>;
       }
     },
     {
-      title: '上报估值',
-      dataIndex: 'totalAsset',
-      key: 'totalAsset',
+      title: '策略估值',
+      dataIndex: 'estimatedTotalAssets',
+      key: 'estimatedTotalAssets',
       render: (value, item, index) => {
         return <span key={index}>{toFixed(value, 10 ** underlyingUnit)}</span>;
       }
