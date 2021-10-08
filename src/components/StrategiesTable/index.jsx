@@ -279,9 +279,16 @@ export default function StrategiesTable(props) {
    * 调用定时器的api服务
    */
   const callApi = (method) => {
+    const close = message.loading('接口调用中...', 10);
     request.get(`${APY_SERVER}/v3/${method}`, (error, response, body) => {
       console.log('error, response, bod=', error, response, body);
-    })
+      close();
+      if (error) {
+        message.error('接口调用失败');
+      } else {
+        message.success('接口调用成功');
+      }
+    });
   }
 
   const columns = [
@@ -442,17 +449,6 @@ export default function StrategiesTable(props) {
           >
             <Button style={{ marginRight: 20 }} type="primary" >
               allocation
-            </Button>
-          </Popconfirm>
-          <Popconfirm
-            placement="topLeft"
-            title={'确认立刻进行该操作？'}
-            onConfirm={() => callApi('update-apy')}
-            okText="是"
-            cancelText="否"
-          >
-            <Button style={{ marginRight: 20 }} type="primary" >
-              update apy
             </Button>
           </Popconfirm>
           <Popconfirm
