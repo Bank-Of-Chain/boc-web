@@ -65,7 +65,7 @@ export default function Transaction(props) {
     } catch (error) {
       console.log('error=', error);
       if (error && error.data) {
-        if (error.data.message === 'Error: VM Exception while processing transaction: reverted with reason string \'vault has been emergency shutdown\'') {
+        if (error.data.message === 'Error: VM Exception while processing transaction: reverted with reason string \'ES\'') {
           message.error('服务已关停，请稍后再试！');
         }
       }
@@ -87,7 +87,7 @@ export default function Transaction(props) {
       message.success('数据提交成功', 2.5)
     } catch (error) {
       if (error && error.data) {
-        if (error.data.message === 'Error: VM Exception while processing transaction: reverted with reason string \'vault has been emergency shutdown\'') {
+        if (error.data.message === 'Error: VM Exception while processing transaction: reverted with reason string \'ES\'') {
           message.error('服务已关停，请稍后再试！');
         }
       }
