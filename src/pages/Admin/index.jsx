@@ -165,8 +165,8 @@ function Admin(props) {
                         okText="是"
                         cancelText="否"
                       >
-                        <Button type="primary">
-                          开启调仓
+                        <Button danger>
+                          结束调仓
                         </Button>
                       </Popconfirm>
                       : <Popconfirm
@@ -176,8 +176,8 @@ function Admin(props) {
                         okText="是"
                         cancelText="否"
                       >
-                        <Button danger >
-                          结束调仓
+                        <Button type="primary"  >
+                          开启调仓
                         </Button>
                       </Popconfirm>
                   )
