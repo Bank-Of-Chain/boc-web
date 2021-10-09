@@ -6,7 +6,7 @@ import { withRouter, Redirect } from "react-router-dom";
 import * as ethers from "ethers";
 
 // === constants === //
-import { VAULT_ADDRESS, VAULT_ABI } from "./../../constants";
+import { VAULT_ADDRESS, VAULT_ABI, TREASURE_ABI } from "./../../constants";
 
 // === Components === //
 import AdminBoard from "../../components/AdminBoard";
@@ -29,6 +29,8 @@ function Admin(props) {
 
   const [blackAddress, setBlackAddress] = useState('');
   const [blackAddressStatus, setBlackAddressStatus] = useState(false);
+
+  const [reciveAddress, setReciveAddress] = useState('');
 
   /**
    * 执行开启/紧急关停操作
@@ -72,7 +74,6 @@ function Admin(props) {
     const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider);
     const signer = userProvider.getSigner();
     vaultContract.connect(signer).whiteList(value).then(setBlackAddressStatus)
-
   }
 
   /**
@@ -85,6 +86,20 @@ function Admin(props) {
     const tx = await vaultContract.connect(signer).setAdjustPositionPeriod(symbol);
     await tx.wait();
     setAdjustPositionPeriod(symbol);
+  }
+
+  /**
+   * 国库收益提取至账户
+   * @param {*} address 
+   */
+  const treasureWithdraw = async (address) => {
+    const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider);
+    const treasureAddress = await vaultContract.treasure();
+    const amount = await vaultContract.balanceOf(treasureAddress);
+    const treasureContract = new ethers.Contract(treasureAddress, TREASURE_ABI, userProvider);
+    const signer = userProvider.getSigner();
+    const tx = await treasureContract.connect(signer).withdraw(VAULT_ADDRESS, address, amount);
+    await tx.wait();
   }
 
   useEffect(() => {
@@ -151,6 +166,20 @@ function Admin(props) {
         </Card>
       </Col>
       <Col span={24} style={{ padding: 20 }}>
+        <Card title={<span style={{ fontWeight: 'bold' }}>收益提取</span>} bordered>
+          <Row>
+            <Col span={10}>
+              <Input placeholder="请输入收益接收地址" value={reciveAddress} onChange={event => setReciveAddress(event.target.value)} />
+            </Col>
+          </Row>
+          <Row style={{ paddingTop: 20 }}>
+            <Col span={24}>
+              <Button type="primary" onClick={() => treasureWithdraw(reciveAddress)}>收益提取</Button>
+            </Col>
+          </Row>
+        </Card>
+      </Col>
+      <Col span={24} style={{ padding: 20 }}>
         <Card title={<span style={{ fontWeight: 'bold' }}>系统管理</span>} bordered>
           <Row gutter={[3, 3]}>
             <Col span={24}>
@@ -160,7 +189,7 @@ function Admin(props) {
                     adjustPositionPeriod
                       ? <Popconfirm
                         placement="topLeft"
-                        title={'确认立刻进行开启操作？'}
+                        title={'确认立刻结束调仓？'}
                         onConfirm={() => setAdjustPosition(false)}
                         okText="是"
                         cancelText="否"
@@ -171,7 +200,7 @@ function Admin(props) {
                       </Popconfirm>
                       : <Popconfirm
                         placement="topLeft"
-                        title={'确认立刻进行紧急关停操作？'}
+                        title={'确认立刻开启调仓？'}
                         onConfirm={() => setAdjustPosition(true)}
                         okText="是"
                         cancelText="否"
