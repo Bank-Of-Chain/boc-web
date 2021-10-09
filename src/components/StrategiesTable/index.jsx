@@ -328,7 +328,7 @@ export default function StrategiesTable(props) {
       }
     },
     {
-      title: '最近dohardwork时间',
+      title: '最近上报时间',
       dataIndex: 'lastReport',
       key: 'lastReport',
       render: (value, index) => {
