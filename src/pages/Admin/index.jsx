@@ -23,6 +23,8 @@ function Admin(props) {
   const [governance, setGovernance] = useState('');
   const [status, setStatus] = useState();
 
+  const [adjustPositionPeriod, setAdjustPositionPeriod] = useState();
+
   const [refreshCount, setRefreshCount] = useState(0);
 
   const [blackAddress, setBlackAddress] = useState('');
@@ -73,11 +75,24 @@ function Admin(props) {
 
   }
 
+  /**
+   * 设置调仓标识位
+   * @param {*} symbol 
+   */
+  const setAdjustPosition = async (symbol) => {
+    const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider);
+    const signer = userProvider.getSigner();
+    const tx = await vaultContract.connect(signer).setAdjustPositionPeriod(symbol);
+    await tx.wait();
+    setAdjustPositionPeriod(symbol);
+  }
+
   useEffect(() => {
     try {
       const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider);
       vaultContract.getGovernanceOwner().then(setGovernance);
       vaultContract.emergencyShutdown().then(setStatus);
+      vaultContract.adjustPositionPeriod().then(setAdjustPositionPeriod);
     } catch (error) {
     }
   }, []);
@@ -139,7 +154,35 @@ function Admin(props) {
         <Card title={<span style={{ fontWeight: 'bold' }}>系统管理</span>} bordered>
           <Row gutter={[3, 3]}>
             <Col span={24}>
-              
+              {
+                isNil(adjustPositionPeriod)
+                  ? '' : (
+                    adjustPositionPeriod
+                      ? <Popconfirm
+                        placement="topLeft"
+                        title={'确认立刻进行开启操作？'}
+                        onConfirm={() => setAdjustPosition(false)}
+                        okText="是"
+                        cancelText="否"
+                      >
+                        <Button type="primary">
+                          开启调仓
+                        </Button>
+                      </Popconfirm>
+                      : <Popconfirm
+                        placement="topLeft"
+                        title={'确认立刻进行紧急关停操作？'}
+                        onConfirm={() => setAdjustPosition(true)}
+                        okText="是"
+                        cancelText="否"
+                      >
+                        <Button danger >
+                          结束调仓
+                        </Button>
+                      </Popconfirm>
+                  )
+              }
+              &nbsp;&nbsp;&nbsp;
               {
                 isNil(status)
                   ? '' : (
@@ -151,7 +194,7 @@ function Admin(props) {
                         okText="是"
                         cancelText="否"
                       >
-                        <Button>
+                        <Button type="primary">
                           开启
                         </Button>
                       </Popconfirm>
