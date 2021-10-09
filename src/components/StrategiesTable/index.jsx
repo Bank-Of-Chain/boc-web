@@ -58,9 +58,10 @@ export default function StrategiesTable(props) {
         contract.balanceOfLpToken(),
         contract.estimatedTotalAssetsToVault(),
         vaultContract.getStrategyApy(item),
-        wantContract.balanceOf(item)
+        wantContract.balanceOf(item),
+        contract._emergencyExit(),
       ]).then(([
-        name, vaultState, balanceOfLpToken, estimatedTotalAssets, apy, balanceOfWant
+        name, vaultState, balanceOfLpToken, estimatedTotalAssets, apy, balanceOfWant, emergencyExit
       ]) => {
         const {
           activation, enforceChangeLimit, lastReport, totalDebt, totalGain, totalLoss
@@ -78,7 +79,8 @@ export default function StrategiesTable(props) {
           lastReport,
           balanceOfLpToken,
           balanceOfWant,
-          estimatedTotalAssets
+          estimatedTotalAssets,
+          emergencyExit
         };
       });
     }));
@@ -171,6 +173,19 @@ export default function StrategiesTable(props) {
   }
 
   /**
+   * 策略退出紧急情况
+   * @param {*} address 
+   */
+  const resetEmergencyExit = async (address) => {
+    const contract = new ethers.Contract(address, STRATEGY_ABI, userProvider);
+    const signer = userProvider.getSigner();
+    const contractWithSigner = contract.connect(signer);
+    const tx = await contractWithSigner.resetEmergencyExit();
+    await tx.wait();
+    loadBanlance();
+  }
+
+  /**
    * 批量执行策略doHardWork
    */
   const batchDoHardWork = () => {
@@ -219,7 +234,7 @@ export default function StrategiesTable(props) {
         exchangePlatformAdapters
       );
     }
-    
+
     try {
       const signer = userProvider.getSigner();
       const tx = await vaultContract.connect(signer).lend(address, USDT_ADDRESS, value, exchangeParam);
@@ -378,7 +393,7 @@ export default function StrategiesTable(props) {
       title: '操作',
       key: 'action',
       render: (value, item) => {
-        const { address, totalDebt } = value;
+        const { address, totalDebt, emergencyExit } = value;
         return <Space size="middle">
           <Popconfirm
             placement="topLeft"
@@ -416,6 +431,17 @@ export default function StrategiesTable(props) {
           >
             <a>Exchange</a>
           </Popconfirm>
+          {
+            emergencyExit && <Popconfirm
+              placement="topLeft"
+              title={'确认立刻执行Reset操作？'}
+              onConfirm={() => resetEmergencyExit(address)}
+              okText="是"
+              cancelText="否"
+            >
+              <a>Reset</a>
+            </Popconfirm>
+          }
           {
             item.totalDebt.toString() === '0' && item.balanceOfLpToken.toString() === '0' &&
             <Popconfirm
