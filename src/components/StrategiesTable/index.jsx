@@ -161,6 +161,15 @@ export default function StrategiesTable(props) {
     return resp;
   };
 
+  const emergencyExit = async (address) => {
+    const contract = new ethers.Contract(address, STRATEGY_ABI, userProvider);
+    const signer = userProvider.getSigner();
+    const contractWithSigner = contract.connect(signer);
+    const tx = await contractWithSigner.emergencyExit();
+    await tx.wait();
+    loadBanlance();
+  }
+
   /**
    * 批量执行策略doHardWork
    */
@@ -210,11 +219,20 @@ export default function StrategiesTable(props) {
         exchangePlatformAdapters
       );
     }
-    const signer = userProvider.getSigner();
-    const tx = await vaultContract.connect(signer).lend(address, USDT_ADDRESS, value, exchangeParam);
-    await tx.wait()
-    await loadBanlance();
-    refreshCallBack();
+    
+    try {
+      const signer = userProvider.getSigner();
+      const tx = await vaultContract.connect(signer).lend(address, USDT_ADDRESS, value, exchangeParam);
+      await tx.wait()
+      loadBanlance();
+      refreshCallBack();
+    } catch (error) {
+      if (error && error.data) {
+        if (error.data.message === 'Error: VM Exception while processing transaction: reverted with reason string \'ES\'') {
+          message.error('服务已关停，请稍后再试！');
+        }
+      }
+    }
   }
 
   /**
@@ -228,7 +246,7 @@ export default function StrategiesTable(props) {
     const signer = userProvider.getSigner();
     const tx = await vaultContract.connect(signer).redeem(strategyAddress, totalAsset)
     await tx.wait();
-    await loadBanlance();
+    loadBanlance();
     refreshCallBack();
   }
 
@@ -271,7 +289,7 @@ export default function StrategiesTable(props) {
     const signer = userProvider.getSigner();
     const tx = vaultContract.connect(signer).exchange(wantAddress, USDT_ADDRESS, value.toString(), exchangeParam)
     await tx.wait();
-    await loadBanlance();
+    loadBanlance();
     refreshCallBack();
   }
 
@@ -283,6 +301,7 @@ export default function StrategiesTable(props) {
     request.get(`${APY_SERVER}/v3/${method}`, (error, response, body) => {
       console.log('error, response, bod=', error, response, body);
       close();
+      loadBanlance();
       if (error) {
         message.error('接口调用失败');
       } else {
@@ -369,6 +388,15 @@ export default function StrategiesTable(props) {
             cancelText="否"
           >
             <a>Harvest</a>
+          </Popconfirm>
+          <Popconfirm
+            placement="topLeft"
+            title={'确认立刻执行Emergency Exit操作？'}
+            onConfirm={() => emergencyExit(address)}
+            okText="是"
+            cancelText="否"
+          >
+            <a>Emergency Exit</a>
           </Popconfirm>
           <Popconfirm
             placement="topLeft"
