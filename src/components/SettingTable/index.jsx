@@ -82,6 +82,21 @@ export default function SettingTable(props) {
     loadBanlance();
   }
 
+  const setProfitLimitRatio = async (id, lossLimitRatio, value) => {
+    if (isEmpty(id) || isEmpty(value))
+      return;
+    const nextValue = parseInt(value * 1e2);
+    if (isNaN(nextValue) || nextValue < 0 || nextValue > 10000) {
+      message.error('请设置合适的数值');
+      return;
+    }
+    const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider);
+    const signer = userProvider.getSigner();
+    await vaultContract.connect(signer).setStrategySetLimitRatio(id, lossLimitRatio, nextValue)
+      .then(tx => tx.wait());
+    loadBanlance();
+  }
+
   const setMinReportDelay = async (id, value) => {
     if (isNaN(value) || isEmpty(value) || value < 0) {
       message.error('请设置合适的数值');
@@ -188,6 +203,17 @@ export default function SettingTable(props) {
         return <div>
           <span style={{ lineHeight: '32px' }} key={index}>{toFixed(value, 1)}</span>&nbsp;
           <Input.Search onSearch={(v) => setProfitFactor(item.address, v)} enterButton={<SettingOutlined />} style={{ width: 120, float: 'right' }} />
+        </div>
+      }
+    },
+    {
+      title: '收益占比阈值',
+      dataIndex: 'profitLimitRatio',
+      key: 'profitLimitRatio',
+      render: (value, item, index) => {
+        return <div>
+          <span style={{ lineHeight: '32px' }} key={index}>{toFixed(value, 1e2, 2)}%</span>&nbsp;
+          <Input.Search onSearch={(v) => setProfitLimitRatio(item.address, item.lossLimitRatio, v)} enterButton={<SettingOutlined />} style={{ width: 120, float: 'right' }} />
         </div>
       }
     },
