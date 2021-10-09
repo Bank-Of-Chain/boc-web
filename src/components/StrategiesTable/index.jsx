@@ -279,7 +279,7 @@ export default function StrategiesTable(props) {
    * 调用定时器的api服务
    */
   const callApi = (method) => {
-    const close = message.loading('接口调用中...', 10);
+    const close = message.loading('接口调用中...', 60 * 60);
     request.get(`${APY_SERVER}/v3/${method}`, (error, response, body) => {
       console.log('error, response, bod=', error, response, body);
       close();
