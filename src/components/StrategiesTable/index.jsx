@@ -372,7 +372,7 @@ export default function StrategiesTable(props) {
       dataIndex: 'totalGain',
       key: 'totalGain',
       render: (value, item, index) => {
-        return <span key={index}>{toFixed(value)}</span>;
+        return <span key={index}>{toFixed(value, 10 ** 6)}</span>;
       }
     },
     {
@@ -380,7 +380,7 @@ export default function StrategiesTable(props) {
       dataIndex: 'totalLoss',
       key: 'totalLoss',
       render: (value, item, index) => {
-        return <span key={index}>{toFixed(value)}</span>;
+        return <span key={index}>{toFixed(value, 10 ** 6)}</span>;
       }
     },
     {
@@ -444,6 +444,7 @@ export default function StrategiesTable(props) {
           >
             <a>Redeem</a>
           </Popconfirm>
+          {/* 
           <Popconfirm
             placement="topLeft"
             title={'确认立刻执行Exchange操作？'}
@@ -453,6 +454,7 @@ export default function StrategiesTable(props) {
           >
             <a>Exchange</a>
           </Popconfirm>
+           */}
           {
             emergencyExit && <Popconfirm
               placement="topLeft"

@@ -26,6 +26,8 @@ function AdminBoard(props) {
 
   const [treasureBalance, setTreasureBalance] = useState(BigNumber.from(0));
 
+  const [perFullShare, setPerFullShare] = useState(BigNumber.from(1));
+
   useEffect(() => {
     loadData();
   }, [address, refreshSymbol]);
@@ -39,6 +41,8 @@ function AdminBoard(props) {
       usdtContract.balanceOf(VAULT_ADDRESS).then(setBufferTotal);
       const lusdContract = new ethers.Contract(LUSD_ADDRESS, STRATEGY_ABI, userProvider);
       lusdContract.balanceOf(VAULT_ADDRESS).then(setLusdTotal);
+
+      vaultContract.pricePerShare().then(setPerFullShare);
 
       vaultContract.treasure().then(treasureAddress => {
         vaultContract.balanceOf(treasureAddress).then(setTreasureBalance);
@@ -129,7 +133,7 @@ function AdminBoard(props) {
         valueStyle={{
           fontWeight: 'bold', color: '#000', fontSize: 'x-large'
         }}
-        value={toFixed(treasureBalance, 10 ** 6)}
+        value={`${toFixed(treasureBalance, 10 ** 6)}（${treasureBalance * perFullShare / 10 ** 12} USDT）`}
       />
     </Row>
   </PageHeader>
