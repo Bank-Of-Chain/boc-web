@@ -316,12 +316,12 @@ export default function StrategiesTable(props) {
     request.get(`${APY_SERVER}/v3/${method}`, (error, response, body) => {
       console.log('error, response, bod=', error, response, body);
       close();
-      loadBanlance();
       if (error) {
         message.error('接口调用失败');
       } else {
         message.success('接口调用成功');
       }
+      setTimeout(loadBanlance, 1000);
     });
   }
 
