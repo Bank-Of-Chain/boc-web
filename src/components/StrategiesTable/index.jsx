@@ -207,6 +207,7 @@ export default function StrategiesTable(props) {
 
     const contract = new ethers.Contract(address, STRATEGY_ABI, userProvider);
     const wantAddress = await contract.want();
+    const nextValue = BigNumber.from(value).mul(10 ** 6);
 
     let exchangeParam = {
       platform: '0x0000000000000000000000000000000000000000',
@@ -229,7 +230,7 @@ export default function StrategiesTable(props) {
         decimals: (await wantAddressContract.decimals()).toString(),
         address: wantAddress
       },
-        value,
+        nextValue.toString(),
         slipper,
         exchangePlatformAdapters
       );
@@ -237,7 +238,7 @@ export default function StrategiesTable(props) {
 
     try {
       const signer = userProvider.getSigner();
-      const tx = await vaultContract.connect(signer).lend(address, USDT_ADDRESS, value, exchangeParam);
+      const tx = await vaultContract.connect(signer).lend(address, USDT_ADDRESS, nextValue.toString(), exchangeParam);
       await tx.wait()
       loadBanlance();
       refreshCallBack();
@@ -245,6 +246,8 @@ export default function StrategiesTable(props) {
       if (error && error.data) {
         if (error.data.message === 'Error: VM Exception while processing transaction: reverted with reason string \'ES\'') {
           message.error('服务已关停，请稍后再试！');
+        } else {
+          message.error('操作异常！');
         }
       }
     }
@@ -357,6 +360,22 @@ export default function StrategiesTable(props) {
       title: '稳定币数量',
       dataIndex: 'balanceOfWant',
       key: 'balanceOfWant',
+      render: (value, item, index) => {
+        return <span key={index}>{toFixed(value)}</span>;
+      }
+    },
+    {
+      title: '收益总额',
+      dataIndex: 'totalGain',
+      key: 'totalGain',
+      render: (value, item, index) => {
+        return <span key={index}>{toFixed(value)}</span>;
+      }
+    },
+    {
+      title: '损失总额',
+      dataIndex: 'totalLoss',
+      key: 'totalLoss',
       render: (value, item, index) => {
         return <span key={index}>{toFixed(value)}</span>;
       }
