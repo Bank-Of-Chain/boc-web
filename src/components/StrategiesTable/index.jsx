@@ -324,7 +324,10 @@ export default function StrategiesTable(props) {
       } else {
         message.success('接口调用成功');
       }
-      setTimeout(loadBanlance, 1000);
+      setTimeout(() => {
+        loadBanlance()
+        refreshCallBack()
+      }, 2000);
     });
   }
 
