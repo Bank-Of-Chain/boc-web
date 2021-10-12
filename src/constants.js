@@ -2,7 +2,6 @@ const vaultAbi = require('./abis/vault-abi.json');
 const strategyAbi = require('./abis/strategy-abi.json');
 const ierc20Abi = require('./abis/ierc20-abi.json');
 const treasureAbi = require('./abis/treasure-abi.json');
-const valueInterpreterAbi = require('./abis/value-interpreter-abi.json');
 const exchangeAggreatorAbi = require('./abis/exchange-aggregator-abi.json');
 // MY INFURA_ID, SWAP IN YOURS FROM https://infura.io/dashboard/ethereum
 export const INFURA_ID = "b5156ceaa4b644c49e74b1301121a6c6";
@@ -24,8 +23,6 @@ export const STRATEGY_ABI = strategyAbi;
 export const IERC20_ABI = ierc20Abi;
 
 export const EXCHANGE_AGGREGATOR_ABI = exchangeAggreatorAbi;
-
-export const VALUE_INTERPRETER_ABI = valueInterpreterAbi;
 
 export const TREASURE_ABI = treasureAbi;
 
