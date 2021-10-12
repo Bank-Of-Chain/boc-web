@@ -7,7 +7,7 @@ import { CloudSyncOutlined, SettingOutlined } from "@ant-design/icons";
 import * as ethers from "ethers";
 
 // === constants === //
-import { VAULT_ADDRESS, VAULT_ABI, STRATEGY_ABI, IERC20_ABI, EXCHANGE_AGGREGATOR_ABI, APY_SERVER } from "./../../constants";
+import { VAULT_ADDRESS, VAULT_ABI, STRATEGY_ABI, IERC20_ABI, EXCHANGE_AGGREGATOR_ABI, APY_SERVER, EXCHANGE_EXTRA_PARAMS } from "./../../constants";
 
 // === Utils === //
 import map from 'lodash/map';
@@ -232,7 +232,8 @@ export default function StrategiesTable(props) {
       },
         nextValue.toString(),
         slipper,
-        exchangePlatformAdapters
+        exchangePlatformAdapters,
+        EXCHANGE_EXTRA_PARAMS
       );
     }
 
