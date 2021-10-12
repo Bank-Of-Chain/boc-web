@@ -163,14 +163,14 @@ export default function StrategiesTable(props) {
     return resp;
   };
 
-  const emergencyExit = async (address) => {
-    const contract = new ethers.Contract(address, STRATEGY_ABI, userProvider);
-    const signer = userProvider.getSigner();
-    const contractWithSigner = contract.connect(signer);
-    const tx = await contractWithSigner.emergencyExit();
-    await tx.wait();
-    loadBanlance();
-  }
+  // const emergencyExit = async (address) => {
+  //   const contract = new ethers.Contract(address, STRATEGY_ABI, userProvider);
+  //   const signer = userProvider.getSigner();
+  //   const contractWithSigner = contract.connect(signer);
+  //   const tx = await contractWithSigner.emergencyExit();
+  //   await tx.wait();
+  //   loadBanlance();
+  // }
 
   /**
    * 策略退出紧急情况
@@ -271,45 +271,45 @@ export default function StrategiesTable(props) {
   /**
    * 执行策略exchange操作
    */
-  const exchange = async (address) => {
-    if (isEmpty(address)) return Promise.reject();
+  // const exchange = async (address) => {
+  //   if (isEmpty(address)) return Promise.reject();
 
-    const contract = new ethers.Contract(address, STRATEGY_ABI, userProvider);
-    const wantAddress = await contract.want();
+  //   const contract = new ethers.Contract(address, STRATEGY_ABI, userProvider);
+  //   const wantAddress = await contract.want();
 
-    const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider);
-    const wantContract = new ethers.Contract(wantAddress, IERC20_ABI, userProvider);
-    const underlyingContract = new ethers.Contract(USDT_ADDRESS, IERC20_ABI, userProvider);
-    const value = await wantContract.balanceOf(VAULT_ADDRESS);
-    let exchangeParam = {
-      platform: '0x0000000000000000000000000000000000000000',
-      method: '0',
-      encodeExchangeArgs: '0x'
-    }
-    // 如果策略稳定币不是USDT，则需要匹配兑换路径
-    if (wantAddress !== USDT_ADDRESS) {
-      const exchangeManager = await vaultContract.exchangeManager();
-      const exchangeManagerContract = await new ethers.Contract(exchangeManager, EXCHANGE_AGGREGATOR_ABI, userProvider);
-      const exchangePlatformAdapters = await getExchangePlatformAdapters(exchangeManagerContract)
-      exchangeParam = await getBestSwapInfo({
-        decimals: (await wantContract.decimals()).toString(),
-        address: wantAddress
-      }, {
-        decimals: (await underlyingContract.decimals()).toString(),
-        address: USDT_ADDRESS
-      },
-        value,
-        slipper,
-        exchangePlatformAdapters
-      );
-    }
+  //   const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider);
+  //   const wantContract = new ethers.Contract(wantAddress, IERC20_ABI, userProvider);
+  //   const underlyingContract = new ethers.Contract(USDT_ADDRESS, IERC20_ABI, userProvider);
+  //   const value = await wantContract.balanceOf(VAULT_ADDRESS);
+  //   let exchangeParam = {
+  //     platform: '0x0000000000000000000000000000000000000000',
+  //     method: '0',
+  //     encodeExchangeArgs: '0x'
+  //   }
+  //   // 如果策略稳定币不是USDT，则需要匹配兑换路径
+  //   if (wantAddress !== USDT_ADDRESS) {
+  //     const exchangeManager = await vaultContract.exchangeManager();
+  //     const exchangeManagerContract = await new ethers.Contract(exchangeManager, EXCHANGE_AGGREGATOR_ABI, userProvider);
+  //     const exchangePlatformAdapters = await getExchangePlatformAdapters(exchangeManagerContract)
+  //     exchangeParam = await getBestSwapInfo({
+  //       decimals: (await wantContract.decimals()).toString(),
+  //       address: wantAddress
+  //     }, {
+  //       decimals: (await underlyingContract.decimals()).toString(),
+  //       address: USDT_ADDRESS
+  //     },
+  //       value,
+  //       slipper,
+  //       exchangePlatformAdapters
+  //     );
+  //   }
 
-    const signer = userProvider.getSigner();
-    const tx = vaultContract.connect(signer).exchange(wantAddress, USDT_ADDRESS, value.toString(), exchangeParam)
-    await tx.wait();
-    loadBanlance();
-    refreshCallBack();
-  }
+  //   const signer = userProvider.getSigner();
+  //   const tx = vaultContract.connect(signer).exchange(wantAddress, USDT_ADDRESS, value.toString(), exchangeParam)
+  //   await tx.wait();
+  //   loadBanlance();
+  //   refreshCallBack();
+  // }
 
   /**
    * 调用定时器的api服务

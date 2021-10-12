@@ -79,7 +79,6 @@ export default function Transaction(props) {
     setToValue(0);
     try {
       const close = message.loading('数据提交中...', 2.5)
-      const signerAddress = await signer.getAddress();
       const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider);
       const exchangeParams = await new Promise((resolve) => {
         request.get(`${APY_SERVER}/v3/withdraw-exchange-params?amount=${nextValue}&slipper=${allowMaxLoss}`, (error, resp, body) => {
