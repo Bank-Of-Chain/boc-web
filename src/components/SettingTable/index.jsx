@@ -133,18 +133,6 @@ export default function SettingTable(props) {
     loadBanlance();
   }
 
-  const setDebtThreshold = async (id, value) => {
-    if (isNaN(value) || isEmpty(value) || value < 0) {
-      message.error('请设置合适的数值');
-      return;
-    }
-    const strategyContract = new ethers.Contract(id, STRATEGY_ABI, userProvider);
-    const signer = userProvider.getSigner();
-    await strategyContract.connect(signer).setDebtThreshold(value)
-      .then(tx => tx.wait());
-    loadBanlance();
-  }
-
   const onChange = async (id, value) => {
     if (isEmpty(id)) return;
     const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider);
