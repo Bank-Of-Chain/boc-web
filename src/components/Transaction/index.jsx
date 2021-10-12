@@ -1,16 +1,17 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useState } from "react";
 import { Row, Col, Tag, Button, Card, InputNumber, Popconfirm, message } from "antd";
-import isEmpty from "lodash/isEmpty";
 import * as ethers from "ethers";
 import { BigNumber } from 'ethers';
 
 // === constants === //
-import { VAULT_ADDRESS, VAULT_ABI, STRATEGY_ABI, IERC20_ABI } from "./../../constants";
+import { VAULT_ADDRESS, VAULT_ABI, STRATEGY_ABI, IERC20_ABI, APY_SERVER } from "./../../constants";
 
 // === Utils === //
-import { toFixed } from "./../../helpers/number-format"
-import { withdraw as withdrawInner } from './../../helpers/withdraw-helper';
+import { toFixed } from "./../../helpers/number-format";
+import get from "lodash/get";
+import isEmpty from "lodash/isEmpty";
+import request from "request";
 
 export default function Transaction(props) {
   const { name, from, address, userProvider } = props;
@@ -80,7 +81,12 @@ export default function Transaction(props) {
       const close = message.loading('数据提交中...', 2.5)
       const signerAddress = await signer.getAddress();
       const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider);
-      const exchangeParams = await withdrawInner(VAULT_ADDRESS, signerAddress, nextValue, userProvider);
+      const exchangeParams = await new Promise((resolve) => {
+        request.get(`${APY_SERVER}/v3/withdraw-exchange-params?amount=${nextValue}&slipper=${allowMaxLoss}`, (error, resp, body) => {
+          const bodyJson = JSON.parse(body)
+          resolve(get(bodyJson, 'data.exchangeParams', []))
+        })
+      })
       const tx = await vaultContract.connect(signer).withdraw(nextValue, allowMaxLoss, exchangeParams);
       await tx.wait();
       close();
