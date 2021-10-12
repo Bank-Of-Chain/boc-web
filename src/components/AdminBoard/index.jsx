@@ -7,7 +7,7 @@ import Address from '../Address';
 import * as ethers from "ethers";
 
 // === constants === //
-import { VAULT_ADDRESS, VAULT_ABI, STRATEGY_ABI } from "./../../constants";
+import { VAULT_ADDRESS, VAULT_ABI, STRATEGY_ABI, USDT_ADDRESS, LUSD_ADDRESS } from "./../../constants";
 
 // === Utils === //
 import { toFixed } from "./../../helpers/number-format"
@@ -22,6 +22,11 @@ function AdminBoard(props) {
   const [underlyingUnit, setUnderlyingUnit] = useState(BigNumber.from(0));
 
   const [bufferTotal, setBufferTotal] = useState(BigNumber.from(0));
+  const [lusdTotal, setLusdTotal] = useState(BigNumber.from(0));
+
+  const [treasureBalance, setTreasureBalance] = useState(BigNumber.from(0));
+
+  const [perFullShare, setPerFullShare] = useState(BigNumber.from(1));
 
   useEffect(() => {
     loadData();
@@ -30,11 +35,18 @@ function AdminBoard(props) {
     try {
       const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider);
       vaultContract.totalAssets().then(setTotalAssets);
-      vaultContract.totalOriginalDebt().then(setStrategyTotalAssetsValue);
+      vaultContract.totalDebt().then(setStrategyTotalAssetsValue);
       vaultContract.decimals().then(setUnderlyingUnit);
+      const usdtContract = new ethers.Contract(USDT_ADDRESS, STRATEGY_ABI, userProvider);
+      usdtContract.balanceOf(VAULT_ADDRESS).then(setBufferTotal);
+      const lusdContract = new ethers.Contract(LUSD_ADDRESS, STRATEGY_ABI, userProvider);
+      lusdContract.balanceOf(VAULT_ADDRESS).then(setLusdTotal);
 
-      const usdtContract = new ethers.Contract('0xdAC17F958D2ee523a2206206994597C13D831ec7', STRATEGY_ABI, userProvider);
-      usdtContract.balanceOf(VAULT_ADDRESS).then(setBufferTotal)
+      vaultContract.pricePerShare().then(setPerFullShare);
+
+      vaultContract.treasure().then(treasureAddress => {
+        vaultContract.balanceOf(treasureAddress).then(setTreasureBalance);
+      });
     } catch (error) {
       console.error('error', error);
     }
@@ -101,6 +113,27 @@ function AdminBoard(props) {
           fontWeight: 'bold', color: '#000', fontSize: 'x-large'
         }}
         value={toFixed(bufferTotal, 10 ** underlyingUnit)}
+      />
+      <Statistic
+        title={<span style={{ fontWeight: 'bold', color: '#000', fontSize: 'large' }}>缓冲池资金</span>}
+        style={{
+          marginLeft: 32,
+        }}
+        suffix="(LUSD)"
+        valueStyle={{
+          fontWeight: 'bold', color: '#000', fontSize: 'x-large'
+        }}
+        value={toFixed(lusdTotal, 10 ** 18)}
+      />
+      <Statistic
+        title={<span style={{ fontWeight: 'bold', color: '#000', fontSize: 'large' }}>国库拥有份额</span>}
+        style={{
+          marginLeft: 32,
+        }}
+        valueStyle={{
+          fontWeight: 'bold', color: '#000', fontSize: 'x-large'
+        }}
+        value={`${toFixed(treasureBalance, 10 ** 6)}（${treasureBalance * perFullShare / 10 ** 12} USDT）`}
       />
     </Row>
   </PageHeader>
