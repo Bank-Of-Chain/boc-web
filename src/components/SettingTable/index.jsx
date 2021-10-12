@@ -31,16 +31,12 @@ export default function SettingTable(props) {
       return await Promise.all([
         contract.name(),
         vaultContract.strategies(item),
-        contract.minReturnBps(),
         contract.estimatedTotalAssetsToVault(),
-        contract.balanceOfLpToken(),
-        vaultContract.getStrategyApy(item),
         contract.minReportDelay(),
         contract.maxReportDelay(),
         contract.profitFactor(),
-        contract.debtThreshold(),
       ]).then(([
-        name, vaultState, minReturnBps, estimatedTotalAssets, balanceOfLpToken, apy, minReportDelay, maxReportDelay, profitFactor, debtThreshold
+        name, vaultState, estimatedTotalAssets, minReportDelay, maxReportDelay, profitFactor
       ]) => {
         const {
           debtRatio, enforceChangeLimit, activation, originalDebt, totalGain, totalLoss, lastReport, totalAsset, enableWithdraw,
@@ -53,19 +49,15 @@ export default function SettingTable(props) {
           debtRatio,
           enforceChangeLimit,
           activation,
-          apy,
           totalDebt: originalDebt,
           totalAsset,
           totalGain,
           totalLoss,
-          minReturnBps,
           lastReport,
           estimatedTotalAssets,
-          balanceOfLpToken,
           minReportDelay,
           maxReportDelay,
           profitFactor,
-          debtThreshold,
           enableWithdraw,
           lossLimitRatio,
           profitLimitRatio
@@ -74,30 +66,8 @@ export default function SettingTable(props) {
     }));
     setData(nextData);
   }
-  /**
-   * 设置 apy 的数值
-   * @param {string} id 策略地址
-   * @param {number} value apy的值
-   * @returns 
-   */
-  const setMinReturnBps = async (id, value) => {
-    if (isEmpty(id) || isEmpty(value))
-      return;
-    const nextValue = parseInt(value * 1e2);
-    if (isNaN(nextValue) || nextValue < 0 || nextValue > 10000) {
-      message.error('请设置合适的数值');
-      return;
-    }
-    const contract = new ethers.Contract(id, STRATEGY_ABI, userProvider);
-    const signer = userProvider.getSigner();
-    const contractWithSigner = contract.connect(signer);
-    await contractWithSigner.setMinReturnBps(nextValue)
-      .then(tx => tx.wait());
-    loadBanlance();
-  }
 
   const setLossLimitRatio = async (id, value, profitLimitRatio) => {
-    debugger
     if (isEmpty(id) || isEmpty(value))
       return;
     const nextValue = parseInt(value * 1e2);
@@ -112,8 +82,23 @@ export default function SettingTable(props) {
     loadBanlance();
   }
 
+  const setProfitLimitRatio = async (id, lossLimitRatio, value) => {
+    if (isEmpty(id) || isEmpty(value))
+      return;
+    const nextValue = parseInt(value * 1e2);
+    if (isNaN(nextValue) || nextValue < 0 || nextValue > 10000) {
+      message.error('请设置合适的数值');
+      return;
+    }
+    const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider);
+    const signer = userProvider.getSigner();
+    await vaultContract.connect(signer).setStrategySetLimitRatio(id, lossLimitRatio, nextValue)
+      .then(tx => tx.wait());
+    loadBanlance();
+  }
+
   const setMinReportDelay = async (id, value) => {
-    if (isNaN(value) || value < 0) {
+    if (isNaN(value) || isEmpty(value) || value < 0) {
       message.error('请设置合适的数值');
       return;
     }
@@ -125,7 +110,7 @@ export default function SettingTable(props) {
   }
 
   const setMaxReportDelay = async (id, value) => {
-    if (isNaN(value) || value < 0) {
+    if (isNaN(value) || isEmpty(value) || value < 0) {
       message.error('请设置合适的数值');
       return;
     }
@@ -137,7 +122,7 @@ export default function SettingTable(props) {
   }
 
   const setProfitFactor = async (id, value) => {
-    if (isNaN(value) || value < 0) {
+    if (isNaN(value) || isEmpty(value) || value < 0) {
       message.error('请设置合适的数值');
       return;
     }
@@ -149,7 +134,7 @@ export default function SettingTable(props) {
   }
 
   const setDebtThreshold = async (id, value) => {
-    if (isNaN(value) || value < 0) {
+    if (isNaN(value) || isEmpty(value) || value < 0) {
       message.error('请设置合适的数值');
       return;
     }
@@ -222,13 +207,13 @@ export default function SettingTable(props) {
       }
     },
     {
-      title: '债务阈值',
-      dataIndex: 'debtThreshold',
-      key: 'debtThreshold',
+      title: '收益占比阈值',
+      dataIndex: 'profitLimitRatio',
+      key: 'profitLimitRatio',
       render: (value, item, index) => {
         return <div>
-          <span style={{ lineHeight: '32px' }} key={index}>{toFixed(value, 1)}</span>&nbsp;
-          <Input.Search onSearch={(v) => setDebtThreshold(item.address, v)} enterButton={<SettingOutlined />} style={{ width: 120, float: 'right' }} />
+          <span style={{ lineHeight: '32px' }} key={index}>{toFixed(value, 1e2, 2)}%</span>&nbsp;
+          <Input.Search onSearch={(v) => setProfitLimitRatio(item.address, item.lossLimitRatio, v)} enterButton={<SettingOutlined />} style={{ width: 120, float: 'right' }} />
         </div>
       }
     },
@@ -240,17 +225,6 @@ export default function SettingTable(props) {
         return <div>
           <span style={{ lineHeight: '32px' }} key={index}>{toFixed(value, 1e2, 2)}%</span>&nbsp;
           <Input.Search onSearch={(v) => setLossLimitRatio(item.address, v, item.profitLimitRatio)} enterButton={<SettingOutlined />} style={{ width: 120, float: 'right' }} />
-        </div>
-      }
-    },
-    {
-      title: '滑点阈值设置',
-      dataIndex: 'minReturnBps',
-      key: 'minReturnBps',
-      render: (value, item, index) => {
-        return <div>
-          <span style={{ lineHeight: '32px' }} key={index}>{toFixed(value, 1e2, 2)}%</span>&nbsp;
-          <Input.Search onSearch={(v) => setMinReturnBps(item.address, v)} enterButton={<SettingOutlined />} style={{ width: 120, float: 'right' }} />
         </div>
       }
     },

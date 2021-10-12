@@ -1,15 +1,17 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useState } from "react";
 import { Row, Col, Tag, Button, Card, InputNumber, Popconfirm, message } from "antd";
-import isEmpty from "lodash/isEmpty";
 import * as ethers from "ethers";
 import { BigNumber } from 'ethers';
 
 // === constants === //
-import { VAULT_ADDRESS, VAULT_ABI, STRATEGY_ABI } from "./../../constants";
+import { VAULT_ADDRESS, VAULT_ABI, STRATEGY_ABI, IERC20_ABI, APY_SERVER } from "./../../constants";
 
 // === Utils === //
-import { toFixed } from "./../../helpers/number-format"
+import { toFixed } from "./../../helpers/number-format";
+import get from "lodash/get";
+import isEmpty from "lodash/isEmpty";
+import request from "request";
 
 export default function Transaction(props) {
   const { name, from, address, userProvider } = props;
@@ -37,7 +39,7 @@ export default function Transaction(props) {
 
   const diposit = async () => {
     // 获取usdc的合约
-    const usdtContract = new ethers.Contract(from, STRATEGY_ABI, userProvider);
+    const usdtContract = new ethers.Contract(from, IERC20_ABI, userProvider);
     const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider);
     const signer = userProvider.getSigner();
     const usdtContractWithUser = usdtContract.connect(signer);
@@ -62,8 +64,9 @@ export default function Transaction(props) {
       setFromValue(0);
       message.loading('数据提交中...', 2.5).then(() => message.success('数据提交成功', 2.5))
     } catch (error) {
+      console.log('error=', error);
       if (error && error.data) {
-        if (error.data.message === 'Error: VM Exception while processing transaction: reverted with reason string \'vault has been emergency shutdown\'') {
+        if (error.data.message === 'Error: VM Exception while processing transaction: reverted with reason string \'ES\'') {
           message.error('服务已关停，请稍后再试！');
         }
       }
@@ -75,13 +78,22 @@ export default function Transaction(props) {
     const nextValue = `${toValue * 1e6}`;
     setToValue(0);
     try {
+      const close = message.loading('数据提交中...', 2.5)
+      const signerAddress = await signer.getAddress();
       const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider);
-      const tx = await vaultContract.connect(signer).withdraw(nextValue, allowMaxLoss);
-      message.loading('数据提交中...', 2.5).then(() => message.success('数据提交成功', 2.5));
+      const exchangeParams = await new Promise((resolve) => {
+        request.get(`${APY_SERVER}/v3/withdraw-exchange-params?amount=${nextValue}&slipper=${allowMaxLoss}`, (error, resp, body) => {
+          const bodyJson = JSON.parse(body)
+          resolve(get(bodyJson, 'data.exchangeParams', []))
+        })
+      })
+      const tx = await vaultContract.connect(signer).withdraw(nextValue, allowMaxLoss, exchangeParams);
       await tx.wait();
+      close();
+      message.success('数据提交成功', 2.5)
     } catch (error) {
       if (error && error.data) {
-        if (error.data.message === 'Error: VM Exception while processing transaction: reverted with reason string \'vault has been emergency shutdown\'') {
+        if (error.data.message === 'Error: VM Exception while processing transaction: reverted with reason string \'ES\'') {
           message.error('服务已关停，请稍后再试！');
         }
       }
