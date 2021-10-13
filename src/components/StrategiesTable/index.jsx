@@ -163,14 +163,14 @@ export default function StrategiesTable(props) {
     return resp;
   };
 
-  // const emergencyExit = async (address) => {
-  //   const contract = new ethers.Contract(address, STRATEGY_ABI, userProvider);
-  //   const signer = userProvider.getSigner();
-  //   const contractWithSigner = contract.connect(signer);
-  //   const tx = await contractWithSigner.emergencyExit();
-  //   await tx.wait();
-  //   loadBanlance();
-  // }
+  const emergencyExit = async (address) => {
+    const contract = new ethers.Contract(address, STRATEGY_ABI, userProvider);
+    const signer = userProvider.getSigner();
+    const contractWithSigner = contract.connect(signer);
+    const tx = await contractWithSigner.emergencyExit();
+    await tx.wait();
+    loadBanlance();
+  }
 
   /**
    * 策略退出紧急情况
@@ -416,7 +416,7 @@ export default function StrategiesTable(props) {
       title: '操作',
       key: 'action',
       render: (value, item) => {
-        const { address, totalDebt, emergencyExit } = value;
+        const { address, totalDebt, emergencyExit: emergencyExitValue } = value;
         return <Space size="middle">
           <Popconfirm
             placement="topLeft"
@@ -457,7 +457,7 @@ export default function StrategiesTable(props) {
           </Popconfirm>
            */}
           {
-            emergencyExit && <Popconfirm
+            emergencyExitValue && <Popconfirm
               placement="topLeft"
               title={'确认立刻执行Reset操作？'}
               onConfirm={() => resetEmergencyExit(address)}
