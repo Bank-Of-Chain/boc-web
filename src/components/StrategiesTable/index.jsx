@@ -7,7 +7,7 @@ import { CloudSyncOutlined, SettingOutlined } from "@ant-design/icons";
 import * as ethers from "ethers";
 
 // === constants === //
-import { VAULT_ADDRESS, VAULT_ABI, STRATEGY_ABI, IERC20_ABI, EXCHANGE_AGGREGATOR_ABI, APY_SERVER, EXCHANGE_EXTRA_PARAMS } from "./../../constants";
+import { VAULT_ADDRESS, VAULT_ABI, STRATEGY_ABI, IERC20_ABI, EXCHANGE_AGGREGATOR_ABI, APY_SERVER, EXCHANGE_EXTRA_PARAMS, USDT_ADDRESS } from "./../../constants";
 
 // === Utils === //
 import map from 'lodash/map';
@@ -21,7 +21,6 @@ import request from "request";
 import OriginApy from './OriginApy';
 
 const slipper = 30;
-const USDT_ADDRESS = '0xdAC17F958D2ee523a2206206994597C13D831ec7';
 
 const getExchangePlatformAdapters = async (exchangeAggregator) => {
   const adapters = await exchangeAggregator.getExchangeAdapters();
