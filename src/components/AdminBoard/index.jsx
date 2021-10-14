@@ -22,7 +22,7 @@ function AdminBoard(props) {
   const [underlyingUnit, setUnderlyingUnit] = useState(BigNumber.from(0));
 
   const [bufferTotal, setBufferTotal] = useState(BigNumber.from(0));
-  const [lusdTotal, setLusdTotal] = useState(BigNumber.from(0));
+  // const [lusdTotal, setLusdTotal] = useState(BigNumber.from(0));
 
   const [treasureBalance, setTreasureBalance] = useState(BigNumber.from(0));
 
@@ -39,8 +39,8 @@ function AdminBoard(props) {
       vaultContract.decimals().then(setUnderlyingUnit);
       const usdtContract = new ethers.Contract(USDT_ADDRESS, STRATEGY_ABI, userProvider);
       usdtContract.balanceOf(VAULT_ADDRESS).then(setBufferTotal);
-      const lusdContract = new ethers.Contract(LUSD_ADDRESS, STRATEGY_ABI, userProvider);
-      lusdContract.balanceOf(VAULT_ADDRESS).then(setLusdTotal);
+      // const lusdContract = new ethers.Contract(LUSD_ADDRESS, STRATEGY_ABI, userProvider);
+      // lusdContract.balanceOf(VAULT_ADDRESS).then(setLusdTotal);
 
       vaultContract.pricePerShare().then(setPerFullShare);
 
@@ -114,7 +114,7 @@ function AdminBoard(props) {
         }}
         value={toFixed(bufferTotal, 10 ** underlyingUnit)}
       />
-      <Statistic
+      {/* <Statistic
         title={<span style={{ fontWeight: 'bold', color: '#000', fontSize: 'large' }}>缓冲池资金</span>}
         style={{
           marginLeft: 32,
@@ -124,7 +124,7 @@ function AdminBoard(props) {
           fontWeight: 'bold', color: '#000', fontSize: 'x-large'
         }}
         value={toFixed(lusdTotal, 10 ** 18)}
-      />
+      /> */}
       <Statistic
         title={<span style={{ fontWeight: 'bold', color: '#000', fontSize: 'large' }}>国库拥有份额</span>}
         style={{
