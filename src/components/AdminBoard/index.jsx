@@ -7,7 +7,7 @@ import Address from '../Address';
 import * as ethers from "ethers";
 
 // === constants === //
-import { VAULT_ADDRESS, VAULT_ABI, STRATEGY_ABI, USDT_ADDRESS, LUSD_ADDRESS } from "./../../constants";
+import { VAULT_ADDRESS, VAULT_ABI, USDT_ADDRESS, IERC20_ABI } from "./../../constants";
 
 // === Utils === //
 import { toFixed } from "./../../helpers/number-format"
@@ -37,7 +37,7 @@ function AdminBoard(props) {
       vaultContract.totalAssets().then(setTotalAssets);
       vaultContract.totalDebt().then(setStrategyTotalAssetsValue);
       vaultContract.decimals().then(setUnderlyingUnit);
-      const usdtContract = new ethers.Contract(USDT_ADDRESS, STRATEGY_ABI, userProvider);
+      const usdtContract = new ethers.Contract(USDT_ADDRESS, IERC20_ABI, userProvider);
       usdtContract.balanceOf(VAULT_ADDRESS).then(setBufferTotal);
       // const lusdContract = new ethers.Contract(LUSD_ADDRESS, STRATEGY_ABI, userProvider);
       // lusdContract.balanceOf(VAULT_ADDRESS).then(setLusdTotal);

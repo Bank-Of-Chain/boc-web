@@ -15,6 +15,8 @@ import isNaN from 'lodash/isNaN';
 import isEmpty from 'lodash/isEmpty';
 import { toFixed } from "../../helpers/number-format"
 
+const { BigNumber } = ethers
+
 export default function SettingTable(props) {
   const { userProvider, refreshSymbol } = props;
   const [data, setData] = useState([]);
@@ -31,7 +33,7 @@ export default function SettingTable(props) {
       return await Promise.all([
         contract.name(),
         vaultContract.strategies(item),
-        contract.estimatedTotalAssetsToVault(),
+        contract.estimatedTotalAssets().catch(() => Promise.resolve(BigNumber.from(0))),
         contract.minReportDelay(),
         contract.maxReportDelay(),
         contract.profitFactor(),

@@ -49,13 +49,13 @@ export default function StrategiesTable(props) {
     const strategiesAddress = await vaultContract.getStrategies();
     const nextData = await Promise.all(map(strategiesAddress, async (item) => {
       const contract = new ethers.Contract(item, STRATEGY_ABI, userProvider);
-      const wantAddress = await contract.want();
+      const [wantAddress,] = await contract.getWants();
       const wantContract = new ethers.Contract(wantAddress, IERC20_ABI, userProvider);
       return await Promise.all([
         contract.name(),
         vaultContract.strategies(item),
-        contract.balanceOfLpToken(),
-        contract.estimatedTotalAssetsToVault(),
+        contract.balanceOfLpToken().catch(() => Promise.resolve(BigNumber.from(0))),
+        contract.estimatedTotalAssets().catch(() => Promise.resolve(BigNumber.from(0))),
         vaultContract.getStrategyApy(item),
         wantContract.balanceOf(item),
         contract._emergencyExit(),
