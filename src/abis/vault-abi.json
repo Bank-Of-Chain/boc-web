@@ -84,28 +84,22 @@
         "type": "address"
       },
       {
+        "components": [
+          {
+            "internalType": "address",
+            "name": "token",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "amount",
+            "type": "uint256"
+          }
+        ],
         "indexed": false,
-        "internalType": "address",
-        "name": "fromToken",
-        "type": "address"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "fromAmount",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "internalType": "address",
-        "name": "toToken",
-        "type": "address"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "toAmount",
-        "type": "uint256"
+        "internalType": "struct IStrategy.TokenDetail[]",
+        "name": "tokenDetails",
+        "type": "tuple[]"
       }
     ],
     "name": "LendToStrategy",
@@ -121,21 +115,27 @@
         "type": "address"
       },
       {
+        "components": [
+          {
+            "internalType": "address",
+            "name": "token",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "amount",
+            "type": "uint256"
+          }
+        ],
+        "indexed": false,
+        "internalType": "struct IStrategy.TokenDetail[]",
+        "name": "tokenDetails",
+        "type": "tuple[]"
+      },
+      {
         "indexed": false,
         "internalType": "uint256",
         "name": "redeemValue",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "redeemTokenAmount",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "actualRedeemValue",
         "type": "uint256"
       }
     ],
@@ -192,8 +192,44 @@
       {
         "indexed": false,
         "internalType": "uint256",
-        "name": "amount",
+        "name": "shares",
         "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "canGetShares",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "profitFeeShares",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "totalValue",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "userCost",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "address[]",
+        "name": "withdrawTokens",
+        "type": "address[]"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256[]",
+        "name": "withdrawAmounts",
+        "type": "uint256[]"
       }
     ],
     "name": "Withdraw",
@@ -343,6 +379,25 @@
   {
     "inputs": [],
     "name": "balanceOfToken",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "user",
+        "type": "address"
+      }
+    ],
+    "name": "calculateWithdrawFeePercent",
     "outputs": [
       {
         "internalType": "uint256",
@@ -552,6 +607,19 @@
     "type": "function"
   },
   {
+    "inputs": [],
+    "name": "getTrackedAssets",
+    "outputs": [
+      {
+        "internalType": "address[]",
+        "name": "",
+        "type": "address[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
     "inputs": [
       {
         "internalType": "address",
@@ -629,36 +697,48 @@
         "type": "address"
       },
       {
-        "internalType": "address",
-        "name": "_fromToken",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "_amount",
-        "type": "uint256"
-      },
-      {
         "components": [
           {
             "internalType": "address",
-            "name": "platform",
+            "name": "fromToken",
             "type": "address"
           },
           {
-            "internalType": "uint8",
-            "name": "method",
-            "type": "uint8"
+            "internalType": "address",
+            "name": "toToken",
+            "type": "address"
           },
           {
-            "internalType": "bytes",
-            "name": "encodeExchangeArgs",
-            "type": "bytes"
+            "internalType": "uint256",
+            "name": "fromAmount",
+            "type": "uint256"
+          },
+          {
+            "components": [
+              {
+                "internalType": "address",
+                "name": "platform",
+                "type": "address"
+              },
+              {
+                "internalType": "uint8",
+                "name": "method",
+                "type": "uint8"
+              },
+              {
+                "internalType": "bytes",
+                "name": "encodeExchangeArgs",
+                "type": "bytes"
+              }
+            ],
+            "internalType": "struct ExchangeParam",
+            "name": "exchangeParam",
+            "type": "tuple"
           }
         ],
-        "internalType": "struct ExchangeParam",
-        "name": "exchangeParam",
-        "type": "tuple"
+        "internalType": "struct ExchangeToken[]",
+        "name": "_exchangeTokens",
+        "type": "tuple[]"
       }
     ],
     "name": "lend",
@@ -668,7 +748,7 @@
   },
   {
     "inputs": [],
-    "name": "lockedProfit",
+    "name": "lockedWithdrawDegradation",
     "outputs": [
       {
         "internalType": "uint256",
@@ -681,7 +761,7 @@
   },
   {
     "inputs": [],
-    "name": "lockedProfitDegradation",
+    "name": "lockedWithdrawFeePercent",
     "outputs": [
       {
         "internalType": "uint256",
@@ -786,9 +866,21 @@
     "name": "redeem",
     "outputs": [
       {
-        "internalType": "uint256",
+        "components": [
+          {
+            "internalType": "address",
+            "name": "token",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "amount",
+            "type": "uint256"
+          }
+        ],
+        "internalType": "struct IStrategy.TokenDetail[]",
         "name": "",
-        "type": "uint256"
+        "type": "tuple[]"
       }
     ],
     "stateMutability": "nonpayable",
@@ -876,11 +968,24 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "degradation",
+        "name": "_degradation",
         "type": "uint256"
       }
     ],
-    "name": "setLockedProfitDegradation",
+    "name": "setLockedWithdrawDegradation",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_lockedWithdrawFeePercent",
+        "type": "uint256"
+      }
+    ],
+    "name": "setLockedWithdrawFeePercent",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -1234,6 +1339,25 @@
     "type": "function"
   },
   {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "name": "userLastDepositTimes",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
     "inputs": [],
     "name": "valueInterpreter",
     "outputs": [
@@ -1241,6 +1365,19 @@
         "internalType": "address",
         "name": "",
         "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "valueOfTrackedTokens",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
       }
     ],
     "stateMutability": "view",
@@ -1271,33 +1408,6 @@
         "internalType": "uint256",
         "name": "shares",
         "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "maxLoss",
-        "type": "uint256"
-      },
-      {
-        "components": [
-          {
-            "internalType": "address",
-            "name": "platform",
-            "type": "address"
-          },
-          {
-            "internalType": "uint8",
-            "name": "method",
-            "type": "uint8"
-          },
-          {
-            "internalType": "bytes",
-            "name": "encodeExchangeArgs",
-            "type": "bytes"
-          }
-        ],
-        "internalType": "struct ExchangeParam[]",
-        "name": "exchangeParams",
-        "type": "tuple[]"
       }
     ],
     "name": "withdraw",
