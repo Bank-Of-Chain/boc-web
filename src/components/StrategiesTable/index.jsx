@@ -13,8 +13,9 @@ import { VAULT_ADDRESS, VAULT_ABI, STRATEGY_ABI, IERC20_ABI, EXCHANGE_AGGREGATOR
 import map from 'lodash/map';
 import isNaN from 'lodash/isNaN';
 import isEmpty from 'lodash/isEmpty';
+import mapKeys from 'lodash/mapKeys';
 import { toFixed } from "./../../helpers/number-format";
-import { getBestSwapInfo } from 'piggy-finance-utils';
+import { lendSwap } from 'piggy-finance-utils';
 import request from "request";
 
 // === Components === //
@@ -204,41 +205,43 @@ export default function StrategiesTable(props) {
   const lend = async (address, value) => {
     if (isEmpty(address)) return Promise.reject();
 
-    const contract = new ethers.Contract(address, STRATEGY_ABI, userProvider);
-    const wantAddress = await contract.want();
+    // 新版 lend 方法改造
+    const decimalsMachine = (token, vaule, decimals) => vaule * 10 ** decimals
+
     const nextValue = BigNumber.from(value).mul(10 ** 6);
 
-    let exchangeParam = {
-      platform: '0x0000000000000000000000000000000000000000',
-      method: '0',
-      encodeExchangeArgs: '0x'
-    }
     const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider);
-    // 如果策略稳定币不是USDT，则需要匹配兑换路径
-    if (wantAddress !== USDT_ADDRESS) {
-      const exchangeManager = await vaultContract.exchangeManager();
-      const exchangeManagerContract = await new ethers.Contract(exchangeManager, EXCHANGE_AGGREGATOR_ABI, userProvider);
-      const exchangePlatformAdapters = await getExchangePlatformAdapters(exchangeManagerContract)
+    const contract = new ethers.Contract(address, STRATEGY_ABI, userProvider);
+    const strateAspect = await contract.queryTokenAspect();
+    const strateAspectNext = map(strateAspect, item => {
+      return {
+        ...item,
+        aspect: parseInt(item.aspect.toString())
+      }
+    })
 
-      const wantAddressContract = new ethers.Contract(wantAddress, IERC20_ABI, userProvider);
-      const underlyingContract = new ethers.Contract(USDT_ADDRESS, IERC20_ABI, userProvider);
-      exchangeParam = await getBestSwapInfo({
-        decimals: (await underlyingContract.decimals()).toString(),
-        address: USDT_ADDRESS
-      }, {
-        decimals: (await wantAddressContract.decimals()).toString(),
-        address: wantAddress
-      },
-        nextValue.toString(),
-        slipper,
-        exchangePlatformAdapters,
-        EXCHANGE_EXTRA_PARAMS
-      );
+    console.log('strateAspectNext=', strateAspectNext);
+    const tokenMap = mapKeys(await Promise.all(map(strateAspectNext, async (item) => {
+      const token = new ethers.Contract(item.token, IERC20_ABI, userProvider);
+      return {
+        decimals: parseInt((await token.decimals()).toString()),
+        symbol: await token.symbol(),
+        address: item.token
+      }
+    })), 'address');
+
+    tokenMap[USDT_ADDRESS] = {
+      decimals: 6,
+      symbol: 'USDT',
+      address: USDT_ADDRESS
     }
-
+    const exchangeManager = await vaultContract.exchangeManager();
+    const exchangeManagerContract = await new ethers.Contract(exchangeManager, EXCHANGE_AGGREGATOR_ABI, userProvider);
+    const exchangePlatformAdapters = await getExchangePlatformAdapters(exchangeManagerContract)
+    const path = await lendSwap(parseInt(nextValue.toString()), strateAspectNext, decimalsMachine, exchangePlatformAdapters, EXCHANGE_EXTRA_PARAMS, tokenMap)
     try {
       const signer = userProvider.getSigner();
-      const tx = await vaultContract.connect(signer).lend(address, USDT_ADDRESS, nextValue.toString(), exchangeParam);
+      const tx = await vaultContract.connect(signer).lend(address, path);
       await tx.wait()
       loadBanlance();
       refreshCallBack();

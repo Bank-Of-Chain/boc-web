@@ -5,7 +5,7 @@ import * as ethers from "ethers";
 import { BigNumber } from 'ethers';
 
 // === constants === //
-import { VAULT_ADDRESS, VAULT_ABI, STRATEGY_ABI, IERC20_ABI, APY_SERVER } from "./../../constants";
+import { VAULT_ADDRESS, VAULT_ABI, IERC20_ABI, APY_SERVER } from "./../../constants";
 
 // === Utils === //
 import { toFixed } from "./../../helpers/number-format";
@@ -29,7 +29,7 @@ export default function Transaction(props) {
   const loadBanlance = () => {
     if (isEmpty(address)) return loadBanlance;
     // 获取usdc的合约
-    const usdtContract = new ethers.Contract(from, STRATEGY_ABI, userProvider);
+    const usdtContract = new ethers.Contract(from, IERC20_ABI, userProvider);
     usdtContract.balanceOf(address).then(setFromBalance);
     const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider);
     vaultContract.balanceOf(address).then(setToBalance);
@@ -80,13 +80,7 @@ export default function Transaction(props) {
     try {
       const close = message.loading('数据提交中...', 2.5)
       const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider);
-      const exchangeParams = await new Promise((resolve) => {
-        request.get(`${APY_SERVER}/v3/withdraw-exchange-params?amount=${nextValue}&slipper=${allowMaxLoss}`, (error, resp, body) => {
-          const bodyJson = JSON.parse(body)
-          resolve(get(bodyJson, 'data.exchangeParams', []))
-        })
-      })
-      const tx = await vaultContract.connect(signer).withdraw(nextValue, allowMaxLoss, exchangeParams);
+      const tx = await vaultContract.connect(signer).withdraw(nextValue);
       await tx.wait();
       close();
       message.success('数据提交成功', 2.5)
@@ -110,11 +104,11 @@ export default function Transaction(props) {
   useEffect(() => {
     loadBanlance();
     const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider);
-    vaultContract.on('Deposit', (to, amount, from) => {
-      from.getTransaction().then(tx => tx.wait()).then(loadBanlance);
+    vaultContract.on('Deposit', (a, b, c, d, e, f, g, h, i) => {
+      i.getTransaction().then(tx => tx.wait()).then(loadBanlance);
     });
-    vaultContract.on('Withdraw', (to, amount, from) => {
-      from.getTransaction().then(tx => tx.wait()).then(loadBanlance);
+    vaultContract.on('Withdraw', (a, b, c, d, e, f, g, h, i) => {
+      i.getTransaction().then(tx => tx.wait()).then(loadBanlance);
     });
     return () => vaultContract.removeAllListeners(["Deposit", "Withdraw"])
   }, [address]);
