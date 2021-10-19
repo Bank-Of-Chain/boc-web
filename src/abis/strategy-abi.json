@@ -104,19 +104,6 @@
   },
   {
     "inputs": [],
-    "name": "DAI",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
     "name": "MAI",
     "outputs": [
       {
@@ -143,7 +130,20 @@
   },
   {
     "inputs": [],
-    "name": "WETH",
+    "name": "USDT",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "WMATIC",
     "outputs": [
       {
         "internalType": "address",
