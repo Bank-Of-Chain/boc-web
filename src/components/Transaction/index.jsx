@@ -5,7 +5,7 @@ import * as ethers from "ethers";
 import { BigNumber } from 'ethers';
 
 // === constants === //
-import { VAULT_ADDRESS, VAULT_ABI, STRATEGY_ABI, IERC20_ABI, APY_SERVER } from "./../../constants";
+import { VAULT_ADDRESS, VAULT_ABI, IERC20_ABI, APY_SERVER } from "./../../constants";
 
 // === Utils === //
 import { toFixed } from "./../../helpers/number-format";
@@ -29,7 +29,7 @@ export default function Transaction(props) {
   const loadBanlance = () => {
     if (isEmpty(address)) return loadBanlance;
     // 获取usdc的合约
-    const usdtContract = new ethers.Contract(from, STRATEGY_ABI, userProvider);
+    const usdtContract = new ethers.Contract(from, IERC20_ABI, userProvider);
     usdtContract.balanceOf(address).then(setFromBalance);
     const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider);
     vaultContract.balanceOf(address).then(setToBalance);
