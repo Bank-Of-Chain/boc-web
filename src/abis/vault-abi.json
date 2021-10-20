@@ -197,30 +197,6 @@
       },
       {
         "indexed": false,
-        "internalType": "uint256",
-        "name": "canGetShares",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "profitFeeShares",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "totalValue",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "userCost",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
         "internalType": "address[]",
         "name": "withdrawTokens",
         "type": "address[]"
@@ -506,7 +482,7 @@
             "type": "bytes"
           }
         ],
-        "internalType": "struct ExchangeParam",
+        "internalType": "struct IExchangeAggregator.ExchangeParam",
         "name": "exchangeParam",
         "type": "tuple"
       }
@@ -731,12 +707,12 @@
                 "type": "bytes"
               }
             ],
-            "internalType": "struct ExchangeParam",
+            "internalType": "struct IExchangeAggregator.ExchangeParam",
             "name": "exchangeParam",
             "type": "tuple"
           }
         ],
-        "internalType": "struct ExchangeToken[]",
+        "internalType": "struct IExchangeAggregator.ExchangeToken[]",
         "name": "_exchangeTokens",
         "type": "tuple[]"
       }
@@ -767,19 +743,6 @@
         "internalType": "uint256",
         "name": "",
         "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "management",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
       }
     ],
     "stateMutability": "view",
@@ -1119,11 +1082,6 @@
         "internalType": "bool",
         "name": "enforceChangeLimit",
         "type": "bool"
-      },
-      {
-        "internalType": "bool",
-        "name": "enableWithdraw",
-        "type": "bool"
       }
     ],
     "stateMutability": "view",
@@ -1305,43 +1263,6 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "_strategy",
-        "type": "address"
-      },
-      {
-        "internalType": "bool",
-        "name": "_enableWithdraw",
-        "type": "bool"
-      }
-    ],
-    "name": "updateStrategyEnableWithdraw",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "name": "userDebts",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
         "name": "",
         "type": "address"
       }
@@ -1408,10 +1329,70 @@
         "internalType": "uint256",
         "name": "shares",
         "type": "uint256"
+      },
+      {
+        "internalType": "bool",
+        "name": "_needExchange",
+        "type": "bool"
+      },
+      {
+        "components": [
+          {
+            "internalType": "address",
+            "name": "fromToken",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "toToken",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "fromAmount",
+            "type": "uint256"
+          },
+          {
+            "components": [
+              {
+                "internalType": "address",
+                "name": "platform",
+                "type": "address"
+              },
+              {
+                "internalType": "uint8",
+                "name": "method",
+                "type": "uint8"
+              },
+              {
+                "internalType": "bytes",
+                "name": "encodeExchangeArgs",
+                "type": "bytes"
+              }
+            ],
+            "internalType": "struct IExchangeAggregator.ExchangeParam",
+            "name": "exchangeParam",
+            "type": "tuple"
+          }
+        ],
+        "internalType": "struct IExchangeAggregator.ExchangeToken[]",
+        "name": "_exchangeTokens",
+        "type": "tuple[]"
       }
     ],
     "name": "withdraw",
-    "outputs": [],
+    "outputs": [
+      {
+        "internalType": "address[]",
+        "name": "",
+        "type": "address[]"
+      },
+      {
+        "internalType": "uint256[]",
+        "name": "",
+        "type": "uint256[]"
+      }
+    ],
     "stateMutability": "nonpayable",
     "type": "function"
   }
