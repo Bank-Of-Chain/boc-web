@@ -5,13 +5,25 @@ import * as ethers from "ethers";
 import { BigNumber } from 'ethers';
 
 // === constants === //
-import { VAULT_ADDRESS, VAULT_ABI, IERC20_ABI, APY_SERVER } from "./../../constants";
+import { VAULT_ADDRESS, VAULT_ABI, IERC20_ABI, USDT_ADDRESS, EXCHANGE_AGGREGATOR_ABI, EXCHANGE_EXTRA_PARAMS } from "./../../constants";
 
 // === Utils === //
+import { getBestSwapInfo } from "piggy-finance-utils";
 import { toFixed } from "./../../helpers/number-format";
-import get from "lodash/get";
+import map from "lodash/map";
 import isEmpty from "lodash/isEmpty";
-import request from "request";
+import filter from "lodash/filter";
+
+const slipper = 30;
+
+const getExchangePlatformAdapters = async (exchangeAggregator) => {
+  const adapters = await exchangeAggregator.getExchangeAdapters();
+  const exchangePlatformAdapters = {};
+  for (let i = 0; i < adapters.identifiers_.length; i++) {
+    exchangePlatformAdapters[adapters.identifiers_[i]] = adapters.exchangeAdapters_[i];
+  }
+  return exchangePlatformAdapters;
+}
 
 export default function Transaction(props) {
   const { name, from, address, userProvider } = props;
@@ -76,15 +88,57 @@ export default function Transaction(props) {
   const withdraw = async () => {
     const signer = userProvider.getSigner();
     const nextValue = `${toValue * 1e6}`;
-    setToValue(0);
     try {
       const close = message.loading('数据提交中...', 2.5)
       const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider);
-      const tx = await vaultContract.connect(signer).withdraw(nextValue);
-      await tx.wait();
+      const vaultContractWithSigner = vaultContract.connect(signer)
+      const [tokens, amounts] = await vaultContractWithSigner.callStatic.withdraw(nextValue, false, []);
+      console.log('resp=', tokens, amounts);
+
+      const exchangeManager = await vaultContract.exchangeManager();
+      const exchangeManagerContract = new ethers.Contract(exchangeManager, EXCHANGE_AGGREGATOR_ABI, userProvider);
+      const exchangePlatformAdapters = await getExchangePlatformAdapters(exchangeManagerContract)
+      // 查询兑换路径
+      console.log('exchangePlatformAdapters=', exchangePlatformAdapters);
+      const exchangeArray = await Promise.all(
+        map(tokens, async (tokenItem, index) => {
+          const exchangeAmounts = amounts[index].toString();
+          if (tokenItem === USDT_ADDRESS || exchangeAmounts === '0') {
+            return undefined
+          }
+          const fromConstrat = new ethers.Contract(tokenItem, IERC20_ABI, userProvider)
+          const fromToken = {
+            decimals: parseInt((await fromConstrat.decimals()).toString()),
+            symbol: await fromConstrat.symbol(),
+            address: tokenItem
+          }
+          return {
+            fromToken: tokenItem,
+            toToken: USDT_ADDRESS,
+            fromAmount: exchangeAmounts,
+            exchangeParam: await getBestSwapInfo(
+              fromToken,
+              {
+                decimals: 6,
+                symbol: 'USDT',
+                address: USDT_ADDRESS
+              },
+              amounts[index].toString(),
+              slipper,
+              exchangePlatformAdapters,
+              EXCHANGE_EXTRA_PARAMS
+            )
+          }
+        })
+      )
+      console.log('exchangeArray=', exchangeArray, filter(exchangeArray, i => !isEmpty(i)));
+      const tx = await vaultContractWithSigner.withdraw(nextValue, true, filter(exchangeArray, i => !isEmpty(i)));
+      await tx.wait(1);
+      setToValue(0);
       close();
       message.success('数据提交成功', 2.5)
     } catch (error) {
+      console.error(error);
       if (error && error.data) {
         if (error.data.message === 'Error: VM Exception while processing transaction: reverted with reason string \'ES\'') {
           message.error('服务已关停，请稍后再试！');
@@ -105,7 +159,7 @@ export default function Transaction(props) {
     loadBanlance();
     const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider);
     vaultContract.on('Deposit', (a, b, c, d, e, f, g, h, i) => {
-      i.getTransaction().then(tx => tx.wait()).then(loadBanlance);
+      c.getTransaction().then(tx => tx.wait()).then(loadBanlance);
     });
     vaultContract.on('Withdraw', (a, b, c, d, e, f, g, h, i) => {
       i.getTransaction().then(tx => tx.wait()).then(loadBanlance);
