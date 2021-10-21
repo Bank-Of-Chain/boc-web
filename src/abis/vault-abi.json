@@ -500,19 +500,6 @@
   },
   {
     "inputs": [],
-    "name": "exchangeBiasPercent",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
     "name": "exchangeManager",
     "outputs": [
       {
@@ -750,19 +737,6 @@
   },
   {
     "inputs": [],
-    "name": "minReturnBps",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
     "name": "myDecimals",
     "outputs": [
       {
@@ -918,19 +892,6 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "_exchangeBiasPercent",
-        "type": "uint256"
-      }
-    ],
-    "name": "setExchangeBiasPercent",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
         "name": "_degradation",
         "type": "uint256"
       }
@@ -949,19 +910,6 @@
       }
     ],
     "name": "setLockedWithdrawFeePercent",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "_minReturnBps",
-        "type": "uint256"
-      }
-    ],
-    "name": "setMinReturnBps",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -1082,29 +1030,6 @@
         "internalType": "bool",
         "name": "enforceChangeLimit",
         "type": "bool"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "strategyRankedList",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "head",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "tail",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "size",
-        "type": "uint256"
       }
     ],
     "stateMutability": "view",
