@@ -21,8 +21,6 @@ import request from "request";
 // === Components === //
 import OriginApy from './OriginApy';
 
-const slipper = 30;
-
 const getExchangePlatformAdapters = async (exchangeAggregator) => {
   const adapters = await exchangeAggregator.getExchangeAdapters();
   const exchangePlatformAdapters = {};

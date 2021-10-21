@@ -158,11 +158,11 @@ export default function Transaction(props) {
   useEffect(() => {
     loadBanlance();
     const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider);
-    vaultContract.on('Deposit', (a, b, c, d, e, f, g, h, i) => {
-      c.getTransaction().then(tx => tx.wait()).then(loadBanlance);
+    vaultContract.on('Deposit', (a, b, c) => {
+      c && c.getTransaction().then(tx => tx.wait()).then(loadBanlance);
     });
     vaultContract.on('Withdraw', (a, b, c, d, e, f, g, h, i) => {
-      i.getTransaction().then(tx => tx.wait()).then(loadBanlance);
+      i && i.getTransaction().then(tx => tx.wait()).then(loadBanlance);
     });
     return () => vaultContract.removeAllListeners(["Deposit", "Withdraw"])
   }, [address]);
