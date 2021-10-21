@@ -48,15 +48,20 @@ export default function StrategiesTable(props) {
     const strategiesAddress = await vaultContract.getStrategies();
     const nextData = await Promise.all(map(strategiesAddress, async (item) => {
       const contract = new ethers.Contract(item, STRATEGY_ABI, userProvider);
-      const [wantAddress,] = await contract.getWants();
-      const wantContract = new ethers.Contract(wantAddress, IERC20_ABI, userProvider);
+      const wantAddress = await contract.getWants();
       return await Promise.all([
         contract.name(),
         vaultContract.strategies(item),
         contract.balanceOfLpToken().catch(() => Promise.resolve(BigNumber.from(0))),
         contract.estimatedTotalAssets().catch(() => Promise.resolve(BigNumber.from(0))),
         vaultContract.getStrategyApy(item),
-        wantContract.balanceOf(item),
+        Promise.all(map(wantAddress, async (wantItem) => {
+          const wantItemContract = new ethers.Contract(wantItem, IERC20_ABI, userProvider);
+          return {
+            name: await wantItemContract.symbol(),
+            amount: await wantItemContract.balanceOf(item)
+          }
+        })),
         contract._emergencyExit(),
       ]).then(([
         name, vaultState, balanceOfLpToken, estimatedTotalAssets, apy, balanceOfWant, emergencyExit
@@ -339,7 +344,11 @@ export default function StrategiesTable(props) {
       key: 'name',
       width: "15%",
       render: (text, item, index) => {
-        return <Tooltip placement="topLeft" title={`LPs : ${item.balanceOfLpToken.toString()}`}>
+        const { balanceOfWant } = item;
+        const balanceOfWantText = map(balanceOfWant, item => {
+          return [<span>{item.name}: {toFixed(item.amount)}</span>, <br />]
+        });
+        return <Tooltip placement="topLeft" title={balanceOfWantText}>
           <a key={index}>{text}</a>
         </Tooltip>
       }
@@ -361,11 +370,11 @@ export default function StrategiesTable(props) {
       }
     },
     {
-      title: '稳定币数量',
-      dataIndex: 'balanceOfWant',
-      key: 'balanceOfWant',
+      title: 'LP数量',
+      dataIndex: 'balanceOfLpToken',
+      key: 'balanceOfLpToken',
       render: (value, item, index) => {
-        return <span key={index}>{toFixed(value)}</span>;
+        return <span key={index}>{toFixed(value)}</span>
       }
     },
     {
