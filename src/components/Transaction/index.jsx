@@ -93,13 +93,11 @@ export default function Transaction(props) {
       const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider);
       const vaultContractWithSigner = vaultContract.connect(signer)
       const [tokens, amounts] = await vaultContractWithSigner.callStatic.withdraw(nextValue, false, []);
-      console.log('resp=', tokens, amounts);
 
       const exchangeManager = await vaultContract.exchangeManager();
       const exchangeManagerContract = new ethers.Contract(exchangeManager, EXCHANGE_AGGREGATOR_ABI, userProvider);
       const exchangePlatformAdapters = await getExchangePlatformAdapters(exchangeManagerContract)
       // 查询兑换路径
-      console.log('exchangePlatformAdapters=', exchangePlatformAdapters);
       const exchangeArray = await Promise.all(
         map(tokens, async (tokenItem, index) => {
           const exchangeAmounts = amounts[index].toString();
@@ -131,7 +129,6 @@ export default function Transaction(props) {
           }
         })
       )
-      console.log('exchangeArray=', exchangeArray, filter(exchangeArray, i => !isEmpty(i)));
       const tx = await vaultContractWithSigner.withdraw(nextValue, true, filter(exchangeArray, i => !isEmpty(i)));
       await tx.wait(1);
       setToValue(0);
@@ -161,8 +158,8 @@ export default function Transaction(props) {
     vaultContract.on('Deposit', (a, b, c) => {
       c && c.getTransaction().then(tx => tx.wait()).then(loadBanlance);
     });
-    vaultContract.on('Withdraw', (a, b, c, d, e, f, g, h, i) => {
-      i && i.getTransaction().then(tx => tx.wait()).then(loadBanlance);
+    vaultContract.on('Withdraw', (a, b, c, d, e) => {
+      e && e.getTransaction().then(tx => tx.wait()).then(loadBanlance);
     });
     return () => vaultContract.removeAllListeners(["Deposit", "Withdraw"])
   }, [address]);
