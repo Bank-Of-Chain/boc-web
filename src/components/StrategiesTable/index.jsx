@@ -14,6 +14,7 @@ import map from 'lodash/map';
 import isNaN from 'lodash/isNaN';
 import isEmpty from 'lodash/isEmpty';
 import mapKeys from 'lodash/mapKeys';
+import sortBy from 'lodash/sortBy';
 import { toFixed } from "./../../helpers/number-format";
 import { lendSwap } from 'piggy-finance-utils';
 import request from "request";
@@ -87,7 +88,7 @@ export default function StrategiesTable(props) {
         };
       });
     }));
-    setData(nextData);
+    setData(sortBy(nextData, [i => -1 * i.apy]));
   }
 
   /**
