@@ -160,6 +160,7 @@ export default function Transaction(props) {
     });
     vaultContract.on('Withdraw', (a, b, c, d, e) => {
       e && e.getTransaction().then(tx => tx.wait()).then(loadBanlance);
+      
     });
     return () => vaultContract.removeAllListeners(["Deposit", "Withdraw"])
   }, [address]);
