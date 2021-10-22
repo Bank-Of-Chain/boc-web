@@ -7,7 +7,7 @@ import Address from '../Address';
 import * as ethers from "ethers";
 
 // === constants === //
-import { VAULT_ADDRESS, VAULT_ABI, USDT_ADDRESS, IERC20_ABI } from "./../../constants";
+import { VAULT_ADDRESS, VAULT_ABI, IERC20_ABI } from "./../../constants";
 
 // === Utils === //
 import { toFixed } from "./../../helpers/number-format"
