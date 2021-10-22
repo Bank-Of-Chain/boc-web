@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect } from 'react';
-import { Row, Menu, Dropdown, PageHeader, Tag, Statistic } from "antd";
+import { Row, Menu, Dropdown, PageHeader, Tag, Statistic, Tooltip } from "antd";
 import { LogoutOutlined, UserOutlined } from "@ant-design/icons";
 import { Link } from "react-router-dom";
 import Address from '../Address';
@@ -11,6 +11,7 @@ import { VAULT_ADDRESS, VAULT_ABI, USDT_ADDRESS, IERC20_ABI } from "./../../cons
 
 // === Utils === //
 import { toFixed } from "./../../helpers/number-format"
+import map from "lodash/map"
 
 const { BigNumber } = ethers;
 
@@ -22,7 +23,7 @@ function AdminBoard(props) {
   const [underlyingUnit, setUnderlyingUnit] = useState(BigNumber.from(0));
 
   const [bufferTotal, setBufferTotal] = useState(BigNumber.from(0));
-  // const [lusdTotal, setLusdTotal] = useState(BigNumber.from(0));
+  const [balanceOfTrackedToken, setBalanceOfTrackedToken] = useState([]);
 
   const [treasureBalance, setTreasureBalance] = useState(BigNumber.from(0));
 
@@ -37,10 +38,18 @@ function AdminBoard(props) {
       vaultContract.totalAssets().then(setTotalAssets);
       vaultContract.totalDebt().then(setStrategyTotalAssetsValue);
       vaultContract.decimals().then(setUnderlyingUnit);
-      const usdtContract = new ethers.Contract(USDT_ADDRESS, IERC20_ABI, userProvider);
-      usdtContract.balanceOf(VAULT_ADDRESS).then(setBufferTotal);
-      // const lusdContract = new ethers.Contract(LUSD_ADDRESS, STRATEGY_ABI, userProvider);
-      // lusdContract.balanceOf(VAULT_ADDRESS).then(setLusdTotal);
+      vaultContract.valueOfTrackedTokens().then(setBufferTotal);
+
+      vaultContract.getTrackedAssets().then(trackedAssets => {
+        Promise.all(map(trackedAssets, async (trackedAssetItem) => {
+          const trackedAssetConstract = new ethers.Contract(trackedAssetItem, IERC20_ABI, userProvider)
+          return {
+            name: await trackedAssetConstract.symbol(),
+            decimals: await trackedAssetConstract.decimals(),
+            amount: await trackedAssetConstract.balanceOf(VAULT_ADDRESS)
+          }
+        })).then(setBalanceOfTrackedToken);
+      })
 
       vaultContract.pricePerShare().then(setPerFullShare);
 
@@ -51,7 +60,9 @@ function AdminBoard(props) {
       console.error('error', error);
     }
   }
-
+  const balanceOfTrackedTokenText = map(balanceOfTrackedToken, item => {
+    return [<span>{item.name}: {toFixed(item.amount, 10 ** item.decimals)}</span>, <br />]
+  });
   return <PageHeader
     onBack={() => {
       history.push({
@@ -104,28 +115,6 @@ function AdminBoard(props) {
         value={toFixed(strategyTotalAssetsValue, 10 ** underlyingUnit)}
       />
       <Statistic
-        title={<span style={{ fontWeight: 'bold', color: '#000', fontSize: 'large' }}>缓冲池资金</span>}
-        style={{
-          marginLeft: 32,
-        }}
-        suffix="(USDT)"
-        valueStyle={{
-          fontWeight: 'bold', color: '#000', fontSize: 'x-large'
-        }}
-        value={toFixed(bufferTotal, 10 ** underlyingUnit)}
-      />
-      {/* <Statistic
-        title={<span style={{ fontWeight: 'bold', color: '#000', fontSize: 'large' }}>缓冲池资金</span>}
-        style={{
-          marginLeft: 32,
-        }}
-        suffix="(LUSD)"
-        valueStyle={{
-          fontWeight: 'bold', color: '#000', fontSize: 'x-large'
-        }}
-        value={toFixed(lusdTotal, 10 ** 18)}
-      /> */}
-      <Statistic
         title={<span style={{ fontWeight: 'bold', color: '#000', fontSize: 'large' }}>国库拥有份额</span>}
         style={{
           marginLeft: 32,
@@ -135,6 +124,19 @@ function AdminBoard(props) {
         }}
         value={`${toFixed(treasureBalance, 10 ** 6)}（${treasureBalance * perFullShare / 10 ** 12} USDT）`}
       />
+      <Tooltip placement="bottom" title={balanceOfTrackedTokenText}>
+        <Statistic
+          title={<span style={{ fontWeight: 'bold', color: '#000', fontSize: 'large' }}>缓冲池资金</span>}
+          style={{
+            marginLeft: 32,
+          }}
+          suffix={`(USDT)`}
+          valueStyle={{
+            fontWeight: 'bold', color: '#000', fontSize: 'x-large'
+          }}
+          value={toFixed(bufferTotal, 10 ** underlyingUnit)}
+        />
+      </Tooltip>
     </Row>
   </PageHeader>
 }
