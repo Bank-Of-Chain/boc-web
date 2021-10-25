@@ -61,7 +61,7 @@ function AdminBoard(props) {
     }
   }
   const balanceOfTrackedTokenText = map(balanceOfTrackedToken, item => {
-    return [<span>{item.name}: {toFixed(item.amount, 10 ** item.decimals)}</span>, <br />]
+    return [<span key={item.name}>{item.name}: {toFixed(item.amount, 10 ** item.decimals)}</span>, <br key={`${item.name}-br`} />]
   });
   return <PageHeader
     onBack={() => {
