@@ -37,7 +37,6 @@ export default function Transaction(props) {
 
   const [underlyingUnit, setUnderlyingUnit] = useState(BigNumber.from(1));
 
-  const [allowMaxLoss, setAllowMaxLoss] = useState(100);
   const loadBanlance = () => {
     if (isEmpty(address)) return loadBanlance;
     // 获取usdc的合约
@@ -244,14 +243,6 @@ export default function Transaction(props) {
                     max={toBalance / underlyingUnit}
                     onChange={value => setToValue(value || 0)}
                   />
-                  &nbsp;&nbsp;Max loss:&nbsp;
-                  <InputNumber
-                    style={{ width: 100 }}
-                    value={allowMaxLoss / 100}
-                    min={0}
-                    max={100}
-                    onChange={value => setAllowMaxLoss(value * 100)}
-                  />&nbsp;%
                 </Col>
                 <Col span={24}>
                   <Popconfirm
