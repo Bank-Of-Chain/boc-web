@@ -167,15 +167,6 @@ export default function StrategiesTable(props) {
     return resp;
   };
 
-  const emergencyExit = async (address) => {
-    const contract = new ethers.Contract(address, STRATEGY_ABI, userProvider);
-    const signer = userProvider.getSigner();
-    const contractWithSigner = contract.connect(signer);
-    const tx = await contractWithSigner.emergencyExit();
-    await tx.wait();
-    loadBanlance();
-  }
-
   /**
    * 策略退出紧急情况
    * @param {*} address 
@@ -276,49 +267,6 @@ export default function StrategiesTable(props) {
   }
 
   /**
-   * 执行策略exchange操作
-   */
-  // const exchange = async (address) => {
-  //   if (isEmpty(address)) return Promise.reject();
-
-  //   const contract = new ethers.Contract(address, STRATEGY_ABI, userProvider);
-  //   const wantAddress = await contract.want();
-
-  //   const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider);
-  //   const wantContract = new ethers.Contract(wantAddress, IERC20_ABI, userProvider);
-  //   const underlyingContract = new ethers.Contract(USDT_ADDRESS, IERC20_ABI, userProvider);
-  //   const value = await wantContract.balanceOf(VAULT_ADDRESS);
-  //   let exchangeParam = {
-  //     platform: '0x0000000000000000000000000000000000000000',
-  //     method: '0',
-  //     encodeExchangeArgs: '0x'
-  //   }
-  //   // 如果策略稳定币不是USDT，则需要匹配兑换路径
-  //   if (wantAddress !== USDT_ADDRESS) {
-  //     const exchangeManager = await vaultContract.exchangeManager();
-  //     const exchangeManagerContract = await new ethers.Contract(exchangeManager, EXCHANGE_AGGREGATOR_ABI, userProvider);
-  //     const exchangePlatformAdapters = await getExchangePlatformAdapters(exchangeManagerContract)
-  //     exchangeParam = await getBestSwapInfo({
-  //       decimals: (await wantContract.decimals()).toString(),
-  //       address: wantAddress
-  //     }, {
-  //       decimals: (await underlyingContract.decimals()).toString(),
-  //       address: USDT_ADDRESS
-  //     },
-  //       value,
-  //       slipper,
-  //       exchangePlatformAdapters
-  //     );
-  //   }
-
-  //   const signer = userProvider.getSigner();
-  //   const tx = vaultContract.connect(signer).exchange(wantAddress, USDT_ADDRESS, value.toString(), exchangeParam)
-  //   await tx.wait();
-  //   loadBanlance();
-  //   refreshCallBack();
-  // }
-
-  /**
    * 调用定时器的api服务
    */
   const callApi = (method) => {
@@ -347,7 +295,7 @@ export default function StrategiesTable(props) {
       render: (text, item, index) => {
         const { balanceOfWant } = item;
         const balanceOfWantText = map(balanceOfWant, item => {
-          return [<span>{item.name}: {toFixed(item.amount)}</span>, <br />]
+          return [<span key={item.name}>{item.name}: {toFixed(item.amount)}</span>, <br key={`${item.name}-br`} />]
         });
         return <Tooltip placement="topLeft" title={balanceOfWantText}>
           <a key={index}>{text}</a>
@@ -409,7 +357,7 @@ export default function StrategiesTable(props) {
       key: 'apy',
       render: (value, item, index) => {
         return <div>
-          <span style={{ lineHeight: '32px' }} key={index}>{toFixed(value, 1e2, 2)}% (<OriginApy id={item.address} days={3} />)</span>&nbsp;
+          <span style={{ lineHeight: '32px' }} key={index}>{toFixed(value, 1e2, 2)}% (<OriginApy key={item.address} id={item.address} days={3} />)</span>&nbsp;
           <Input.Search onSearch={(v) => setApy(item.address, v)} enterButton={<SettingOutlined />} style={{ width: 120, float: 'right' }} />
         </div>
       }
@@ -439,15 +387,6 @@ export default function StrategiesTable(props) {
           </Popconfirm>
           <Popconfirm
             placement="topLeft"
-            title={'确认立刻执行Emergency Exit操作？'}
-            onConfirm={() => emergencyExit(address)}
-            okText="是"
-            cancelText="否"
-          >
-            <a>Emergency Exit</a>
-          </Popconfirm>
-          <Popconfirm
-            placement="topLeft"
             title={'确认立刻执行Redeem操作？'}
             onConfirm={() => redeem(address, totalDebt.toString())}
             okText="是"
@@ -455,17 +394,6 @@ export default function StrategiesTable(props) {
           >
             <a>Redeem</a>
           </Popconfirm>
-          {/* 
-          <Popconfirm
-            placement="topLeft"
-            title={'确认立刻执行Exchange操作？'}
-            onConfirm={() => exchange(address)}
-            okText="是"
-            cancelText="否"
-          >
-            <a>Exchange</a>
-          </Popconfirm>
-           */}
           {
             emergencyExitValue && <Popconfirm
               placement="topLeft"
@@ -477,18 +405,15 @@ export default function StrategiesTable(props) {
               <a>Reset</a>
             </Popconfirm>
           }
-          {
-            item.totalDebt.toString() === '0' && item.balanceOfLpToken.toString() === '0' &&
-            <Popconfirm
-              placement="topLeft"
-              title={'确认立刻移除该策略？'}
-              onConfirm={() => removeStrategy(address)}
-              okText="是"
-              cancelText="否"
-            >
-              <a style={{ color: 'red' }}>移除策略</a>
-            </Popconfirm>
-          }
+          <Popconfirm
+            placement="topLeft"
+            title={'确认立刻移除该策略？'}
+            onConfirm={() => removeStrategy(address)}
+            okText="是"
+            cancelText="否"
+          >
+            <a style={{ color: 'red' }}>移除策略</a>
+          </Popconfirm>
         </Space>
       }
     },
