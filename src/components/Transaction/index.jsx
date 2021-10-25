@@ -14,7 +14,7 @@ import map from "lodash/map";
 import isEmpty from "lodash/isEmpty";
 import filter from "lodash/filter";
 
-const slipper = 30;
+const slipper = 60;
 
 const getExchangePlatformAdapters = async (exchangeAggregator) => {
   const adapters = await exchangeAggregator.getExchangeAdapters();
