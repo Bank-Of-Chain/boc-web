@@ -19,9 +19,6 @@ import { toFixed } from "./../../helpers/number-format";
 import { lendSwap } from 'piggy-finance-utils';
 import request from "request";
 
-// === Components === //
-import OriginApy from './OriginApy';
-
 const getExchangePlatformAdapters = async (exchangeAggregator) => {
   const adapters = await exchangeAggregator.getExchangeAdapters();
   const exchangePlatformAdapters = {};
@@ -256,7 +253,7 @@ export default function StrategiesTable(props) {
    */
   const callApi = (method) => {
     const close = message.loading('接口调用中...', 60 * 60);
-    request.get(`${APY_SERVER}/v3/${method}`, (error, response, body) => {
+    request.post(`${APY_SERVER}/v3/${method}`, (error, response, body) => {
       console.log('error, response, bod=', error, response, body);
       close();
       if (error) {
@@ -337,12 +334,12 @@ export default function StrategiesTable(props) {
       }
     },
     {
-      title: 'Apy (实时Apy)',
+      title: 'Apy',
       dataIndex: 'apy',
       key: 'apy',
       render: (value, item, index) => {
         return <div>
-          <span style={{ lineHeight: '32px' }} key={index}>{toFixed(value, 1e2, 2)}% (<OriginApy key={item.address} id={item.address} days={3} />)</span>&nbsp;
+          <span style={{ lineHeight: '32px' }} key={index}>{toFixed(value, 1e2, 2)}%</span>&nbsp;
           <Input.Search onSearch={(v) => setApy(item.address, v)} enterButton={<SettingOutlined />} style={{ width: 120, float: 'right' }} />
         </div>
       }
@@ -450,7 +447,7 @@ export default function StrategiesTable(props) {
               harvest
             </Button>
           </Popconfirm>
-          <Popconfirm
+          {/* <Popconfirm
             placement="topLeft"
             title={'确认批量获取选中策略盈利？'}
             onConfirm={batchDoHardWork}
@@ -458,11 +455,22 @@ export default function StrategiesTable(props) {
             cancelText="否"
           >
             <Button type="primary">批量获取盈利</Button>
+          </Popconfirm> */}
+          <Popconfirm
+            placement="topLeft"
+            title={'确认批量更新apy？'}
+            onConfirm={() => callApi('update-apy')}
+            okText="是"
+            cancelText="否"
+          >
+            <Button type="primary">更新Apy</Button>
           </Popconfirm>
         </Col>
       </Row>
     }
   >
-    <Table bordered columns={columns} rowSelection={rowSelection} dataSource={data} pagination={false} />
+    <Table bordered columns={columns}
+      // rowSelection={rowSelection}
+      dataSource={data} pagination={false} />
   </Card>
 }
