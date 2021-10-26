@@ -197,6 +197,18 @@
       },
       {
         "indexed": false,
+        "internalType": "uint256",
+        "name": "withdrawFeeShare",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "profitFeeShare",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
         "internalType": "address[]",
         "name": "withdrawTokens",
         "type": "address[]"
@@ -342,19 +354,6 @@
       }
     ],
     "name": "balanceOf",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "balanceOfToken",
     "outputs": [
       {
         "internalType": "uint256",
@@ -1182,6 +1181,25 @@
     "name": "updateStrategyApy",
     "outputs": [],
     "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "name": "userDebts",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
     "type": "function"
   },
   {

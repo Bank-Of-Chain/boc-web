@@ -40,6 +40,7 @@ export default function Transaction(props) {
 
   const [lastDepositTimes, setLastDepositTimes] = useState(BigNumber.from(0));
   const [withdrawFee, setWithdrawFee] = useState(BigNumber.from(0));
+  const [currentBlockTimestamp, setCurrentBlockTimestamp] = useState(0);
 
   const loadBanlance = () => {
     if (isEmpty(address)) return loadBanlance;
@@ -53,6 +54,10 @@ export default function Transaction(props) {
 
     vaultContract.userLastDepositTimes(address).then(setLastDepositTimes);
     vaultContract.calculateWithdrawFeePercent(address).then(setWithdrawFee);
+
+    userProvider.getBlock(userProvider.blockNumber).then(resp => {
+      setCurrentBlockTimestamp(resp.timestamp)
+    })
   };
 
   const diposit = async () => {
@@ -167,16 +172,18 @@ export default function Transaction(props) {
     loadBanlance();
     const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider);
     vaultContract.on('Deposit', (a, b, c) => {
+      console.log('Deposit=', a, b, c)
       c && c.getTransaction().then(tx => tx.wait()).then(loadBanlance);
     });
-    vaultContract.on('Withdraw', (a, b, c, d, e) => {
-      e && e.getTransaction().then(tx => tx.wait()).then(loadBanlance);
+    vaultContract.on('Withdraw', (a, b, c, d, e, f, g) => {
+      console.log('Withdraw=', a, b, c, d, e, f, g)
+      g && g.getTransaction().then(tx => tx.wait()).then(loadBanlance);
 
     });
     return () => vaultContract.removeAllListeners(["Deposit", "Withdraw"])
   }, [address]);
 
-  const deadline = lastDepositTimes.add(60 * 60 * 24).mul(1000).toNumber();
+  const deadline = lastDepositTimes.add(60 * 60 * 24).add(parseInt(Date.now() / 1000) - currentBlockTimestamp).mul(1000).toNumber();
   return (
     <Row>
       <Col span={24}>
