@@ -34,7 +34,6 @@ export default function StrategiesTable(props) {
   const { userProvider, refreshSymbol, refreshCallBack } = props;
   const [data, setData] = useState([]);
   const [underlyingUnit, setUnderlyingUnit] = useState(BigNumber.from(1));
-  const [selectedRowKeys, setSelectedRowKeys] = useState([]);
 
   useEffect(() => {
     loadBanlance();
@@ -161,20 +160,6 @@ export default function StrategiesTable(props) {
     const resp = await tx.wait();
     return resp;
   };
-
-  /**
-   * 批量执行策略doHardWork
-   */
-  const batchDoHardWork = () => {
-    if (isEmpty(selectedRowKeys)) {
-      message.error('请选中策略条目');
-      return;
-    }
-    ;
-    Promise.all(selectedRowKeys.map(async (addr) => {
-      await doHardWork(addr);
-    })).then(loadBanlance).then(refreshCallBack);
-  }
 
   /**
    * 执行策略lend操作
@@ -395,11 +380,6 @@ export default function StrategiesTable(props) {
     const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider);
     vaultContract.decimals().then(setUnderlyingUnit).catch(() => { })
   }, []);
-
-  const rowSelection = {
-    selectedRowKeys,
-    onChange: setSelectedRowKeys,
-  };
 
   return <Card title={<span style={{ fontWeight: 'bold' }}>各个策略投资详情</span>} bordered
     extra={
