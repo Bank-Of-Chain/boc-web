@@ -249,7 +249,7 @@ export default function StrategiesTable(props) {
       setTimeout(() => {
         loadBanlance()
         refreshCallBack()
-      }, 2000);
+      }, 3000);
     });
   }
 
