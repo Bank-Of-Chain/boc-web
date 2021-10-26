@@ -109,11 +109,8 @@ export default function Transaction(props) {
             symbol: await fromConstrat.symbol(),
             address: tokenItem
           }
-          return {
-            fromToken: tokenItem,
-            toToken: USDT_ADDRESS,
-            fromAmount: exchangeAmounts,
-            exchangeParam: await getBestSwapInfo(
+          try {
+            const bestSwapInfo = await getBestSwapInfo(
               fromToken,
               {
                 decimals: 6,
@@ -125,6 +122,14 @@ export default function Transaction(props) {
               exchangePlatformAdapters,
               EXCHANGE_EXTRA_PARAMS
             )
+            return {
+              fromToken: tokenItem,
+              toToken: USDT_ADDRESS,
+              fromAmount: exchangeAmounts,
+              exchangeParam: bestSwapInfo
+            }
+          } catch (error) {
+            return
           }
         })
       )
@@ -159,7 +164,7 @@ export default function Transaction(props) {
     });
     vaultContract.on('Withdraw', (a, b, c, d, e) => {
       e && e.getTransaction().then(tx => tx.wait()).then(loadBanlance);
-      
+
     });
     return () => vaultContract.removeAllListeners(["Deposit", "Withdraw"])
   }, [address]);
