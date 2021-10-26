@@ -1,6 +1,6 @@
 window.config = {
   localhost: {
-    vault_address: "0xCC9676b9bf25cE45a3a5F88205239aFdDeCF1BC7",
+    vault_address: "0x9A8Ec3B44ee760b629e204900c86d67414a67e8f",
     underlying_address: "0xc2132D05D31c914a87C6611C10748AEb04B58e8F",
     apy_server: "http://localhost:3000",
     exchange_extra_params: {
@@ -10,13 +10,14 @@ window.config = {
       },
       oneInch: {
         network: 137,
+        protocols: 'DFYN,POLYGON_DODO_V2,POLYGON_MSTABLE,POLYGON_SUSHISWAP,POLYGON_QUICKSWAP,POLYGON_CURVE,POLYGON_AAVE_V2'
       }
     }
   },
   dev: {
-    vault_address: "0x202CCe504e04bEd6fC0521238dDf04Bc9E8E15aB",
+    vault_address: "0x9A8Ec3B44ee760b629e204900c86d67414a67e8f",
     underlying_address: "0xc2132D05D31c914a87C6611C10748AEb04B58e8F",
-    apy_server: "http://192.168.254.27/api",
+    apy_server: "http://192.168.60.12/api",
     exchange_extra_params: {
       paraswap: {
         network: 137,
@@ -24,6 +25,7 @@ window.config = {
       },
       oneInch: {
         network: 137,
+        protocols: 'DFYN,POLYGON_DODO_V2,POLYGON_MSTABLE,POLYGON_SUSHISWAP,POLYGON_QUICKSWAP,POLYGON_CURVE,POLYGON_AAVE_V2'
       }
     }
   },

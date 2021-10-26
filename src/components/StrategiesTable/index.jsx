@@ -19,9 +19,6 @@ import { toFixed } from "./../../helpers/number-format";
 import { lendSwap } from 'piggy-finance-utils';
 import request from "request";
 
-// === Components === //
-import OriginApy from './OriginApy';
-
 const getExchangePlatformAdapters = async (exchangeAggregator) => {
   const adapters = await exchangeAggregator.getExchangeAdapters();
   const exchangePlatformAdapters = {};
@@ -37,7 +34,6 @@ export default function StrategiesTable(props) {
   const { userProvider, refreshSymbol, refreshCallBack } = props;
   const [data, setData] = useState([]);
   const [underlyingUnit, setUnderlyingUnit] = useState(BigNumber.from(1));
-  const [selectedRowKeys, setSelectedRowKeys] = useState([]);
 
   useEffect(() => {
     loadBanlance();
@@ -63,9 +59,8 @@ export default function StrategiesTable(props) {
             amount: await wantItemContract.balanceOf(item)
           }
         })),
-        contract._emergencyExit(),
       ]).then(([
-        name, vaultState, balanceOfLpToken, estimatedTotalAssets, apy, balanceOfWant, emergencyExit
+        name, vaultState, balanceOfLpToken, estimatedTotalAssets, apy, balanceOfWant
       ]) => {
         const {
           activation, enforceChangeLimit, lastReport, totalDebt, totalGain, totalLoss
@@ -83,8 +78,7 @@ export default function StrategiesTable(props) {
           lastReport,
           balanceOfLpToken,
           balanceOfWant,
-          estimatedTotalAssets,
-          emergencyExit
+          estimatedTotalAssets
         };
       });
     }));
@@ -168,33 +162,6 @@ export default function StrategiesTable(props) {
   };
 
   /**
-   * 策略退出紧急情况
-   * @param {*} address 
-   */
-  const resetEmergencyExit = async (address) => {
-    const contract = new ethers.Contract(address, STRATEGY_ABI, userProvider);
-    const signer = userProvider.getSigner();
-    const contractWithSigner = contract.connect(signer);
-    const tx = await contractWithSigner.resetEmergencyExit();
-    await tx.wait();
-    loadBanlance();
-  }
-
-  /**
-   * 批量执行策略doHardWork
-   */
-  const batchDoHardWork = () => {
-    if (isEmpty(selectedRowKeys)) {
-      message.error('请选中策略条目');
-      return;
-    }
-    ;
-    Promise.all(selectedRowKeys.map(async (addr) => {
-      await doHardWork(addr);
-    })).then(loadBanlance).then(refreshCallBack);
-  }
-
-  /**
    * 执行策略lend操作
    */
   const lend = async (address, value) => {
@@ -271,7 +238,7 @@ export default function StrategiesTable(props) {
    */
   const callApi = (method) => {
     const close = message.loading('接口调用中...', 60 * 60);
-    request.get(`${APY_SERVER}/v3/${method}`, (error, response, body) => {
+    request.post(`${APY_SERVER}/v3/${method}`, (error, response, body) => {
       console.log('error, response, bod=', error, response, body);
       close();
       if (error) {
@@ -282,7 +249,7 @@ export default function StrategiesTable(props) {
       setTimeout(() => {
         loadBanlance()
         refreshCallBack()
-      }, 2000);
+      }, 3000);
     });
   }
 
@@ -352,12 +319,12 @@ export default function StrategiesTable(props) {
       }
     },
     {
-      title: 'Apy (实时Apy)',
+      title: 'Apy',
       dataIndex: 'apy',
       key: 'apy',
       render: (value, item, index) => {
         return <div>
-          <span style={{ lineHeight: '32px' }} key={index}>{toFixed(value, 1e2, 2)}% (<OriginApy key={item.address} id={item.address} days={3} />)</span>&nbsp;
+          <span style={{ lineHeight: '32px' }} key={index}>{toFixed(value, 1e2, 2)}%</span>&nbsp;
           <Input.Search onSearch={(v) => setApy(item.address, v)} enterButton={<SettingOutlined />} style={{ width: 120, float: 'right' }} />
         </div>
       }
@@ -374,7 +341,7 @@ export default function StrategiesTable(props) {
       title: '操作',
       key: 'action',
       render: (value, item) => {
-        const { address, totalDebt, emergencyExit: emergencyExitValue } = value;
+        const { address, totalDebt } = value;
         return <Space size="middle">
           <Popconfirm
             placement="topLeft"
@@ -394,17 +361,6 @@ export default function StrategiesTable(props) {
           >
             <a>Redeem</a>
           </Popconfirm>
-          {
-            emergencyExitValue && <Popconfirm
-              placement="topLeft"
-              title={'确认立刻执行Reset操作？'}
-              onConfirm={() => resetEmergencyExit(address)}
-              okText="是"
-              cancelText="否"
-            >
-              <a>Reset</a>
-            </Popconfirm>
-          }
           <Popconfirm
             placement="topLeft"
             title={'确认立刻移除该策略？'}
@@ -424,11 +380,6 @@ export default function StrategiesTable(props) {
     const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider);
     vaultContract.decimals().then(setUnderlyingUnit).catch(() => { })
   }, []);
-
-  const rowSelection = {
-    selectedRowKeys,
-    onChange: setSelectedRowKeys,
-  };
 
   return <Card title={<span style={{ fontWeight: 'bold' }}>各个策略投资详情</span>} bordered
     extra={
@@ -476,7 +427,7 @@ export default function StrategiesTable(props) {
               harvest
             </Button>
           </Popconfirm>
-          <Popconfirm
+          {/* <Popconfirm
             placement="topLeft"
             title={'确认批量获取选中策略盈利？'}
             onConfirm={batchDoHardWork}
@@ -484,11 +435,22 @@ export default function StrategiesTable(props) {
             cancelText="否"
           >
             <Button type="primary">批量获取盈利</Button>
+          </Popconfirm> */}
+          <Popconfirm
+            placement="topLeft"
+            title={'确认批量更新apy？'}
+            onConfirm={() => callApi('update-apy')}
+            okText="是"
+            cancelText="否"
+          >
+            <Button type="primary">更新Apy</Button>
           </Popconfirm>
         </Col>
       </Row>
     }
   >
-    <Table bordered columns={columns} rowSelection={rowSelection} dataSource={data} pagination={false} />
+    <Table bordered columns={columns}
+      // rowSelection={rowSelection}
+      dataSource={data} pagination={false} />
   </Card>
 }
