@@ -63,9 +63,8 @@ export default function StrategiesTable(props) {
             amount: await wantItemContract.balanceOf(item)
           }
         })),
-        contract._emergencyExit(),
       ]).then(([
-        name, vaultState, balanceOfLpToken, estimatedTotalAssets, apy, balanceOfWant, emergencyExit
+        name, vaultState, balanceOfLpToken, estimatedTotalAssets, apy, balanceOfWant
       ]) => {
         const {
           activation, enforceChangeLimit, lastReport, totalDebt, totalGain, totalLoss
@@ -83,8 +82,7 @@ export default function StrategiesTable(props) {
           lastReport,
           balanceOfLpToken,
           balanceOfWant,
-          estimatedTotalAssets,
-          emergencyExit
+          estimatedTotalAssets
         };
       });
     }));
@@ -166,19 +164,6 @@ export default function StrategiesTable(props) {
     const resp = await tx.wait();
     return resp;
   };
-
-  /**
-   * 策略退出紧急情况
-   * @param {*} address 
-   */
-  const resetEmergencyExit = async (address) => {
-    const contract = new ethers.Contract(address, STRATEGY_ABI, userProvider);
-    const signer = userProvider.getSigner();
-    const contractWithSigner = contract.connect(signer);
-    const tx = await contractWithSigner.resetEmergencyExit();
-    await tx.wait();
-    loadBanlance();
-  }
 
   /**
    * 批量执行策略doHardWork
@@ -374,7 +359,7 @@ export default function StrategiesTable(props) {
       title: '操作',
       key: 'action',
       render: (value, item) => {
-        const { address, totalDebt, emergencyExit: emergencyExitValue } = value;
+        const { address, totalDebt } = value;
         return <Space size="middle">
           <Popconfirm
             placement="topLeft"
@@ -394,17 +379,6 @@ export default function StrategiesTable(props) {
           >
             <a>Redeem</a>
           </Popconfirm>
-          {
-            emergencyExitValue && <Popconfirm
-              placement="topLeft"
-              title={'确认立刻执行Reset操作？'}
-              onConfirm={() => resetEmergencyExit(address)}
-              okText="是"
-              cancelText="否"
-            >
-              <a>Reset</a>
-            </Popconfirm>
-          }
           <Popconfirm
             placement="topLeft"
             title={'确认立刻移除该策略？'}
