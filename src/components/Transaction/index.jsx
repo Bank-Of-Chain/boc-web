@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useState } from "react";
-import { Row, Col, Tag, Button, Card, InputNumber, Popconfirm, message } from "antd";
+import { Row, Col, Tag, Button, Card, InputNumber, Popconfirm, message, Statistic, Tooltip } from "antd";
 import * as ethers from "ethers";
 import { BigNumber } from 'ethers';
 
@@ -14,6 +14,7 @@ import map from "lodash/map";
 import isEmpty from "lodash/isEmpty";
 import filter from "lodash/filter";
 
+const { Countdown } = Statistic;
 const slipper = 60;
 
 const getExchangePlatformAdapters = async (exchangeAggregator) => {
@@ -37,6 +38,9 @@ export default function Transaction(props) {
 
   const [underlyingUnit, setUnderlyingUnit] = useState(BigNumber.from(1));
 
+  const [lastDepositTimes, setLastDepositTimes] = useState(BigNumber.from(0));
+  const [withdrawFee, setWithdrawFee] = useState(BigNumber.from(0));
+
   const loadBanlance = () => {
     if (isEmpty(address)) return loadBanlance;
     // 获取usdc的合约
@@ -46,6 +50,9 @@ export default function Transaction(props) {
     vaultContract.balanceOf(address).then(setToBalance);
     vaultContract.pricePerShare().then(setPerFullShare);
     vaultContract.decimals().then(setUnderlyingUnit);
+
+    vaultContract.userLastDepositTimes(address).then(setLastDepositTimes);
+    vaultContract.calculateWithdrawFeePercent(address).then(setWithdrawFee);
   };
 
   const diposit = async () => {
@@ -169,6 +176,7 @@ export default function Transaction(props) {
     return () => vaultContract.removeAllListeners(["Deposit", "Withdraw"])
   }, [address]);
 
+  const deadline = lastDepositTimes.add(60 * 60 * 24).mul(1000).toNumber();
   return (
     <Row>
       <Col span={24}>
@@ -257,10 +265,28 @@ export default function Transaction(props) {
                     okText="是"
                     cancelText="否"
                   >
-                    <Button type="primary" disabled={parseFloat(toValue) <= 0}>
-                      转出
-                    </Button>
+                    {
+                      lastDepositTimes.gt(0) && withdrawFee.gt(0)
+                        ? <Button type="primary" disabled={parseFloat(toValue) <= 0}>
+                          转出<span style={{ color: 'red', cursor: 'pointer', marginLeft: 5 }}>({toFixed(withdrawFee, 10 ** 2, 2)}%)</span>
+                        </Button>
+                        : <Button type="primary" disabled={parseFloat(toValue) <= 0}>
+                          转出
+                        </Button>}
                   </Popconfirm>
+                  {
+                    lastDepositTimes.gt(0) && withdrawFee.gt(0) && <Tooltip title="距离上一次存款时间未达到24小时，支取需要支付额外的手续费用。">
+                      <Countdown style={{
+                        display: "inline-flex",
+                        marginLeft: 10
+                      }}
+                        valueStyle={{
+                          color: 'red',
+                          fontSize: 16
+                        }}
+                        title={null} value={deadline} format="HH:mm:ss" />
+                    </Tooltip>
+                  }
                 </Col>
               </Row>
             </Col>
