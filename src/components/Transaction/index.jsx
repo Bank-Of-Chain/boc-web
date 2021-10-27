@@ -15,7 +15,6 @@ import isEmpty from "lodash/isEmpty";
 import filter from "lodash/filter";
 
 const { Countdown } = Statistic;
-const slipper = 60;
 
 const getExchangePlatformAdapters = async (exchangeAggregator) => {
   const adapters = await exchangeAggregator.getExchangeAdapters();
@@ -165,7 +164,7 @@ export default function Transaction(props) {
       if (error && error.data) {
         if (error.data.message === 'Error: VM Exception while processing transaction: reverted with reason string \'ES\'') {
           message.error('服务已关停，请稍后再试！');
-        }else if (error.data.message === 'Error: VM Exception while processing transaction: reverted with reason string \'Return amount is not enough\'') {
+        } else if (error.data.message === 'Error: VM Exception while processing transaction: reverted with reason string \'Return amount is not enough\'') {
           message.error('兑换失败，请加大兑换滑点或关闭兑换功能！');
         }
       }
@@ -173,11 +172,11 @@ export default function Transaction(props) {
   };
 
   const setFromValuePercent = percent => {
-    setFromValue(parseFloat(toFixed(fromBalance, usdtDecimals)) * percent);
+    setFromValue(Math.round(parseFloat(toFixed(fromBalance, usdtDecimals)) * percent * 1000000) / 1000000);
   };
 
   const setToValuePercent = percent => {
-    setToValue(parseFloat(toFixed(toBalance, usdtDecimals)) * percent);
+    setToValue(Math.round(parseFloat(toFixed(toBalance, usdtDecimals)) * percent * 1000000) / 1000000);
   };
 
   useEffect(() => {
