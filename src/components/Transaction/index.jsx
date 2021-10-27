@@ -275,7 +275,7 @@ export default function Transaction(props) {
                     {
                       lastDepositTimes.gt(0) && withdrawFee.gt(0)
                         ? <Button type="primary" disabled={parseFloat(toValue) <= 0}>
-                          转出<span style={{ color: 'red', cursor: 'pointer', marginLeft: 5 }}>({toFixed(withdrawFee, 10 ** 2, 2)}%)</span>
+                          转出<span style={{ color: 'red', cursor: 'pointer', marginLeft: 5 }}>(-{toFixed(withdrawFee, 10 ** 2, 2)}%)</span>
                         </Button>
                         : <Button type="primary" disabled={parseFloat(toValue) <= 0}>
                           转出
@@ -283,13 +283,14 @@ export default function Transaction(props) {
                   </Popconfirm>
                   {
                     lastDepositTimes.gt(0) && withdrawFee.gt(0) && <Tooltip title="距离上一次存款时间未达到24小时，支取需要支付额外的手续费用。">
+                      <span style={{ color: 'red', fontSize: 16, marginLeft: 10, cursor: 'pointer' }}>剩余锁定时间：</span>
                       <Countdown style={{
-                        display: "inline-flex",
-                        marginLeft: 10
+                        display: "inline-flex"
                       }}
                         valueStyle={{
                           color: 'red',
-                          fontSize: 16
+                          fontSize: 16,
+                          cursor: 'pointer'
                         }}
                         title={null} value={deadline} format="HH:mm:ss" />
                     </Tooltip>
