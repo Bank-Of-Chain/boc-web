@@ -11841,16 +11841,18 @@ pify@^5.0.0:
   resolved "https://registry.npm.taobao.org/pify/download/pify-5.0.0.tgz#1f5eca3f5e87ebec28cc6d54a0e4aaf00acc127f"
   integrity sha1-H17KP16H6+wozG1UoOSq8ArMEn8=
 
-piggy-finance-utils@1.0.20:
-  version "1.0.20"
-  resolved "https://registry.yarnpkg.com/piggy-finance-utils/-/piggy-finance-utils-1.0.20.tgz#8ce64ec2da8c3a79efa8a430f9e6024e74147848"
-  integrity sha512-C3DX0fGScHjyF0eRKrfMNfKyw5ExzNB1PkiqXBCY4sjY9Pm6Z0Gyl4lG22wxigFRlI7KxG6m/bTlHmHwYtZb/g==
+piggy-finance-utils@1.0.32:
+  version "1.0.32"
+  resolved "https://registry.yarnpkg.com/piggy-finance-utils/-/piggy-finance-utils-1.0.32.tgz#73c122deb229719aaae1b8b67b0e54191a6adec4"
+  integrity sha512-p+bUerZxmHq6bNa0QMOBKyMPgX766xZRFkNiXNDJrhbpuGOc/k7A2Tz11RhxsRDJdnk4RkBqQI5wlM6xF5Zfbg==
   dependencies:
     "@babel/runtime" "^7.11.4"
     axios "^0.21.4"
     ethers "^5.4.7"
+    lodash "^4.17.21"
     paraswap "^5.0.0"
     paraswap-core "^1.0.2"
+    tiny-retry "^1.6.5"
 
 pinkie-promise@^2.0.0:
   version "2.0.1"
@@ -15257,6 +15259,11 @@ tiny-invariant@^1.0.2, tiny-invariant@^1.1.0:
   version "1.1.0"
   resolved "https://registry.nlark.com/tiny-invariant/download/tiny-invariant-1.1.0.tgz?cache=0&sync_timestamp=1626167269422&other_urls=https%3A%2F%2Fregistry.nlark.com%2Ftiny-invariant%2Fdownload%2Ftiny-invariant-1.1.0.tgz#634c5f8efdc27714b7f386c35e6760991d230875"
   integrity sha1-Y0xfjv3CdxS384bDXmdgmR0jCHU=
+
+tiny-retry@^1.6.5:
+  version "1.6.5"
+  resolved "https://registry.yarnpkg.com/tiny-retry/-/tiny-retry-1.6.5.tgz#608a7b6dfe0becd182f3c0cc8603d2646c1ae887"
+  integrity sha512-+s9jGGHr6h4Lq3RIsVuNgQ2fIoduBUexXwimvUiP2dbXNkWxgI3Y8xkHysoGHFFyPVnrXRqDci4o6X46ezPFHw==
 
 tiny-warning@^1.0.0, tiny-warning@^1.0.3:
   version "1.0.3"

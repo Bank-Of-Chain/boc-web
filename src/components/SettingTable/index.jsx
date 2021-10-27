@@ -12,8 +12,11 @@ import { VAULT_ADDRESS, VAULT_ABI, STRATEGY_ABI } from "../../constants";
 // === Utils === //
 import map from 'lodash/map';
 import isNaN from 'lodash/isNaN';
+import sortBy from 'lodash/sortBy';
 import isEmpty from 'lodash/isEmpty';
 import { toFixed } from "../../helpers/number-format"
+
+const { BigNumber } = ethers
 
 export default function SettingTable(props) {
   const { userProvider, refreshSymbol } = props;
@@ -31,12 +34,13 @@ export default function SettingTable(props) {
       return await Promise.all([
         contract.name(),
         vaultContract.strategies(item),
-        contract.estimatedTotalAssetsToVault(),
+        contract.estimatedTotalAssets().catch(() => Promise.resolve(BigNumber.from(0))),
         contract.minReportDelay(),
         contract.maxReportDelay(),
         contract.profitFactor(),
+        vaultContract.getStrategyApy(item),
       ]).then(([
-        name, vaultState, estimatedTotalAssets, minReportDelay, maxReportDelay, profitFactor
+        name, vaultState, estimatedTotalAssets, minReportDelay, maxReportDelay, profitFactor, apy
       ]) => {
         const {
           debtRatio, enforceChangeLimit, activation, originalDebt, totalGain, totalLoss, lastReport, totalAsset, enableWithdraw,
@@ -46,6 +50,7 @@ export default function SettingTable(props) {
           key: item,
           name: name,
           address: item,
+          apy,
           debtRatio,
           enforceChangeLimit,
           activation,
@@ -64,7 +69,7 @@ export default function SettingTable(props) {
         };
       });
     }));
-    setData(nextData);
+    setData(sortBy(nextData, [i => -1 * i.apy]));
   }
 
   const setLossLimitRatio = async (id, value, profitLimitRatio) => {

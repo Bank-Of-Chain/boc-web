@@ -7,21 +7,17 @@ import { CloudSyncOutlined, SettingOutlined } from "@ant-design/icons";
 import * as ethers from "ethers";
 
 // === constants === //
-import { VAULT_ADDRESS, VAULT_ABI, STRATEGY_ABI, IERC20_ABI, EXCHANGE_AGGREGATOR_ABI, APY_SERVER, EXCHANGE_EXTRA_PARAMS } from "./../../constants";
+import { VAULT_ADDRESS, VAULT_ABI, STRATEGY_ABI, IERC20_ABI, EXCHANGE_AGGREGATOR_ABI, APY_SERVER, EXCHANGE_EXTRA_PARAMS, USDT_ADDRESS } from "./../../constants";
 
 // === Utils === //
 import map from 'lodash/map';
 import isNaN from 'lodash/isNaN';
 import isEmpty from 'lodash/isEmpty';
+import mapKeys from 'lodash/mapKeys';
+import sortBy from 'lodash/sortBy';
 import { toFixed } from "./../../helpers/number-format";
-import { getBestSwapInfo } from 'piggy-finance-utils';
+import { lendSwap } from 'piggy-finance-utils';
 import request from "request";
-
-// === Components === //
-import OriginApy from './OriginApy';
-
-const slipper = 30;
-const USDT_ADDRESS = '0xdAC17F958D2ee523a2206206994597C13D831ec7';
 
 const getExchangePlatformAdapters = async (exchangeAggregator) => {
   const adapters = await exchangeAggregator.getExchangeAdapters();
@@ -38,7 +34,6 @@ export default function StrategiesTable(props) {
   const { userProvider, refreshSymbol, refreshCallBack } = props;
   const [data, setData] = useState([]);
   const [underlyingUnit, setUnderlyingUnit] = useState(BigNumber.from(1));
-  const [selectedRowKeys, setSelectedRowKeys] = useState([]);
 
   useEffect(() => {
     loadBanlance();
@@ -50,18 +45,22 @@ export default function StrategiesTable(props) {
     const strategiesAddress = await vaultContract.getStrategies();
     const nextData = await Promise.all(map(strategiesAddress, async (item) => {
       const contract = new ethers.Contract(item, STRATEGY_ABI, userProvider);
-      const wantAddress = await contract.want();
-      const wantContract = new ethers.Contract(wantAddress, IERC20_ABI, userProvider);
+      const wantAddress = await contract.getWants();
       return await Promise.all([
         contract.name(),
         vaultContract.strategies(item),
-        contract.balanceOfLpToken(),
-        contract.estimatedTotalAssetsToVault(),
+        contract.balanceOfLpToken().catch(() => Promise.resolve(BigNumber.from(0))),
+        contract.estimatedTotalAssets().catch(() => Promise.resolve(BigNumber.from(0))),
         vaultContract.getStrategyApy(item),
-        wantContract.balanceOf(item),
-        contract._emergencyExit(),
+        Promise.all(map(wantAddress, async (wantItem) => {
+          const wantItemContract = new ethers.Contract(wantItem, IERC20_ABI, userProvider);
+          return {
+            name: await wantItemContract.symbol(),
+            amount: await wantItemContract.balanceOf(item)
+          }
+        })),
       ]).then(([
-        name, vaultState, balanceOfLpToken, estimatedTotalAssets, apy, balanceOfWant, emergencyExit
+        name, vaultState, balanceOfLpToken, estimatedTotalAssets, apy, balanceOfWant
       ]) => {
         const {
           activation, enforceChangeLimit, lastReport, totalDebt, totalGain, totalLoss
@@ -79,12 +78,11 @@ export default function StrategiesTable(props) {
           lastReport,
           balanceOfLpToken,
           balanceOfWant,
-          estimatedTotalAssets,
-          emergencyExit
+          estimatedTotalAssets
         };
       });
     }));
-    setData(nextData);
+    setData(sortBy(nextData, [i => -1 * i.apy]));
   }
 
   /**
@@ -163,83 +161,49 @@ export default function StrategiesTable(props) {
     return resp;
   };
 
-  // const emergencyExit = async (address) => {
-  //   const contract = new ethers.Contract(address, STRATEGY_ABI, userProvider);
-  //   const signer = userProvider.getSigner();
-  //   const contractWithSigner = contract.connect(signer);
-  //   const tx = await contractWithSigner.emergencyExit();
-  //   await tx.wait();
-  //   loadBanlance();
-  // }
-
-  /**
-   * 策略退出紧急情况
-   * @param {*} address 
-   */
-  const resetEmergencyExit = async (address) => {
-    const contract = new ethers.Contract(address, STRATEGY_ABI, userProvider);
-    const signer = userProvider.getSigner();
-    const contractWithSigner = contract.connect(signer);
-    const tx = await contractWithSigner.resetEmergencyExit();
-    await tx.wait();
-    loadBanlance();
-  }
-
-  /**
-   * 批量执行策略doHardWork
-   */
-  const batchDoHardWork = () => {
-    if (isEmpty(selectedRowKeys)) {
-      message.error('请选中策略条目');
-      return;
-    }
-    ;
-    Promise.all(selectedRowKeys.map(async (addr) => {
-      await doHardWork(addr);
-    })).then(loadBanlance).then(refreshCallBack);
-  }
-
   /**
    * 执行策略lend操作
    */
   const lend = async (address, value) => {
     if (isEmpty(address)) return Promise.reject();
 
-    const contract = new ethers.Contract(address, STRATEGY_ABI, userProvider);
-    const wantAddress = await contract.want();
+    // 新版 lend 方法改造
+    const decimalsMachine = (token, vaule, decimals) => vaule * 10 ** decimals
+
     const nextValue = BigNumber.from(value).mul(10 ** 6);
 
-    let exchangeParam = {
-      platform: '0x0000000000000000000000000000000000000000',
-      method: '0',
-      encodeExchangeArgs: '0x'
-    }
     const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider);
-    // 如果策略稳定币不是USDT，则需要匹配兑换路径
-    if (wantAddress !== USDT_ADDRESS) {
-      const exchangeManager = await vaultContract.exchangeManager();
-      const exchangeManagerContract = await new ethers.Contract(exchangeManager, EXCHANGE_AGGREGATOR_ABI, userProvider);
-      const exchangePlatformAdapters = await getExchangePlatformAdapters(exchangeManagerContract)
+    const contract = new ethers.Contract(address, STRATEGY_ABI, userProvider);
+    const strateAspect = await contract.queryTokenAspect();
+    const strateAspectNext = map(strateAspect, item => {
+      return {
+        ...item,
+        aspect: parseInt(item.aspect.toString())
+      }
+    })
 
-      const wantAddressContract = new ethers.Contract(wantAddress, IERC20_ABI, userProvider);
-      const underlyingContract = new ethers.Contract(USDT_ADDRESS, IERC20_ABI, userProvider);
-      exchangeParam = await getBestSwapInfo({
-        decimals: (await underlyingContract.decimals()).toString(),
-        address: USDT_ADDRESS
-      }, {
-        decimals: (await wantAddressContract.decimals()).toString(),
-        address: wantAddress
-      },
-        nextValue.toString(),
-        slipper,
-        exchangePlatformAdapters,
-        EXCHANGE_EXTRA_PARAMS
-      );
+    console.log('strateAspectNext=', strateAspectNext);
+    const tokenMap = mapKeys(await Promise.all(map(strateAspectNext, async (item) => {
+      const token = new ethers.Contract(item.token, IERC20_ABI, userProvider);
+      return {
+        decimals: parseInt((await token.decimals()).toString()),
+        symbol: await token.symbol(),
+        address: item.token
+      }
+    })), 'address');
+
+    tokenMap[USDT_ADDRESS] = {
+      decimals: 6,
+      symbol: 'USDT',
+      address: USDT_ADDRESS
     }
-
+    const exchangeManager = await vaultContract.exchangeManager();
+    const exchangeManagerContract = await new ethers.Contract(exchangeManager, EXCHANGE_AGGREGATOR_ABI, userProvider);
+    const exchangePlatformAdapters = await getExchangePlatformAdapters(exchangeManagerContract)
+    const path = await lendSwap(parseInt(nextValue.toString()), strateAspectNext, decimalsMachine, exchangePlatformAdapters, EXCHANGE_EXTRA_PARAMS, tokenMap)
     try {
       const signer = userProvider.getSigner();
-      const tx = await vaultContract.connect(signer).lend(address, USDT_ADDRESS, nextValue.toString(), exchangeParam);
+      const tx = await vaultContract.connect(signer).lend(address, path);
       await tx.wait()
       loadBanlance();
       refreshCallBack();
@@ -270,54 +234,11 @@ export default function StrategiesTable(props) {
   }
 
   /**
-   * 执行策略exchange操作
-   */
-  // const exchange = async (address) => {
-  //   if (isEmpty(address)) return Promise.reject();
-
-  //   const contract = new ethers.Contract(address, STRATEGY_ABI, userProvider);
-  //   const wantAddress = await contract.want();
-
-  //   const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider);
-  //   const wantContract = new ethers.Contract(wantAddress, IERC20_ABI, userProvider);
-  //   const underlyingContract = new ethers.Contract(USDT_ADDRESS, IERC20_ABI, userProvider);
-  //   const value = await wantContract.balanceOf(VAULT_ADDRESS);
-  //   let exchangeParam = {
-  //     platform: '0x0000000000000000000000000000000000000000',
-  //     method: '0',
-  //     encodeExchangeArgs: '0x'
-  //   }
-  //   // 如果策略稳定币不是USDT，则需要匹配兑换路径
-  //   if (wantAddress !== USDT_ADDRESS) {
-  //     const exchangeManager = await vaultContract.exchangeManager();
-  //     const exchangeManagerContract = await new ethers.Contract(exchangeManager, EXCHANGE_AGGREGATOR_ABI, userProvider);
-  //     const exchangePlatformAdapters = await getExchangePlatformAdapters(exchangeManagerContract)
-  //     exchangeParam = await getBestSwapInfo({
-  //       decimals: (await wantContract.decimals()).toString(),
-  //       address: wantAddress
-  //     }, {
-  //       decimals: (await underlyingContract.decimals()).toString(),
-  //       address: USDT_ADDRESS
-  //     },
-  //       value,
-  //       slipper,
-  //       exchangePlatformAdapters
-  //     );
-  //   }
-
-  //   const signer = userProvider.getSigner();
-  //   const tx = vaultContract.connect(signer).exchange(wantAddress, USDT_ADDRESS, value.toString(), exchangeParam)
-  //   await tx.wait();
-  //   loadBanlance();
-  //   refreshCallBack();
-  // }
-
-  /**
    * 调用定时器的api服务
    */
   const callApi = (method) => {
     const close = message.loading('接口调用中...', 60 * 60);
-    request.get(`${APY_SERVER}/v3/${method}`, (error, response, body) => {
+    request.post(`${APY_SERVER}/v3/${method}`, (error, response, body) => {
       console.log('error, response, bod=', error, response, body);
       close();
       if (error) {
@@ -328,7 +249,7 @@ export default function StrategiesTable(props) {
       setTimeout(() => {
         loadBanlance()
         refreshCallBack()
-      }, 2000);
+      }, 3000);
     });
   }
 
@@ -339,7 +260,11 @@ export default function StrategiesTable(props) {
       key: 'name',
       width: "15%",
       render: (text, item, index) => {
-        return <Tooltip placement="topLeft" title={`LPs : ${item.balanceOfLpToken.toString()}`}>
+        const { balanceOfWant } = item;
+        const balanceOfWantText = map(balanceOfWant, item => {
+          return [<span key={item.name}>{item.name}: {toFixed(item.amount)}</span>, <br key={`${item.name}-br`} />]
+        });
+        return <Tooltip placement="topLeft" title={balanceOfWantText}>
           <a key={index}>{text}</a>
         </Tooltip>
       }
@@ -361,11 +286,11 @@ export default function StrategiesTable(props) {
       }
     },
     {
-      title: '稳定币数量',
-      dataIndex: 'balanceOfWant',
-      key: 'balanceOfWant',
+      title: 'LP数量',
+      dataIndex: 'balanceOfLpToken',
+      key: 'balanceOfLpToken',
       render: (value, item, index) => {
-        return <span key={index}>{toFixed(value)}</span>;
+        return <span key={index}>{toFixed(value)}</span>
       }
     },
     {
@@ -394,12 +319,12 @@ export default function StrategiesTable(props) {
       }
     },
     {
-      title: 'Apy (实时Apy)',
+      title: 'Apy',
       dataIndex: 'apy',
       key: 'apy',
       render: (value, item, index) => {
         return <div>
-          <span style={{ lineHeight: '32px' }} key={index}>{toFixed(value, 1e2, 2)}% (<OriginApy id={item.address} days={3} />)</span>&nbsp;
+          <span style={{ lineHeight: '32px' }} key={index}>{toFixed(value, 1e2, 2)}%</span>&nbsp;
           <Input.Search onSearch={(v) => setApy(item.address, v)} enterButton={<SettingOutlined />} style={{ width: 120, float: 'right' }} />
         </div>
       }
@@ -416,7 +341,7 @@ export default function StrategiesTable(props) {
       title: '操作',
       key: 'action',
       render: (value, item) => {
-        const { address, totalDebt, emergencyExit } = value;
+        const { address, totalDebt } = value;
         return <Space size="middle">
           <Popconfirm
             placement="topLeft"
@@ -429,15 +354,6 @@ export default function StrategiesTable(props) {
           </Popconfirm>
           <Popconfirm
             placement="topLeft"
-            title={'确认立刻执行Emergency Exit操作？'}
-            onConfirm={() => emergencyExit(address)}
-            okText="是"
-            cancelText="否"
-          >
-            <a>Emergency Exit</a>
-          </Popconfirm>
-          <Popconfirm
-            placement="topLeft"
             title={'确认立刻执行Redeem操作？'}
             onConfirm={() => redeem(address, totalDebt.toString())}
             okText="是"
@@ -445,40 +361,15 @@ export default function StrategiesTable(props) {
           >
             <a>Redeem</a>
           </Popconfirm>
-          {/* 
           <Popconfirm
             placement="topLeft"
-            title={'确认立刻执行Exchange操作？'}
-            onConfirm={() => exchange(address)}
+            title={'确认立刻移除该策略？'}
+            onConfirm={() => removeStrategy(address)}
             okText="是"
             cancelText="否"
           >
-            <a>Exchange</a>
+            <a style={{ color: 'red' }}>移除策略</a>
           </Popconfirm>
-           */}
-          {
-            emergencyExit && <Popconfirm
-              placement="topLeft"
-              title={'确认立刻执行Reset操作？'}
-              onConfirm={() => resetEmergencyExit(address)}
-              okText="是"
-              cancelText="否"
-            >
-              <a>Reset</a>
-            </Popconfirm>
-          }
-          {
-            item.totalDebt.toString() === '0' && item.balanceOfLpToken.toString() === '0' &&
-            <Popconfirm
-              placement="topLeft"
-              title={'确认立刻移除该策略？'}
-              onConfirm={() => removeStrategy(address)}
-              okText="是"
-              cancelText="否"
-            >
-              <a style={{ color: 'red' }}>移除策略</a>
-            </Popconfirm>
-          }
         </Space>
       }
     },
@@ -489,11 +380,6 @@ export default function StrategiesTable(props) {
     const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider);
     vaultContract.decimals().then(setUnderlyingUnit).catch(() => { })
   }, []);
-
-  const rowSelection = {
-    selectedRowKeys,
-    onChange: setSelectedRowKeys,
-  };
 
   return <Card title={<span style={{ fontWeight: 'bold' }}>各个策略投资详情</span>} bordered
     extra={
@@ -541,7 +427,7 @@ export default function StrategiesTable(props) {
               harvest
             </Button>
           </Popconfirm>
-          <Popconfirm
+          {/* <Popconfirm
             placement="topLeft"
             title={'确认批量获取选中策略盈利？'}
             onConfirm={batchDoHardWork}
@@ -549,11 +435,22 @@ export default function StrategiesTable(props) {
             cancelText="否"
           >
             <Button type="primary">批量获取盈利</Button>
+          </Popconfirm> */}
+          <Popconfirm
+            placement="topLeft"
+            title={'确认批量更新apy？'}
+            onConfirm={() => callApi('update-apy')}
+            okText="是"
+            cancelText="否"
+          >
+            <Button type="primary">更新Apy</Button>
           </Popconfirm>
         </Col>
       </Row>
     }
   >
-    <Table bordered columns={columns} rowSelection={rowSelection} dataSource={data} pagination={false} />
+    <Table bordered columns={columns}
+      // rowSelection={rowSelection}
+      dataSource={data} pagination={false} />
   </Card>
 }

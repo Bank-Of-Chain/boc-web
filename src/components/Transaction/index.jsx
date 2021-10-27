@@ -1,17 +1,30 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useState } from "react";
-import { Row, Col, Tag, Button, Card, InputNumber, Popconfirm, message } from "antd";
+import { Row, Col, Tag, Button, Card, InputNumber, Popconfirm, message, Statistic, Tooltip } from "antd";
 import * as ethers from "ethers";
 import { BigNumber } from 'ethers';
 
 // === constants === //
-import { VAULT_ADDRESS, VAULT_ABI, STRATEGY_ABI, IERC20_ABI, APY_SERVER } from "./../../constants";
+import { VAULT_ADDRESS, VAULT_ABI, IERC20_ABI, USDT_ADDRESS, EXCHANGE_AGGREGATOR_ABI, EXCHANGE_EXTRA_PARAMS } from "./../../constants";
 
 // === Utils === //
+import { getBestSwapInfo } from "piggy-finance-utils";
 import { toFixed } from "./../../helpers/number-format";
-import get from "lodash/get";
+import map from "lodash/map";
 import isEmpty from "lodash/isEmpty";
-import request from "request";
+import filter from "lodash/filter";
+
+const { Countdown } = Statistic;
+const slipper = 60;
+
+const getExchangePlatformAdapters = async (exchangeAggregator) => {
+  const adapters = await exchangeAggregator.getExchangeAdapters();
+  const exchangePlatformAdapters = {};
+  for (let i = 0; i < adapters.identifiers_.length; i++) {
+    exchangePlatformAdapters[adapters.identifiers_[i]] = adapters.exchangeAdapters_[i];
+  }
+  return exchangePlatformAdapters;
+}
 
 export default function Transaction(props) {
   const { name, from, address, userProvider } = props;
@@ -25,16 +38,26 @@ export default function Transaction(props) {
 
   const [underlyingUnit, setUnderlyingUnit] = useState(BigNumber.from(1));
 
-  const [allowMaxLoss, setAllowMaxLoss] = useState(100);
+  const [lastDepositTimes, setLastDepositTimes] = useState(BigNumber.from(0));
+  const [withdrawFee, setWithdrawFee] = useState(BigNumber.from(0));
+  const [currentBlockTimestamp, setCurrentBlockTimestamp] = useState(0);
+
   const loadBanlance = () => {
     if (isEmpty(address)) return loadBanlance;
     // 获取usdc的合约
-    const usdtContract = new ethers.Contract(from, STRATEGY_ABI, userProvider);
+    const usdtContract = new ethers.Contract(from, IERC20_ABI, userProvider);
     usdtContract.balanceOf(address).then(setFromBalance);
     const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider);
     vaultContract.balanceOf(address).then(setToBalance);
     vaultContract.pricePerShare().then(setPerFullShare);
     vaultContract.decimals().then(setUnderlyingUnit);
+
+    vaultContract.userLastDepositTimes(address).then(setLastDepositTimes);
+    vaultContract.calculateWithdrawFeePercent(address).then(setWithdrawFee);
+
+    userProvider.getBlock(userProvider.blockNumber).then(resp => {
+      setCurrentBlockTimestamp(resp.timestamp)
+    })
   };
 
   const diposit = async () => {
@@ -76,21 +99,59 @@ export default function Transaction(props) {
   const withdraw = async () => {
     const signer = userProvider.getSigner();
     const nextValue = `${toValue * 1e6}`;
-    setToValue(0);
     try {
       const close = message.loading('数据提交中...', 2.5)
       const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider);
-      const exchangeParams = await new Promise((resolve) => {
-        request.get(`${APY_SERVER}/v3/withdraw-exchange-params?amount=${nextValue}&slipper=${allowMaxLoss}`, (error, resp, body) => {
-          const bodyJson = JSON.parse(body)
-          resolve(get(bodyJson, 'data.exchangeParams', []))
+      const vaultContractWithSigner = vaultContract.connect(signer)
+      const [tokens, amounts] = await vaultContractWithSigner.callStatic.withdraw(nextValue, false, []);
+
+      const exchangeManager = await vaultContract.exchangeManager();
+      const exchangeManagerContract = new ethers.Contract(exchangeManager, EXCHANGE_AGGREGATOR_ABI, userProvider);
+      const exchangePlatformAdapters = await getExchangePlatformAdapters(exchangeManagerContract)
+      // 查询兑换路径
+      const exchangeArray = await Promise.all(
+        map(tokens, async (tokenItem, index) => {
+          const exchangeAmounts = amounts[index].toString();
+          if (tokenItem === USDT_ADDRESS || exchangeAmounts === '0') {
+            return undefined
+          }
+          const fromConstrat = new ethers.Contract(tokenItem, IERC20_ABI, userProvider)
+          const fromToken = {
+            decimals: parseInt((await fromConstrat.decimals()).toString()),
+            symbol: await fromConstrat.symbol(),
+            address: tokenItem
+          }
+          try {
+            const bestSwapInfo = await getBestSwapInfo(
+              fromToken,
+              {
+                decimals: 6,
+                symbol: 'USDT',
+                address: USDT_ADDRESS
+              },
+              amounts[index].toString(),
+              slipper,
+              exchangePlatformAdapters,
+              EXCHANGE_EXTRA_PARAMS
+            )
+            return {
+              fromToken: tokenItem,
+              toToken: USDT_ADDRESS,
+              fromAmount: exchangeAmounts,
+              exchangeParam: bestSwapInfo
+            }
+          } catch (error) {
+            return
+          }
         })
-      })
-      const tx = await vaultContract.connect(signer).withdraw(nextValue, allowMaxLoss, exchangeParams);
-      await tx.wait();
+      )
+      const tx = await vaultContractWithSigner.withdraw(nextValue, true, filter(exchangeArray, i => !isEmpty(i)));
+      await tx.wait(1);
+      setToValue(0);
       close();
       message.success('数据提交成功', 2.5)
     } catch (error) {
+      console.error(error);
       if (error && error.data) {
         if (error.data.message === 'Error: VM Exception while processing transaction: reverted with reason string \'ES\'') {
           message.error('服务已关停，请稍后再试！');
@@ -110,15 +171,19 @@ export default function Transaction(props) {
   useEffect(() => {
     loadBanlance();
     const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider);
-    vaultContract.on('Deposit', (to, amount, from) => {
-      from.getTransaction().then(tx => tx.wait()).then(loadBanlance);
+    vaultContract.on('Deposit', (a, b, c) => {
+      console.log('Deposit=', a, b, c)
+      c && c.getTransaction().then(tx => tx.wait()).then(loadBanlance);
     });
-    vaultContract.on('Withdraw', (to, amount, from) => {
-      from.getTransaction().then(tx => tx.wait()).then(loadBanlance);
+    vaultContract.on('Withdraw', (a, b, c, d, e, f, g) => {
+      console.log('Withdraw=', a, b, c, d, e, f, g)
+      g && g.getTransaction().then(tx => tx.wait()).then(loadBanlance);
+
     });
     return () => vaultContract.removeAllListeners(["Deposit", "Withdraw"])
   }, [address]);
 
+  const deadline = lastDepositTimes.add(60 * 60 * 24).add(parseInt(Date.now() / 1000) - currentBlockTimestamp).mul(1000).toNumber();
   return (
     <Row>
       <Col span={24}>
@@ -198,14 +263,6 @@ export default function Transaction(props) {
                     max={toBalance / underlyingUnit}
                     onChange={value => setToValue(value || 0)}
                   />
-                  &nbsp;&nbsp;Max loss:&nbsp;
-                  <InputNumber
-                    style={{ width: 100 }}
-                    value={allowMaxLoss / 100}
-                    min={0}
-                    max={100}
-                    onChange={value => setAllowMaxLoss(value * 100)}
-                  />&nbsp;%
                 </Col>
                 <Col span={24}>
                   <Popconfirm
@@ -215,10 +272,29 @@ export default function Transaction(props) {
                     okText="是"
                     cancelText="否"
                   >
-                    <Button type="primary" disabled={parseFloat(toValue) <= 0}>
-                      转出
-                    </Button>
+                    {
+                      lastDepositTimes.gt(0) && withdrawFee.gt(0)
+                        ? <Button type="primary" disabled={parseFloat(toValue) <= 0}>
+                          转出<span style={{ color: 'red', cursor: 'pointer', marginLeft: 5 }}>(-{toFixed(withdrawFee, 10 ** 2, 2)}%)</span>
+                        </Button>
+                        : <Button type="primary" disabled={parseFloat(toValue) <= 0}>
+                          转出
+                        </Button>}
                   </Popconfirm>
+                  {
+                    lastDepositTimes.gt(0) && withdrawFee.gt(0) && <Tooltip title="距离上一次存款时间未达到24小时，支取需要支付额外的手续费用。">
+                      <span style={{ color: 'red', fontSize: 16, marginLeft: 10, cursor: 'pointer' }}>剩余锁定时间：</span>
+                      <Countdown style={{
+                        display: "inline-flex"
+                      }}
+                        valueStyle={{
+                          color: 'red',
+                          fontSize: 16,
+                          cursor: 'pointer'
+                        }}
+                        title={null} value={deadline} format="HH:mm:ss" />
+                    </Tooltip>
+                  }
                 </Col>
               </Row>
             </Col>
