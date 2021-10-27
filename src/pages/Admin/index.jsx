@@ -135,7 +135,7 @@ function Admin(props) {
 
       <Col span={24} style={{ padding: 20 }}>
         {
-          address && <StrategiesTable writeContracts={writeContracts} userProvider={userProvider} refreshSymbol={refreshCount} refreshCallBack={() => setRefreshCount(refreshCount + 1)} />
+          address && <StrategiesTable address={address} writeContracts={writeContracts} userProvider={userProvider} refreshSymbol={refreshCount} refreshCallBack={() => setRefreshCount(refreshCount + 1)} />
         }
       </Col>
       <Col span={24} style={{ padding: 20 }}>
