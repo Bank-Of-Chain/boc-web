@@ -19,6 +19,8 @@ import { toFixed } from "./../../helpers/number-format";
 import { lendSwap } from 'piggy-finance-utils';
 import request from "request";
 
+const { utils } = ethers;
+
 const getExchangePlatformAdapters = async (exchangeAggregator) => {
   const adapters = await exchangeAggregator.getExchangeAdapters();
   const exchangePlatformAdapters = {};
@@ -31,7 +33,7 @@ const getExchangePlatformAdapters = async (exchangeAggregator) => {
 const { BigNumber } = ethers
 
 export default function StrategiesTable(props) {
-  const { userProvider, refreshSymbol, refreshCallBack } = props;
+  const { userProvider, refreshSymbol, refreshCallBack, address } = props;
   const [data, setData] = useState([]);
   const [underlyingUnit, setUnderlyingUnit] = useState(BigNumber.from(1));
 
@@ -236,9 +238,21 @@ export default function StrategiesTable(props) {
   /**
    * 调用定时器的api服务
    */
-  const callApi = (method) => {
+  const callApi = async (method) => {
     const close = message.loading('接口调用中...', 60 * 60);
-    request.post(`${APY_SERVER}/v3/${method}`, (error, response, body) => {
+    const signer = userProvider.getSigner();
+    const timestamp = Date.now();
+    const messageHash = utils.id(`${method}:${address}:${timestamp}`);
+
+    const messageHashBytes = utils.arrayify(messageHash)
+
+    const signature = await signer.signMessage(messageHashBytes);
+    const headers = {
+      timestamp,
+      signature
+    }
+    console.log('headers=', headers);
+    request.post(`${APY_SERVER}/v3/${method}`, { headers }, (error, response, body) => {
       console.log('error, response, bod=', error, response, body);
       close();
       if (error) {
