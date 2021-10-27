@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useState } from "react";
-import { Row, Col, Tag, Button, Card, InputNumber, Popconfirm, message, Statistic, Tooltip } from "antd";
+import { Row, Col, Tag, Button, Card, InputNumber, Popconfirm, message, Statistic, Tooltip, Switch } from "antd";
 import * as ethers from "ethers";
 import { BigNumber } from 'ethers';
 
@@ -41,6 +41,8 @@ export default function Transaction(props) {
   const [lastDepositTimes, setLastDepositTimes] = useState(BigNumber.from(0));
   const [withdrawFee, setWithdrawFee] = useState(BigNumber.from(0));
   const [currentBlockTimestamp, setCurrentBlockTimestamp] = useState(0);
+
+  const [shouldExchange, setShouldExchange] = useState(true);
 
   const loadBanlance = () => {
     if (isEmpty(address)) return loadBanlance;
@@ -103,50 +105,54 @@ export default function Transaction(props) {
       const close = message.loading('数据提交中...', 2.5)
       const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider);
       const vaultContractWithSigner = vaultContract.connect(signer)
-      const [tokens, amounts] = await vaultContractWithSigner.callStatic.withdraw(nextValue, false, []);
+      let exchangeArray = []
+      // 如果不需要兑换则按照多币返回
+      if (shouldExchange) {
+        const [tokens, amounts] = await vaultContractWithSigner.callStatic.withdraw(nextValue, false, []);
 
-      const exchangeManager = await vaultContract.exchangeManager();
-      const exchangeManagerContract = new ethers.Contract(exchangeManager, EXCHANGE_AGGREGATOR_ABI, userProvider);
-      const exchangePlatformAdapters = await getExchangePlatformAdapters(exchangeManagerContract)
-      // 查询兑换路径
-      const exchangeArray = await Promise.all(
-        map(tokens, async (tokenItem, index) => {
-          const exchangeAmounts = amounts[index].toString();
-          if (tokenItem === USDT_ADDRESS || exchangeAmounts === '0') {
-            return undefined
-          }
-          const fromConstrat = new ethers.Contract(tokenItem, IERC20_ABI, userProvider)
-          const fromToken = {
-            decimals: parseInt((await fromConstrat.decimals()).toString()),
-            symbol: await fromConstrat.symbol(),
-            address: tokenItem
-          }
-          try {
-            const bestSwapInfo = await getBestSwapInfo(
-              fromToken,
-              {
-                decimals: 6,
-                symbol: 'USDT',
-                address: USDT_ADDRESS
-              },
-              amounts[index].toString(),
-              slipper,
-              exchangePlatformAdapters,
-              EXCHANGE_EXTRA_PARAMS
-            )
-            return {
-              fromToken: tokenItem,
-              toToken: USDT_ADDRESS,
-              fromAmount: exchangeAmounts,
-              exchangeParam: bestSwapInfo
+        const exchangeManager = await vaultContract.exchangeManager();
+        const exchangeManagerContract = new ethers.Contract(exchangeManager, EXCHANGE_AGGREGATOR_ABI, userProvider);
+        const exchangePlatformAdapters = await getExchangePlatformAdapters(exchangeManagerContract)
+        // 查询兑换路径
+        exchangeArray = await Promise.all(
+          map(tokens, async (tokenItem, index) => {
+            const exchangeAmounts = amounts[index].toString();
+            if (tokenItem === USDT_ADDRESS || exchangeAmounts === '0') {
+              return undefined
             }
-          } catch (error) {
-            return
-          }
-        })
-      )
+            const fromConstrat = new ethers.Contract(tokenItem, IERC20_ABI, userProvider)
+            const fromToken = {
+              decimals: parseInt((await fromConstrat.decimals()).toString()),
+              symbol: await fromConstrat.symbol(),
+              address: tokenItem
+            }
+            try {
+              const bestSwapInfo = await getBestSwapInfo(
+                fromToken,
+                {
+                  decimals: 6,
+                  symbol: 'USDT',
+                  address: USDT_ADDRESS
+                },
+                amounts[index].toString(),
+                slipper,
+                exchangePlatformAdapters,
+                EXCHANGE_EXTRA_PARAMS
+              )
+              return {
+                fromToken: tokenItem,
+                toToken: USDT_ADDRESS,
+                fromAmount: exchangeAmounts,
+                exchangeParam: bestSwapInfo
+              }
+            } catch (error) {
+              return
+            }
+          })
+        )
+      }
       const tx = await vaultContractWithSigner.withdraw(nextValue, true, filter(exchangeArray, i => !isEmpty(i)));
-      await tx.wait(1);
+      await tx.wait();
       setToValue(0);
       close();
       message.success('数据提交成功', 2.5)
@@ -263,6 +269,9 @@ export default function Transaction(props) {
                     max={toBalance / underlyingUnit}
                     onChange={value => setToValue(value || 0)}
                   />
+                  &nbsp;&nbsp;
+                  <Switch checked={shouldExchange} onChange={setShouldExchange}></Switch>
+                  &nbsp;&nbsp;{shouldExchange ? '开启' : '关闭'}兑换
                 </Col>
                 <Col span={24}>
                   <Popconfirm
