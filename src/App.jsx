@@ -41,7 +41,7 @@ const Admin = lazy(() => import('./pages/Admin/index'));
 const envNetworkType = process.env.REACT_APP_NETWORK_TYPE;
 console.log('envNetworkType=', envNetworkType);
 const DEBUG = false;
-const targetNetwork = NETWORKS[envNetworkType] || NETWORKS.localhost;
+const targetNetwork = NETWORKS[envNetworkType || 'matic'];
 
 // 🏠 Your local provider is usually pointed at your local blockchain
 const localProviderUrl = targetNetwork.rpcUrl;

@@ -29,10 +29,10 @@ window.config = {
       }
     }
   },
-  mainnet: {
+  matic: {
     vault_address: "0xB0D4afd8879eD9F52b28595d31B441D079B2Ca07",
     underlying_address: "0xc2132D05D31c914a87C6611C10748AEb04B58e8F",
-    apy_server: "",
+    apy_server: "http://47.243.164.64/api",
     exchange_extra_params: {
       paraswap: {
         network: 137,

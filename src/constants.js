@@ -11,7 +11,7 @@ export const ETHERSCAN_KEY = "PSW8C433Q667DVEX5BCRMGNAH9FSGFZ7Q8";
 
 // EXTERNAL CONTRACTS
 const envNetworkType = process.env.REACT_APP_NETWORK_TYPE;
-const config = window.config[envNetworkType || 'localhost']
+const config = window.config[envNetworkType || 'matic']
 console.log('config=', config);
 export const VAULT_ADDRESS = config.vault_address;
 export const APY_SERVER = config.apy_server;
