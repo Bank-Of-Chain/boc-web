@@ -79,7 +79,7 @@
     "extends": "react-app"
   },
   "scripts": {
-    "build": "cross-env REACT_APP_NETWORK_TYPE=mainnet react-scripts build",
+    "build": "cross-env REACT_APP_NETWORK_TYPE=matic react-scripts build",
     "build:localhost": "cross-env REACT_APP_NETWORK_TYPE=localhost react-scripts build",
     "build:dev": "cross-env REACT_APP_NETWORK_TYPE=dev react-scripts build",
     "eject": "react-scripts eject",
