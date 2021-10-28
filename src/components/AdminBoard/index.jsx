@@ -124,6 +124,16 @@ function AdminBoard(props) {
         }}
         value={`${toFixed(treasureBalance, 10 ** 6)}（${treasureBalance * perFullShare / 10 ** 12} USDT）`}
       />
+      <Statistic
+        title={<span style={{ fontWeight: 'bold', color: '#000', fontSize: 'large' }}>Vault净值</span>}
+        style={{
+          marginLeft: 32,
+        }}
+        valueStyle={{
+          fontWeight: 'bold', color: '#000', fontSize: 'x-large'
+        }}
+        value={toFixed(perFullShare, 10 ** 6)}
+      />
       <Tooltip placement="bottom" title={balanceOfTrackedTokenText}>
         <Statistic
           title={<span style={{ fontWeight: 'bold', color: '#000', fontSize: 'large' }}>缓冲池资金</span>}
