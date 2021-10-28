@@ -164,7 +164,8 @@ export default function Transaction(props) {
       if (error && error.data) {
         if (error.data.message === 'Error: VM Exception while processing transaction: reverted with reason string \'ES\'') {
           message.error('服务已关停，请稍后再试！');
-        } else if (error.data.message === 'Error: VM Exception while processing transaction: reverted with reason string \'Return amount is not enough\'') {
+        } else if (error.data.message === 'Error: VM Exception while processing transaction: reverted with reason string \'Return amount is not enough\''
+          || error.data.message === 'Error: VM Exception while processing transaction: reverted with reason string \'Received amount of tokens are less then expected\'') {
           message.error('兑换失败，请加大兑换滑点或关闭兑换功能！');
         }
       }
