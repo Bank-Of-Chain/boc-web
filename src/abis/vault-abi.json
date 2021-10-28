@@ -1191,30 +1191,16 @@
         "type": "address"
       }
     ],
-    "name": "userDebts",
+    "name": "userInfos",
     "outputs": [
       {
         "internalType": "uint256",
-        "name": "",
+        "name": "userDebt",
         "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "name": "userLastDepositTimes",
-    "outputs": [
+      },
       {
         "internalType": "uint256",
-        "name": "",
+        "name": "lastDepositTime",
         "type": "uint256"
       }
     ],

@@ -54,7 +54,9 @@ export default function Transaction(props) {
     vaultContract.pricePerShare().then(setPerFullShare);
     vaultContract.decimals().then(setUnderlyingUnit);
 
-    vaultContract.userLastDepositTimes(address).then(setLastDepositTimes);
+    vaultContract.userInfos(address).then(resp => {
+      setLastDepositTimes(resp.lastDepositTime);
+    });
     vaultContract.calculateWithdrawFeePercent(address).then(setWithdrawFee);
 
     userProvider.getBlock(userProvider.blockNumber).then(resp => {
