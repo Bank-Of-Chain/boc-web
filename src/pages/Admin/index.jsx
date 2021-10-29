@@ -105,7 +105,7 @@ function Admin(props) {
   useEffect(() => {
     try {
       const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider);
-      vaultContract.getGovernanceOwner().then(setGovernance);
+      vaultContract.getManagement().then(setGovernance);
       vaultContract.emergencyShutdown().then(setStatus);
       vaultContract.adjustPositionPeriod().then(setAdjustPositionPeriod);
     } catch (error) {
