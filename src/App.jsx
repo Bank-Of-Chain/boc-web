@@ -9,7 +9,7 @@ import Web3Modal from "web3modal";
 import WalletConnectProvider from "@walletconnect/web3-provider";
 import { useUserAddress } from "eth-hooks";
 import { useUserProvider, useGasPrice, useBalance } from "./hooks";
-import { INFURA_ID, NETWORKS } from "./constants";
+import { INFURA_ID, NETWORKS, ENV_NETWORK_TYPE } from "./constants";
 import { Transactor } from "./helpers";
 import isEmpty from 'lodash/isEmpty';
 import "antd/dist/antd.css";
@@ -38,10 +38,8 @@ const Home = lazy(() => import('./pages/Home/index'));
 const Dashboard = lazy(() => import('./pages/Dashboard/index'));
 const Admin = lazy(() => import('./pages/Admin/index'));
 
-const envNetworkType = process.env.REACT_APP_NETWORK_TYPE;
-console.log('envNetworkType=', envNetworkType);
 const DEBUG = false;
-const targetNetwork = NETWORKS[envNetworkType || 'matic'];
+const targetNetwork = NETWORKS[ENV_NETWORK_TYPE];
 
 // 🏠 Your local provider is usually pointed at your local blockchain
 const localProviderUrl = targetNetwork.rpcUrl;

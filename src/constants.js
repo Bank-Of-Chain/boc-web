@@ -10,9 +10,9 @@ export const INFURA_ID = "b5156ceaa4b644c49e74b1301121a6c6";
 export const ETHERSCAN_KEY = "PSW8C433Q667DVEX5BCRMGNAH9FSGFZ7Q8";
 
 // EXTERNAL CONTRACTS
-const envNetworkType = process.env.REACT_APP_NETWORK_TYPE;
-const config = window.config[envNetworkType || 'matic']
-console.log('config=', config);
+export const ENV_NETWORK_TYPE = process.env.REACT_APP_NETWORK_TYPE || 'localhost';
+const config = window.config[ENV_NETWORK_TYPE]
+console.log('env config=', ENV_NETWORK_TYPE, config);
 export const VAULT_ADDRESS = config.vault_address;
 export const APY_SERVER = config.apy_server;
 
