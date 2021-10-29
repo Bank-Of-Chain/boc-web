@@ -1,6 +1,6 @@
 window.config = {
   localhost: {
-    vault_address: "0xF94AB55a20B32AC37c3A105f12dB535986697945",
+    vault_address: "0xB03BE3E9D96c1Ba71d6ed26F62966dAAca288b45",
     underlying_address: "0xc2132D05D31c914a87C6611C10748AEb04B58e8F",
     apy_server: "http://localhost:3000",
     exchange_extra_params: {
@@ -15,7 +15,7 @@ window.config = {
     }
   },
   dev: {
-    vault_address: "0x9A8Ec3B44ee760b629e204900c86d67414a67e8f",
+    vault_address: "0xB03BE3E9D96c1Ba71d6ed26F62966dAAca288b45",
     underlying_address: "0xc2132D05D31c914a87C6611C10748AEb04B58e8F",
     apy_server: "http://192.168.60.12/api",
     exchange_extra_params: {
@@ -36,9 +36,11 @@ window.config = {
     exchange_extra_params: {
       paraswap: {
         network: 137,
+        excludeContractMethods: ['swapOnZeroXv2', 'swapOnZeroXv4']
       },
       oneInch: {
         network: 137,
+        protocols: 'POLYGON_SAFE_SWAP,POLYGON_APESWAP,IRONSWAP,POLYGON_JETSWAP,POLYGON_DODO,POLYGON_DODO_V2,POLYGON_KYBER_DMM,POLYGON_BALANCER_V2,POLYGON_WAULTSWAP,DFYN,POLYDEX_FINANCE,ONESWAP,FIREBIRD_FINANCE,POLYGON_MSTABLE,POLYGON_SUSHISWAP,POLYGON_QUICKSWAP,WMATIC,POLYGON_CURVE,POLYGON_AAVE_V2,COMETH'
       }
     }
   }
