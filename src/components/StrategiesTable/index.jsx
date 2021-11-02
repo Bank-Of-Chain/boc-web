@@ -2,8 +2,8 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 
 import React, { useState, useEffect } from 'react';
-import { Card, Table, Space, Popconfirm, Input, Button, Tooltip, message, Row, Col } from 'antd';
-import { CloudSyncOutlined, SettingOutlined } from "@ant-design/icons";
+import { Card, Table, Space, Popconfirm, Input, Button, Tooltip, message, Row, Col, Spin } from 'antd';
+import { SettingOutlined } from "@ant-design/icons";
 import * as ethers from "ethers";
 
 // === constants === //
@@ -36,6 +36,7 @@ export default function StrategiesTable(props) {
   const { userProvider, refreshSymbol, refreshCallBack, address } = props;
   const [data, setData] = useState([]);
   const [underlyingUnit, setUnderlyingUnit] = useState(BigNumber.from(1));
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     loadBanlance();
@@ -43,6 +44,7 @@ export default function StrategiesTable(props) {
 
 
   const loadBanlance = async () => {
+    setLoading(true);
     const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider);
     const strategiesAddress = await vaultContract.getStrategies();
     const nextData = await Promise.all(map(strategiesAddress, async (item) => {
@@ -85,6 +87,9 @@ export default function StrategiesTable(props) {
       });
     }));
     setData(sortBy(nextData, [i => -1 * i.apy]));
+    setTimeout(() => {
+      setLoading(false);
+    }, 1000);
   }
 
   /**
@@ -159,8 +164,7 @@ export default function StrategiesTable(props) {
     const signer = userProvider.getSigner();
     const contractWithSigner = contract.connect(signer);
     const tx = await contractWithSigner.harvest();
-    const resp = await tx.wait();
-    return resp;
+    await tx.wait();
   };
 
   /**
@@ -231,15 +235,12 @@ export default function StrategiesTable(props) {
     const signer = userProvider.getSigner();
     const tx = await vaultContract.connect(signer).redeem(strategyAddress, totalAsset)
     await tx.wait();
-    loadBanlance();
-    refreshCallBack();
   }
 
   /**
    * 调用定时器的api服务
    */
   const callApi = async (method) => {
-    const close = message.loading('接口调用中...', 60 * 60);
     const signer = userProvider.getSigner();
     const timestamp = Date.now();
     const messageHash = utils.id(`${method}:${address}:${timestamp}`);
@@ -247,24 +248,24 @@ export default function StrategiesTable(props) {
     const messageHashBytes = utils.arrayify(messageHash)
 
     const signature = await signer.signMessage(messageHashBytes);
+    const close = message.loading('接口调用中...', 60 * 60);
     const headers = {
       timestamp,
       signature
     }
-    console.log('headers=', headers);
-    request.post(`${APY_SERVER}/v3/${method}`, { headers }, (error, response, body) => {
-      console.log('error, response, bod=', error, response, body);
-      close();
-      if (error) {
-        message.error('接口调用失败');
-      } else {
-        message.success('接口调用成功');
-      }
-      setTimeout(() => {
-        loadBanlance()
-        refreshCallBack()
-      }, 3000);
-    });
+    return new Promise((resolve, reject) => {
+      request.post(`${APY_SERVER}/v3/${method}`, { headers }, (error, response, body) => {
+        console.log('error, response, bod=', error, response, body);
+        close();
+        if (error) {
+          message.error('接口调用失败');
+          reject();
+        } else {
+          message.success('接口调用成功');
+          resolve();
+        }
+      });
+    })
   }
 
   const columns = [
@@ -360,7 +361,7 @@ export default function StrategiesTable(props) {
           <Popconfirm
             placement="topLeft"
             title={'确认立刻执行Harvest操作？'}
-            onConfirm={() => doHardWork(address)}
+            onConfirm={() => doHardWork(address).then(loadBanlance).then(refreshCallBack)}
             okText="是"
             cancelText="否"
           >
@@ -369,7 +370,7 @@ export default function StrategiesTable(props) {
           <Popconfirm
             placement="topLeft"
             title={'确认立刻执行Redeem操作？'}
-            onConfirm={() => redeem(address, totalDebt.toString())}
+            onConfirm={() => redeem(address, totalDebt.toString()).then(loadBanlance).then(refreshCallBack)}
             okText="是"
             cancelText="否"
           >
@@ -378,7 +379,7 @@ export default function StrategiesTable(props) {
           <Popconfirm
             placement="topLeft"
             title={'确认立刻移除该策略？'}
-            onConfirm={() => removeStrategy(address)}
+            onConfirm={() => removeStrategy(address).then(loadBanlance).then(refreshCallBack)}
             okText="是"
             cancelText="否"
           >
@@ -400,7 +401,6 @@ export default function StrategiesTable(props) {
       <Row>
         <Col span={6}>
           <Input.Search
-            addonBefore={<CloudSyncOutlined title="刷新策略数据" onClick={loadBanlance} />}
             placeholder="请输入合约地址"
             enterButton="添加"
             onSearch={addStrategy}
@@ -408,10 +408,13 @@ export default function StrategiesTable(props) {
         </Col>
 
         <Col offset={1} span={17}>
+          <Button style={{ marginRight: 20 }} type="primary" loading={loading} onClick={loadBanlance} >
+            刷新数据
+          </Button>
           <Popconfirm
             placement="topLeft"
             title={'确认立刻进行该操作？'}
-            onConfirm={() => callApi('do-hardwork')}
+            onConfirm={() => callApi('do-hardwork').then(loadBanlance).then(refreshCallBack)}
             okText="是"
             cancelText="否"
           >
@@ -422,7 +425,7 @@ export default function StrategiesTable(props) {
           <Popconfirm
             placement="topLeft"
             title={'确认立刻进行该操作？'}
-            onConfirm={() => callApi('allocation')}
+            onConfirm={() => callApi('allocation').then(loadBanlance).then(refreshCallBack)}
             okText="是"
             cancelText="否"
           >
@@ -433,7 +436,7 @@ export default function StrategiesTable(props) {
           <Popconfirm
             placement="topLeft"
             title={'确认立刻进行该操作？'}
-            onConfirm={() => callApi('harvest')}
+            onConfirm={() => callApi('harvest').then(loadBanlance).then(refreshCallBack)}
             okText="是"
             cancelText="否"
           >
@@ -441,19 +444,10 @@ export default function StrategiesTable(props) {
               harvest
             </Button>
           </Popconfirm>
-          {/* <Popconfirm
-            placement="topLeft"
-            title={'确认批量获取选中策略盈利？'}
-            onConfirm={batchDoHardWork}
-            okText="是"
-            cancelText="否"
-          >
-            <Button type="primary">批量获取盈利</Button>
-          </Popconfirm> */}
           <Popconfirm
             placement="topLeft"
             title={'确认批量更新apy？'}
-            onConfirm={() => callApi('update-apy')}
+            onConfirm={() => callApi('update-apy').then(loadBanlance).then(refreshCallBack)}
             okText="是"
             cancelText="否"
           >
@@ -463,8 +457,9 @@ export default function StrategiesTable(props) {
       </Row>
     }
   >
-    <Table bordered columns={columns}
-      // rowSelection={rowSelection}
-      dataSource={data} pagination={false} />
+    <Spin spinning={loading} size="large" tip="数据加载中...">
+      <Table bordered columns={columns}
+        dataSource={data} pagination={false} />
+    </Spin>
   </Card>
 }

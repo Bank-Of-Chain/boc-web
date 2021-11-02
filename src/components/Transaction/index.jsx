@@ -15,6 +15,7 @@ import isEmpty from "lodash/isEmpty";
 import filter from "lodash/filter";
 
 const { Countdown } = Statistic;
+const slipper = 100;
 
 const getExchangePlatformAdapters = async (exchangeAggregator) => {
   const adapters = await exchangeAggregator.getExchangeAdapters();
@@ -41,30 +42,43 @@ export default function Transaction(props) {
   const [withdrawFee, setWithdrawFee] = useState(BigNumber.from(0));
   const [currentBlockTimestamp, setCurrentBlockTimestamp] = useState(0);
 
-  const [allowMaxLoss, setAllowMaxLoss] = useState(60);
+  const [allowMaxLoss, setAllowMaxLoss] = useState(100);
   const [shouldExchange, setShouldExchange] = useState(true);
 
+  const [withdrawLoading, setWithdrawLoading] = useState(false);
+  const [depositLoading, setDepositLoading] = useState(false);
   const loadBanlance = () => {
     if (isEmpty(address)) return loadBanlance;
+    setWithdrawLoading(true);
+    setDepositLoading(true);
     // 获取usdc的合约
     const usdtContract = new ethers.Contract(from, IERC20_ABI, userProvider);
-    usdtContract.balanceOf(address).then(setFromBalance);
+    usdtContract.balanceOf(address).then((value) => {
+      setTimeout(() => {
+        setFromBalance(value);
+        setDepositLoading(false);
+      }, 1000);
+    });
     const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider);
-    vaultContract.balanceOf(address).then(setToBalance);
+    vaultContract.balanceOf(address).then((value) => {
+      setTimeout(() => {
+        setToBalance(value);
+        setWithdrawLoading(false);
+      }, 1000);
+    });
     vaultContract.pricePerShare().then(setPerFullShare);
     vaultContract.decimals().then(setUnderlyingUnit);
 
-    vaultContract.userInfos(address).then(resp => {
-      setLastDepositTimes(resp.lastDepositTime);
-    });
+    vaultContract.userInfos(address).then(setLastDepositTimes);
     vaultContract.calculateWithdrawFeePercent(address).then(setWithdrawFee);
 
     userProvider.getBlock(userProvider.blockNumber).then(resp => {
-      setCurrentBlockTimestamp(resp.timestamp)
+      setCurrentBlockTimestamp(resp.timestamp);
     })
   };
 
   const diposit = async () => {
+    setDepositLoading(true);
     // 获取usdc的合约
     const usdtContract = new ethers.Contract(from, IERC20_ABI, userProvider);
     const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider);
@@ -88,8 +102,7 @@ export default function Transaction(props) {
       }
       const depositTx = await nVaultWithUser.deposit(nextValue);
       await depositTx.wait();
-      setFromValue(0);
-      message.loading('数据提交中...', 2.5).then(() => message.success('数据提交成功', 2.5))
+      message.success('数据提交成功');
     } catch (error) {
       console.log('error=', error);
       if (error && error.data) {
@@ -98,19 +111,23 @@ export default function Transaction(props) {
         }
       }
     }
+    setTimeout(() => {
+      setDepositLoading(false);
+      setFromValue(0);
+    }, 1000);
   };
 
   const withdraw = async () => {
+    setWithdrawLoading(true);
     const signer = userProvider.getSigner();
     const nextValue = `${toValue * 1e6}`;
     try {
-      const close = message.loading('数据提交中...', 2.5)
       const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider);
       const vaultContractWithSigner = vaultContract.connect(signer)
       let exchangeArray = []
       // 如果不需要兑换则按照多币返回
       if (shouldExchange) {
-        const [tokens, amounts] = await vaultContractWithSigner.callStatic.withdraw(nextValue, false, []);
+        const [tokens, amounts] = await vaultContractWithSigner.callStatic.withdraw(nextValue, allowMaxLoss, false, []);
         console.log('tokens, amounts=', tokens, amounts);
         const exchangeManager = await vaultContract.exchangeManager();
         const exchangeManagerContract = new ethers.Contract(exchangeManager, EXCHANGE_AGGREGATOR_ABI, userProvider);
@@ -137,7 +154,7 @@ export default function Transaction(props) {
                   address: USDT_ADDRESS
                 },
                 amounts[index].toString(),
-                allowMaxLoss,
+                slipper,
                 exchangePlatformAdapters,
                 EXCHANGE_EXTRA_PARAMS
               )
@@ -155,12 +172,10 @@ export default function Transaction(props) {
       }
       const nextArray = filter(exchangeArray, i => !isEmpty(i));
       console.log('nextArray=', nextArray);
-      await vaultContractWithSigner.callStatic.withdraw(nextValue, true, nextArray);
-      const tx = await vaultContractWithSigner.withdraw(nextValue, true, nextArray);
+      await vaultContractWithSigner.callStatic.withdraw(nextValue, allowMaxLoss, true, nextArray);
+      const tx = await vaultContractWithSigner.withdraw(nextValue, allowMaxLoss, true, nextArray);
       await tx.wait();
-      setToValue(0);
-      close();
-      message.success('数据提交成功', 2.5)
+      message.success('数据提交成功')
     } catch (error) {
       console.error(error);
       if (error && error.data) {
@@ -172,6 +187,10 @@ export default function Transaction(props) {
         }
       }
     }
+    setTimeout(() => {
+      setWithdrawLoading(false);
+      setToValue(0);
+    }, 1000);
   };
 
   const setFromValuePercent = percent => {
@@ -241,7 +260,7 @@ export default function Transaction(props) {
                     okText="是"
                     cancelText="否"
                   >
-                    <Button type="primary" disabled={parseFloat(fromValue) <= 0}>
+                    <Button type="primary" disabled={parseFloat(fromValue) <= 0} loading={depositLoading}>
                       转入
                     </Button>
                   </Popconfirm>
@@ -277,21 +296,19 @@ export default function Transaction(props) {
                     max={toBalance / underlyingUnit}
                     onChange={value => setToValue(value || 0)}
                   />
+                  <div style={{ display: 'inline' }}>
+                    &nbsp;&nbsp;Max Loss:&nbsp;
+                    <InputNumber
+                      style={{ width: 100 }}
+                      value={allowMaxLoss / 100}
+                      min={0}
+                      max={100}
+                      onChange={value => setAllowMaxLoss(value * 100)}
+                    />&nbsp;%
+                  </div>
                   &nbsp;&nbsp;
                   <Switch checked={shouldExchange} onChange={setShouldExchange}></Switch>
                   &nbsp;&nbsp;{shouldExchange ? '开启' : '关闭'}兑换
-                  {
-                    shouldExchange && <div style={{ display: 'inline' }}>
-                      &nbsp;&nbsp;Max loss:&nbsp;
-                      <InputNumber
-                        style={{ width: 100 }}
-                        value={allowMaxLoss / 100}
-                        min={0}
-                        max={100}
-                        onChange={value => setAllowMaxLoss(value * 100)}
-                      />&nbsp;%
-                    </div>
-                  }
                 </Col>
                 <Col span={24}>
                   <Popconfirm
@@ -303,10 +320,10 @@ export default function Transaction(props) {
                   >
                     {
                       lastDepositTimes.gt(0) && withdrawFee.gt(0)
-                        ? <Button type="primary" disabled={parseFloat(toValue) <= 0}>
+                        ? <Button type="primary" disabled={parseFloat(toValue) <= 0} loading={withdrawLoading}>
                           转出<span style={{ color: 'red', cursor: 'pointer', marginLeft: 5 }}>(-{toFixed(withdrawFee, 10 ** 2, 2)}%)</span>
                         </Button>
-                        : <Button type="primary" disabled={parseFloat(toValue) <= 0}>
+                        : <Button type="primary" disabled={parseFloat(toValue) <= 0} loading={withdrawLoading}>
                           转出
                         </Button>}
                   </Popconfirm>
