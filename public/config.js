@@ -6,7 +6,7 @@ window.config = {
     exchange_extra_params: {
       oneInch: {
         network: 137,
-        excluedeProtocols: ['POLYGON_ONE_INCH_LIMIT_ORDER']
+        excludeProtocols: ['POLYGON_ONE_INCH_LIMIT_ORDER']
       },
       paraswap: {
         network: 137,
@@ -21,7 +21,7 @@ window.config = {
     exchange_extra_params: {
       oneInch: {
         network: 137,
-        excluedeProtocols: ['POLYGON_ONE_INCH_LIMIT_ORDER']
+        excludeProtocols: ['POLYGON_ONE_INCH_LIMIT_ORDER']
       },
       paraswap: {
         network: 137,
@@ -36,7 +36,7 @@ window.config = {
     exchange_extra_params: {
       oneInch: {
         network: 137,
-        excluedeProtocols: ['POLYGON_ONE_INCH_LIMIT_ORDER']
+        excludeProtocols: ['POLYGON_ONE_INCH_LIMIT_ORDER']
       },
       paraswap: {
         network: 137,

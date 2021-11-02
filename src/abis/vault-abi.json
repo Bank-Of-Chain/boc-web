@@ -203,12 +203,6 @@
       },
       {
         "indexed": false,
-        "internalType": "uint256",
-        "name": "profitFeeShare",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
         "internalType": "address[]",
         "name": "withdrawTokens",
         "type": "address[]"
@@ -1195,11 +1189,6 @@
     "outputs": [
       {
         "internalType": "uint256",
-        "name": "userDebt",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
         "name": "lastDepositTime",
         "type": "uint256"
       }
@@ -1257,6 +1246,11 @@
       {
         "internalType": "uint256",
         "name": "shares",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "maxLoss",
         "type": "uint256"
       },
       {

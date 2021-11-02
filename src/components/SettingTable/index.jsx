@@ -2,8 +2,8 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 
 import React, { useState, useEffect } from 'react';
-import { Card, Table, Input, message, Row, Col, Switch } from 'antd';
-import { CloudSyncOutlined, SettingOutlined } from "@ant-design/icons";
+import { Card, Table, Input, message, Row, Col, Switch, Button, Spin } from 'antd';
+import { SettingOutlined } from "@ant-design/icons";
 import * as ethers from "ethers";
 
 // === constants === //
@@ -22,11 +22,14 @@ export default function SettingTable(props) {
   const { userProvider, refreshSymbol } = props;
   const [data, setData] = useState([]);
 
+  const [loading, setLoading] = useState(false);
+
   useEffect(() => {
     loadBanlance();
   }, [refreshSymbol]);
 
   const loadBanlance = async () => {
+    setLoading(true);
     const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider);
     const strategiesAddress = await vaultContract.getStrategies();
     const nextData = await Promise.all(map(strategiesAddress, async (item) => {
@@ -70,6 +73,9 @@ export default function SettingTable(props) {
       });
     }));
     setData(sortBy(nextData, [i => -1 * i.apy]));
+    setTimeout(() => {
+      setLoading(false);
+    }, 1000);
   }
 
   const setLossLimitRatio = async (id, value, profitLimitRatio) => {
@@ -247,11 +253,15 @@ export default function SettingTable(props) {
     extra={
       <Row>
         <Col span={24}>
-          <CloudSyncOutlined title="刷新策略数据" onClick={loadBanlance} />
+          <Button style={{ marginRight: 20 }} type="primary" loading={loading} onClick={loadBanlance} >
+            刷新数据
+          </Button>
         </Col>
       </Row>
     }
   >
-    <Table bordered columns={columns} dataSource={data} pagination={false} />
+    <Spin spinning={loading} size="large" tip="数据加载中...">
+      <Table bordered columns={columns} dataSource={data} pagination={false} />
+    </Spin>
   </Card>
 }
