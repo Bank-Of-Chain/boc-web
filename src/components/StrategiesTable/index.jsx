@@ -87,9 +87,7 @@ export default function StrategiesTable(props) {
       });
     }));
     setData(sortBy(nextData, [i => -1 * i.apy]));
-    setTimeout(() => {
-      setLoading(false);
-    }, 1000);
+    setLoading(false);
   }
 
   /**
