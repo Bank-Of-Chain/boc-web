@@ -5,14 +5,16 @@ import * as ethers from "ethers";
 import { BigNumber } from 'ethers';
 
 // === constants === //
-import { VAULT_ADDRESS, VAULT_ABI, IERC20_ABI, USDT_ADDRESS, EXCHANGE_AGGREGATOR_ABI, EXCHANGE_EXTRA_PARAMS } from "./../../constants";
+import { VAULT_ADDRESS, VAULT_ABI, IERC20_ABI, USDT_ADDRESS, EXCHANGE_AGGREGATOR_ABI, EXCHANGE_EXTRA_PARAMS, APY_SERVER } from "./../../constants";
 
 // === Utils === //
 import { getBestSwapInfo } from "piggy-finance-utils";
 import { toFixed } from "./../../helpers/number-format";
 import map from "lodash/map";
+import get from "lodash/get";
 import isEmpty from "lodash/isEmpty";
 import filter from "lodash/filter";
+import request from "request";
 
 const { Countdown } = Statistic;
 const slipper = 100;
@@ -41,6 +43,7 @@ export default function Transaction(props) {
   const [lastDepositTimes, setLastDepositTimes] = useState(BigNumber.from(0));
   const [withdrawFee, setWithdrawFee] = useState(BigNumber.from(0));
   const [currentBlockTimestamp, setCurrentBlockTimestamp] = useState(0);
+  const [vaultApy, setVaultApy] = useState(BigNumber.from(0));
 
   const [allowMaxLoss, setAllowMaxLoss] = useState(100);
   const [shouldExchange, setShouldExchange] = useState(true);
@@ -76,6 +79,17 @@ export default function Transaction(props) {
       setCurrentBlockTimestamp(resp.timestamp);
     })
   };
+
+  const loadApy = () => {
+    const days = 3;
+    request.get(`${APY_SERVER}/v3/vault/apy/${days}`, (error, response, body) => {
+      console.log('error, response, bod=', error, response, body);
+      if (error) {
+        return
+      }
+      setVaultApy(BigNumber.from(get(response, 'data.apy', 0)));
+    });
+  }
 
   const diposit = async () => {
     setDepositLoading(true);
@@ -203,6 +217,7 @@ export default function Transaction(props) {
 
   useEffect(() => {
     loadBanlance();
+    loadApy();
     const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider);
     vaultContract.on('Deposit', (a, b, c) => {
       console.log('Deposit=', a, b, c)
@@ -221,7 +236,7 @@ export default function Transaction(props) {
     <Row>
       <Col span={24}>
         <Card
-          title={<span style={{ textAlign: "left", fontSize: 32 }}>{name}</span>}
+          title={[<span style={{ textAlign: "left", fontSize: 32 }}>{name}</span>, <span style={{ marginLeft: 10, textAlign: "left", fontSize: 32, color: 'red' }}>({vaultApy.div(100).toString()}%)</span>]}
           bordered
         >
           <Row>
