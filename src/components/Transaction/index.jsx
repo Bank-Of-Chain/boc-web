@@ -1,21 +1,22 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useState } from "react";
-import { Row, Col, Tag, Button, Card, InputNumber, Popconfirm, message, Statistic, Tooltip, Switch } from "antd";
+import { Row, Col, Tag, Button, InputNumber, Popconfirm, message, Statistic, Tooltip, Switch, PageHeader, Divider, Radio } from "antd";
 import * as ethers from "ethers";
 import { BigNumber } from 'ethers';
 
 // === constants === //
-import { VAULT_ADDRESS, VAULT_ABI, IERC20_ABI, USDT_ADDRESS, EXCHANGE_AGGREGATOR_ABI, EXCHANGE_EXTRA_PARAMS, APY_SERVER } from "./../../constants";
+import { VAULT_ADDRESS, VAULT_ABI, IERC20_ABI, USDT_ADDRESS, EXCHANGE_AGGREGATOR_ABI, EXCHANGE_EXTRA_PARAMS } from "./../../constants";
 
 // === Utils === //
 import { getBestSwapInfo } from "piggy-finance-utils";
 import { toFixed } from "./../../helpers/number-format";
 import map from "lodash/map";
-import get from "lodash/get";
 import isEmpty from "lodash/isEmpty";
 import filter from "lodash/filter";
-import request from "request";
+import getApyByDays from './../../helpers/api-service';
 
+// apy查询的天数
+const days = [1, 3, 7, 30, 90, 365];
 const { Countdown } = Statistic;
 const slipper = 100;
 
@@ -43,13 +44,19 @@ export default function Transaction(props) {
   const [lastDepositTimes, setLastDepositTimes] = useState(BigNumber.from(0));
   const [withdrawFee, setWithdrawFee] = useState(BigNumber.from(0));
   const [currentBlockTimestamp, setCurrentBlockTimestamp] = useState(0);
-  const [vaultApy, setVaultApy] = useState(BigNumber.from(0));
+  const [vaultApys, setVaultApys] = useState([]);
 
   const [allowMaxLoss, setAllowMaxLoss] = useState(100);
   const [shouldExchange, setShouldExchange] = useState(true);
 
   const [withdrawLoading, setWithdrawLoading] = useState(false);
   const [depositLoading, setDepositLoading] = useState(false);
+
+  // 当前选中的 tab
+  const [currentTab, setCurrentTab] = useState(0);
+
+  const [currentDays, setCurrentDays] = useState(1);
+
   const loadBanlance = () => {
     if (isEmpty(address)) return loadBanlance;
     setWithdrawLoading(true);
@@ -80,15 +87,9 @@ export default function Transaction(props) {
     })
   };
 
-  const loadApy = () => {
-    const days = 3;
-    request.get(`${APY_SERVER}/v3/vault/apy/${days}`, (error, response, body) => {
-      console.log('error, response, bod=', error, response, body);
-      if (error) {
-        return
-      }
-      setVaultApy(BigNumber.from(get(response, 'data.apy', 0)));
-    });
+  const loadApy = async () => {
+    const requestArray = await Promise.all(map(days, day => getApyByDays(day)));
+    setVaultApys(requestArray);
   }
 
   const diposit = async () => {
@@ -235,132 +236,165 @@ export default function Transaction(props) {
   return (
     <Row>
       <Col span={24}>
-        <Card
-          title={[<span style={{ textAlign: "left", fontSize: 32 }}>{name}</span>, <span style={{ marginLeft: 10, textAlign: "left", fontSize: 32, color: 'red' }}>({vaultApy.div(100).toString()}%)</span>]}
-          bordered
+        <PageHeader
+          ghost={false}
+          onBack={null}
+          title={<span >{name}</span>}
+          subTitle={vaultApys[currentDays] && <span style={{ color: 'red' }}>{toFixed(vaultApys[currentDays], 100, 2)}%&nbsp;&nbsp;&nbsp;
+            <Radio.Group onChange={e => setCurrentDays(e.target.value)} value={currentDays}>
+              {
+                map(days, (day, index) => <Radio key={index} value={index}>{day}天</Radio>)
+              }
+            </Radio.Group>
+          </span>}
+          extra={[
+            // <Button key="0" type={currentTab === 0 && 'primary'} onClick={() => setCurrentTab(0)}>
+            //   主页
+            // </Button>,
+            // <Button key="1" type={currentTab === 1 && 'primary'} onClick={() => setCurrentTab(1)}>
+            //   详细情况
+            // </Button>,
+            // <Button key="2" type={currentTab === 2 && 'primary'} onClick={() => setCurrentTab(2)}>
+            //   收益变化
+            // </Button>,
+          ]}
         >
-          <Row>
-            <Col span={12}>
-              <Row gutter={[10, 10]} justify="start">
-                <Col span={24} style={{ fontSize: 30, fontWeight: 'bold' }}>余额：{toFixed(fromBalance, usdtDecimals)}</Col>
-                <Col span={24}>
-                  <Tag color="geekblue" onClick={() => setFromValuePercent(0.25)}>
-                    25%
-                  </Tag>
-                  <Tag color="green" onClick={() => setFromValuePercent(0.5)}>
-                    50%
-                  </Tag>
-                  <Tag color="orange" onClick={() => setFromValuePercent(0.75)}>
-                    75%
-                  </Tag>
-                  <Tag color="magenta" onClick={() => setFromValuePercent(1)}>
-                    100%
-                  </Tag>
-                </Col>
-                <Col span={24}>
-                  <InputNumber
-                    disabled={fromBalance.lt(0)}
-                    style={{ width: 200 }}
-                    value={fromValue}
-                    min={0}
-                    max={fromBalance.div(usdtDecimals)}
-                    onChange={value => setFromValue(value || 0)}
-                  />
-                </Col>
-                <Col span={24}>
-                  <Popconfirm
-                    placement="topLeft"
-                    title={`确认存入${fromValue && fromValue.toString()}枚USDT吗？`}
-                    onConfirm={diposit}
-                    okText="是"
-                    cancelText="否"
-                  >
-                    <Button type="primary" disabled={parseFloat(fromValue) <= 0} loading={depositLoading}>
-                      转入
-                    </Button>
-                  </Popconfirm>
-                </Col>
-              </Row>
-            </Col>
-            <Col span={12}>
-              <Row gutter={[10, 10]}>
-                <Col span={24} style={{ fontSize: 30, fontWeight: 'bold' }}>
-                  <span>份额：{toFixed(toBalance, 10 ** underlyingUnit)}</span>
-                  <span>({toFixed(toBalance.mul(perFullShare).div(10 ** underlyingUnit), 10 ** underlyingUnit)}USDT)</span>
-                </Col>
-                <Col span={24}>
-                  <Tag color="geekblue" onClick={() => setToValuePercent(0.25)}>
-                    25%
-                  </Tag>
-                  <Tag color="green" onClick={() => setToValuePercent(0.5)}>
-                    50%
-                  </Tag>
-                  <Tag color="orange" onClick={() => setToValuePercent(0.75)}>
-                    75%
-                  </Tag>
-                  <Tag color="magenta" onClick={() => setToValuePercent(1)}>
-                    100%
-                  </Tag>
-                </Col>
-                <Col span={24}>
-                  <InputNumber
-                    disabled={toBalance.lt(0)}
-                    style={{ width: 200 }}
-                    value={toValue}
-                    min={0}
-                    max={toBalance / underlyingUnit}
-                    onChange={value => setToValue(value || 0)}
-                  />
-                  <div style={{ display: 'inline' }}>
-                    &nbsp;&nbsp;Max Loss:&nbsp;
+          <Divider style={{ marginTop: 0 }} />
+          {
+            currentTab === 0 && <Row>
+              <Col span={12}>
+                <Row gutter={[10, 10]} justify="start">
+                  <Col span={24} style={{ fontSize: 30, fontWeight: 'bold' }}>余额：{toFixed(fromBalance, usdtDecimals)}</Col>
+                  <Col span={24}>
+                    <Tag color="geekblue" onClick={() => setFromValuePercent(0.25)}>
+                      25%
+                    </Tag>
+                    <Tag color="green" onClick={() => setFromValuePercent(0.5)}>
+                      50%
+                    </Tag>
+                    <Tag color="orange" onClick={() => setFromValuePercent(0.75)}>
+                      75%
+                    </Tag>
+                    <Tag color="magenta" onClick={() => setFromValuePercent(1)}>
+                      100%
+                    </Tag>
+                  </Col>
+                  <Col span={24}>
                     <InputNumber
-                      style={{ width: 100 }}
-                      value={allowMaxLoss / 100}
+                      disabled={fromBalance.lt(0)}
+                      style={{ width: 200 }}
+                      value={fromValue}
                       min={0}
-                      max={100}
-                      onChange={value => setAllowMaxLoss(value * 100)}
-                    />&nbsp;%
-                  </div>
-                  &nbsp;&nbsp;
-                  <Switch checked={shouldExchange} onChange={setShouldExchange}></Switch>
-                  &nbsp;&nbsp;{shouldExchange ? '开启' : '关闭'}兑换
-                </Col>
-                <Col span={24}>
-                  <Popconfirm
-                    placement="topLeft"
-                    title={`确认售出${toValue && toValue.toString()}份购入合约吗？`}
-                    onConfirm={withdraw}
-                    okText="是"
-                    cancelText="否"
-                  >
+                      max={fromBalance.div(usdtDecimals)}
+                      onChange={value => setFromValue(value || 0)}
+                    />
+                  </Col>
+                  <Col span={24}>
+                    <Popconfirm
+                      placement="topLeft"
+                      title={`确认存入${fromValue && fromValue.toString()}枚USDT吗？`}
+                      onConfirm={diposit}
+                      okText="是"
+                      cancelText="否"
+                    >
+                      <Button type="primary" disabled={parseFloat(fromValue) <= 0} loading={depositLoading}>
+                        转入
+                      </Button>
+                    </Popconfirm>
+                  </Col>
+                </Row>
+              </Col>
+              <Col span={12}>
+                <Row gutter={[10, 10]}>
+                  <Col span={24} style={{ fontSize: 30, fontWeight: 'bold' }}>
+                    <span>份额：{toFixed(toBalance, 10 ** underlyingUnit)}</span>
+                    <span>({toFixed(toBalance.mul(perFullShare).div(10 ** underlyingUnit), 10 ** underlyingUnit)}USDT)</span>
+                  </Col>
+                  <Col span={24}>
+                    <Tag color="geekblue" onClick={() => setToValuePercent(0.25)}>
+                      25%
+                    </Tag>
+                    <Tag color="green" onClick={() => setToValuePercent(0.5)}>
+                      50%
+                    </Tag>
+                    <Tag color="orange" onClick={() => setToValuePercent(0.75)}>
+                      75%
+                    </Tag>
+                    <Tag color="magenta" onClick={() => setToValuePercent(1)}>
+                      100%
+                    </Tag>
+                  </Col>
+                  <Col span={24}>
+                    <InputNumber
+                      disabled={toBalance.lt(0)}
+                      style={{ width: 200 }}
+                      value={toValue}
+                      min={0}
+                      max={toBalance / underlyingUnit}
+                      onChange={value => setToValue(value || 0)}
+                    />
+                    <div style={{ display: 'inline' }}>
+                      &nbsp;&nbsp;Max Loss:&nbsp;
+                      <InputNumber
+                        style={{ width: 100 }}
+                        value={allowMaxLoss / 100}
+                        min={0}
+                        max={100}
+                        onChange={value => setAllowMaxLoss(value * 100)}
+                      />&nbsp;%
+                    </div>
+                    &nbsp;&nbsp;
+                    <Switch checked={shouldExchange} onChange={setShouldExchange}></Switch>
+                    &nbsp;&nbsp;{shouldExchange ? '开启' : '关闭'}兑换
+                  </Col>
+                  <Col span={24}>
+                    <Popconfirm
+                      placement="topLeft"
+                      title={`确认售出${toValue && toValue.toString()}份购入合约吗？`}
+                      onConfirm={withdraw}
+                      okText="是"
+                      cancelText="否"
+                    >
+                      {
+                        lastDepositTimes.gt(0) && withdrawFee.gt(0)
+                          ? <Button type="primary" disabled={parseFloat(toValue) <= 0} loading={withdrawLoading}>
+                            转出<span style={{ color: 'red', cursor: 'pointer', marginLeft: 5 }}>(-{toFixed(withdrawFee, 10 ** 2, 2)}%)</span>
+                          </Button>
+                          : <Button type="primary" disabled={parseFloat(toValue) <= 0} loading={withdrawLoading}>
+                            转出
+                          </Button>}
+                    </Popconfirm>
                     {
-                      lastDepositTimes.gt(0) && withdrawFee.gt(0)
-                        ? <Button type="primary" disabled={parseFloat(toValue) <= 0} loading={withdrawLoading}>
-                          转出<span style={{ color: 'red', cursor: 'pointer', marginLeft: 5 }}>(-{toFixed(withdrawFee, 10 ** 2, 2)}%)</span>
-                        </Button>
-                        : <Button type="primary" disabled={parseFloat(toValue) <= 0} loading={withdrawLoading}>
-                          转出
-                        </Button>}
-                  </Popconfirm>
-                  {
-                    lastDepositTimes.gt(0) && withdrawFee.gt(0) && <Tooltip title="距离上一次存款时间未达到24小时，支取需要支付额外的手续费用。">
-                      <span style={{ color: 'red', fontSize: 16, marginLeft: 10, cursor: 'pointer' }}>剩余锁定时间：</span>
-                      <Countdown style={{
-                        display: "inline-flex"
-                      }}
-                        valueStyle={{
-                          color: 'red',
-                          fontSize: 16,
-                          cursor: 'pointer'
+                      lastDepositTimes.gt(0) && withdrawFee.gt(0) && <Tooltip title="距离上一次存款时间未达到24小时，支取需要支付额外的手续费用。">
+                        <span style={{ color: 'red', fontSize: 16, marginLeft: 10, cursor: 'pointer' }}>剩余锁定时间：</span>
+                        <Countdown style={{
+                          display: "inline-flex"
                         }}
-                        title={null} value={deadline} format="HH:mm:ss" />
-                    </Tooltip>
-                  }
-                </Col>
-              </Row>
-            </Col>
-          </Row>
-        </Card>
+                          valueStyle={{
+                            color: 'red',
+                            fontSize: 16,
+                            cursor: 'pointer'
+                          }}
+                          title={null} value={deadline} format="HH:mm:ss" />
+                      </Tooltip>
+                    }
+                  </Col>
+                </Row>
+              </Col>
+            </Row>
+          }
+          {/* {
+            currentTab === 1 && <Row>
+              <p>这是一段软文</p>
+            </Row>
+          }
+
+          {
+            currentTab === 2 && <Row>
+              <Apy />
+            </Row>
+          } */}
+        </PageHeader>
       </Col>
     </Row>
   );
