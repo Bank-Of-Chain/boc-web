@@ -1,12 +1,11 @@
-#### 提交 PR 之前请确认以下事项:
-
-* [ ] 测试用例 action 是否执行通过.
-* [ ] 代码格式验证 actions 是否执行通过.
-
-功能描述：
-
-操作/复现步骤：
-
-使用账号：
+# Description
 
 
+# Ticket
+
+
+# Checklist:
+
+- [ ] My code follows the style guidelines of this project
+- [ ] I have performed a self-review of my own code
+- [ ] My changes generate no new warnings
