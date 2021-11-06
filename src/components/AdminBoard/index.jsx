@@ -122,7 +122,7 @@ function AdminBoard(props) {
         valueStyle={{
           fontWeight: 'bold', color: '#000', fontSize: 'x-large'
         }}
-        value={`${toFixed(treasureBalance, 10 ** 6)}（${treasureBalance * perFullShare / 10 ** 12} USDT）`}
+        value={`${toFixed(treasureBalance, 10 ** 6)}（${toFixed(treasureBalance * perFullShare, 10 ** 12, 6)} USDT）`}
       />
       <Statistic
         title={<span style={{ fontWeight: 'bold', color: '#000', fontSize: 'large' }}>Vault净值</span>}
