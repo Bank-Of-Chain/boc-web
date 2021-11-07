@@ -8,16 +8,16 @@ import styles from "./typographyStyle";
 
 const useStyles = makeStyles(styles);
 
-export default function Danger(props) {
+export default function Info(props) {
   const classes = useStyles();
   const { children } = props;
   return (
-    <div className={classes.defaultFontStyle + " " + classes.dangerText}>
+    <div className={classes.defaultFontStyle + " " + classes.infoText}>
       {children}
     </div>
   );
 }
 
-Danger.propTypes = {
+Info.propTypes = {
   children: PropTypes.node,
 };

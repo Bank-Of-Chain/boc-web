@@ -8,16 +8,18 @@ import styles from "./typographyStyle";
 
 const useStyles = makeStyles(styles);
 
-export default function Danger(props) {
+export default function Quote(props) {
+  const { text, author } = props;
   const classes = useStyles();
-  const { children } = props;
   return (
-    <div className={classes.defaultFontStyle + " " + classes.dangerText}>
-      {children}
-    </div>
+    <blockquote className={classes.defaultFontStyle + " " + classes.quote}>
+      <p className={classes.quoteText}>{text}</p>
+      <small className={classes.quoteAuthor}>{author}</small>
+    </blockquote>
   );
 }
 
-Danger.propTypes = {
-  children: PropTypes.node,
+Quote.propTypes = {
+  text: PropTypes.node,
+  author: PropTypes.node,
 };
