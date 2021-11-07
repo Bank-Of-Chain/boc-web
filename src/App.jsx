@@ -34,9 +34,7 @@ Date.prototype.format = function (fmt) {
   return fmt;
 }
 
-const Home = lazy(() => import('./pages/Home/index'));
-const Dashboard = lazy(() => import('./pages/Dashboard/index'));
-const Admin = lazy(() => import('./pages/Admin/index'));
+const User = lazy(() => import('./pages/User/index'));
 
 const DEBUG = false;
 const targetNetwork = NETWORKS[ENV_NETWORK_TYPE];
@@ -105,19 +103,9 @@ function App() {
     <div className="App">
       <HashRouter>
         <Switch>
-          <Route exact path="/">
+          <Route path="/">
             <Suspense fallback={<div>Loading</div>}>
-              <Home {...nextProps} />
-            </Suspense>
-          </Route>
-          <Route path="/dashboard">
-            <Suspense fallback={<div>Loading</div>}>
-              <Dashboard {...nextProps} />
-            </Suspense>
-          </Route>
-          <Route path="/admin">
-            <Suspense fallback={<div>Loading</div>}>
-              <Admin {...nextProps} />
+              <User {...nextProps} />
             </Suspense>
           </Route>
           <Route path="*">
