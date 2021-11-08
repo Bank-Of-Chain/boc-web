@@ -12317,7 +12317,7 @@ prompts@^2.0.1:
     kleur "^3.0.3"
     sisteransi "^1.0.5"
 
-prop-types@^15.5.10, prop-types@^15.6.0, prop-types@^15.6.2, prop-types@^15.7.2:
+prop-types@^15.5.10, prop-types@^15.5.8, prop-types@^15.6.0, prop-types@^15.6.2, prop-types@^15.7.2:
   version "15.7.2"
   resolved "https://registry.yarnpkg.com/prop-types/-/prop-types-15.7.2.tgz#52c41e75b8c87e72b9d9360e0206b99dcbffa6c5"
   integrity sha512-8QQikdH7//R2vurIJSutZ1smHYTcLpRWEOlHnzcWHmBYrOGUysKwSsrC89BCiFj3CbrfJ/nXFdJepOVrY1GCHQ==
@@ -12910,6 +12910,18 @@ react-blockies@^1.4.1:
   integrity sha512-4N015X5oPNnD3xQPsiqolOFzPZSSWyc5mJhJUZShUCHtiGUxVN+1qsWTcglkHMNySux9hUofaispqcw9QkWP5Q==
   dependencies:
     prop-types "^15.5.10"
+
+react-count-to@^0.12.0:
+  version "0.12.0"
+  resolved "https://registry.yarnpkg.com/react-count-to/-/react-count-to-0.12.0.tgz#28c6a2cc47b1d47c6019b35f02752ff109f3ca00"
+  integrity sha512-zckT3EvkGvdM65X7mIMVDXtv0/pYI2wpNH6iSEE7M14F2jO2IbCBTuJ+GCifkriY/l493CF9qCH5J4hiel9hYQ==
+  dependencies:
+    prop-types "^15.5.8"
+
+react-countdown-hook@^1.1.1:
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/react-countdown-hook/-/react-countdown-hook-1.1.1.tgz#2536209b0d9243f75275844ae575d696f2ffbc5d"
+  integrity sha512-+/vH6zK2H0yM9dPWJOa3hnLsBWWjwwi/6KOXDBc6F65lrc8vmuMozjTOlLhG4AtyyOTJAd2bvJhlph8IPqrXxg==
 
 react-dev-utils@^10.2.1:
   version "10.2.1"
