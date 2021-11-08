@@ -20,6 +20,8 @@ import Button from "../../components/CustomButtons/Button";
 import Muted from "../../components/Typography/Muted";
 import CountTo from 'react-count-to';
 import Tooltip from "@material-ui/core/Tooltip";
+import Snackbar from "@material-ui/core/Snackbar";
+import Alert from '@material-ui/lab/Alert';
 
 // === constants === //
 import { VAULT_ADDRESS, VAULT_ABI, IERC20_ABI, USDT_ADDRESS, EXCHANGE_AGGREGATOR_ABI, EXCHANGE_EXTRA_PARAMS, MULTIPLE_OF_GAS } from "./../../constants";
@@ -31,12 +33,16 @@ import { getTime } from "../../helpers/time-format";
 import map from "lodash/map";
 import isEmpty from "lodash/isEmpty";
 import filter from "lodash/filter";
+import isUndefined from "lodash/isUndefined";
 import * as ethers from "ethers";
 
 import styles from "./style";
 
 const useStyles = makeStyles(styles);
 const { BigNumber } = ethers;
+
+// 获取兑换路径时，支持的最大损失
+const slipper = 5000;
 
 const getExchangePlatformAdapters = async (exchangeAggregator) => {
   const adapters = await exchangeAggregator.getExchangeAdapters();
@@ -66,7 +72,14 @@ export default function User(props) {
 
   const [allowMaxLoss, setAllowMaxLoss] = useState(60);
   const [shouldExchange, setShouldExchange] = useState(true);
-  const dealLine = BigNumber.from(60 * 60 * 24).sub(currentBlockTimestamp - lastDepositTimes);
+  // 模态框标识位
+  const [alertState, setAlertState] = useState({
+    open: false,
+    type: '',
+    message: ''
+  });
+
+  const dealLine = BigNumber.from(60 * 60 * 24 - 1).sub(currentBlockTimestamp - lastDepositTimes);
 
   // 载入账户数据
   const loadBanlance = () => {
@@ -86,7 +99,37 @@ export default function User(props) {
     })
   };
 
+  /**
+   * 校验fromValue是否为有效输入
+   * @returns 
+   */
+  const isValidFromValue = () => {
+    if (fromValue === '' || fromValue === '-') return;
+    if (fromValue < 0) return false;
+    if (fromBalance.lt(usdtDecimals.mul(fromValue))) return false;
+    return true;
+  }
+
+  /**
+   * 校验toValue是否为有效输入
+   * @returns 
+   */
+  const isValidToValue = () => {
+    if (toValue === '' || toValue === '-') return;
+    if (toValue < 0) return false;
+    if (toBalance.lt(usdtDecimals.mul(toValue))) return false;
+    return true;
+  }
+
   const diposit = async () => {
+    // 如果输入的数字不合法，弹出提示框
+    if (!isValidFromValue()) {
+      return setAlertState({
+        open: true,
+        type: 'warning',
+        message: '请输入正确的数值'
+      })
+    }
     // 获取usdc的合约
     const usdtContract = new ethers.Contract(USDT_ADDRESS, IERC20_ABI, userProvider);
     const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider);
@@ -111,28 +154,42 @@ export default function User(props) {
       const depositTx = await nVaultWithUser.deposit(nextValue);
       await depositTx.wait();
       setFromValue(0);
-      // message.loading('数据提交中...', 2.5).then(() => message.success('数据提交成功', 2.5))
+      setAlertState({
+        open: true,
+        type: 'success',
+        message: '数据提交成功'
+      })
     } catch (error) {
       console.log('error=', error);
       if (error && error.data) {
         if (error.data.message === 'Error: VM Exception while processing transaction: reverted with reason string \'ES\'') {
-          // message.error('服务已关停，请稍后再试！');
+          setAlertState({
+            open: true,
+            type: 'error',
+            message: '服务已关停，请稍后再试！'
+          })
         }
       }
     }
   };
 
   const withdraw = async () => {
+    if (!isValidToValue()) {
+      return setAlertState({
+        open: true,
+        type: 'warning',
+        message: '请输入正确的数值'
+      })
+    }
     const signer = userProvider.getSigner();
     const nextValue = `${toValue * 1e6}`;
     try {
-      // const close = message.loading('数据提交中...', 2.5)
       const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider);
       const vaultContractWithSigner = vaultContract.connect(signer)
       let exchangeArray = []
       // 如果不需要兑换则按照多币返回
       if (shouldExchange) {
-        const [tokens, amounts] = await vaultContractWithSigner.callStatic.withdraw(nextValue, false, []);
+        const [tokens, amounts] = await vaultContractWithSigner.callStatic.withdraw(nextValue, allowMaxLoss, false, []);
         console.log('tokens, amounts=', tokens, amounts);
         const exchangeManager = await vaultContract.exchangeManager();
         const exchangeManagerContract = new ethers.Contract(exchangeManager, EXCHANGE_AGGREGATOR_ABI, userProvider);
@@ -159,7 +216,7 @@ export default function User(props) {
                   address: USDT_ADDRESS
                 },
                 amounts[index].toString(),
-                allowMaxLoss,
+                slipper,
                 exchangePlatformAdapters,
                 EXCHANGE_EXTRA_PARAMS
               )
@@ -177,25 +234,37 @@ export default function User(props) {
       }
       const nextArray = filter(exchangeArray, i => !isEmpty(i));
       console.log('nextArray=', nextArray);
-      const gas = await vaultContractWithSigner.estimateGas.withdraw(nextValue, true, nextArray);
-      await vaultContractWithSigner.callStatic.withdraw(nextValue, true, nextArray, {
+      const gas = await vaultContractWithSigner.estimateGas.withdraw(nextValue, allowMaxLoss, true, nextArray);
+      await vaultContractWithSigner.callStatic.withdraw(nextValue, allowMaxLoss, true, nextArray, {
         gasLimit: gas * MULTIPLE_OF_GAS
       });
-      const tx = await vaultContractWithSigner.withdraw(nextValue, true, nextArray, {
+      const tx = await vaultContractWithSigner.withdraw(nextValue, allowMaxLoss, true, nextArray, {
         gasLimit: gas * MULTIPLE_OF_GAS
       });
 
       await tx.wait();
       setToValue(0);
-      // message.success('数据提交成功', 2.5)
+      setAlertState({
+        open: true,
+        type: 'success',
+        message: '数据提交成功'
+      });
     } catch (error) {
       console.error(error);
       if (error && error.data) {
         if (error.data.message === 'Error: VM Exception while processing transaction: reverted with reason string \'ES\'') {
-          // message.error('服务已关停，请稍后再试！');
+          setAlertState({
+            open: true,
+            type: 'error',
+            message: '服务已关停，请稍后再试！'
+          })
         } else if (error.data.message === 'Error: VM Exception while processing transaction: reverted with reason string \'Return amount is not enough\''
           || error.data.message === 'Error: VM Exception while processing transaction: reverted with reason string \'Received amount of tokens are less then expected\'') {
-          // message.error('兑换失败，请加大兑换滑点或关闭兑换功能！');
+          setAlertState({
+            open: true,
+            type: 'error',
+            message: '兑换失败，请加大兑换滑点或关闭兑换功能！'
+          })
         }
       }
     }
@@ -207,8 +276,24 @@ export default function User(props) {
       setTotalAssets(totalAssets.add(10 ** 10))
     });
   }
+  /**
+   * 关闭提示框的方法回调
+   * @param {*} event 
+   * @param {*} reason 
+   * @returns 
+   */
+  const handleClose = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+
+    setAlertState({
+      ...alertState,
+      open: false,
+    })
+  }
   useEffect(() => {
-    const timer = setInterval(loadTotalAssets, 300000);
+    const timer = setInterval(loadTotalAssets, 3000);
     return () => clearInterval(timer);
   }, [totalAssets.toString()]);
 
@@ -236,6 +321,9 @@ export default function User(props) {
     const { hourTime, minuteTime, secondTime } = getTime(dealLine - value);// 秒
     return <span style={{ color: '#f44336' }}> ({hourTime}:{minuteTime}:{secondTime})</span>
   }
+
+  const isValidToValueFlag = isValidToValue();
+  const isValidFromValueFlag = isValidFromValue();
   return (
     <div>
       <Header
@@ -282,7 +370,7 @@ export default function User(props) {
                           inputProps={{
                             placeholder: "Please input a deposit amount",
                             value: fromValue,
-                            endAdornment: <a href="" onClick={() => setFromValue(parseInt(toFixed(fromBalance, 10 ** 6)))}>Max</a>,
+                            endAdornment: <span style={{ color: '#1890ff', cursor: 'pointer' }} onClick={() => setFromValue(parseInt(toFixed(fromBalance, 10 ** 6)))}>Max</span>,
                             onChange: (event) => {
                               try {
                                 if (event.target.value === '-') {
@@ -299,8 +387,8 @@ export default function User(props) {
                               }
                             }
                           }}
-                          error={!!fromValue && (fromBalance.div(usdtDecimals).lt(fromValue) || fromValue < 0)}
-                          success={!!fromValue && fromBalance.div(usdtDecimals).gte(fromValue) && fromValue >= 0}
+                          error={!isUndefined(isValidFromValueFlag) && !isValidFromValueFlag}
+                          success={!isUndefined(isValidFromValueFlag) && isValidFromValueFlag}
                           formControlProps={{
                             fullWidth: true
                           }}
@@ -312,7 +400,7 @@ export default function User(props) {
                           inputProps={{
                             placeholder: "Please input a withdraw amount",
                             value: toValue,
-                            endAdornment: <a href="" onClick={() => setToValue(parseInt(toFixed(toBalance, 10 ** 6)))}>Max</a>,
+                            endAdornment: <span style={{ color: '#1890ff', cursor: 'pointer' }} onClick={() => setToValue(parseInt(toFixed(toBalance, 10 ** 6)))}>Max</span>,
                             onChange: (event) => {
                               try {
                                 if (event.target.value === '-') {
@@ -329,8 +417,8 @@ export default function User(props) {
                               }
                             }
                           }}
-                          error={!!toValue && (toBalance.div(usdtDecimals).lt(toValue) || toValue < 0)}
-                          success={!!toValue && toBalance.div(usdtDecimals).gte(toValue) && toValue >= 0}
+                          error={!isUndefined(isValidToValueFlag) && !isValidToValueFlag}
+                          success={!isUndefined(isValidToValueFlag) && isValidToValueFlag}
                           formControlProps={{
                             fullWidth: true
                           }}
@@ -339,7 +427,7 @@ export default function User(props) {
                       <GridItem xs={12} sm={12} md={6} lg={6} />
                       <GridItem xs={12} sm={12} md={6} lg={6}>
                         <GridContainer>
-                          <GridItem xs={6} sm={6} md={6} lg={6} style={{ border: '1px solid #fff' }}>
+                          <GridItem xs={6} sm={6} md={6} lg={6}>
                             <FormControlLabel
                               control={
                                 <Switch
@@ -360,27 +448,25 @@ export default function User(props) {
                               label={<Muted>{shouldExchange ? "开启兑换" : "关闭兑换"}</Muted>}
                             />
                           </GridItem>
-                          <GridItem xs={6} sm={6} md={6} lg={6} style={{ border: '1px solid #fff' }}>
-                            {
-                              shouldExchange && <CustomInput
-                                labelText="Max Loss"
-                                inputProps={{
-                                  placeholder: "Allow loss percent",
-                                  value: `${toFixed(BigNumber.from(allowMaxLoss), 10 ** 2, 2)}%`,
-                                  endAdornment: <a href="" onClick={() => setAllowMaxLoss(5000)}>Max</a>,
-                                  onChange: (event) => {
-                                    const value = event.target.value;
-                                    const nextValue = value.replace('%', '');
-                                    setAllowMaxLoss(Math.round(100 * nextValue))
-                                  }
-                                }}
-                                error={allowMaxLoss < 0 || allowMaxLoss > 5000}
-                                success={allowMaxLoss >= 0 && allowMaxLoss <= 5000}
-                                formControlProps={{
-                                  fullWidth: true
-                                }}
-                              />
-                            }
+                          <GridItem md={6} style={shouldExchange ? {} : { visibility: 'hidden' }}>
+                            <CustomInput
+                              labelText="Max Loss"
+                              inputProps={{
+                                placeholder: "Allow loss percent",
+                                value: `${toFixed(BigNumber.from(allowMaxLoss), 10 ** 2, 2)}%`,
+                                endAdornment: <span style={{ color: '#1890ff', cursor: 'pointer' }} onClick={() => setAllowMaxLoss(5000)}>Max</span>,
+                                onChange: (event) => {
+                                  const value = event.target.value;
+                                  const nextValue = value.replace('%', '');
+                                  setAllowMaxLoss(Math.round(100 * nextValue))
+                                }
+                              }}
+                              error={allowMaxLoss < 0 || allowMaxLoss > 5000}
+                              success={allowMaxLoss >= 0 && allowMaxLoss <= 5000}
+                              formControlProps={{
+                                fullWidth: true
+                              }}
+                            />
                           </GridItem>
                         </GridContainer>
                       </GridItem>
@@ -390,7 +476,7 @@ export default function User(props) {
                       <GridItem xs={6} sm={6} md={6} lg={6}>
                         <Button color="primary" onClick={withdraw} >Withdraw</Button>
                         {
-                          lastDepositTimes.gt(0) && withdrawFee.gt(0) && <Tooltip
+                          lastDepositTimes.gt(0) && withdrawFee.gt(0) && toBalance.gt(0) && <Tooltip
                             title="距离上一次存款时间未达到24小时，支取需要支付额外的手续费用。"
                             placement={window.innerWidth > 959 ? "top" : "left"}
                             classes={{ tooltip: classes.tooltip }}
@@ -410,6 +496,11 @@ export default function User(props) {
         </GridContainer>
       </div>
       <Footer />
+      <Snackbar open={alertState.open} autoHideDuration={3000} onClose={handleClose} anchorOrigin={{ vertical: 'top', horizontal: 'center' }}>
+        <Alert severity={alertState.type}>
+          {alertState.message}
+        </Alert>
+      </Snackbar>
     </div>
   );
 }
