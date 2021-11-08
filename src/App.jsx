@@ -124,12 +124,16 @@ function App() {
 // eslint-disable-next-line no-unused-expressions
 window.ethereum &&
   (() => {
+    function chainChangedReload(chainId) {
+      localStorage.REACT_APP_NETWORK_TYPE = parseInt(chainId);
+      reload();
+    }
     function reload() {
       setTimeout(() => {
         window.location.reload();
-      }, 1);
+      }, 100);
     }
-    window.ethereum.on("chainChanged", reload);
+    window.ethereum.on("chainChanged", chainChangedReload);
     window.ethereum.on("accountsChanged", reload);
   })()
 
