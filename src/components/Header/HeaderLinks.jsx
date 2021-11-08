@@ -36,7 +36,7 @@ export default function HeaderLinks(props) {
               className={classes.navLink}
               onClick={loadWeb3Modal}
             >
-              <AccountBalanceWallet className={classes.icons} ></AccountBalanceWallet> Conect
+              <AccountBalanceWallet className={classes.icons} ></AccountBalanceWallet> Connect
             </Button>
             : <Button
               color="transparent"
