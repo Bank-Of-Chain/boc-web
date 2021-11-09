@@ -1,6 +1,5 @@
 /*eslint-disable*/
 import React from "react";
-import IconButton from "@material-ui/core/IconButton";
 
 // @material-ui/core components
 import { makeStyles } from "@material-ui/core/styles";
@@ -9,7 +8,6 @@ import ListItem from "@material-ui/core/ListItem";
 
 // @material-ui/icons
 import Settings from "@material-ui/icons/Settings";
-import AccountBalanceWallet from "@material-ui/icons/AccountBalanceWallet";
 import LibraryBooksIcon from '@material-ui/icons/LibraryBooks';
 import TrendingUpIcon from '@material-ui/icons/TrendingUp';
  
@@ -17,10 +15,7 @@ import TrendingUpIcon from '@material-ui/icons/TrendingUp';
 // core components
 import Button from "../CustomButtons/Button";
 import styles from "./headerLinksStyle";
-import Address from "../Address/Address";
 
-// === Utils === //
-import isEmpty from "lodash/isEmpty";
 
 const useStyles = makeStyles(styles);
 

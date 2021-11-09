@@ -9,10 +9,8 @@ import { makeStyles } from "@material-ui/core/styles";
 // core components
 import GridContainer from "../../../components/Grid/GridContainer";
 import GridItem from "../../../components/Grid/GridItem";
-import Button from "../../../components/CustomButtons/Button";
 import Card from "../../../components/Card/Card";
 import CardBody from "../../../components/Card/CardBody";
-import CardFooter from "../../../components/Card/CardFooter";
 
 import styles from "./teamStyle";
 
