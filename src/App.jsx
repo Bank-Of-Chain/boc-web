@@ -9,7 +9,7 @@ import Web3Modal from "web3modal";
 import WalletConnectProvider from "@walletconnect/web3-provider";
 import { useUserAddress } from "eth-hooks";
 import { useUserProvider, useGasPrice, useBalance } from "./hooks";
-import { INFURA_ID, NETWORKS, ENV_NETWORK_TYPE } from "./constants";
+import { RPC_URL } from "./constants";
 import { Transactor } from "./helpers";
 import isEmpty from 'lodash/isEmpty';
 import "antd/dist/antd.css";
@@ -37,10 +37,9 @@ Date.prototype.format = function (fmt) {
 const User = lazy(() => import('./pages/User/index'));
 
 const DEBUG = false;
-const targetNetwork = NETWORKS[ENV_NETWORK_TYPE];
 
 // 🏠 Your local provider is usually pointed at your local blockchain
-const localProviderUrl = targetNetwork.rpcUrl;
+const localProviderUrl = RPC_URL;
 // as you deploy to other networks you can set REACT_APP_PROVIDER=https://dai.poa.network in packages/react-app/.env
 const localProviderUrlFromEnv = process.env.REACT_APP_PROVIDER ? process.env.REACT_APP_PROVIDER : localProviderUrl;
 if (DEBUG) console.log("🏠 Connecting to provider:", localProviderUrlFromEnv);
@@ -50,12 +49,6 @@ const web3Modal = new Web3Modal({
   // network: "mainnet", // optional
   cacheProvider: true, // optional
   providerOptions: {
-    walletconnect: {
-      package: WalletConnectProvider, // required
-      options: {
-        infuraId: INFURA_ID,
-      },
-    },
   },
 });
 
@@ -81,7 +74,7 @@ function App() {
   }, [loadWeb3Modal]);
 
   const userProvider = useUserProvider(injectedProvider, localProvider);
-  const gasPrice = useGasPrice(targetNetwork);
+  const gasPrice = useGasPrice();
   const tx = Transactor(userProvider, gasPrice);
   const address = useUserAddress(userProvider);
 
