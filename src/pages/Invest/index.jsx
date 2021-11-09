@@ -24,7 +24,7 @@ import Snackbar from "@material-ui/core/Snackbar";
 import Alert from '@material-ui/lab/Alert';
 
 // === constants === //
-import { VAULT_ADDRESS, VAULT_ABI, IERC20_ABI, USDT_ADDRESS, EXCHANGE_AGGREGATOR_ABI, EXCHANGE_EXTRA_PARAMS, MULTIPLE_OF_GAS } from "./../../constants";
+import { VAULT_ADDRESS, VAULT_ABI, IERC20_ABI, USDT_ADDRESS, EXCHANGE_AGGREGATOR_ABI, EXCHANGE_EXTRA_PARAMS, MULTIPLE_OF_GAS } from "../../constants";
 
 // === Utils === //
 import { getBestSwapInfo } from "piggy-finance-utils";
@@ -54,7 +54,7 @@ const getExchangePlatformAdapters = async (exchangeAggregator) => {
   return exchangePlatformAdapters;
 }
 
-export default function User(props) {
+export default function Invest(props) {
   const classes = useStyles();
   const { address, userProvider } = props;
   const usdtDecimals = BigNumber.from(1e6);
@@ -383,146 +383,148 @@ export default function User(props) {
           </GridContainer>
         </div>
       </Parallax>
-      <div id="sliders" className={classNames(classes.main, classes.mainRaised)}>
-        <GridContainer className={classNames(classes.center)}>
-          <GridItem xs={12} sm={12} md={8}>
-            <CustomTabs
-              headerColor="primary"
-              tabs={[
-                {
-                  tabName: 'USDT',
-                  // tabIcon: () => <image src='https://tokens.1inch.io/0xdac17f958d2ee523a2206206994597c13d831ec7.png' />,
-                  tabContent: (
-                    <GridContainer>
-                      <GridItem xs={12} sm={12} md={6} lg={6}>
-                        <CustomInput
-                          labelText={`Balance: ${toFixed(fromBalance, 10 ** 6)}`}
-                          inputProps={{
-                            placeholder: "Please input a deposit amount",
-                            value: fromValue,
-                            endAdornment: <span style={{ color: '#1890ff', cursor: 'pointer' }} onClick={() => setFromValue(parseInt(toFixed(fromBalance, 10 ** 6)))}>Max</span>,
-                            onChange: (event) => {
-                              try {
-                                if (event.target.value === '-') {
-                                  setFromValue(event.target.value);
-                                  return
+      <div className={classNames(classes.main, classes.mainRaised)}>
+        <div className={classes.container}>
+          <GridContainer className={classNames(classes.center)}>
+            <GridItem xs={12} sm={12} md={8}>
+              <CustomTabs
+                headerColor="primary"
+                tabs={[
+                  {
+                    tabName: 'USDT',
+                    // tabIcon: () => <image src='https://tokens.1inch.io/0xdac17f958d2ee523a2206206994597c13d831ec7.png' />,
+                    tabContent: (
+                      <GridContainer>
+                        <GridItem xs={12} sm={12} md={6} lg={6}>
+                          <CustomInput
+                            labelText={`Balance: ${toFixed(fromBalance, 10 ** 6)}`}
+                            inputProps={{
+                              placeholder: "Please input a deposit amount",
+                              value: fromValue,
+                              endAdornment: <span style={{ color: '#1890ff', cursor: 'pointer' }} onClick={() => setFromValue(parseInt(toFixed(fromBalance, 10 ** 6)))}>Max</span>,
+                              onChange: (event) => {
+                                try {
+                                  if (event.target.value === '-') {
+                                    setFromValue(event.target.value);
+                                    return
+                                  }
+                                  const nextValue = parseInt(event.target.value)
+                                  if (isNaN(nextValue)) {
+                                    throw new Error('数值转换失败');
+                                  }
+                                  setFromValue(nextValue)
+                                } catch (error) {
+                                  setFromValue('');
                                 }
-                                const nextValue = parseInt(event.target.value)
-                                if (isNaN(nextValue)) {
-                                  throw new Error('数值转换失败');
-                                }
-                                setFromValue(nextValue)
-                              } catch (error) {
-                                setFromValue('');
                               }
-                            }
-                          }}
-                          error={!isUndefined(isValidFromValueFlag) && !isValidFromValueFlag}
-                          success={!isUndefined(isValidFromValueFlag) && isValidFromValueFlag}
-                          formControlProps={{
-                            fullWidth: true
-                          }}
-                        />
-                      </GridItem>
-                      <GridItem xs={12} sm={12} md={6} lg={6}>
-                        <CustomInput
-                          labelText={`Balance: ${toFixed(toBalance, 10 ** 6)}`}
-                          inputProps={{
-                            placeholder: "Please input a withdraw amount",
-                            value: toValue,
-                            endAdornment: <span style={{ color: '#1890ff', cursor: 'pointer' }} onClick={() => setToValue(parseInt(toFixed(toBalance, 10 ** 6)))}>Max</span>,
-                            onChange: (event) => {
-                              try {
-                                if (event.target.value === '-') {
-                                  setToValue(event.target.value);
-                                  return
+                            }}
+                            error={!isUndefined(isValidFromValueFlag) && !isValidFromValueFlag}
+                            success={!isUndefined(isValidFromValueFlag) && isValidFromValueFlag}
+                            formControlProps={{
+                              fullWidth: true
+                            }}
+                          />
+                        </GridItem>
+                        <GridItem xs={12} sm={12} md={6} lg={6}>
+                          <CustomInput
+                            labelText={`Balance: ${toFixed(toBalance, 10 ** 6)}`}
+                            inputProps={{
+                              placeholder: "Please input a withdraw amount",
+                              value: toValue,
+                              endAdornment: <span style={{ color: '#1890ff', cursor: 'pointer' }} onClick={() => setToValue(parseInt(toFixed(toBalance, 10 ** 6)))}>Max</span>,
+                              onChange: (event) => {
+                                try {
+                                  if (event.target.value === '-') {
+                                    setToValue(event.target.value);
+                                    return
+                                  }
+                                  const nextValue = parseInt(event.target.value)
+                                  if (isNaN(nextValue)) {
+                                    throw new Error('数值转换失败');
+                                  }
+                                  setToValue(nextValue);
+                                } catch (error) {
+                                  setToValue('');
                                 }
-                                const nextValue = parseInt(event.target.value)
-                                if (isNaN(nextValue)) {
-                                  throw new Error('数值转换失败');
-                                }
-                                setToValue(nextValue);
-                              } catch (error) {
-                                setToValue('');
                               }
-                            }
-                          }}
-                          error={!isUndefined(isValidToValueFlag) && !isValidToValueFlag}
-                          success={!isUndefined(isValidToValueFlag) && isValidToValueFlag}
-                          formControlProps={{
-                            fullWidth: true
-                          }}
-                        />
-                      </GridItem>
-                      <GridItem xs={12} sm={12} md={6} lg={6} />
-                      <GridItem xs={12} sm={12} md={6} lg={6}>
-                        <GridContainer>
-                          <GridItem xs={6} sm={6} md={6} lg={6}>
-                            <FormControlLabel
-                              control={
-                                <Switch
-                                  checked={shouldExchange}
-                                  onChange={(event) => setShouldExchange(event.target.checked)}
-                                  classes={{
-                                    switchBase: classes.switchBase,
-                                    checked: classes.switchChecked,
-                                    thumb: classes.switchIcon,
-                                    track: classes.switchBar,
-                                  }}
-                                />
-                              }
-                              style={{ padding: '24px 0' }}
-                              classes={{
-                                label: classes.label,
-                              }}
-                              label={<Muted>{shouldExchange ? "开启兑换" : "关闭兑换"}</Muted>}
-                            />
-                          </GridItem>
-                          <GridItem md={6} style={shouldExchange ? {} : { visibility: 'hidden' }}>
-                            <CustomInput
-                              labelText="Max Loss"
-                              inputProps={{
-                                placeholder: "Allow loss percent",
-                                value: allowMaxLoss,
-                                endAdornment: <span>%&nbsp;&nbsp;&nbsp;<span style={{ color: '#1890ff', cursor: 'pointer' }} onClick={() => setAllowMaxLoss(50)}>Max</span></span>,
-                                onChange: (event) => {
-                                  const value = event.target.value;
-                                  setAllowMaxLoss(value);
+                            }}
+                            error={!isUndefined(isValidToValueFlag) && !isValidToValueFlag}
+                            success={!isUndefined(isValidToValueFlag) && isValidToValueFlag}
+                            formControlProps={{
+                              fullWidth: true
+                            }}
+                          />
+                        </GridItem>
+                        <GridItem xs={12} sm={12} md={6} lg={6} />
+                        <GridItem xs={12} sm={12} md={6} lg={6}>
+                          <GridContainer>
+                            <GridItem xs={6} sm={6} md={6} lg={6}>
+                              <FormControlLabel
+                                control={
+                                  <Switch
+                                    checked={shouldExchange}
+                                    onChange={(event) => setShouldExchange(event.target.checked)}
+                                    classes={{
+                                      switchBase: classes.switchBase,
+                                      checked: classes.switchChecked,
+                                      thumb: classes.switchIcon,
+                                      track: classes.switchBar,
+                                    }}
+                                  />
                                 }
-                              }}
-                              error={!isUndefined(isValidAllowLossFlag) && !isValidAllowLossFlag}
-                              success={!isUndefined(isValidAllowLossFlag) && isValidAllowLossFlag}
-                              formControlProps={{
-                                fullWidth: true
-                              }}
-                            />
-                          </GridItem>
-                        </GridContainer>
-                      </GridItem>
-                      <GridItem xs={6} sm={6} md={6} lg={6}>
-                        <Button color="primary" onClick={diposit} >Deposit</Button>
-                      </GridItem>
-                      <GridItem xs={6} sm={6} md={6} lg={6}>
-                        <Button color="primary" onClick={withdraw} >Withdraw</Button>
-                        {
-                          lastDepositTimes.gt(0) && withdrawFee.gt(0) && toBalance.gt(0) && <Tooltip
-                            title="距离上一次存款时间未达到24小时，支取需要支付额外的手续费用。"
-                            placement={window.innerWidth > 959 ? "top" : "left"}
-                            classes={{ tooltip: classes.tooltip }}
-                          >
-                            <span style={{ color: '#f44336', paddingLeft: 5, cursor: 'pointer' }}>
-                              {toFixed(withdrawFee, 10 ** 2, 2)}%<CountTo to={dealLine.toNumber()} delay={1000} speed={60 * 60 * 24 * 1000} >{countFn}</CountTo>
-                            </span>
-                          </Tooltip>
-                        }
-                      </GridItem>
-                    </GridContainer>
-                  ),
-                }
-              ]}
-            />
-          </GridItem>
-        </GridContainer>
+                                style={{ padding: '24px 0' }}
+                                classes={{
+                                  label: classes.label,
+                                }}
+                                label={<Muted>{shouldExchange ? "开启兑换" : "关闭兑换"}</Muted>}
+                              />
+                            </GridItem>
+                            <GridItem md={6} style={shouldExchange ? {} : { visibility: 'hidden' }}>
+                              <CustomInput
+                                labelText="Max Loss"
+                                inputProps={{
+                                  placeholder: "Allow loss percent",
+                                  value: allowMaxLoss,
+                                  endAdornment: <span>%&nbsp;&nbsp;&nbsp;<span style={{ color: '#1890ff', cursor: 'pointer' }} onClick={() => setAllowMaxLoss(50)}>Max</span></span>,
+                                  onChange: (event) => {
+                                    const value = event.target.value;
+                                    setAllowMaxLoss(value);
+                                  }
+                                }}
+                                error={!isUndefined(isValidAllowLossFlag) && !isValidAllowLossFlag}
+                                success={!isUndefined(isValidAllowLossFlag) && isValidAllowLossFlag}
+                                formControlProps={{
+                                  fullWidth: true
+                                }}
+                              />
+                            </GridItem>
+                          </GridContainer>
+                        </GridItem>
+                        <GridItem xs={6} sm={6} md={6} lg={6}>
+                          <Button color="primary" onClick={diposit} >Deposit</Button>
+                        </GridItem>
+                        <GridItem xs={6} sm={6} md={6} lg={6}>
+                          <Button color="primary" onClick={withdraw} >Withdraw</Button>
+                          {
+                            lastDepositTimes.gt(0) && withdrawFee.gt(0) && toBalance.gt(0) && <Tooltip
+                              title="距离上一次存款时间未达到24小时，支取需要支付额外的手续费用。"
+                              placement={window.innerWidth > 959 ? "top" : "left"}
+                              classes={{ tooltip: classes.tooltip }}
+                            >
+                              <span style={{ color: '#f44336', paddingLeft: 5, cursor: 'pointer' }}>
+                                {toFixed(withdrawFee, 10 ** 2, 2)}%<CountTo to={dealLine.toNumber()} delay={1000} speed={60 * 60 * 24 * 1000} >{countFn}</CountTo>
+                              </span>
+                            </Tooltip>
+                          }
+                        </GridItem>
+                      </GridContainer>
+                    ),
+                  }
+                ]}
+              />
+            </GridItem>
+          </GridContainer>
+        </div>
       </div>
       <Footer />
       <Snackbar open={alertState.open} autoHideDuration={3000} onClose={handleClose} anchorOrigin={{ vertical: 'top', horizontal: 'center' }}>
