@@ -1,7 +1,7 @@
 window.config = {
   // localhost
   99999: {
-    vault_address: "0x8659DF1C638CDA8E475CD3C6481730C2b4f85873",
+    vault_address: "0xB03BE3E9D96c1Ba71d6ed26F62966dAAca288b45",
     underlying_address: "0xc2132D05D31c914a87C6611C10748AEb04B58e8F",
     apy_server: "http://localhost:3000",
     rpcUrl: "http://localhost:8545",
@@ -18,7 +18,7 @@ window.config = {
   },
   // dev
   31337: {
-    vault_address: "0x8659DF1C638CDA8E475CD3C6481730C2b4f85873",
+    vault_address: "0xB03BE3E9D96c1Ba71d6ed26F62966dAAca288b45",
     underlying_address: "0xc2132D05D31c914a87C6611C10748AEb04B58e8F",
     apy_server: "http://192.168.60.12/api",
     rpcUrl: "http://192.168.60.12:8545",
@@ -35,7 +35,7 @@ window.config = {
   },
   // polygon
   137: {
-    vault_address: "0xB0D4afd8879eD9F52b28595d31B441D079B2Ca07",
+    vault_address: "0xB03BE3E9D96c1Ba71d6ed26F62966dAAca288b45",
     underlying_address: "0xc2132D05D31c914a87C6611C10748AEb04B58e8F",
     apy_server: "http://47.243.164.64/api",
     rpcUrl: "https://rpc-mainnet.maticvigil.com",
