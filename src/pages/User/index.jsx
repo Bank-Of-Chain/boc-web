@@ -34,6 +34,7 @@ import map from "lodash/map";
 import isEmpty from "lodash/isEmpty";
 import filter from "lodash/filter";
 import isUndefined from "lodash/isUndefined";
+import noop from "lodash/noop";
 import * as ethers from "ethers";
 
 import styles from "./style";
@@ -85,17 +86,23 @@ export default function User(props) {
   const loadBanlance = () => {
     if (isEmpty(address)) return loadBanlance;
     const usdtContract = new ethers.Contract(USDT_ADDRESS, IERC20_ABI, userProvider);
-    usdtContract.balanceOf(address).then(setFromBalance);
     const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider);
-    vaultContract.balanceOf(address).then(setToBalance);
-    vaultContract.pricePerShare().then(setPerFullShare);
 
-
-    vaultContract.userInfos(address).then(setLastDepositTimes);
-    vaultContract.calculateWithdrawFeePercent(address).then(setWithdrawFee);
-
-    userProvider.getBlock(userProvider.blockNumber).then(resp => {
-      setCurrentBlockTimestamp(resp.timestamp)
+    Promise.all([
+      usdtContract.balanceOf(address).then(setFromBalance),
+      vaultContract.balanceOf(address).then(setToBalance).catch(console.error),
+      vaultContract.pricePerShare().then(setPerFullShare).catch(console.error),
+      vaultContract.userInfos(address).then(setLastDepositTimes),
+      vaultContract.calculateWithdrawFeePercent(address).then(setWithdrawFee),
+      userProvider.getBlock(userProvider.blockNumber).then(resp => {
+        setCurrentBlockTimestamp(resp.timestamp)
+      })
+    ]).catch(() => {
+      setAlertState({
+        open: true,
+        type: 'warning',
+        message: '请确认MetaMask的当前网络！'
+      })
     })
   };
 
@@ -274,7 +281,7 @@ export default function User(props) {
     vaultContract.totalAssets().then(resp => {
       setBeforeTotalAssets(totalAssets)
       setTotalAssets(totalAssets.add(10 ** 10))
-    });
+    }).catch(noop);
   }
   /**
    * 关闭提示框的方法回调
