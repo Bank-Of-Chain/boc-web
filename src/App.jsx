@@ -6,13 +6,11 @@ import React, { useState, useCallback, useEffect, Suspense, lazy } from "react";
 import { Switch, Route, Redirect, HashRouter } from "react-router-dom";
 import { JsonRpcProvider, Web3Provider } from "@ethersproject/providers";
 import Web3Modal from "web3modal";
-import WalletConnectProvider from "@walletconnect/web3-provider";
 import { useUserAddress } from "eth-hooks";
 import { useUserProvider, useGasPrice, useBalance } from "./hooks";
 import { RPC_URL } from "./constants";
 import { Transactor } from "./helpers";
 import isEmpty from 'lodash/isEmpty';
-import "antd/dist/antd.css";
 import "./App.css";
 
 Date.prototype.format = function (fmt) {
@@ -34,7 +32,8 @@ Date.prototype.format = function (fmt) {
   return fmt;
 }
 
-const User = lazy(() => import('./pages/User/index'));
+const Home = lazy(() => import('./pages/Home/index'));
+const Invest = lazy(() => import('./pages/Invest/index'));
 
 const DEBUG = false;
 
@@ -96,9 +95,14 @@ function App() {
     <div className="App">
       <HashRouter>
         <Switch>
-          <Route path="/">
+          <Route exact path="/">
             <Suspense fallback={<div>Loading</div>}>
-              <User {...nextProps} />
+              <Home {...nextProps} />
+            </Suspense>
+          </Route>
+          <Route path="/invest">
+            <Suspense fallback={<div>Loading</div>}>
+              <Invest {...nextProps} />
             </Suspense>
           </Route>
           <Route path="*">
