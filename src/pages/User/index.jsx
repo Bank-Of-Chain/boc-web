@@ -71,7 +71,7 @@ export default function User(props) {
   const [withdrawFee, setWithdrawFee] = useState(BigNumber.from(0));
   const [currentBlockTimestamp, setCurrentBlockTimestamp] = useState(0);
 
-  const [allowMaxLoss, setAllowMaxLoss] = useState(60);
+  const [allowMaxLoss, setAllowMaxLoss] = useState('0.6');
   const [shouldExchange, setShouldExchange] = useState(true);
   // 模态框标识位
   const [alertState, setAlertState] = useState({
@@ -125,6 +125,18 @@ export default function User(props) {
     if (toValue === '' || toValue === '-') return;
     if (toValue < 0) return false;
     if (toBalance.lt(usdtDecimals.mul(toValue))) return false;
+    return true;
+  }
+
+  /**
+   * 校验allow loss是否为有效输入
+   * @returns 
+   */
+  const isValidAllowLoss = () => {
+    const allowMaxLossValue = parseFloat(allowMaxLoss);
+    if (allowMaxLoss === '') return;
+    if (allowMaxLossValue === NaN) return false;
+    if (allowMaxLoss < 0 || allowMaxLoss > 50) return false;
     return true;
   }
 
@@ -188,6 +200,15 @@ export default function User(props) {
         message: '请输入正确的数值'
       })
     }
+
+    if (shouldExchange && !isValidAllowLoss()) {
+      return setAlertState({
+        open: true,
+        type: 'warning',
+        message: '请输入正确的Max Loss数值'
+      })
+    }
+    const allowMaxLossValue = parseInt(100 * parseFloat(allowMaxLoss));
     const signer = userProvider.getSigner();
     const nextValue = `${toValue * 1e6}`;
     try {
@@ -196,7 +217,7 @@ export default function User(props) {
       let exchangeArray = []
       // 如果不需要兑换则按照多币返回
       if (shouldExchange) {
-        const [tokens, amounts] = await vaultContractWithSigner.callStatic.withdraw(nextValue, allowMaxLoss, false, []);
+        const [tokens, amounts] = await vaultContractWithSigner.callStatic.withdraw(nextValue, allowMaxLossValue, false, []);
         console.log('tokens, amounts=', tokens, amounts);
         const exchangeManager = await vaultContract.exchangeManager();
         const exchangeManagerContract = new ethers.Contract(exchangeManager, EXCHANGE_AGGREGATOR_ABI, userProvider);
@@ -241,11 +262,11 @@ export default function User(props) {
       }
       const nextArray = filter(exchangeArray, i => !isEmpty(i));
       console.log('nextArray=', nextArray);
-      const gas = await vaultContractWithSigner.estimateGas.withdraw(nextValue, allowMaxLoss, true, nextArray);
-      await vaultContractWithSigner.callStatic.withdraw(nextValue, allowMaxLoss, true, nextArray, {
+      const gas = await vaultContractWithSigner.estimateGas.withdraw(nextValue, allowMaxLossValue, true, nextArray);
+      await vaultContractWithSigner.callStatic.withdraw(nextValue, allowMaxLossValue, true, nextArray, {
         gasLimit: gas * MULTIPLE_OF_GAS
       });
-      const tx = await vaultContractWithSigner.withdraw(nextValue, allowMaxLoss, true, nextArray, {
+      const tx = await vaultContractWithSigner.withdraw(nextValue, allowMaxLossValue, true, nextArray, {
         gasLimit: gas * MULTIPLE_OF_GAS
       });
 
@@ -331,6 +352,8 @@ export default function User(props) {
 
   const isValidToValueFlag = isValidToValue();
   const isValidFromValueFlag = isValidFromValue();
+  const isValidAllowLossFlag = isValidAllowLoss();
+
   return (
     <div>
       <Header
@@ -460,16 +483,15 @@ export default function User(props) {
                               labelText="Max Loss"
                               inputProps={{
                                 placeholder: "Allow loss percent",
-                                value: `${toFixed(BigNumber.from(allowMaxLoss), 10 ** 2, 2)}%`,
-                                endAdornment: <span style={{ color: '#1890ff', cursor: 'pointer' }} onClick={() => setAllowMaxLoss(5000)}>Max</span>,
+                                value: allowMaxLoss,
+                                endAdornment: <span>%&nbsp;&nbsp;&nbsp;<span style={{ color: '#1890ff', cursor: 'pointer' }} onClick={() => setAllowMaxLoss(50)}>Max</span></span>,
                                 onChange: (event) => {
                                   const value = event.target.value;
-                                  const nextValue = value.replace('%', '');
-                                  setAllowMaxLoss(Math.round(100 * nextValue))
+                                  setAllowMaxLoss(value);
                                 }
                               }}
-                              error={allowMaxLoss < 0 || allowMaxLoss > 5000}
-                              success={allowMaxLoss >= 0 && allowMaxLoss <= 5000}
+                              error={!isUndefined(isValidAllowLossFlag) && !isValidAllowLossFlag}
+                              success={!isUndefined(isValidAllowLossFlag) && isValidAllowLossFlag}
                               formControlProps={{
                                 fullWidth: true
                               }}
