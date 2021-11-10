@@ -79,6 +79,8 @@ export default function Invest(props) {
     type: '',
     message: ''
   });
+  const [trackedAssets, setTrackedAssets] = useState([]);
+  const [token, setToken] = useState('');
 
   const dealLine = BigNumber.from(60 * 60 * 24 - 1).sub(currentBlockTimestamp - lastDepositTimes);
 
@@ -95,8 +97,10 @@ export default function Invest(props) {
       vaultContract.userInfos(address).then(setLastDepositTimes),
       vaultContract.calculateWithdrawFeePercent(address).then(setWithdrawFee),
       userProvider.getBlock(userProvider.blockNumber).then(resp => {
-        setCurrentBlockTimestamp(resp.timestamp)
-      })
+        setCurrentBlockTimestamp(resp.timestamp);
+      }),
+      vaultContract.token().then(setToken),
+      vaultContract.getTrackedAssets().then(setTrackedAssets)
     ]).catch(() => {
       setAlertState({
         open: true,
@@ -135,7 +139,7 @@ export default function Invest(props) {
   const isValidAllowLoss = () => {
     const allowMaxLossValue = parseFloat(allowMaxLoss);
     if (allowMaxLoss === '') return;
-    if (allowMaxLossValue === NaN) return false;
+    if (isNaN(allowMaxLoss)) return false;
     if (allowMaxLoss < 0 || allowMaxLoss > 50) return false;
     return true;
   }
@@ -300,8 +304,9 @@ export default function Invest(props) {
   const loadTotalAssets = () => {
     const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider);
     vaultContract.totalAssets().then(resp => {
-      setBeforeTotalAssets(totalAssets)
-      setTotalAssets(totalAssets.add(10 ** 10))
+      if (resp.eq(totalAssets)) return;
+      setBeforeTotalAssets(totalAssets);
+      setTotalAssets(resp);
     }).catch(noop);
   }
   /**
@@ -347,7 +352,7 @@ export default function Invest(props) {
   // 展示时间倒计时
   const countFn = (value) => {
     const { hourTime, minuteTime, secondTime } = getTime(dealLine - value);// 秒
-    return <span style={{ color: '#f44336' }}> ({hourTime}:{minuteTime}:{secondTime})</span>
+    return <span style={{ color: '#fa8c16' }}> ({hourTime}:{minuteTime}:{secondTime})</span>
   }
 
   const isValidToValueFlag = isValidToValue();
@@ -401,7 +406,7 @@ export default function Invest(props) {
                             inputProps={{
                               placeholder: "Please input a deposit amount",
                               value: fromValue,
-                              endAdornment: <span style={{ color: '#1890ff', cursor: 'pointer' }} onClick={() => setFromValue(parseInt(toFixed(fromBalance, 10 ** 6)))}>Max</span>,
+                              endAdornment: <span style={{ color: '#9c27b0', cursor: 'pointer' }} onClick={() => setFromValue(parseInt(toFixed(fromBalance, 10 ** 6)))}>Max</span>,
                               onChange: (event) => {
                                 try {
                                   if (event.target.value === '-') {
@@ -427,11 +432,11 @@ export default function Invest(props) {
                         </GridItem>
                         <GridItem xs={12} sm={12} md={6} lg={6}>
                           <CustomInput
-                            labelText={`Balance: ${toFixed(toBalance, 10 ** 6)}`}
+                            labelText={`Balance: ${toFixed(toBalance, 10 ** 6)} (~${toFixed(toBalance.mul(perFullShare), 10 ** 12, 2)} USDT)`}
                             inputProps={{
                               placeholder: "Please input a withdraw amount",
                               value: toValue,
-                              endAdornment: <span style={{ color: '#1890ff', cursor: 'pointer' }} onClick={() => setToValue(parseInt(toFixed(toBalance, 10 ** 6)))}>Max</span>,
+                              endAdornment: <span style={{ color: '#9c27b0', cursor: 'pointer' }} onClick={() => setToValue(parseInt(toFixed(toBalance, 10 ** 6)))}>Max</span>,
                               onChange: (event) => {
                                 try {
                                   if (event.target.value === '-') {
@@ -485,7 +490,7 @@ export default function Invest(props) {
                                 inputProps={{
                                   placeholder: "Allow loss percent",
                                   value: allowMaxLoss,
-                                  endAdornment: <span>%&nbsp;&nbsp;&nbsp;<span style={{ color: '#1890ff', cursor: 'pointer' }} onClick={() => setAllowMaxLoss(50)}>Max</span></span>,
+                                  endAdornment: <span>%&nbsp;&nbsp;&nbsp;<span style={{ color: '#9c27b0', cursor: 'pointer' }} onClick={() => setAllowMaxLoss(50)}>Max</span></span>,
                                   onChange: (event) => {
                                     const value = event.target.value;
                                     setAllowMaxLoss(value);
@@ -511,7 +516,7 @@ export default function Invest(props) {
                               placement={window.innerWidth > 959 ? "top" : "left"}
                               classes={{ tooltip: classes.tooltip }}
                             >
-                              <span style={{ color: '#f44336', paddingLeft: 5, cursor: 'pointer' }}>
+                              <span style={{ color: '#fa8c16', paddingLeft: 5, cursor: 'pointer' }}>
                                 {toFixed(withdrawFee, 10 ** 2, 2)}%<CountTo to={dealLine.toNumber()} delay={1000} speed={60 * 60 * 24 * 1000} >{countFn}</CountTo>
                               </span>
                             </Tooltip>

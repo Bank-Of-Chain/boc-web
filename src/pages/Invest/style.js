@@ -11,6 +11,7 @@ const componentsStyle = {
   brand: {
     color: "#FFFFFF",
     textAlign: "left",
+    paddingLeft: 20
   },
   title: {
     fontSize: "4.2rem",
