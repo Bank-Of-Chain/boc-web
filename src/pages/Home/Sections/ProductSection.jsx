@@ -21,13 +21,9 @@ export default function ProductSection() {
     <div className={classes.section}>
       <GridContainer justify="center">
         <GridItem xs={12} sm={12} md={8}>
-          <h2 className={classes.title}>Let{"'"}s talk product</h2>
+          <h2 className={classes.title}>Let{"'"}s Defi</h2>
           <h5 className={classes.description}>
-            This is the paragraph where you can write more details about your
-            product. Keep you user engaged by providing meaningful information.
-            Remember that by this time, the user is curious, otherwise he wouldn
-            {"'"}t scroll to get here. Add a button if you want the user to see
-            more.
+            这是一段项目的介绍文档，这是一段项目的介绍文档，这是一段项目的介绍文档，这是一段项目的介绍文档，这是一段项目的介绍文档，这是一段项目的介绍文档，这是一段项目的介绍文档，这是一段项目的介绍文档，
           </h5>
         </GridItem>
       </GridContainer>
@@ -36,7 +32,7 @@ export default function ProductSection() {
           <GridItem xs={12} sm={12} md={4}>
             <InfoArea
               title="Free Chat"
-              description="Divide details about your product or agency work into parts. Write a few lines about each one. A paragraph describing a feature will be enough."
+              description="良好的社区氛围和多签机制良好的社区氛围和多签机制良好的社区氛围和多签机制良好的社区氛围和多签机制良好的社区氛围和多签机制良好的社区氛围和多签机制"
               icon={Chat}
               iconColor="info"
               vertical
@@ -44,8 +40,8 @@ export default function ProductSection() {
           </GridItem>
           <GridItem xs={12} sm={12} md={4}>
             <InfoArea
-              title="Verified Users"
-              description="Divide details about your product or agency work into parts. Write a few lines about each one. A paragraph describing a feature will be enough."
+              title="Verified Contract"
+              description="审查的合约脚本审查的合约脚本审查的合约脚本审查的合约脚本审查的合约脚本审查的合约脚本审查的合约脚本审查的合约脚本审查的合约脚本"
               icon={VerifiedUser}
               iconColor="success"
               vertical
@@ -53,8 +49,8 @@ export default function ProductSection() {
           </GridItem>
           <GridItem xs={12} sm={12} md={4}>
             <InfoArea
-              title="Fingerprint"
-              description="Divide details about your product or agency work into parts. Write a few lines about each one. A paragraph describing a feature will be enough."
+              title="Security"
+              description="安全安全安全安全安全安全安全安全安全安全安全安全安全安全安全安全安全安全安全安全安全安全安全安全安全安全安全安全安全安全安全安全"
               icon={Fingerprint}
               iconColor="danger"
               vertical

@@ -33,7 +33,7 @@ export default function Footer(props) {
           <List className={classes.list}>
             <ListItem className={classes.inlineBlock}>
               <a
-                href=""
+                href="http://www.baidu.com"
                 className={classes.block}
                 target="_blank"
               >
@@ -42,7 +42,7 @@ export default function Footer(props) {
             </ListItem>
             <ListItem className={classes.inlineBlock}>
               <a
-                href=""
+                href="http://www.baidu.com"
                 className={classes.block}
                 target="_blank"
               >
@@ -51,7 +51,7 @@ export default function Footer(props) {
             </ListItem>
             <ListItem className={classes.inlineBlock}>
               <a
-                href=""
+                href="http://www.baidu.com"
                 className={classes.block}
                 target="_blank"
               >
@@ -60,7 +60,7 @@ export default function Footer(props) {
             </ListItem>
             <ListItem className={classes.inlineBlock}>
               <a
-                href=""
+                href="http://www.baidu.com"
                 className={classes.block}
                 target="_blank"
               >
@@ -73,7 +73,7 @@ export default function Footer(props) {
           &copy; {1900 + new Date().getYear()} , made with
           <Favorite className={classes.icon} /> by{" "}
           <a
-            href=""
+            href="http://www.baidu.com"
             className={aClasses}
             target="_blank"
           >

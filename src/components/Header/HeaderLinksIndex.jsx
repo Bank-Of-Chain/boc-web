@@ -36,6 +36,7 @@ export default function HeaderLinksIndex(props) {
         <Button
           color="transparent"
           target="_blank"
+          href="http://www.baidu.com"
           className={classes.navLink}
         >
           <LibraryBooksIcon className={classes.icons} ></LibraryBooksIcon> Document

@@ -38,20 +38,17 @@ export default function TeamSection() {
                 <img src={team1} alt="..." className={imageClasses} />
               </GridItem>
               <h4 className={classes.cardTitle}>
-                Gigi Hadid
+                罗伟
                 <br />
-                <small className={classes.smallTitle}>Model</small>
+                <small className={classes.smallTitle}>设计师</small>
               </h4>
               <CardBody>
                 <p className={classes.description}>
-                  You can write here details about one of your team members. You
-                  can give more details about what they do. Feel free to add
-                  some <a href="#pablo" style={{
+                  个人介绍个人介绍个人介绍个人介绍个人介绍个人介绍个人介绍个人介绍个人介绍个人介绍个人介绍个人介绍 <a href="http://www.baidu.com" style={{
                     color: '#9c27b0',
                     textDecoration: 'none',
                     backgroundColor: 'transparent'
-                  }}>links</a> for people to be able to
-                  follow them outside the site.
+                  }}>links</a>
                 </p>
               </CardBody>
             </Card>
@@ -62,20 +59,17 @@ export default function TeamSection() {
                 <img src={team2} alt="..." className={imageClasses} />
               </GridItem>
               <h4 className={classes.cardTitle}>
-                Christian Louboutin
+                林玉良
                 <br />
-                <small className={classes.smallTitle}>Designer</small>
+                <small className={classes.smallTitle}>设计师</small>
               </h4>
               <CardBody>
                 <p className={classes.description}>
-                  You can write here details about one of your team members. You
-                  can give more details about what they do. Feel free to add
-                  some <a href="#pablo" style={{
+                  个人介绍个人介绍个人介绍个人介绍个人介绍个人介绍个人介绍个人介绍个人介绍个人介绍个人介绍个人介绍 <a href="http://www.baidu.com" style={{
                     color: '#9c27b0',
                     textDecoration: 'none',
                     backgroundColor: 'transparent'
-                  }}>links</a> for people to be able to
-                  follow them outside the site.
+                  }}>links</a>
                 </p>
               </CardBody>
             </Card>
@@ -86,20 +80,17 @@ export default function TeamSection() {
                 <img src={team3} alt="..." className={imageClasses} />
               </GridItem>
               <h4 className={classes.cardTitle}>
-                Kendall Jenner
+                包小糯
                 <br />
-                <small className={classes.smallTitle}>Model</small>
+                <small className={classes.smallTitle}>设计师</small>
               </h4>
               <CardBody>
                 <p className={classes.description}>
-                  You can write here details about one of your team members. You
-                  can give more details about what they do. Feel free to add
-                  some <a href="#pablo" style={{
+                  个人介绍个人介绍个人介绍个人介绍个人介绍个人介绍个人介绍个人介绍个人介绍个人介绍个人介绍个人介绍 <a href="http://www.baidu.com" style={{
                     color: '#9c27b0',
                     textDecoration: 'none',
                     backgroundColor: 'transparent'
-                  }}>links</a> for people to be able to
-                  follow them outside the site.
+                  }}>links</a>
                 </p>
               </CardBody>
             </Card>
