@@ -9,13 +9,23 @@ export const INFURA_ID = "3be290dd5c1a46f894bdf28625c000ce";
 // MY ETHERSCAN_ID, SWAP IN YOURS FROM https://etherscan.io/myapikey
 export const ETHERSCAN_KEY = "PSW8C433Q667DVEX5BCRMGNAH9FSGFZ7Q8";
 
-// EXTERNAL CONTRACTS
-export const ENV_NETWORK_TYPE = process.env.REACT_APP_NETWORK_TYPE || 'localhost';
-const config = window.config[ENV_NETWORK_TYPE]
-console.log('env config=', ENV_NETWORK_TYPE, config);
-export const VAULT_ADDRESS = config.vault_address;
-export const APY_SERVER = config.apy_server;
+// gas limit设置为平常的2倍
+export const MULTIPLE_OF_GAS = 2;
 
+const localNetworkCode = 99999
+// EXTERNAL CONTRACTS
+export const ENV_NETWORK_TYPE = process.env.REACT_APP_NETWORK_TYPE || localStorage.REACT_APP_NETWORK_TYPE || localNetworkCode;
+const config = window.config[ENV_NETWORK_TYPE] || window.config[localNetworkCode]
+console.log('env config=', ENV_NETWORK_TYPE, config);
+
+// === configs === //
+export const APY_SERVER = config.apy_server;
+export const VAULT_ADDRESS = config.vault_address;
+export const EXCHANGE_EXTRA_PARAMS = config.exchange_extra_params;
+export const USDT_ADDRESS = config.underlying_address
+export const RPC_URL = config.rpcUrl
+
+// === abi === //
 export const VAULT_ABI = vaultAbi;
 
 export const STRATEGY_ABI = strategyAbi;
@@ -26,101 +36,4 @@ export const EXCHANGE_AGGREGATOR_ABI = exchangeAggreatorAbi;
 
 export const TREASURE_ABI = treasureAbi;
 
-export const EXCHANGE_EXTRA_PARAMS = config.exchange_extra_params;
 
-export const USDT_ADDRESS = '0xc2132D05D31c914a87C6611C10748AEb04B58e8F'
-export const LUSD_ADDRESS = '0x5f98805A4E8be255a32880FDeC7F6728C6568bA0'
-
-export const NETWORK = chainId => {
-  for (let n in NETWORKS) {
-    if (NETWORKS[n].chainId === chainId) {
-      return NETWORKS[n];
-    }
-  }
-};
-
-export const NETWORKS = {
-  localhost: {
-    name: "localhost",
-    color: "#666666",
-    chainId: 31337,
-    blockExplorer: "",
-    rpcUrl: "http://" + window.location.hostname + ":8545",
-  },
-  dev: {
-    name: "dev",
-    color: "#666666",
-    chainId: 31337,
-    blockExplorer: "",
-    rpcUrl: "http://192.168.60.12:8545",
-  },
-  mainnet: {
-    name: "mainnet",
-    color: "#ff8b9e",
-    chainId: 1,
-    rpcUrl: `https://mainnet.infura.io/v3/${INFURA_ID}`,
-    blockExplorer: "https://etherscan.io/",
-  },
-  kovan: {
-    name: "kovan",
-    color: "#7003DD",
-    chainId: 42,
-    rpcUrl: `https://kovan.infura.io/v3/${INFURA_ID}`,
-    blockExplorer: "https://kovan.etherscan.io/",
-    faucet: "https://gitter.im/kovan-testnet/faucet", // https://faucet.kovan.network/
-  },
-  rinkeby: {
-    name: "rinkeby",
-    color: "#e0d068",
-    chainId: 4,
-    rpcUrl: `https://rinkeby.infura.io/v3/${INFURA_ID}`,
-    faucet: "https://faucet.rinkeby.io/",
-    blockExplorer: "https://rinkeby.etherscan.io/",
-  },
-  ropsten: {
-    name: "ropsten",
-    color: "#F60D09",
-    chainId: 3,
-    faucet: "https://faucet.ropsten.be/",
-    blockExplorer: "https://ropsten.etherscan.io/",
-    rpcUrl: `https://ropsten.infura.io/v3/${INFURA_ID}`,
-  },
-  goerli: {
-    name: "goerli",
-    color: "#0975F6",
-    chainId: 5,
-    faucet: "https://goerli-faucet.slock.it/",
-    blockExplorer: "https://goerli.etherscan.io/",
-    rpcUrl: `https://goerli.infura.io/v3/${INFURA_ID}`,
-  },
-  xdai: {
-    name: "xdai",
-    color: "#48a9a6",
-    chainId: 100,
-    price: 1,
-    gasPrice: 1000000000,
-    rpcUrl: "https://dai.poa.network",
-    faucet: "https://xdai-faucet.top/",
-    blockExplorer: "https://blockscout.com/poa/xdai/",
-  },
-  matic: {
-    name: "matic",
-    color: "#2bbdf7",
-    chainId: 137,
-    price: 1,
-    gasPrice: 1000000000,
-    rpcUrl: "https://rpc-mainnet.maticvigil.com",
-    faucet: "https://faucet.matic.network/",
-    blockExplorer: "https://explorer-mainnet.maticvigil.com//",
-  },
-  mumbai: {
-    name: "mumbai",
-    color: "#92D9FA",
-    chainId: 80001,
-    price: 1,
-    gasPrice: 1000000000,
-    rpcUrl: "https://rpc-mumbai.maticvigil.com",
-    faucet: "https://faucet.matic.network/",
-    blockExplorer: "https://mumbai-explorer.matic.today/",
-  },
-};

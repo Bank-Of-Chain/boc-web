@@ -55,6 +55,9 @@ const infoStyle = {
     overflow: "hidden",
     marginTop: "0px",
     fontSize: "14px",
+    fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',
+    lineHeight: '1.5em',
+    textAlign: 'center'
   },
   iconWrapperVertical: {
     float: "none",

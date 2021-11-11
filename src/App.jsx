@@ -6,13 +6,20 @@ import React, { useState, useCallback, useEffect, Suspense, lazy } from "react";
 import { Switch, Route, Redirect, HashRouter } from "react-router-dom";
 import { JsonRpcProvider, Web3Provider } from "@ethersproject/providers";
 import Web3Modal from "web3modal";
-import WalletConnectProvider from "@walletconnect/web3-provider";
 import { useUserAddress } from "eth-hooks";
-import { useUserProvider, useGasPrice, useBalance } from "./hooks";
-import { INFURA_ID, NETWORKS, ENV_NETWORK_TYPE } from "./constants";
+
+// === Components === //
+import CircularProgress from '@material-ui/core/CircularProgress';
+import Backdrop from '@material-ui/core/Backdrop';
+
+// === Utils === //
+import { useGasPrice, useBalance } from "./hooks";
+import { RPC_URL } from "./constants";
 import { Transactor } from "./helpers";
 import isEmpty from 'lodash/isEmpty';
-import "antd/dist/antd.css";
+import { makeStyles } from '@material-ui/core/styles';
+
+// === Styles === //
 import "./App.css";
 
 Date.prototype.format = function (fmt) {
@@ -34,38 +41,42 @@ Date.prototype.format = function (fmt) {
   return fmt;
 }
 
-const User = lazy(() => import('./pages/User/index'));
+const Home = lazy(() => import('./pages/Home/index'));
+const Invest = lazy(() => import('./pages/Invest/index'));
 
 const DEBUG = false;
-const targetNetwork = NETWORKS[ENV_NETWORK_TYPE];
 
 // 🏠 Your local provider is usually pointed at your local blockchain
-const localProviderUrl = targetNetwork.rpcUrl;
+const localProviderUrl = RPC_URL;
 // as you deploy to other networks you can set REACT_APP_PROVIDER=https://dai.poa.network in packages/react-app/.env
-const localProviderUrlFromEnv = process.env.REACT_APP_PROVIDER ? process.env.REACT_APP_PROVIDER : localProviderUrl;
-if (DEBUG) console.log("🏠 Connecting to provider:", localProviderUrlFromEnv);
-const localProvider = new JsonRpcProvider(localProviderUrlFromEnv);
-
+if (DEBUG) console.log("🏠 Connecting to provider:", localProviderUrl);
+const localProvider = new JsonRpcProvider(localProviderUrl);
 const web3Modal = new Web3Modal({
   // network: "mainnet", // optional
   cacheProvider: true, // optional
   providerOptions: {
-    walletconnect: {
-      package: WalletConnectProvider, // required
-      options: {
-        infuraId: INFURA_ID,
-      },
-    },
   },
 });
 
+
+const useStyles = makeStyles((theme) => ({
+  backdrop: {
+    zIndex: theme.zIndex.drawer + 1,
+    color: '#BBB',
+    backgroundColor: '#e1e1e1'
+  },
+}));
+
 function App() {
-  const [injectedProvider, setInjectedProvider] = useState();
+
+  const classes = useStyles();
+  const [userProvider, setUserProvider] = useState();
 
   const loadWeb3Modal = useCallback(async () => {
     const provider = await web3Modal.connect();
-    setInjectedProvider(new Web3Provider(provider));
-  }, [setInjectedProvider]);
+    const library = new Web3Provider(provider);
+    setUserProvider(library);
+  }, [setUserProvider]);
 
   const logoutOfWeb3Modal = async () => {
     await web3Modal.clearCachedProvider();
@@ -80,32 +91,40 @@ function App() {
     }
   }, [loadWeb3Modal]);
 
-  const userProvider = useUserProvider(injectedProvider, localProvider);
-  const gasPrice = useGasPrice(targetNetwork);
+  const gasPrice = useGasPrice();
   const tx = Transactor(userProvider, gasPrice);
   const address = useUserAddress(userProvider);
 
   const yourLocalBalance = useBalance(userProvider, address);
   const nextProps = {
     web3Modal,
-    address: yourLocalBalance ? address : '',
+    address,
     loadWeb3Modal,
     logoutOfWeb3Modal,
-    injectedProvider,
     userProvider,
     localProvider,
     tx,
   };
-
-  if (isEmpty(nextProps.address)) return <span />;
-
+  const localChainId = localProvider && localProvider._network && localProvider._network.chainId;
+  const selectedChainId = userProvider && userProvider._network && userProvider._network.chainId;
+  console.log('nextProps=', nextProps, yourLocalBalance && yourLocalBalance.toString());
+  console.error('当前的链不匹配=', selectedChainId, localChainId, selectedChainId === localChainId)
   return (
     <div className="App">
       <HashRouter>
         <Switch>
-          <Route path="/">
-            <Suspense fallback={<div>Loading</div>}>
-              <User {...nextProps} />
+          <Route exact path="/">
+            <Suspense fallback={<Backdrop className={classes.backdrop} open>
+              <CircularProgress color="inherit" />
+            </Backdrop>}>
+              <Home {...nextProps} />
+            </Suspense>
+          </Route>
+          <Route path="/invest">
+            <Suspense fallback={<Backdrop className={classes.backdrop} open>
+              <CircularProgress color="inherit" />
+            </Backdrop>}>
+              <Invest {...nextProps} />
             </Suspense>
           </Route>
           <Route path="*">
@@ -124,12 +143,16 @@ function App() {
 // eslint-disable-next-line no-unused-expressions
 window.ethereum &&
   (() => {
+    function chainChangedReload(chainId) {
+      localStorage.REACT_APP_NETWORK_TYPE = parseInt(chainId);
+      reload();
+    }
     function reload() {
       setTimeout(() => {
         window.location.reload();
-      }, 1);
+      }, 100);
     }
-    window.ethereum.on("chainChanged", reload);
+    window.ethereum.on("chainChanged", chainChangedReload);
     window.ethereum.on("accountsChanged", reload);
   })()
 

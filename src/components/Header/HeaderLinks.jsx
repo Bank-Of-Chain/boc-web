@@ -17,29 +17,32 @@ import Button from "../CustomButtons/Button";
 import styles from "./headerLinksStyle";
 import Address from "../Address/Address";
 
+// === Utils === //
+import isEmpty from "lodash/isEmpty";
+
 const useStyles = makeStyles(styles);
 
 export default function HeaderLinks(props) {
-  const { address } = props;
+  const { address, userProvider, loadWeb3Modal, logoutOfWeb3Modal } = props;
   const classes = useStyles();
   return (
     <List className={classes.list}>
       <ListItem className={classes.listItem}>
         {
-          !address
+          isEmpty(userProvider)
             ? <Button
-              href=""
               color="transparent"
               target="_blank"
               className={classes.navLink}
+              onClick={loadWeb3Modal}
             >
-              <AccountBalanceWallet className={classes.icons} ></AccountBalanceWallet> Conect
+              <AccountBalanceWallet className={classes.icons} ></AccountBalanceWallet> Connect Wallet
             </Button>
             : <Button
-              href=""
               color="transparent"
               target="_blank"
               className={classes.navLink}
+              onClick={logoutOfWeb3Modal}
             >
               <AccountBalanceWalletOutlined className={classes.icons} /> <Address size="short" address={address} />
             </Button>
