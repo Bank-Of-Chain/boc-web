@@ -25,7 +25,6 @@ const componentsStyle = {
     margin: "10px 0 0",
   },
   main: {
-    background: "#FFFFFF",
     position: "relative",
     background: "linear-gradient(30deg, #91d5ff, #efdbff)"
   },

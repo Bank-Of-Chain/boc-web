@@ -16,7 +16,6 @@ import Backdrop from '@material-ui/core/Backdrop';
 import { useGasPrice, useBalance } from "./hooks";
 import { RPC_URL } from "./constants";
 import { Transactor } from "./helpers";
-import isEmpty from 'lodash/isEmpty';
 import { makeStyles } from '@material-ui/core/styles';
 
 // === Styles === //
