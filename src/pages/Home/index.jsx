@@ -34,11 +34,11 @@ export default function Home(props) {
       <Header
         color="transparent"
         routes={dashboardRoutes}
-        brand="Piggy.Finance"
+        brand="Bank Of Chain"
         rightLinks={<HeaderLinksIndex />}
         fixed
         changeColorOnScroll={{
-          height: 400,
+          height: 200,
           color: "white",
         }}
         {...rest}

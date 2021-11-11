@@ -13,7 +13,7 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import Backdrop from '@material-ui/core/Backdrop';
 
 // === Utils === //
-import { useUserProvider, useGasPrice, useBalance } from "./hooks";
+import { useGasPrice, useBalance } from "./hooks";
 import { RPC_URL } from "./constants";
 import { Transactor } from "./helpers";
 import isEmpty from 'lodash/isEmpty';
@@ -49,10 +49,8 @@ const DEBUG = false;
 // 🏠 Your local provider is usually pointed at your local blockchain
 const localProviderUrl = RPC_URL;
 // as you deploy to other networks you can set REACT_APP_PROVIDER=https://dai.poa.network in packages/react-app/.env
-const localProviderUrlFromEnv = process.env.REACT_APP_PROVIDER ? process.env.REACT_APP_PROVIDER : localProviderUrl;
-if (DEBUG) console.log("🏠 Connecting to provider:", localProviderUrlFromEnv);
-const localProvider = new JsonRpcProvider(localProviderUrlFromEnv);
-
+if (DEBUG) console.log("🏠 Connecting to provider:", localProviderUrl);
+const localProvider = new JsonRpcProvider(localProviderUrl);
 const web3Modal = new Web3Modal({
   // network: "mainnet", // optional
   cacheProvider: true, // optional
@@ -72,13 +70,13 @@ const useStyles = makeStyles((theme) => ({
 function App() {
 
   const classes = useStyles();
-  console.log('classes=', classes)
-  const [injectedProvider, setInjectedProvider] = useState();
+  const [userProvider, setUserProvider] = useState();
 
   const loadWeb3Modal = useCallback(async () => {
     const provider = await web3Modal.connect();
-    setInjectedProvider(new Web3Provider(provider));
-  }, [setInjectedProvider]);
+    const library = new Web3Provider(provider);
+    setUserProvider(library);
+  }, [setUserProvider]);
 
   const logoutOfWeb3Modal = async () => {
     await web3Modal.clearCachedProvider();
@@ -93,7 +91,6 @@ function App() {
     }
   }, [loadWeb3Modal]);
 
-  const userProvider = useUserProvider(injectedProvider, localProvider);
   const gasPrice = useGasPrice();
   const tx = Transactor(userProvider, gasPrice);
   const address = useUserAddress(userProvider);
@@ -101,17 +98,17 @@ function App() {
   const yourLocalBalance = useBalance(userProvider, address);
   const nextProps = {
     web3Modal,
-    address: yourLocalBalance ? address : '',
+    address,
     loadWeb3Modal,
     logoutOfWeb3Modal,
-    injectedProvider,
     userProvider,
     localProvider,
     tx,
   };
-
-  if (isEmpty(nextProps.address)) return <span />;
-
+  const localChainId = localProvider && localProvider._network && localProvider._network.chainId;
+  const selectedChainId = userProvider && userProvider._network && userProvider._network.chainId;
+  console.log('nextProps=', nextProps, yourLocalBalance && yourLocalBalance.toString());
+  console.error('当前的链不匹配=', selectedChainId, localChainId, selectedChainId === localChainId)
   return (
     <div className="App">
       <HashRouter>

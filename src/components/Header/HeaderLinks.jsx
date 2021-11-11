@@ -23,20 +23,20 @@ import isEmpty from "lodash/isEmpty";
 const useStyles = makeStyles(styles);
 
 export default function HeaderLinks(props) {
-  const { address, injectedProvider, loadWeb3Modal, logoutOfWeb3Modal } = props;
+  const { address, userProvider, loadWeb3Modal, logoutOfWeb3Modal } = props;
   const classes = useStyles();
   return (
     <List className={classes.list}>
       <ListItem className={classes.listItem}>
         {
-          isEmpty(injectedProvider)
+          isEmpty(userProvider)
             ? <Button
               color="transparent"
               target="_blank"
               className={classes.navLink}
               onClick={loadWeb3Modal}
             >
-              <AccountBalanceWallet className={classes.icons} ></AccountBalanceWallet> Connect
+              <AccountBalanceWallet className={classes.icons} ></AccountBalanceWallet> Connect Wallet
             </Button>
             : <Button
               color="transparent"

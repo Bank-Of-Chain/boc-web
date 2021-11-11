@@ -27,6 +27,7 @@ const componentsStyle = {
   main: {
     background: "#FFFFFF",
     position: "relative",
+    background: "linear-gradient(30deg, #91d5ff, #efdbff)"
   },
   mainRaised: {
     margin: "-60px 30px 0px",
@@ -40,10 +41,10 @@ const componentsStyle = {
     textAlign: "center",
   },
   switchIcon: {
-    color: '#9c27b0!important'
+    color: '#40a9ff !important'
   },
   switchBar: {
-    backgroundColor: 'rgba(156, 39, 176, 1) !important'
+    backgroundColor: '#91d5ff !important'
   },
   tooltip: {
     padding: "10px 15px",
