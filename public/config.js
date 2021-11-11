@@ -1,10 +1,10 @@
 window.config = {
   // localhost
   99999: {
-    vault_address: "0xB03BE3E9D96c1Ba71d6ed26F62966dAAca288b45",
+    vault_address: "0x1f9c84B161b2c7FFB540BC5354543108cCE37df1",
     underlying_address: "0xc2132D05D31c914a87C6611C10748AEb04B58e8F",
-    apy_server: "http://localhost:3000",
-    rpcUrl: "http://localhost:8545",
+    apy_server: "http://192.168.60.6:3000",
+    rpcUrl: "http://192.168.60.6:8545",
     exchange_extra_params: {
       oneInch: {
         network: 137,
