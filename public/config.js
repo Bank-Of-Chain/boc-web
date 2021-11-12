@@ -50,6 +50,22 @@ window.config = {
       }
     }
   },
+  4: {
+    vault_address: "",
+    underlying_address: "",
+    apy_server: "",
+    rpcUrl: "https://eth-rinkeby.alchemyapi.io/v2/RbuvkoqtcsoGKG0__pVEKQWjh8cLNyV1",
+    exchange_extra_params: {
+      oneInch: {
+        network: 4,
+        excludeProtocols: ['POLYGON_ONE_INCH_LIMIT_ORDER']
+      },
+      paraswap: {
+        network: 4,
+        excludeContractMethods: ['swapOnZeroXv2', 'swapOnZeroXv4', 'swapOnUniswap', 'swapOnUniswapFork']
+      }
+    }
+  },
   // eth
   1: {
     vault_address: "0xB0D4afd8879eD9F52b28595d31B441D079B2Ca07",
