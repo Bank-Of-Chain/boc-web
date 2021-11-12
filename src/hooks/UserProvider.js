@@ -1,7 +1,4 @@
 import { useMemo } from "react";
-import { Web3Provider } from "@ethersproject/providers";
-import BurnerProvider from "burner-provider";
-import { INFURA_ID } from "../constants";
 
 /*
   ~ What it does? ~

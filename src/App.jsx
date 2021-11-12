@@ -16,8 +16,8 @@ import Backdrop from '@material-ui/core/Backdrop';
 import { useGasPrice, useBalance } from "./hooks";
 import { RPC_URL } from "./constants";
 import { Transactor } from "./helpers";
-import isEmpty from 'lodash/isEmpty';
 import { makeStyles } from '@material-ui/core/styles';
+import { SafeAppWeb3Modal } from '@gnosis.pm/safe-apps-web3modal';
 
 // === Styles === //
 import "./App.css";
@@ -47,11 +47,10 @@ const Invest = lazy(() => import('./pages/Invest/index'));
 const DEBUG = false;
 
 // 🏠 Your local provider is usually pointed at your local blockchain
-const localProviderUrl = RPC_URL;
 // as you deploy to other networks you can set REACT_APP_PROVIDER=https://dai.poa.network in packages/react-app/.env
-if (DEBUG) console.log("🏠 Connecting to provider:", localProviderUrl);
-const localProvider = new JsonRpcProvider(localProviderUrl);
-const web3Modal = new Web3Modal({
+if (DEBUG) console.log("🏠 Connecting to provider:", RPC_URL);
+const localProvider = new JsonRpcProvider(RPC_URL);
+const web3Modal = new SafeAppWeb3Modal({
   // network: "mainnet", // optional
   cacheProvider: true, // optional
   providerOptions: {
@@ -73,7 +72,7 @@ function App() {
   const [userProvider, setUserProvider] = useState();
 
   const loadWeb3Modal = useCallback(async () => {
-    const provider = await web3Modal.connect();
+    const provider = await web3Modal.requestProvider();
     const library = new Web3Provider(provider);
     setUserProvider(library);
   }, [setUserProvider]);

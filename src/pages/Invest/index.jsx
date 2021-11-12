@@ -336,9 +336,9 @@ export default function Invest(props) {
       console.log('Deposit=', a, b, c)
       c && c.getTransaction().then(tx => tx.wait()).then(loadBanlance);
     });
-    vaultContract.on('Withdraw', (a, b, c, d, e, f, g) => {
-      console.log('Withdraw=', a, b, c, d, e, f, g)
-      g && g.getTransaction().then(tx => tx.wait()).then(loadBanlance);
+    vaultContract.on('Withdraw', (a, b, c, d, e, f) => {
+      console.log('Withdraw=', a, b, c, d, e, f)
+      f && f.getTransaction().then(tx => tx.wait()).then(loadBanlance);
 
     });
 
