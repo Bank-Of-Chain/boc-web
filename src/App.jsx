@@ -1,3 +1,4 @@
+/* eslint-disable no-extend-native */
 import React, { useState, useCallback, useEffect, Suspense, lazy } from "react";
 import { Switch, Route, Redirect, HashRouter } from "react-router-dom";
 import { JsonRpcProvider, Web3Provider } from "@ethersproject/providers";
