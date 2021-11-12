@@ -1,11 +1,7 @@
-// forgive me ESLint god for I have sinned
-/* eslint-disable react/jsx-props-no-spreading */
 /* eslint-disable no-extend-native */
-
 import React, { useState, useCallback, useEffect, Suspense, lazy } from "react";
 import { Switch, Route, Redirect, HashRouter } from "react-router-dom";
 import { JsonRpcProvider, Web3Provider } from "@ethersproject/providers";
-import Web3Modal from "web3modal";
 import { useUserAddress } from "eth-hooks";
 
 // === Components === //
@@ -94,7 +90,7 @@ function App() {
   const tx = Transactor(userProvider, gasPrice);
   const address = useUserAddress(userProvider);
 
-  const yourLocalBalance = useBalance(userProvider, address);
+  const balance = useBalance(userProvider, address);
   const nextProps = {
     web3Modal,
     address,
@@ -103,11 +99,9 @@ function App() {
     userProvider,
     localProvider,
     tx,
+    balance
   };
-  const localChainId = localProvider && localProvider._network && localProvider._network.chainId;
-  const selectedChainId = userProvider && userProvider._network && userProvider._network.chainId;
-  console.log('nextProps=', nextProps, yourLocalBalance && yourLocalBalance.toString());
-  console.error('当前的链不匹配=', selectedChainId, localChainId, selectedChainId === localChainId)
+
   return (
     <div className="App">
       <HashRouter>
