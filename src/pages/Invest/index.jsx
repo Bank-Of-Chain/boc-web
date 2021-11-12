@@ -498,7 +498,7 @@ export default function Invest(props) {
                                 label={<Muted>{shouldExchange ? "开启兑换" : "关闭兑换"}</Muted>}
                               />
                             </GridItem>
-                            <GridItem xs={6} sm={6} md={6} md={6} style={shouldExchange ? {} : { visibility: 'hidden' }}>
+                            <GridItem xs={6} sm={6} md={6} style={shouldExchange ? {} : { visibility: 'hidden' }}>
                               <CustomInput
                                 labelText="Max Loss"
                                 inputProps={{

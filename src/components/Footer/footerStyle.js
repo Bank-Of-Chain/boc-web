@@ -27,6 +27,7 @@ const footerStyle = {
     display: "flex",
     zIndex: "2",
     position: "relative",
+    cursor: "pointer"
   },
   a: {
     color: primaryColor,

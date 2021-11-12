@@ -27,7 +27,6 @@ const useStyles = makeStyles(styles);
 
 export default function Home(props) {
   const classes = useStyles();
-  const { ...rest } = props;
 
   return (
     <div>
@@ -41,7 +40,6 @@ export default function Home(props) {
           height: 200,
           color: "white",
         }}
-        {...rest}
       />
       <Parallax filter image={require("./images/landing-bg.jpg")}>
         <div className={classes.container}>
@@ -49,13 +47,13 @@ export default function Home(props) {
             <GridItem xs={12} sm={12} md={6}>
               <h1 className={classes.title}>Your Story Starts With Us.</h1>
               <h4 className={classes.text}>
-                30w+投资者、5200W+锁仓资金
+                3w+优秀投资者、5200W+锁仓资金
               </h4>
               <br />
               <Button
                 color="danger"
                 size="lg"
-                href="http://www.baidu.com"
+                onClick={() => alert('关联一个项目操作视频')}
                 target="_blank"
                 rel="noopener noreferrer"
               >

@@ -48,16 +48,6 @@ export default function HeaderLinks(props) {
             </Button>
         }
       </ListItem>
-      <ListItem className={classes.listItem}>
-        <Button
-          href=""
-          color="transparent"
-          target="_blank"
-          className={classes.navLink}
-        >
-          <Settings className={classes.icons} />
-        </Button>
-      </ListItem>
     </List>
   );
 }

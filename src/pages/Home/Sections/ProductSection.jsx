@@ -21,9 +21,10 @@ export default function ProductSection() {
     <div className={classes.section}>
       <GridContainer justify="center">
         <GridItem xs={12} sm={12} md={8}>
-          <h2 className={classes.title}>Let{"'"}s Defi</h2>
+          <h2 className={classes.title}>Let{"'"}s grow together</h2>
           <h5 className={classes.description}>
-            这是一段项目的介绍文档，这是一段项目的介绍文档，这是一段项目的介绍文档，这是一段项目的介绍文档，这是一段项目的介绍文档，这是一段项目的介绍文档，这是一段项目的介绍文档，这是一段项目的介绍文档，
+            BOC 项目，全称Bank Of Chain。是通过进行稳定币投资，获取稳定收益的平台。底层对接Yearn、Uniswap、Dodo、Curve等众多知名的第三方平台。
+            定期的矿币提取和调仓，确保平台收益最大化。社区+多签的工作模式，让大家来决定资金的投资方向。
           </h5>
         </GridItem>
       </GridContainer>
@@ -31,8 +32,8 @@ export default function ProductSection() {
         <GridContainer>
           <GridItem xs={12} sm={12} md={4}>
             <InfoArea
-              title="Free Chat"
-              description="良好的社区氛围和多签机制良好的社区氛围和多签机制良好的社区氛围和多签机制良好的社区氛围和多签机制良好的社区氛围和多签机制良好的社区氛围和多签机制"
+              title="社区多签机制"
+              description="良好的社区建设+多签机制，让项目的每一次投资都变成一次集思广益。"
               icon={Chat}
               iconColor="info"
               vertical
@@ -40,8 +41,8 @@ export default function ProductSection() {
           </GridItem>
           <GridItem xs={12} sm={12} md={4}>
             <InfoArea
-              title="Verified Contract"
-              description="审查的合约脚本审查的合约脚本审查的合约脚本审查的合约脚本审查的合约脚本审查的合约脚本审查的合约脚本审查的合约脚本审查的合约脚本"
+              title="合约审查"
+              description="专业的合约审查团队，给予你等同于一流 Defi 项目的保障，让漏洞无所遁形。"
               icon={VerifiedUser}
               iconColor="success"
               vertical
@@ -49,8 +50,8 @@ export default function ProductSection() {
           </GridItem>
           <GridItem xs={12} sm={12} md={4}>
             <InfoArea
-              title="Security"
-              description="安全安全安全安全安全安全安全安全安全安全安全安全安全安全安全安全安全安全安全安全安全安全安全安全安全安全安全安全安全安全安全安全"
+              title="资金安全"
+              description="稳定币保本投资，稳定收益，保障用户资金安全。"
               icon={Fingerprint}
               iconColor="danger"
               vertical

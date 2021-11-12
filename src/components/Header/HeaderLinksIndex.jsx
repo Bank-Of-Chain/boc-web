@@ -36,20 +36,10 @@ export default function HeaderLinksIndex(props) {
         <Button
           color="transparent"
           target="_blank"
-          href="http://www.baidu.com"
+          onClick={() => alert('关联至docs项目的首页')}
           className={classes.navLink}
         >
           <LibraryBooksIcon className={classes.icons} ></LibraryBooksIcon> Document
-        </Button>
-      </ListItem>
-      <ListItem className={classes.listItem}>
-        <Button
-          href=""
-          color="transparent"
-          target="_blank"
-          className={classes.navLink}
-        >
-          <Settings className={classes.icons} />
         </Button>
       </ListItem>
     </List>
