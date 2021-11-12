@@ -14,13 +14,21 @@ import Drawer from "@material-ui/core/Drawer";
 import AccountBalanceIcon from '@material-ui/icons/AccountBalance';
 // @material-ui/icons
 import Menu from "@material-ui/icons/Menu";
+import Warning from "@material-ui/icons/Warning";
 // core components
 import styles from "./headerStyle.js";
 
+// === Components === //
+import SnackbarContent from "../Snackbar/SnackbarContent";
+
 const useStyles = makeStyles(styles);
+
+// 允许的chainId
+const allowChainId = [1, 4, 137];
 
 export default function Header(props) {
   const classes = useStyles();
+  const { localProvider, userProvider } = props;
   const [mobileOpen, setMobileOpen] = React.useState(false);
   React.useEffect(() => {
     if (props.changeColorOnScroll) {
@@ -62,8 +70,36 @@ export default function Header(props) {
     [classes.fixed]: fixed,
   });
   const brandComponent = <Button className={classes.title} href="/#/"><AccountBalanceIcon className={classes.icons} ></AccountBalanceIcon>&nbsp;&nbsp;{brand}</Button>;
+
+  const localChainId = localProvider && localProvider._network && localProvider._network.chainId;
+  const selectedChainId = userProvider && userProvider._network && userProvider._network.chainId;
+
   return (
-    <AppBar className={appBarClasses}>
+    <AppBar className={appBarClasses} style={{ flexDirection: 'column' }}>
+      {
+        localChainId !== selectedChainId && <SnackbarContent
+          style={{ width: '100%' }}
+          message={
+            <span>
+              <b>WARNING ALERT:</b> 当前链与钱包不匹配，请切换后使用
+            </span>
+          }
+          color="warning"
+          icon={Warning}
+        />
+      }
+      {
+        !allowChainId.includes(selectedChainId) && <SnackbarContent
+          style={{ width: '100%' }}
+          message={
+            <span>
+              <b>WARNING ALERT:</b> 当前 chainId={selectedChainId}，为非生产链，请注意操作！
+            </span>
+          }
+          color="warning"
+          icon={Warning}
+        />
+      }
       <Toolbar className={classes.container}>
         {leftLinks !== undefined ? brandComponent : null}
         <div className={classes.flex}>

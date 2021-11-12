@@ -36,12 +36,14 @@ import filter from "lodash/filter";
 import isUndefined from "lodash/isUndefined";
 import noop from "lodash/noop";
 import * as ethers from "ethers";
+import getApyByDays from './../../helpers/api-service';
 
 import styles from "./style";
 
 const useStyles = makeStyles(styles);
 const { BigNumber } = ethers;
 
+const days = [1, 3, 7, 30, 90, 365];
 // 获取兑换路径时，支持的最大损失
 const slipper = 5000;
 
@@ -79,8 +81,10 @@ export default function Invest(props) {
     type: '',
     message: ''
   });
-  const [trackedAssets, setTrackedAssets] = useState([]);
-  const [token, setToken] = useState('');
+
+  const [vaultApys, setVaultApys] = useState([]);
+
+  const [currentDays] = useState(1);
 
   const dealLine = BigNumber.from(60 * 60 * 24 - 1).sub(currentBlockTimestamp - lastDepositTimes);
 
@@ -99,8 +103,8 @@ export default function Invest(props) {
       userProvider.getBlock(userProvider.blockNumber).then(resp => {
         setCurrentBlockTimestamp(resp.timestamp);
       }),
-      vaultContract.token().then(setToken),
-      vaultContract.getTrackedAssets().then(setTrackedAssets)
+      // vaultContract.token().then(setToken),
+      // vaultContract.getTrackedAssets().then(setTrackedAssets)
     ]).catch(() => {
       setAlertState({
         open: true,
@@ -175,14 +179,13 @@ export default function Invest(props) {
       }
       const depositTx = await nVaultWithUser.deposit(nextValue);
       await depositTx.wait();
-      setFromValue(0);
+      setFromValue('');
       setAlertState({
         open: true,
         type: 'success',
         message: '数据提交成功'
       })
     } catch (error) {
-      console.log('error=', error);
       if (error && error.data) {
         if (error.data.message === 'Error: VM Exception while processing transaction: reverted with reason string \'ES\'') {
           setAlertState({
@@ -274,7 +277,7 @@ export default function Invest(props) {
       });
 
       await tx.wait();
-      setToValue(0);
+      setToValue('');
       setAlertState({
         open: true,
         type: 'success',
@@ -324,6 +327,11 @@ export default function Invest(props) {
       open: false,
     })
   }
+  // 加载apy数据
+  const loadApy = async () => {
+    const requestArray = await Promise.all(map(days, day => getApyByDays(day).catch(error => 0)));
+    setVaultApys(requestArray);
+  }
   useEffect(() => {
     const timer = setInterval(loadTotalAssets, 3000);
     return () => clearInterval(timer);
@@ -331,16 +339,18 @@ export default function Invest(props) {
 
   useEffect(() => {
     loadBanlance();
+    loadApy();
     const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider);
-    vaultContract.on('Deposit', (a, b, c) => {
-      console.log('Deposit=', a, b, c)
-      c && c.getTransaction().then(tx => tx.wait()).then(loadBanlance);
-    });
-    vaultContract.on('Withdraw', (a, b, c, d, e, f) => {
-      console.log('Withdraw=', a, b, c, d, e, f)
-      f && f.getTransaction().then(tx => tx.wait()).then(loadBanlance);
-
-    });
+    if (!isEmpty(address)) {
+      vaultContract.on('Deposit', (a, b, c) => {
+        console.log('Deposit=', a, b, c)
+        c && c.getTransaction().then(tx => tx.wait()).then(loadBanlance);
+      });
+      vaultContract.on('Withdraw', (a, b, c, d, e, f) => {
+        console.log('Withdraw=', a, b, c, d, e, f)
+        f && f.getTransaction().then(tx => tx.wait()).then(loadBanlance);
+      });
+    }
 
     return () => vaultContract.removeAllListeners(["Deposit", "Withdraw"]);
   }, [address]);
@@ -378,6 +388,9 @@ export default function Invest(props) {
               <div className={classes.brand}>
                 <h2 className={classes.subtitle}>
                   锁仓量: <CountTo from={beforeTotalAssets.toNumber()} to={totalAssets.toNumber()} speed={3500} >{fn}</CountTo>
+                </h2>
+                <h2 className={classes.subtitle}>
+                  Apy: {vaultApys[currentDays] && toFixed(vaultApys[currentDays], 100, 2)}%
                 </h2>
                 <h2 className={classes.subtitle}>
                   Price Per Fullshares: {toFixed(perFullShare, usdtDecimals, 6)}
