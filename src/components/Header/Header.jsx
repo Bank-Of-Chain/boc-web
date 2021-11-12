@@ -77,7 +77,7 @@ export default function Header(props) {
   return (
     <AppBar className={appBarClasses} style={{ flexDirection: 'column' }}>
       {
-        localChainId !== selectedChainId && <SnackbarContent
+        selectedChainId && localChainId !== selectedChainId && <SnackbarContent
           style={{ width: '100%' }}
           message={
             <span>
@@ -89,7 +89,7 @@ export default function Header(props) {
         />
       }
       {
-        !allowChainId.includes(selectedChainId) && <SnackbarContent
+        selectedChainId && !allowChainId.includes(selectedChainId) && <SnackbarContent
           style={{ width: '100%' }}
           message={
             <span>
@@ -100,7 +100,7 @@ export default function Header(props) {
           icon={Warning}
         />
       }
-      <Toolbar className={classes.container}>
+      <Toolbar className={classes.container} style={{ paddingTop: 20 }}>
         {leftLinks !== undefined ? brandComponent : null}
         <div className={classes.flex}>
           {leftLinks !== undefined ? (

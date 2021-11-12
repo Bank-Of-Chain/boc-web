@@ -31,6 +31,7 @@ import { getBestSwapInfo } from "piggy-finance-utils";
 import { toFixed } from "../../helpers/number-format";
 import { getTime } from "../../helpers/time-format";
 import map from "lodash/map";
+import get from "lodash/get";
 import isEmpty from "lodash/isEmpty";
 import filter from "lodash/filter";
 import isUndefined from "lodash/isUndefined";
@@ -38,6 +39,7 @@ import noop from "lodash/noop";
 import * as ethers from "ethers";
 import getApyByDays from './../../helpers/api-service';
 
+// === Styles === //
 import styles from "./style";
 
 const useStyles = makeStyles(styles);
@@ -390,7 +392,7 @@ export default function Invest(props) {
                   锁仓量: <CountTo from={beforeTotalAssets.toNumber()} to={totalAssets.toNumber()} speed={3500} >{fn}</CountTo>
                 </h2>
                 <h2 className={classes.subtitle}>
-                  Apy: {vaultApys[currentDays] && toFixed(vaultApys[currentDays], 100, 2)}%
+                  Apy: {toFixed(get(vaultApys, currentDays, BigNumber.from(0)), 100, 2)}%
                 </h2>
                 <h2 className={classes.subtitle}>
                   Price Per Fullshares: {toFixed(perFullShare, usdtDecimals, 6)}
@@ -496,13 +498,13 @@ export default function Invest(props) {
                                 label={<Muted>{shouldExchange ? "开启兑换" : "关闭兑换"}</Muted>}
                               />
                             </GridItem>
-                            <GridItem md={6} style={shouldExchange ? {} : { visibility: 'hidden' }}>
+                            <GridItem xs={6} sm={6} md={6} md={6} style={shouldExchange ? {} : { visibility: 'hidden' }}>
                               <CustomInput
                                 labelText="Max Loss"
                                 inputProps={{
                                   placeholder: "Allow loss percent",
                                   value: allowMaxLoss,
-                                  endAdornment: <span>%&nbsp;&nbsp;&nbsp;<span style={{ color: '#69c0ff', cursor: 'pointer' }} onClick={() => setAllowMaxLoss(50)}>Max</span></span>,
+                                  endAdornment: <span style={{ color: '#69c0ff' }}>%&nbsp;&nbsp;&nbsp;<span style={{ cursor: 'pointer' }} onClick={() => setAllowMaxLoss(50)}>Max</span></span>,
                                   onChange: (event) => {
                                     const value = event.target.value;
                                     setAllowMaxLoss(value);
