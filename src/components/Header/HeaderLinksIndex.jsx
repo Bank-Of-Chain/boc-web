@@ -25,11 +25,10 @@ export default function HeaderLinksIndex(props) {
     <List className={classes.list}>
       <ListItem className={classes.listItem}>
         <Button
-          color="transparent"
+          color="colorfull"
           href="/#/invest"
-          className={classes.navLink}
         >
-          <TrendingUpIcon className={classes.icons} ></TrendingUpIcon> Invest
+          <TrendingUpIcon className={classes.icons} ></TrendingUpIcon> Launch App
         </Button>
       </ListItem>
       <ListItem className={classes.listItem}>

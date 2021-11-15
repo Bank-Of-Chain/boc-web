@@ -51,14 +51,11 @@ export default function Home(props) {
               </h4>
               <br />
               <Button
-                color="danger"
+                color="colorfull"
                 size="lg"
-                onClick={() => alert('关联一个项目操作视频')}
-                target="_blank"
-                rel="noopener noreferrer"
+                href="/#/invest"
               >
-                <i className="fas fa-play" />
-                Watch video
+                Launch App
               </Button>
             </GridItem>
           </GridContainer>
