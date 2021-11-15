@@ -33,42 +33,42 @@ export default function Footer(props) {
           <List className={classes.list}>
             <ListItem className={classes.inlineBlock}>
               <a
-                onClick={() => alert('关联到社区的频道')}
                 className={classes.block}
+                target="_blank"
+                href="https://piggyfinance.github.io/docs/Community"
               >
                 Community
               </a>
             </ListItem>
             <ListItem className={classes.inlineBlock}>
               <a
-                onClick={() => alert('关联至jira的项目文档首页')}
                 className={classes.block}
                 target="_blank"
+                href="https://piggyfinance.github.io/docs/AboutUs"
               >
                 About us
               </a>
             </ListItem>
             <ListItem className={classes.inlineBlock}>
               <a
-                onClick={() => alert('关联至jira的项目文档首页')}
                 className={classes.block}
                 target="_blank"
+                href="https://piggyfinance.github.io/docs/Blog"
               >
                 Blog
               </a>
             </ListItem>
             <ListItem className={classes.inlineBlock}>
               <a
-                onClick={() => alert('可以关联到github首页去')}
                 className={classes.block}
                 target="_blank"
+                href="https://piggyfinance.github.io/docs/Licenses"
               >
                 Licenses
               </a>
             </ListItem>
             <ListItem className={classes.inlineBlock}>
               <a
-                onClick={() => alert('可以关联到github首页去')}
                 className={classes.block}
                 target="_blank"
               >
