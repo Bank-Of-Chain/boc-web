@@ -124,6 +124,14 @@ const buttonStyle = {
         "0 14px 26px -12px rgba(244, 67, 54, 0.42), 0 4px 23px 0px rgba(0, 0, 0, 0.12), 0 8px 10px -5px rgba(244, 67, 54, 0.2)",
     },
   },
+  colorfull:{
+    borderRadius: 12,
+    color: '#fff',
+    background: 'linear-gradient(245.22deg,#da2eef 35%,#2b6aff 65.17%,#39d0d8 92.1%)',
+    backgroundPosition: '1% 50%',
+    backgroundSize: '150% 150%',
+    transition: '.5s'
+  },
   rose: {
     backgroundColor: roseColor,
     boxShadow:
