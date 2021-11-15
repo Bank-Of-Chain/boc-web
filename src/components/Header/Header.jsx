@@ -84,6 +84,7 @@ export default function Header(props) {
               <b>WARNING ALERT:</b> 当前链与钱包不匹配，请切换后使用
             </span>
           }
+          close
           color="warning"
           icon={Warning}
         />
@@ -96,6 +97,7 @@ export default function Header(props) {
               <b>WARNING ALERT:</b> 当前 chainId={selectedChainId}，为非生产链，请注意操作！
             </span>
           }
+          close
           color="warning"
           icon={Warning}
         />
