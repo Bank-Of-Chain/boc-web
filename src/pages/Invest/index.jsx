@@ -73,7 +73,7 @@ export default function Invest(props) {
   const [withdrawFee, setWithdrawFee] = useState(BigNumber.from(0));
   const [currentBlockTimestamp, setCurrentBlockTimestamp] = useState(0);
 
-  const [allowMaxLoss, setAllowMaxLoss] = useState('0.6');
+  const [allowMaxLoss, setAllowMaxLoss] = useState('0.3');
   const [shouldExchange, setShouldExchange] = useState(true);
   // 模态框标识位
   const [alertState, setAlertState] = useState({
@@ -383,7 +383,7 @@ export default function Invest(props) {
         }}
         {...props}
       />
-      <Parallax image={require("./images/bg-1.jpg")}>
+      <Parallax>
         <div className={classes.container}>
           <GridContainer>
             <GridItem>
@@ -411,7 +411,6 @@ export default function Invest(props) {
                 tabs={[
                   {
                     tabName: 'USDT',
-                    // tabIcon: () => <image src='https://tokens.1inch.io/0xdac17f958d2ee523a2206206994597c13d831ec7.png' />,
                     tabContent: (
                       <GridContainer>
                         <GridItem xs={12} sm={12} md={6} lg={6}>
@@ -520,10 +519,10 @@ export default function Invest(props) {
                           </GridContainer>
                         </GridItem>
                         <GridItem xs={6} sm={6} md={6} lg={6}>
-                          <Button color="primary" onClick={diposit} >Deposit</Button>
+                          <Button color="colorfull" onClick={diposit} >Deposit</Button>
                         </GridItem>
                         <GridItem xs={6} sm={6} md={6} lg={6}>
-                          <Button color="primary" onClick={withdraw} >Withdraw</Button>
+                          <Button color="colorfull" onClick={withdraw} >Withdraw</Button>
                           {
                             lastDepositTimes.gt(0) && withdrawFee.gt(0) && toBalance.gt(0) && <Tooltip
                               title="距离上一次存款时间未达到24小时，支取需要支付额外的手续费用。"
@@ -545,7 +544,7 @@ export default function Invest(props) {
           </GridContainer>
         </div>
       </div>
-      <Footer />
+      <Footer whiteFont />
       <Snackbar open={alertState.open} autoHideDuration={3000} onClose={handleClose} anchorOrigin={{ vertical: 'top', horizontal: 'center' }}>
         <Alert severity={alertState.type}>
           {alertState.message}

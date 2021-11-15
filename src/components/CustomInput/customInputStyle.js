@@ -40,9 +40,9 @@ const customInputStyle = {
   },
   labelRoot: {
     ...defaultFont,
-    color: "#AAAAAA !important",
+    color: "#fff !important",
     fontWeight: "400",
-    fontSize: "14px",
+    fontSize: "20px",
     lineHeight: "1.42857",
     top: "10px",
     letterSpacing: "unset",
@@ -65,22 +65,22 @@ const customInputStyle = {
     },
   },
   input: {
-    color: "#495057",
+    color: "#fff",
     height: "unset",
     "&,&::placeholder": {
-      fontSize: "14px",
+      fontSize: "16px",
       fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',
       fontWeight: "400",
       lineHeight: "1.42857",
       opacity: "1",
     },
     "&::placeholder": {
-      color: "#AAAAAA",
+      color: "#fff",
     },
   },
   whiteInput: {
     "&,&::placeholder": {
-      color: "#FFFFFF",
+      color: "#fff",
       opacity: "1",
     },
   },

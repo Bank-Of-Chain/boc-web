@@ -66,19 +66,16 @@ export default function Footer(props) {
                 Licenses
               </a>
             </ListItem>
+            <ListItem className={classes.inlineBlock}>
+              <a
+                onClick={() => alert('可以关联到github首页去')}
+                className={classes.block}
+                target="_blank"
+              >
+                Copyright@{1900 + new Date().getYear()}
+              </a>
+            </ListItem>
           </List>
-        </div>
-        <div className={classes.center}>
-          &copy; {1900 + new Date().getYear()} , made with
-          <Favorite className={classes.icon} /> by{" "}
-          <a
-            onClick={() => alert('关联至jira的项目文档首页')}
-            className={aClasses}
-            target="_blank"
-          >
-            BOC Team
-          </a>{" "}
-          for a better web.
         </div>
       </div>
     </footer>

@@ -79,7 +79,7 @@ const grayColor = "#999999";
 
 const primaryBoxShadow = {
   boxShadow:
-    "0 12px 20px -10px rgba(105, 192, 255, 0.28), 0 4px 20px 0px rgba(0, 0, 0, 0.12), 0 7px 8px -5px rgba(105, 192, 255, 0.2)",
+    "0 0px 20px 0px rgb(105 192 255 / 28%), 0 4px 20px 0px rgb(0 0 0 / 12%), 0 7px 8px -5px rgb(105 192 255 / 20%)",
 };
 const infoBoxShadow = {
   boxShadow:
@@ -124,7 +124,7 @@ const infoCardHeader = {
 };
 const primaryCardHeader = {
   color: "#fff",
-  background: "linear-gradient(60deg, #40a9ff, #d3adf7)",
+  background: "rgb(19, 24, 35)",
   ...primaryBoxShadow,
 };
 const roseCardHeader = {
@@ -156,7 +156,7 @@ const defaultBoxShadow = {
 };
 
 const title = {
-  color: "#3C4858",
+  color: "#fff",
   margin: "1.75rem 0 0.875rem",
   textDecoration: "none",
   fontWeight: "700",

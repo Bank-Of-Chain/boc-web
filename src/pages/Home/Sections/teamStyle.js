@@ -25,10 +25,10 @@ const teamStyle = {
     color: "#6c757d",
   },
   description: {
-    color: "#999",
+    color: "#fff",
     fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',
     lineHeight: '1.5em',
-    textAlign: 'center'
+    textAlign: 'left'
   },
   justifyCenter: {
     justifyContent: "center !important",

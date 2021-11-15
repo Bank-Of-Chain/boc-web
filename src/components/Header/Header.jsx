@@ -118,7 +118,7 @@ export default function Header(props) {
         </Hidden>
         <Hidden mdUp>
           <IconButton
-            color="inherit"
+            style={{ color: '#fff' }}
             aria-label="open drawer"
             onClick={handleDrawerToggle}
           >
