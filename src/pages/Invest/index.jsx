@@ -337,6 +337,7 @@ export default function Invest(props) {
   useEffect(() => {
     const timer = setInterval(loadTotalAssets, 3000);
     return () => clearInterval(timer);
+    // eslint-disable-next-line
   }, [totalAssets.toString()]);
 
   useEffect(() => {
@@ -355,6 +356,7 @@ export default function Invest(props) {
     }
 
     return () => vaultContract.removeAllListeners(["Deposit", "Withdraw"]);
+    // eslint-disable-next-line
   }, [address]);
 
   // 展示vault.totalAssets
