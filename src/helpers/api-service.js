@@ -18,16 +18,21 @@ import {
 export default function getApyByDays(days) {
   return new Promise((resolve, reject) => {
     request.get(`${APY_SERVER}/v3/vault/apy/${days}`, (error, response, body) => {
-      console.log('error=', body);
-      const jsonBody = JSON.parse(body);
-      const {
-        code
-      } = jsonBody
-      if (code !== 200) {
-        reject('获取失败');
-        return
+      console.log('error=', error, response, body);
+      try {
+
+        const jsonBody = JSON.parse(body);
+        const {
+          code
+        } = jsonBody
+        if (code !== 200) {
+          reject('获取失败');
+          return
+        }
+        resolve(BigNumber.from(get(jsonBody, 'data.apy', 0)));
+      } catch (error) {
+        resolve(BigNumber.from(0))
       }
-      resolve(BigNumber.from(get(jsonBody, 'data.apy', 0)));
     });
   })
 }

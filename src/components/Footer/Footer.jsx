@@ -33,16 +33,15 @@ export default function Footer(props) {
           <List className={classes.list}>
             <ListItem className={classes.inlineBlock}>
               <a
-                href=""
+                onClick={() => alert('关联到社区的频道')}
                 className={classes.block}
-                target="_blank"
               >
-                HX
+                Community
               </a>
             </ListItem>
             <ListItem className={classes.inlineBlock}>
               <a
-                href=""
+                onClick={() => alert('关联至jira的项目文档首页')}
                 className={classes.block}
                 target="_blank"
               >
@@ -51,7 +50,7 @@ export default function Footer(props) {
             </ListItem>
             <ListItem className={classes.inlineBlock}>
               <a
-                href=""
+                onClick={() => alert('关联至jira的项目文档首页')}
                 className={classes.block}
                 target="_blank"
               >
@@ -60,7 +59,7 @@ export default function Footer(props) {
             </ListItem>
             <ListItem className={classes.inlineBlock}>
               <a
-                href=""
+                onClick={() => alert('可以关联到github首页去')}
                 className={classes.block}
                 target="_blank"
               >
@@ -73,11 +72,11 @@ export default function Footer(props) {
           &copy; {1900 + new Date().getYear()} , made with
           <Favorite className={classes.icon} /> by{" "}
           <a
-            href=""
+            onClick={() => alert('关联至jira的项目文档首页')}
             className={aClasses}
             target="_blank"
           >
-            HX
+            BOC Team
           </a>{" "}
           for a better web.
         </div>
