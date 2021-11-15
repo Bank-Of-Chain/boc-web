@@ -14,6 +14,7 @@ import GridItem from "../../components/Grid/GridItem";
 import Button from "../../components/CustomButtons/Button";
 import Parallax from "../../components/Parallax/Parallax";
 import HeaderLinksIndex from "../../components/Header/HeaderLinksIndex";
+import Tooltip from "@material-ui/core/Tooltip";
 
 import styles from "./landingPage";
 
@@ -57,6 +58,87 @@ export default function Home(props) {
               >
                 Launch App
               </Button>
+              <Tooltip
+                title="POLYGON"
+                placement={window.innerWidth > 959 ? "top" : "left"}
+                classes={{ tooltip: classes.tooltip }}
+              >
+                <a href="/#/invest">
+                  <img className={classes.img} src={require('./images/POLYGON.svg')} />
+                </a>
+              </Tooltip>
+              <Tooltip
+                title="ARBITRUM"
+                placement={window.innerWidth > 959 ? "top" : "left"}
+                classes={{ tooltip: classes.tooltip }}
+              >
+                <a href="/#/">
+                  <img className={classes.img} src={require('./images/ARBITRUM.svg')} />
+                </a>
+              </Tooltip>
+              <Tooltip
+                title="AVALANCHE"
+                placement={window.innerWidth > 959 ? "top" : "left"}
+                classes={{ tooltip: classes.tooltip }}
+              >
+                <a href="/#/">
+                  <img className={classes.img} src={require('./images/AVALANCHE.svg')} />
+                </a>
+              </Tooltip>
+              <Tooltip
+                title="BSC"
+                placement={window.innerWidth > 959 ? "top" : "left"}
+                classes={{ tooltip: classes.tooltip }}
+              >
+                <a href="/#/">
+                  <img className={classes.img} src={require('./images/BSC.svg')} />
+                </a>
+              </Tooltip>
+              <Tooltip
+                title="CELO"
+                placement={window.innerWidth > 959 ? "top" : "left"}
+                classes={{ tooltip: classes.tooltip }}
+              >
+                <a href="/#/">
+                  <img className={classes.img} src={require('./images/CELO.svg')} />
+                </a>
+              </Tooltip>
+              <Tooltip
+                title="FANTOM"
+                placement={window.innerWidth > 959 ? "top" : "left"}
+                classes={{ tooltip: classes.tooltip }}
+              >
+                <a href="/#/">
+                  <img className={classes.img} src={require('./images/FANTOM.svg')} />
+                </a>
+              </Tooltip>
+              <Tooltip
+                title="HARMONY"
+                placement={window.innerWidth > 959 ? "top" : "left"}
+                classes={{ tooltip: classes.tooltip }}
+              >
+                <a href="/#/">
+                  <img className={classes.img} src={require('./images/HARMONY.svg')} />
+                </a>
+              </Tooltip>
+              <Tooltip
+                title="HECO"
+                placement={window.innerWidth > 959 ? "top" : "left"}
+                classes={{ tooltip: classes.tooltip }}
+              >
+                <a href="/#/">
+                  <img className={classes.img} src={require('./images/HECO.svg')} />
+                </a>
+              </Tooltip>
+              <Tooltip
+                title="MOONRIVER"
+                placement={window.innerWidth > 959 ? "top" : "left"}
+                classes={{ tooltip: classes.tooltip }}
+              >
+                <a href="/#/">
+                  <img className={classes.img} src={require('./images/MOONRIVER.svg')} />
+                </a>
+              </Tooltip>
             </GridItem>
           </GridContainer>
         </div>
