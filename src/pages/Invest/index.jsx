@@ -46,8 +46,6 @@ const useStyles = makeStyles(styles);
 const { BigNumber } = ethers;
 
 const days = [1, 3, 7, 30, 90, 365];
-// 获取兑换路径时，支持的最大损失
-const slipper = 5000;
 
 const getExchangePlatformAdapters = async (exchangeAggregator) => {
   const adapters = await exchangeAggregator.getExchangeAdapters();
@@ -252,7 +250,7 @@ export default function Invest(props) {
                   address: USDT_ADDRESS
                 },
                 amounts[index].toString(),
-                slipper,
+                allowMaxLossValue,
                 exchangePlatformAdapters,
                 EXCHANGE_EXTRA_PARAMS
               )
