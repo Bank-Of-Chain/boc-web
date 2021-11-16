@@ -46,7 +46,6 @@ export default function HeaderLinksIndex(props) {
             <Link to="/invest" className={classes.dropdownLink}>
               Polygon
             </Link>
-            ,
           ]}
         />
       </ListItem>
