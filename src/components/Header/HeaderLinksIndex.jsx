@@ -8,20 +8,25 @@ import ListItem from "@material-ui/core/ListItem";
 
 // @material-ui/icons
 import LibraryBooksIcon from "@material-ui/icons/LibraryBooks";
-import TrendingUpIcon from "@material-ui/icons/TrendingUp";
 import Apps from "@material-ui/icons/Apps";
 import BookIcon from '@material-ui/icons/Book';
 import ChatIcon from '@material-ui/icons/Chat';
+import AccountBalanceWallet from "@material-ui/icons/AccountBalanceWallet";
+import AccountBalanceWalletOutlined from "@material-ui/icons/AccountBalanceWalletOutlined";
 // core components
 import { Link } from "react-router-dom";
 import Button from "../CustomButtons/Button";
 import CustomDropdown from "../CustomDropdown/CustomDropdown";
 import styles from "./headerLinksStyle";
+import Address from "../Address/Address";
 
+// === Utils === //
+import isEmpty from "lodash/isEmpty";
 
 const useStyles = makeStyles(styles);
 
 export default function HeaderLinksIndex(props) {
+  const { address, userProvider, loadWeb3Modal } = props;
   const classes = useStyles();
   return (
     <List className={classes.list}>
@@ -74,12 +79,24 @@ export default function HeaderLinksIndex(props) {
         </Button>
       </ListItem>
       <ListItem className={classes.listItem}>
-        <Button
-          color="colorfull"
-          href="/#/invest"
-        >
-          <TrendingUpIcon className={classes.icons} ></TrendingUpIcon> Launch App
-        </Button>
+        {
+          isEmpty(userProvider)
+            ? <Button
+              color="colorfull"
+              target="_blank"
+              className={classes.navLink}
+              onClick={loadWeb3Modal}
+            >
+              <AccountBalanceWallet className={classes.icons} ></AccountBalanceWallet> Launch App
+            </Button>
+            : <Button
+              color="transparent"
+              className={classes.navLink}
+              href="/#/invest"
+            >
+              <AccountBalanceWalletOutlined className={classes.icons} /> <Address size="short" address={address} />
+            </Button>
+        }
       </ListItem>
     </List>
   );

@@ -1,6 +1,5 @@
 /*eslint-disable*/
 import React from "react";
-import IconButton from "@material-ui/core/IconButton";
 
 // @material-ui/core components
 import { makeStyles } from "@material-ui/core/styles";

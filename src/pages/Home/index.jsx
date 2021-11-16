@@ -35,7 +35,7 @@ export default function Home(props) {
         color="transparent"
         routes={dashboardRoutes}
         brand="Bank Of Chain"
-        rightLinks={<HeaderLinksIndex />}
+        rightLinks={<HeaderLinksIndex  {...props} />}
         fixed
         changeColorOnScroll={{
           height: 200,
@@ -64,7 +64,7 @@ export default function Home(props) {
                 classes={{ tooltip: classes.tooltip }}
               >
                 <a href="/#/invest">
-                  <img className={classes.img} src={require('./images/POLYGON.svg')} />
+                  <img className={classes.img} src={require('./images/POLYGON.svg')} alt="" />
                 </a>
               </Tooltip>
               <Tooltip
@@ -73,7 +73,7 @@ export default function Home(props) {
                 classes={{ tooltip: classes.tooltip }}
               >
                 <a href="/#/">
-                  <img className={classes.img} src={require('./images/ARBITRUM.svg')} />
+                  <img className={classes.img} src={require('./images/ARBITRUM.svg')} alt="" />
                 </a>
               </Tooltip>
               <Tooltip
@@ -82,7 +82,7 @@ export default function Home(props) {
                 classes={{ tooltip: classes.tooltip }}
               >
                 <a href="/#/">
-                  <img className={classes.img} src={require('./images/AVALANCHE.svg')} />
+                  <img className={classes.img} src={require('./images/AVALANCHE.svg')} alt="" />
                 </a>
               </Tooltip>
               <Tooltip
@@ -91,7 +91,7 @@ export default function Home(props) {
                 classes={{ tooltip: classes.tooltip }}
               >
                 <a href="/#/">
-                  <img className={classes.img} src={require('./images/BSC.svg')} />
+                  <img className={classes.img} src={require('./images/BSC.svg')} alt="" />
                 </a>
               </Tooltip>
               <Tooltip
@@ -100,7 +100,7 @@ export default function Home(props) {
                 classes={{ tooltip: classes.tooltip }}
               >
                 <a href="/#/">
-                  <img className={classes.img} src={require('./images/CELO.svg')} />
+                  <img className={classes.img} src={require('./images/CELO.svg')} alt="" />
                 </a>
               </Tooltip>
               <Tooltip
@@ -109,7 +109,7 @@ export default function Home(props) {
                 classes={{ tooltip: classes.tooltip }}
               >
                 <a href="/#/">
-                  <img className={classes.img} src={require('./images/FANTOM.svg')} />
+                  <img className={classes.img} src={require('./images/FANTOM.svg')} alt="" />
                 </a>
               </Tooltip>
               <Tooltip
@@ -118,7 +118,7 @@ export default function Home(props) {
                 classes={{ tooltip: classes.tooltip }}
               >
                 <a href="/#/">
-                  <img className={classes.img} src={require('./images/HARMONY.svg')} />
+                  <img className={classes.img} src={require('./images/HARMONY.svg')} alt="" />
                 </a>
               </Tooltip>
               <Tooltip
@@ -127,7 +127,7 @@ export default function Home(props) {
                 classes={{ tooltip: classes.tooltip }}
               >
                 <a href="/#/">
-                  <img className={classes.img} src={require('./images/HECO.svg')} />
+                  <img className={classes.img} src={require('./images/HECO.svg')} alt="" />
                 </a>
               </Tooltip>
               <Tooltip
@@ -136,7 +136,7 @@ export default function Home(props) {
                 classes={{ tooltip: classes.tooltip }}
               >
                 <a href="/#/">
-                  <img className={classes.img} src={require('./images/MOONRIVER.svg')} />
+                  <img className={classes.img} src={require('./images/MOONRIVER.svg')} alt="" />
                 </a>
               </Tooltip>
             </GridItem>
