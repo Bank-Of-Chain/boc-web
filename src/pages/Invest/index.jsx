@@ -121,7 +121,11 @@ export default function Invest(props) {
   const isValidFromValue = () => {
     if (fromValue === '' || fromValue === '-') return;
     if (fromValue < 0) return false;
-    if (fromBalance.lt(usdtDecimals.mul(fromValue))) return false;
+    if (isNaN(fromValue)) return false;
+    const value = fromValue * usdtDecimals;
+    const intValue = parseInt(value);
+    if (fromBalance.lt(intValue)) return false;
+    if (value !== intValue) return false;
     return true;
   }
 
@@ -132,7 +136,11 @@ export default function Invest(props) {
   const isValidToValue = () => {
     if (toValue === '' || toValue === '-') return;
     if (toValue < 0) return false;
-    if (toBalance.lt(usdtDecimals.mul(toValue))) return false;
+    if (isNaN(toValue)) return false;
+    const value = toValue * usdtDecimals;
+    const intValue = parseInt(value)
+    if (toBalance.lt(intValue)) return false;
+    if (value !== intValue) return false;
     return true;
   }
 
@@ -187,7 +195,7 @@ export default function Invest(props) {
       })
     } catch (error) {
       if (error && error.data) {
-        if (error.data.message === 'Error: VM Exception while processing transaction: reverted with reason string \'ES\'') {
+        if (error.data.message === 'Error: VM Exception while processing transaction: reverted with reason string \'ES or AD\'') {
           setAlertState({
             open: true,
             type: 'error',
@@ -286,7 +294,7 @@ export default function Invest(props) {
     } catch (error) {
       console.error(error);
       if (error && error.data) {
-        if (error.data.message === 'Error: VM Exception while processing transaction: reverted with reason string \'ES\'') {
+        if (error.data.message === 'Error: VM Exception while processing transaction: reverted with reason string \'ES or AD\'') {
           setAlertState({
             open: true,
             type: 'error',
@@ -419,18 +427,10 @@ export default function Invest(props) {
                             inputProps={{
                               placeholder: "Please input a deposit amount",
                               value: fromValue,
-                              endAdornment: <span style={{ color: '#69c0ff', cursor: 'pointer' }} onClick={() => setFromValue(parseInt(toFixed(fromBalance, 10 ** 6)))}>Max</span>,
+                              endAdornment: <span style={{ color: '#69c0ff', cursor: 'pointer' }} onClick={() => setFromValue(toFixed(fromBalance, 10 ** 6))}>Max</span>,
                               onChange: (event) => {
                                 try {
-                                  if (event.target.value === '-') {
-                                    setFromValue(event.target.value);
-                                    return
-                                  }
-                                  const nextValue = parseInt(event.target.value)
-                                  if (isNaN(nextValue)) {
-                                    throw new Error('数值转换失败');
-                                  }
-                                  setFromValue(nextValue)
+                                  setFromValue(event.target.value)
                                 } catch (error) {
                                   setFromValue('');
                                 }
@@ -449,18 +449,10 @@ export default function Invest(props) {
                             inputProps={{
                               placeholder: "Please input a withdraw amount",
                               value: toValue,
-                              endAdornment: <span style={{ color: '#69c0ff', cursor: 'pointer' }} onClick={() => setToValue(parseInt(toFixed(toBalance, 10 ** 6)))}>Max</span>,
+                              endAdornment: <span style={{ color: '#69c0ff', cursor: 'pointer' }} onClick={() => setToValue(toFixed(toBalance, 10 ** 6))}>Max</span>,
                               onChange: (event) => {
                                 try {
-                                  if (event.target.value === '-') {
-                                    setToValue(event.target.value);
-                                    return
-                                  }
-                                  const nextValue = parseInt(event.target.value)
-                                  if (isNaN(nextValue)) {
-                                    throw new Error('数值转换失败');
-                                  }
-                                  setToValue(nextValue);
+                                  setToValue(event.target.value);
                                 } catch (error) {
                                   setToValue('');
                                 }
