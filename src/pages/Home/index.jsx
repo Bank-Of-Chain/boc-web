@@ -20,7 +20,6 @@ import styles from "./landingPage";
 
 // Sections for this page
 import ProductSection from "./Sections/ProductSection";
-import TeamSection from "./Sections/TeamSection";
 
 const dashboardRoutes = [];
 
