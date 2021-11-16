@@ -68,6 +68,9 @@ const componentsStyle = {
     whiteSpace: "normal",
     lineBreak: "auto",
   },
+  img: {
+    width: '40px'
+  }
 };
 
 export default componentsStyle;

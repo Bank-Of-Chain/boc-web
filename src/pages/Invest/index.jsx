@@ -22,6 +22,10 @@ import CountTo from 'react-count-to';
 import Tooltip from "@material-ui/core/Tooltip";
 import Snackbar from "@material-ui/core/Snackbar";
 import Alert from '@material-ui/lab/Alert';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import KeyboardHideIcon from '@material-ui/icons/KeyboardHide';
+import KeyboardIcon from '@material-ui/icons/Keyboard';
+import HowToVoteIcon from '@material-ui/icons/HowToVote';
 
 // === constants === //
 import { VAULT_ADDRESS, VAULT_ABI, IERC20_ABI, USDT_ADDRESS, EXCHANGE_AGGREGATOR_ABI, EXCHANGE_EXTRA_PARAMS, MULTIPLE_OF_GAS } from "../../constants";
@@ -32,6 +36,8 @@ import { toFixed } from "../../helpers/number-format";
 import { getTime } from "../../helpers/time-format";
 import map from "lodash/map";
 import get from "lodash/get";
+import debounce from "lodash/debounce";
+import compact from "lodash/compact";
 import isEmpty from "lodash/isEmpty";
 import filter from "lodash/filter";
 import isUndefined from "lodash/isUndefined";
@@ -75,6 +81,10 @@ export default function Invest(props) {
 
   const [allowMaxLoss, setAllowMaxLoss] = useState('0.3');
   const [shouldExchange, setShouldExchange] = useState(true);
+  const [focusInput, setFocusInput] = useState(false);
+  const [estimateWithdrawArray, setEstimateWithdrawArray] = useState([]);
+  const [isEstimate, setIsEstimate] = useState(false);
+  const [isOpenEstimate, setIsOpenEstimate] = useState(true);
   // 模态框标识位
   const [alertState, setAlertState] = useState({
     open: false,
@@ -124,7 +134,7 @@ export default function Invest(props) {
     if (isNaN(fromValue)) return false;
     const value = fromValue * usdtDecimals;
     const intValue = parseInt(value);
-    if (fromBalance.lt(intValue)) return false;
+    if (fromBalance.lt(intValue.toString())) return false;
     if (value !== intValue) return false;
     return true;
   }
@@ -138,8 +148,8 @@ export default function Invest(props) {
     if (toValue < 0) return false;
     if (isNaN(toValue)) return false;
     const value = toValue * usdtDecimals;
-    const intValue = parseInt(value)
-    if (toBalance.lt(intValue)) return false;
+    const intValue = parseInt(value);
+    if (toBalance.lt(intValue.toString())) return false;
     if (value !== intValue) return false;
     return true;
   }
@@ -365,6 +375,44 @@ export default function Invest(props) {
     // eslint-disable-next-line
   }, [address]);
 
+  useEffect(() => {
+    if (!isValidToValue() || !isOpenEstimate) return
+
+    const estimateWithdraw = debounce(async () => {
+      setIsEstimate(true);
+      const nextValue = `${toValue * usdtDecimals}`;
+      const allowMaxLossValue = parseInt(100 * parseFloat(allowMaxLoss));
+      const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider);
+      vaultContract.callStatic.withdraw(nextValue, allowMaxLossValue, shouldExchange, []).then(async ([tokens, amounts]) => {
+        let nextEstimateWithdrawArray = compact(
+          map(tokens, (token, index) => {
+            const amount = get(amounts, index, BigNumber.from(0))
+            if (amount.gt(0)) {
+              return {
+                tokenAddress: token,
+                amounts: amount
+              }
+            }
+          })
+        )
+        if (shouldExchange) {
+          nextEstimateWithdrawArray = [{
+            tokenAddress: USDT_ADDRESS,
+            amounts: perFullShare.mul((toValue * usdtDecimals).toString()).div(usdtDecimals)
+          }]
+        }
+        setEstimateWithdrawArray(
+          nextEstimateWithdrawArray
+        )
+        setTimeout(() => {
+          setIsEstimate(false);
+        }, 1000);
+      });
+    }, 1000)
+    estimateWithdraw();
+    // eslint-disable-next-line
+  }, [toValue, allowMaxLoss, shouldExchange, isOpenEstimate])
+
   // 展示vault.totalAssets
   const fn = value => <span>$ {toFixed(value, 10 ** 6, 6)}</span>;
 
@@ -372,6 +420,34 @@ export default function Invest(props) {
   const countFn = (value) => {
     const { hourTime, minuteTime, secondTime } = getTime(dealLine - value);// 秒
     return <span style={{ color: '#ff4d4f' }}> ({hourTime}:{minuteTime}:{secondTime})</span>
+  }
+
+  const renderEstimate = () => {
+    if (isEstimate) {
+      return <GridItem xs={12} sm={12} md={12} lg={12}>
+        <p style={{ textAlign: 'center' }}>
+          <CircularProgress fontSize="large" color="primary" />
+        </p>
+      </GridItem>
+    }
+    if (isEmpty(estimateWithdrawArray) || isEmpty(toValue)) {
+      return <GridItem xs={12} sm={12} md={12} lg={12}>
+        <p style={{ textAlign: 'center', minHeight: '100px' }}>
+          <HowToVoteIcon fontSize="large" color="primary" />
+        </p>
+      </GridItem>
+    }
+    return map(estimateWithdrawArray, item => {
+      return <GridItem key={item.tokenAddress} xs={12} sm={12} md={6} lg={6}>
+        <Button
+          color="transparent"
+          target="_blank"
+          style={{ fontSize: 20 }}
+        >
+          <img className={classes.img} alt="" src={`./images/${item.tokenAddress}.webp`} />&nbsp;&nbsp;~&nbsp;{item.amounts.toString()}
+        </Button>
+      </GridItem>
+    })
   }
 
   const isValidToValueFlag = isValidToValue();
@@ -445,8 +521,10 @@ export default function Invest(props) {
                         </GridItem>
                         <GridItem xs={12} sm={12} md={6} lg={6}>
                           <CustomInput
-                            labelText={`Balance: ${toFixed(toBalance, 10 ** 6)} (~${toFixed(toBalance.mul(perFullShare), 10 ** 12, 2)} USDT)`}
+                            labelText={`Balance: ${toFixed(toBalance, 10 ** 6)}${focusInput ? ` (~${toFixed(toBalance.mul(perFullShare), 10 ** 12, 2)} USDT)` : ''}`}
                             inputProps={{
+                              onFocus: () => setFocusInput(true),
+                              onBlur: () => setFocusInput(false),
                               placeholder: "Please input a withdraw amount",
                               value: toValue,
                               endAdornment: <span style={{ color: '#69c0ff', cursor: 'pointer' }} onClick={() => setToValue(toFixed(toBalance, 10 ** 6))}>Max</span>,
@@ -509,6 +587,26 @@ export default function Invest(props) {
                               />
                             </GridItem>
                           </GridContainer>
+                        </GridItem>
+                        <GridItem xs={12} sm={12} md={12} lg={12}>
+                          {
+                            isOpenEstimate ? <GridContainer>
+                              <GridItem xs={12} sm={12} md={12} lg={12}>
+                                <Muted><p style={{ fontSize: 18 }}>提取数额预估：<KeyboardIcon fontSize="large" style={{ float: 'right', cursor: 'pointer' }} onClick={() => setIsOpenEstimate(false)}></KeyboardIcon></p></Muted>
+                              </GridItem>
+                              {renderEstimate()}
+                            </GridContainer> :
+                              <GridContainer>
+                                <GridItem xs={12} sm={12} md={12} lg={12}>
+                                  <Muted>
+                                    <p style={{ fontSize: 18 }}>
+                                      开启提取份额预估计算
+                                      <KeyboardHideIcon fontSize="large" style={{ float: 'right', cursor: 'pointer' }} onClick={() => setIsOpenEstimate(true)}></KeyboardHideIcon>
+                                    </p>
+                                  </Muted>
+                                </GridItem>
+                              </GridContainer>
+                          }
                         </GridItem>
                         <GridItem xs={6} sm={6} md={6} lg={6}>
                           <Button color="colorfull" onClick={diposit} >Deposit</Button>
