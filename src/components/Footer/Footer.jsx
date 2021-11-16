@@ -35,7 +35,7 @@ export default function Footer(props) {
               <a
                 className={classes.block}
                 target="_blank"
-                href="https://piggyfinance.github.io/docs/Community"
+                href="https://piggyfinance.github.io/docs/zh/community/"
               >
                 Community
               </a>
@@ -44,7 +44,7 @@ export default function Footer(props) {
               <a
                 className={classes.block}
                 target="_blank"
-                href="https://piggyfinance.github.io/docs/AboutUs"
+                href="https://piggyfinance.github.io/docs/zh/aboutus/"
               >
                 About us
               </a>
@@ -53,7 +53,7 @@ export default function Footer(props) {
               <a
                 className={classes.block}
                 target="_blank"
-                href="https://piggyfinance.github.io/docs/Blog"
+                href="https://piggyfinance.github.io/docs/zh/blog/"
               >
                 Blog
               </a>
@@ -62,7 +62,7 @@ export default function Footer(props) {
               <a
                 className={classes.block}
                 target="_blank"
-                href="https://piggyfinance.github.io/docs/Licenses"
+                href="https://piggyfinance.github.io/docs/zh/licenses/"
               >
                 Licenses
               </a>

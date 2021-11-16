@@ -54,7 +54,7 @@ export default function HeaderLinksIndex(props) {
         <Button
           color="transparent"
           target="_blank"
-          href="https://piggyfinance.github.io/docs/Community"
+          href="https://piggyfinance.github.io/docs/zh/community/"
         >
           <ChatIcon className={classes.icons} ></ChatIcon> DAO
         </Button>
@@ -63,7 +63,7 @@ export default function HeaderLinksIndex(props) {
         <Button
           color="transparent"
           target="_blank"
-          href="https://piggyfinance.github.io/docs/Blog"
+          href="https://piggyfinance.github.io/docs/zh/blog/"
         >
           <BookIcon className={classes.icons} ></BookIcon> Blog
         </Button>
@@ -72,7 +72,7 @@ export default function HeaderLinksIndex(props) {
         <Button
           color="transparent"
           target="_blank"
-          href="https://piggyfinance.github.io/docs/"
+          href="https://piggyfinance.github.io/docs/zh/docs/"
           className={classes.navLink}
         >
           <LibraryBooksIcon className={classes.icons} ></LibraryBooksIcon> Document
