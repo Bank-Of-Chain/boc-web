@@ -33,7 +33,7 @@ const typographyStyle = {
     color: "#777",
   },
   mutedText: {
-    color: "#777",
+    color: "#fff",
   },
   primaryText: {
     color: primaryColor,

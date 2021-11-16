@@ -15,6 +15,7 @@ const customTabsStyle = {
     minHeight: "unset !important",
   },
   tabRootButton: {
+    background: 'linear-gradient(245.22deg,#da2eef 35%,#2b6aff 65.17%,#39d0d8 92.1%)',
     minHeight: "unset !important",
     minWidth: "unset !important",
     width: "unset !important",
@@ -38,6 +39,9 @@ const customTabsStyle = {
     transition: "0.2s background-color 0.1s",
   },
   tabWrapper: {
+    fontSize: 20,
+    whiteSpace: 'nowrap',
+    margin: ".3125rem 1px",
     display: "inline-block",
     minHeight: "unset !important",
     minWidth: "unset !important",

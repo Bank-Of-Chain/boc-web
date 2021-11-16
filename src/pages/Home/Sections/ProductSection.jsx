@@ -21,7 +21,6 @@ export default function ProductSection() {
     <div className={classes.section}>
       <GridContainer justify="center">
         <GridItem xs={12} sm={12} md={8}>
-          <h2 className={classes.title}>Let{"'"}s grow together</h2>
           <h5 className={classes.description}>
             BOC 项目，全称Bank Of Chain。是通过进行稳定币投资，获取稳定收益的平台。底层对接Yearn、Uniswap、Dodo、Curve等众多知名的第三方平台。
             定期的矿币提取和调仓，确保平台收益最大化。社区+多签的工作模式，让大家来决定资金的投资方向。

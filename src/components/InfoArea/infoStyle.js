@@ -51,13 +51,13 @@ const infoStyle = {
   },
   title,
   description: {
-    color: grayColor,
+    color: '#fff',
     overflow: "hidden",
     marginTop: "0px",
     fontSize: "14px",
     fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',
     lineHeight: '1.5em',
-    textAlign: 'center'
+    textAlign: 'left'
   },
   iconWrapperVertical: {
     float: "none",

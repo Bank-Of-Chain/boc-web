@@ -40,12 +40,13 @@ const customInputStyle = {
   },
   labelRoot: {
     ...defaultFont,
-    color: "#AAAAAA !important",
+    color: "#fff !important",
     fontWeight: "400",
-    fontSize: "14px",
-    lineHeight: "1.42857",
+    fontSize: "20px",
+    lineHeight: "2.42857",
     top: "10px",
     letterSpacing: "unset",
+    whiteSpace: "nowrap",
     "& + $underline": {
       marginTop: "0px",
     },
@@ -58,29 +59,29 @@ const customInputStyle = {
   },
   formControl: {
     margin: "0 0 17px 0",
-    paddingTop: "27px",
+    paddingTop: "30px",
     position: "relative",
     "& svg,& .fab,& .far,& .fal,& .fas,& .material-icons": {
       color: "#495057",
     },
   },
   input: {
-    color: "#495057",
+    color: "#fff",
     height: "unset",
     "&,&::placeholder": {
-      fontSize: "14px",
+      fontSize: "16px",
       fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',
       fontWeight: "400",
-      lineHeight: "1.42857",
+      lineHeight: "2.42857",
       opacity: "1",
     },
     "&::placeholder": {
-      color: "#AAAAAA",
+      color: "#fff",
     },
   },
   whiteInput: {
     "&,&::placeholder": {
-      color: "#FFFFFF",
+      color: "#fff",
       opacity: "1",
     },
   },
