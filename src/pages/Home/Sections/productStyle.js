@@ -1,4 +1,6 @@
-import { title } from "../../../assets/jss/material-kit-react.js";
+import {
+  title
+} from "../../../assets/jss/material-kit-react.js";
 
 const productStyle = {
   section: {
@@ -15,9 +17,10 @@ const productStyle = {
     lineHeight: '1.5em'
   },
   description: {
-    color: "#999",
+    color: "#fff",
     fontSize: '1.0625rem',
-    lineHeight: '1.55em'
+    lineHeight: '1.55em',
+    textAlign: "left",
   },
 };
 
