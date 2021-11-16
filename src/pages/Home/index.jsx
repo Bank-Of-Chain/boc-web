@@ -67,7 +67,7 @@ export default function Home(props) {
                   <img className={classes.img} src={require('./images/POLYGON.svg')} alt="" />
                 </a>
               </Tooltip>
-              <Tooltip
+              {/* <Tooltip
                 title="ARBITRUM"
                 placement={window.innerWidth > 959 ? "top" : "left"}
                 classes={{ tooltip: classes.tooltip }}
@@ -138,7 +138,7 @@ export default function Home(props) {
                 <a href="/#/">
                   <img className={classes.img} src={require('./images/MOONRIVER.svg')} alt="" />
                 </a>
-              </Tooltip>
+              </Tooltip> */}
             </GridItem>
           </GridContainer>
         </div>
@@ -146,7 +146,7 @@ export default function Home(props) {
       <div className={classNames(classes.main, classes.mainRaised)}>
         <div className={classes.container}>
           <ProductSection />
-          <TeamSection />
+          {/* <TeamSection /> */}
         </div>
       </div>
       <Footer whiteFont />
