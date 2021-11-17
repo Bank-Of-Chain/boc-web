@@ -19,7 +19,6 @@ import CustomInput from "../../components/CustomInput/CustomInput";
 import Button from "../../components/CustomButtons/Button";
 import Muted from "../../components/Typography/Muted";
 import CountTo from 'react-count-to';
-import Tooltip from "@material-ui/core/Tooltip";
 import Snackbar from "@material-ui/core/Snackbar";
 import Alert from '@material-ui/lab/Alert';
 import CircularProgress from '@material-ui/core/CircularProgress';
@@ -33,7 +32,6 @@ import { VAULT_ADDRESS, VAULT_ABI, IERC20_ABI, USDT_ADDRESS, EXCHANGE_AGGREGATOR
 // === Utils === //
 import { getBestSwapInfo } from "piggy-finance-utils";
 import { toFixed } from "../../helpers/number-format";
-import { getTime } from "../../helpers/time-format";
 import map from "lodash/map";
 import get from "lodash/get";
 import debounce from "lodash/debounce";
@@ -75,10 +73,6 @@ export default function Invest(props) {
   const [toBalance, setToBalance] = useState(BigNumber.from(0));
   const [perFullShare, setPerFullShare] = useState(BigNumber.from(1));
 
-  const [lastDepositTimes, setLastDepositTimes] = useState(BigNumber.from(0));
-  const [withdrawFee, setWithdrawFee] = useState(BigNumber.from(0));
-  const [currentBlockTimestamp, setCurrentBlockTimestamp] = useState(0);
-
   const [allowMaxLoss, setAllowMaxLoss] = useState('0.3');
   const [shouldExchange, setShouldExchange] = useState(true);
   const [focusInput, setFocusInput] = useState(false);
@@ -96,8 +90,6 @@ export default function Invest(props) {
 
   const [currentDays] = useState(1);
 
-  const dealLine = BigNumber.from(60 * 60 * 24 - 1).sub(currentBlockTimestamp - lastDepositTimes);
-
   // 载入账户数据
   const loadBanlance = () => {
     if (isEmpty(address)) return loadBanlance;
@@ -108,11 +100,6 @@ export default function Invest(props) {
       usdtContract.balanceOf(address).then(setFromBalance),
       vaultContract.balanceOf(address).then(setToBalance).catch(console.error),
       vaultContract.pricePerShare().then(setPerFullShare).catch(console.error),
-      vaultContract.userInfos(address).then(setLastDepositTimes),
-      vaultContract.calculateWithdrawFeePercent(address).then(setWithdrawFee),
-      userProvider.getBlock(userProvider.blockNumber).then(resp => {
-        setCurrentBlockTimestamp(resp.timestamp);
-      }),
       // vaultContract.token().then(setToken),
       // vaultContract.getTrackedAssets().then(setTrackedAssets)
     ]).catch(() => {
@@ -416,18 +403,12 @@ export default function Invest(props) {
   // 展示vault.totalAssets
   const fn = value => <span>$ {toFixed(value, 10 ** 6, 6)}</span>;
 
-  // 展示时间倒计时
-  const countFn = (value) => {
-    const { hourTime, minuteTime, secondTime } = getTime(dealLine - value);// 秒
-    return <span style={{ color: '#ff4d4f' }}> ({hourTime}:{minuteTime}:{secondTime})</span>
-  }
-
   const renderEstimate = () => {
     if (isEstimate) {
       return <GridItem xs={12} sm={12} md={12} lg={12}>
-        <p style={{ textAlign: 'center' }}>
+        <div style={{ textAlign: 'center' }}>
           <CircularProgress fontSize="large" color="primary" />
-        </p>
+        </div>
       </GridItem>
     }
     if (isEmpty(estimateWithdrawArray) || isEmpty(toValue)) {
@@ -613,17 +594,6 @@ export default function Invest(props) {
                         </GridItem>
                         <GridItem xs={6} sm={6} md={6} lg={6}>
                           <Button color="colorfull" onClick={withdraw} >Withdraw</Button>
-                          {
-                            lastDepositTimes.gt(0) && withdrawFee.gt(0) && toBalance.gt(0) && <Tooltip
-                              title="距离上一次存款时间未达到24小时，支取需要支付额外的手续费用。"
-                              placement={window.innerWidth > 959 ? "top" : "left"}
-                              classes={{ tooltip: classes.tooltip }}
-                            >
-                              <span style={{ color: '#ff4d4f', paddingLeft: 5, cursor: 'pointer' }}>
-                                {toFixed(withdrawFee, 10 ** 2, 2)}%<CountTo to={dealLine.toNumber()} delay={1000} speed={60 * 60 * 24 * 1000} >{countFn}</CountTo>
-                              </span>
-                            </Tooltip>
-                          }
                         </GridItem>
                       </GridContainer>
                     ),
