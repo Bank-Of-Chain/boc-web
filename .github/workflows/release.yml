@@ -20,5 +20,5 @@ jobs:
       - name: Zip&Upload
         uses: actions/upload-artifact@v2
         with:
-          name: admin
+          name: web
           path: build/
