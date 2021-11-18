@@ -146,6 +146,82 @@
     "anonymous": false,
     "inputs": [
       {
+        "indexed": false,
+        "internalType": "address",
+        "name": "caller",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "bool",
+        "name": "state",
+        "type": "bool"
+      }
+    ],
+    "name": "SetAdjustPosition",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "caller",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "bool",
+        "name": "state",
+        "type": "bool"
+      }
+    ],
+    "name": "SetEmergencyShutdown",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "caller",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "lockedWithdrawFeePercent",
+        "type": "uint256"
+      }
+    ],
+    "name": "SetLockedWithdrawFeePercent",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "caller",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "profitFeePercent",
+        "type": "uint256"
+      }
+    ],
+    "name": "SetProfitFeePercent",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
         "indexed": true,
         "internalType": "address",
         "name": "strategy",
@@ -153,6 +229,49 @@
       }
     ],
     "name": "StrategyAdded",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "strategy",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "gain",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "loss",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "lastStrategyTotalDebt",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "nowStrategyTotalDebt",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "totalFee",
+        "type": "uint256"
+      }
+    ],
+    "name": "StrategyReported",
     "type": "event"
   },
   {
@@ -184,6 +303,31 @@
     "anonymous": false,
     "inputs": [
       {
+        "indexed": false,
+        "internalType": "address[]",
+        "name": "_strategies",
+        "type": "address[]"
+      },
+      {
+        "indexed": false,
+        "internalType": "int256[]",
+        "name": "_apys",
+        "type": "int256[]"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "caller",
+        "type": "address"
+      }
+    ],
+    "name": "UpdateStrategyApy",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
         "indexed": true,
         "internalType": "address",
         "name": "userAddress",
@@ -198,7 +342,7 @@
       {
         "indexed": false,
         "internalType": "uint256",
-        "name": "withdrawFeeShare",
+        "name": "withdrawShare",
         "type": "uint256"
       },
       {
@@ -396,25 +540,6 @@
       }
     ],
     "name": "calcCanonicalAssetValue",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "user",
-        "type": "address"
-      }
-    ],
-    "name": "calculateWithdrawFeePercent",
     "outputs": [
       {
         "internalType": "uint256",
@@ -752,7 +877,7 @@
   },
   {
     "inputs": [],
-    "name": "lockedWithdrawDegradation",
+    "name": "lockedProfit",
     "outputs": [
       {
         "internalType": "uint256",
@@ -765,7 +890,7 @@
   },
   {
     "inputs": [],
-    "name": "lockedWithdrawFeePercent",
+    "name": "lockedProfitDegradation",
     "outputs": [
       {
         "internalType": "uint256",
@@ -937,20 +1062,7 @@
         "type": "uint256"
       }
     ],
-    "name": "setLockedWithdrawDegradation",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "_lockedWithdrawFeePercent",
-        "type": "uint256"
-      }
-    ],
-    "name": "setLockedWithdrawFeePercent",
+    "name": "setLockedProfitDegradation",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -1223,25 +1335,6 @@
     "name": "updateStrategyApy",
     "outputs": [],
     "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "name": "userInfos",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "lastDepositTime",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
     "type": "function"
   },
   {

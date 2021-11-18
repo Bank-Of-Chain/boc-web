@@ -19,13 +19,13 @@ import CustomInput from "../../components/CustomInput/CustomInput";
 import Button from "../../components/CustomButtons/Button";
 import Muted from "../../components/Typography/Muted";
 import CountTo from 'react-count-to';
-import Tooltip from "@material-ui/core/Tooltip";
 import Snackbar from "@material-ui/core/Snackbar";
 import Alert from '@material-ui/lab/Alert';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import KeyboardHideIcon from '@material-ui/icons/KeyboardHide';
 import KeyboardIcon from '@material-ui/icons/Keyboard';
 import HowToVoteIcon from '@material-ui/icons/HowToVote';
+import ErrorOutlineIcon from '@material-ui/icons/ErrorOutline';
 
 // === constants === //
 import { VAULT_ADDRESS, VAULT_ABI, IERC20_ABI, USDT_ADDRESS, EXCHANGE_AGGREGATOR_ABI, EXCHANGE_EXTRA_PARAMS, MULTIPLE_OF_GAS } from "../../constants";
@@ -33,7 +33,6 @@ import { VAULT_ADDRESS, VAULT_ABI, IERC20_ABI, USDT_ADDRESS, EXCHANGE_AGGREGATOR
 // === Utils === //
 import { getBestSwapInfo } from "piggy-finance-utils";
 import { toFixed } from "../../helpers/number-format";
-import { getTime } from "../../helpers/time-format";
 import map from "lodash/map";
 import get from "lodash/get";
 import debounce from "lodash/debounce";
@@ -75,10 +74,6 @@ export default function Invest(props) {
   const [toBalance, setToBalance] = useState(BigNumber.from(0));
   const [perFullShare, setPerFullShare] = useState(BigNumber.from(1));
 
-  const [lastDepositTimes, setLastDepositTimes] = useState(BigNumber.from(0));
-  const [withdrawFee, setWithdrawFee] = useState(BigNumber.from(0));
-  const [currentBlockTimestamp, setCurrentBlockTimestamp] = useState(0);
-
   const [allowMaxLoss, setAllowMaxLoss] = useState('0.3');
   const [shouldExchange, setShouldExchange] = useState(true);
   const [focusInput, setFocusInput] = useState(false);
@@ -96,8 +91,6 @@ export default function Invest(props) {
 
   const [currentDays] = useState(1);
 
-  const dealLine = BigNumber.from(60 * 60 * 24 - 1).sub(currentBlockTimestamp - lastDepositTimes);
-
   // 载入账户数据
   const loadBanlance = () => {
     if (isEmpty(address)) return loadBanlance;
@@ -108,11 +101,6 @@ export default function Invest(props) {
       usdtContract.balanceOf(address).then(setFromBalance),
       vaultContract.balanceOf(address).then(setToBalance).catch(console.error),
       vaultContract.pricePerShare().then(setPerFullShare).catch(console.error),
-      vaultContract.userInfos(address).then(setLastDepositTimes),
-      vaultContract.calculateWithdrawFeePercent(address).then(setWithdrawFee),
-      userProvider.getBlock(userProvider.blockNumber).then(resp => {
-        setCurrentBlockTimestamp(resp.timestamp);
-      }),
       // vaultContract.token().then(setToken),
       // vaultContract.getTrackedAssets().then(setTrackedAssets)
     ]).catch(() => {
@@ -401,9 +389,10 @@ export default function Invest(props) {
             amounts: perFullShare.mul((toValue * usdtDecimals).toString()).div(usdtDecimals)
           }]
         }
-        setEstimateWithdrawArray(
-          nextEstimateWithdrawArray
-        )
+        setEstimateWithdrawArray(nextEstimateWithdrawArray);
+      }).catch(() => {
+        setEstimateWithdrawArray(undefined);
+      }).finally(() => {
         setTimeout(() => {
           setIsEstimate(false);
         }, 1000);
@@ -414,20 +403,22 @@ export default function Invest(props) {
   }, [toValue, allowMaxLoss, shouldExchange, isOpenEstimate])
 
   // 展示vault.totalAssets
-  const fn = value => <span>$ {toFixed(value, 10 ** 6, 6)}</span>;
-
-  // 展示时间倒计时
-  const countFn = (value) => {
-    const { hourTime, minuteTime, secondTime } = getTime(dealLine - value);// 秒
-    return <span style={{ color: '#ff4d4f' }}> ({hourTime}:{minuteTime}:{secondTime})</span>
-  }
+  const fn = value => <span>{toFixed(value, 10 ** 6, 6)} USDT</span>;
 
   const renderEstimate = () => {
     if (isEstimate) {
       return <GridItem xs={12} sm={12} md={12} lg={12}>
-        <p style={{ textAlign: 'center' }}>
+        <div style={{ textAlign: 'center', padding: '50px 0' }}>
           <CircularProgress fontSize="large" color="primary" />
-        </p>
+        </div>
+      </GridItem>
+    }
+    if (isUndefined(estimateWithdrawArray)) {
+      return <GridItem xs={12} sm={12} md={12} lg={12}>
+        <div style={{ textAlign: 'center', minHeight: '100px', color: '#fff' }}>
+          <ErrorOutlineIcon fontSize="large" />
+          <p>数额预估失败，请重新获取！</p>
+        </div>
       </GridItem>
     }
     if (isEmpty(estimateWithdrawArray) || isEmpty(toValue)) {
@@ -473,13 +464,13 @@ export default function Invest(props) {
             <GridItem>
               <div className={classes.brand}>
                 <h2 className={classes.subtitle}>
-                  锁仓量: <CountTo from={beforeTotalAssets.toNumber()} to={totalAssets.toNumber()} speed={3500} >{fn}</CountTo>
+                  锁仓量:&nbsp;&nbsp;<CountTo from={beforeTotalAssets.toNumber()} to={totalAssets.toNumber()} speed={3500} >{fn}</CountTo>
                 </h2>
                 <h2 className={classes.subtitle}>
-                  Apy: {toFixed(get(vaultApys, currentDays, BigNumber.from(0)), 100, 2)}%
+                  年化收益率:&nbsp;&nbsp;{toFixed(get(vaultApys, currentDays, BigNumber.from(0)), 100, 2)}%
                 </h2>
                 <h2 className={classes.subtitle}>
-                  Price Per Fullshares: {toFixed(perFullShare, usdtDecimals, 6)}
+                  Boc Usdt单价:&nbsp;&nbsp;{toFixed(perFullShare, usdtDecimals, 6)} USDT
                 </h2>
               </div>
             </GridItem>
@@ -521,7 +512,7 @@ export default function Invest(props) {
                         </GridItem>
                         <GridItem xs={12} sm={12} md={6} lg={6}>
                           <CustomInput
-                            labelText={`Balance: ${toFixed(toBalance, 10 ** 6)}${focusInput ? ` (~${toFixed(toBalance.mul(perFullShare), 10 ** 12, 2)} USDT)` : ''}`}
+                            labelText={`BOC USDT: ${toFixed(toBalance, 10 ** 6)}${focusInput ? ` (~${toFixed(toBalance.mul(perFullShare), 10 ** 12, 2)} USDT)` : ''}`}
                             inputProps={{
                               onFocus: () => setFocusInput(true),
                               onBlur: () => setFocusInput(false),
@@ -613,17 +604,6 @@ export default function Invest(props) {
                         </GridItem>
                         <GridItem xs={6} sm={6} md={6} lg={6}>
                           <Button color="colorfull" onClick={withdraw} >Withdraw</Button>
-                          {
-                            lastDepositTimes.gt(0) && withdrawFee.gt(0) && toBalance.gt(0) && <Tooltip
-                              title="距离上一次存款时间未达到24小时，支取需要支付额外的手续费用。"
-                              placement={window.innerWidth > 959 ? "top" : "left"}
-                              classes={{ tooltip: classes.tooltip }}
-                            >
-                              <span style={{ color: '#ff4d4f', paddingLeft: 5, cursor: 'pointer' }}>
-                                {toFixed(withdrawFee, 10 ** 2, 2)}%<CountTo to={dealLine.toNumber()} delay={1000} speed={60 * 60 * 24 * 1000} >{countFn}</CountTo>
-                              </span>
-                            </Tooltip>
-                          }
                         </GridItem>
                       </GridContainer>
                     ),
