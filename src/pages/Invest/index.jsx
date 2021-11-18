@@ -26,6 +26,7 @@ import KeyboardHideIcon from '@material-ui/icons/KeyboardHide';
 import KeyboardIcon from '@material-ui/icons/Keyboard';
 import HowToVoteIcon from '@material-ui/icons/HowToVote';
 import ErrorOutlineIcon from '@material-ui/icons/ErrorOutline';
+import AddIcon from '@material-ui/icons/Add';
 
 // === constants === //
 import { VAULT_ADDRESS, VAULT_ABI, IERC20_ABI, USDT_ADDRESS, EXCHANGE_AGGREGATOR_ABI, EXCHANGE_EXTRA_PARAMS, MULTIPLE_OF_GAS } from "../../constants";
@@ -405,6 +406,35 @@ export default function Invest(props) {
   // 展示vault.totalAssets
   const fn = value => <span>{toFixed(value, 10 ** 6, 6)} USDT</span>;
 
+  /**
+   * 将ERC20币添加入metamask账户中
+   */
+  const addToken = async (token) => {
+    try {
+      const tokenContract = new ethers.Contract(token, IERC20_ABI, userProvider);
+      // wasAdded is a boolean. Like any RPC method, an error may be thrown.
+      const wasAdded = await window.ethereum.request({
+        method: 'wallet_watchAsset',
+        params: {
+          type: 'ERC20', // Initially only supports ERC20, but eventually more!
+          options: {
+            address: token, // The address that the token is at.
+            symbol: await tokenContract.symbol(), // A ticker symbol or shorthand, up to 5 chars.
+            decimals: await tokenContract.decimals(), // The number of decimals in the token
+          },
+        },
+      });
+
+      if (wasAdded) {
+        console.log('Thanks for your interest!');
+      } else {
+        console.log('Your loss!');
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
   const renderEstimate = () => {
     if (isEstimate) {
       return <GridItem xs={12} sm={12} md={12} lg={12}>
@@ -431,10 +461,13 @@ export default function Invest(props) {
     return map(estimateWithdrawArray, item => {
       return <GridItem key={item.tokenAddress} xs={12} sm={12} md={6} lg={6}>
         <Button
+          title="Add token address to wallet"
           color="transparent"
           target="_blank"
           style={{ fontSize: 20 }}
+          onClick={() => addToken(item.tokenAddress)}
         >
+          <AddIcon fontSize="small" style={{ position: 'absolute', top: 40, left: 63 }} />
           <img className={classes.img} alt="" src={`./images/${item.tokenAddress}.webp`} />&nbsp;&nbsp;~&nbsp;{item.amounts.toString()}
         </Button>
       </GridItem>
