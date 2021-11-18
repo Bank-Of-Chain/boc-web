@@ -25,6 +25,7 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import KeyboardHideIcon from '@material-ui/icons/KeyboardHide';
 import KeyboardIcon from '@material-ui/icons/Keyboard';
 import HowToVoteIcon from '@material-ui/icons/HowToVote';
+import ErrorOutlineIcon from '@material-ui/icons/ErrorOutline';
 
 // === constants === //
 import { VAULT_ADDRESS, VAULT_ABI, IERC20_ABI, USDT_ADDRESS, EXCHANGE_AGGREGATOR_ABI, EXCHANGE_EXTRA_PARAMS, MULTIPLE_OF_GAS } from "../../constants";
@@ -388,9 +389,10 @@ export default function Invest(props) {
             amounts: perFullShare.mul((toValue * usdtDecimals).toString()).div(usdtDecimals)
           }]
         }
-        setEstimateWithdrawArray(
-          nextEstimateWithdrawArray
-        )
+        setEstimateWithdrawArray(nextEstimateWithdrawArray);
+      }).catch(() => {
+        setEstimateWithdrawArray(undefined);
+      }).finally(() => {
         setTimeout(() => {
           setIsEstimate(false);
         }, 1000);
@@ -401,13 +403,21 @@ export default function Invest(props) {
   }, [toValue, allowMaxLoss, shouldExchange, isOpenEstimate])
 
   // 展示vault.totalAssets
-  const fn = value => <span>$ {toFixed(value, 10 ** 6, 6)}</span>;
+  const fn = value => <span>{toFixed(value, 10 ** 6, 6)} USDT</span>;
 
   const renderEstimate = () => {
     if (isEstimate) {
       return <GridItem xs={12} sm={12} md={12} lg={12}>
-        <div style={{ textAlign: 'center' }}>
+        <div style={{ textAlign: 'center', padding: '50px 0' }}>
           <CircularProgress fontSize="large" color="primary" />
+        </div>
+      </GridItem>
+    }
+    if (isUndefined(estimateWithdrawArray)) {
+      return <GridItem xs={12} sm={12} md={12} lg={12}>
+        <div style={{ textAlign: 'center', minHeight: '100px', color: '#fff' }}>
+          <ErrorOutlineIcon fontSize="large" />
+          <p>数额预估失败，请重新获取！</p>
         </div>
       </GridItem>
     }
@@ -454,13 +464,13 @@ export default function Invest(props) {
             <GridItem>
               <div className={classes.brand}>
                 <h2 className={classes.subtitle}>
-                  锁仓量: <CountTo from={beforeTotalAssets.toNumber()} to={totalAssets.toNumber()} speed={3500} >{fn}</CountTo>
+                  锁仓量:&nbsp;&nbsp;<CountTo from={beforeTotalAssets.toNumber()} to={totalAssets.toNumber()} speed={3500} >{fn}</CountTo>
                 </h2>
                 <h2 className={classes.subtitle}>
-                  Apy: {toFixed(get(vaultApys, currentDays, BigNumber.from(0)), 100, 2)}%
+                  年化收益率:&nbsp;&nbsp;{toFixed(get(vaultApys, currentDays, BigNumber.from(0)), 100, 2)}%
                 </h2>
                 <h2 className={classes.subtitle}>
-                  Price Per Fullshares: {toFixed(perFullShare, usdtDecimals, 6)}
+                  Boc Usdt单价:&nbsp;&nbsp;{toFixed(perFullShare, usdtDecimals, 6)} USDT
                 </h2>
               </div>
             </GridItem>
@@ -502,7 +512,7 @@ export default function Invest(props) {
                         </GridItem>
                         <GridItem xs={12} sm={12} md={6} lg={6}>
                           <CustomInput
-                            labelText={`Balance: ${toFixed(toBalance, 10 ** 6)}${focusInput ? ` (~${toFixed(toBalance.mul(perFullShare), 10 ** 12, 2)} USDT)` : ''}`}
+                            labelText={`Boc Usdt: ${toFixed(toBalance, 10 ** 6)}${focusInput ? ` (~${toFixed(toBalance.mul(perFullShare), 10 ** 12, 2)} USDT)` : ''}`}
                             inputProps={{
                               onFocus: () => setFocusInput(true),
                               onBlur: () => setFocusInput(false),
