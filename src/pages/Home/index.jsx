@@ -47,7 +47,6 @@ export default function Home(props) {
             <GridItem xs={12} sm={12} md={12}>
               <h1 className={classes.title}>The Multichain Yield Optimizer</h1>
               <h4 className={classes.text}>
-                3w+优秀投资者、5200W+锁仓资金
               </h4>
               <br />
               <Button

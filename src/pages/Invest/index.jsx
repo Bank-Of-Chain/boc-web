@@ -27,6 +27,8 @@ import KeyboardIcon from '@material-ui/icons/Keyboard';
 import HowToVoteIcon from '@material-ui/icons/HowToVote';
 import ErrorOutlineIcon from '@material-ui/icons/ErrorOutline';
 import AddIcon from '@material-ui/icons/Add';
+import Radio from "@material-ui/core/Radio";
+import FiberManualRecord from "@material-ui/icons/FiberManualRecord";
 
 // === constants === //
 import { VAULT_ADDRESS, VAULT_ABI, IERC20_ABI, USDT_ADDRESS, EXCHANGE_AGGREGATOR_ABI, EXCHANGE_EXTRA_PARAMS, MULTIPLE_OF_GAS } from "../../constants";
@@ -90,7 +92,7 @@ export default function Invest(props) {
 
   const [vaultApys, setVaultApys] = useState([]);
 
-  const [currentDays] = useState(1);
+  const [currentDays, setCurrentDays] = useState(1);
 
   // 载入账户数据
   const loadBanlance = () => {
@@ -500,10 +502,39 @@ export default function Invest(props) {
                   锁仓量:&nbsp;&nbsp;<CountTo from={beforeTotalAssets.toNumber()} to={totalAssets.toNumber()} speed={3500} >{fn}</CountTo>
                 </h2>
                 <h2 className={classes.subtitle}>
-                  年化收益率:&nbsp;&nbsp;{toFixed(get(vaultApys, currentDays, BigNumber.from(0)), 100, 2)}%
+                  BOC USDT单价:&nbsp;&nbsp;{toFixed(perFullShare, usdtDecimals, 6)} USDT
                 </h2>
                 <h2 className={classes.subtitle}>
-                  Boc Usdt单价:&nbsp;&nbsp;{toFixed(perFullShare, usdtDecimals, 6)} USDT
+                  年化收益率:&nbsp;&nbsp;<span className={classes.apyText}>{toFixed(get(vaultApys, currentDays, BigNumber.from(0)), 100, 2)}%</span>&nbsp;&nbsp;&nbsp;
+                  {
+                    map(days, (day, index) => {
+                      return <FormControlLabel
+                        control={
+                          <Radio
+                            checked={index === currentDays}
+                            onChange={() => setCurrentDays(day)}
+                            value={day}
+                            name={`${day}天`}
+                            icon={
+                              <FiberManualRecord className={classes.radioUnchecked} />
+                            }
+                            checkedIcon={
+                              <FiberManualRecord className={classes.radioChecked} />
+                            }
+                            classes={{
+                              checked: classes.radio,
+                              root: classes.radioRoot,
+                            }}
+                          />
+                        }
+                        classes={{
+                          label: classes.label,
+                          root: classes.labelRoot,
+                        }}
+                        label={`${day}天`}
+                      />
+                    })
+                  }
                 </h2>
               </div>
             </GridItem>
