@@ -14,7 +14,8 @@ window.config = {
         network: 137,
         excludeContractMethods: ['swapOnZeroXv2', 'swapOnZeroXv4', 'swapOnUniswap', 'swapOnUniswapFork']
       }
-    }
+    },
+    chain_browser_url: ''
   },
   // dev
   31337: {
@@ -31,7 +32,8 @@ window.config = {
         network: 137,
         excludeContractMethods: ['swapOnZeroXv2', 'swapOnZeroXv4', 'swapOnUniswap', 'swapOnUniswapFork']
       }
-    }
+    },
+    chain_browser_url: ''
   },
   // polygon
   137: {
@@ -48,7 +50,8 @@ window.config = {
         network: 137,
         excludeContractMethods: []
       }
-    }
+    },
+    chain_browser_url: 'https://polygonscan.com'
   },
   4: {
     vault_address: "",
@@ -64,7 +67,8 @@ window.config = {
         network: 4,
         excludeContractMethods: ['swapOnZeroXv2', 'swapOnZeroXv4', 'swapOnUniswap', 'swapOnUniswapFork']
       }
-    }
+    },
+    chain_browser_url: 'https://rinkeby.etherscan.io'
   },
   // eth
   1: {
@@ -81,6 +85,7 @@ window.config = {
         network: 137,
         excludeContractMethods: []
       }
-    }
+    },
+    chain_browser_url: 'https://etherscan.io'
   }
 };
