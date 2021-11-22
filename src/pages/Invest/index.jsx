@@ -506,9 +506,9 @@ export default function Invest(props) {
           <GridContainer>
             <GridItem>
               <div className={classes.brand}>
-                {/* <h2 className={classes.subtitle}>
+                <h2 className={classes.subtitle}>
                   锁仓量:&nbsp;&nbsp;<CountTo from={beforeTotalAssets.toNumber()} to={totalAssets.toNumber()} speed={3500} >{fn}</CountTo>
-                </h2> */}
+                </h2>
                 <h2 className={classes.subtitle}>
                   BOC USDT单价:&nbsp;&nbsp;{toFixed(perFullShare, usdtDecimals, 6)} USDT
                 </h2>
