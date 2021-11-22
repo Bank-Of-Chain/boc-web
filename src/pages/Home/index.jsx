@@ -44,7 +44,7 @@ export default function Home(props) {
       <Parallax filter>
         <div className={classes.container}>
           <GridContainer>
-            <GridItem xs={12} sm={12} md={12}>
+            <GridItem xs={12} sm={12} md={12} style={{ textAlign: 'center' }}>
               <h1 className={classes.title}>The Multichain Yield Optimizer</h1>
               <h4 className={classes.text}>
               </h4>
@@ -56,6 +56,9 @@ export default function Home(props) {
               >
                 Launch App
               </Button>
+              <h4 className={classes.text}>
+              </h4>
+              <br />
               <Tooltip
                 title="POLYGON"
                 placement={window.innerWidth > 959 ? "top" : "left"}

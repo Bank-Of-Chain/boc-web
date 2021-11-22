@@ -32,24 +32,14 @@ export default function HeaderLinks(props) {
   return (
     <List className={classes.list}>
       <ListItem className={classes.listItem}>
-        <CustomDropdown
-          noLiPadding
-          buttonText="Networks"
-          buttonProps={{
-            className: classes.navLink,
-            color: "transparent",
-          }}
-          buttonIcon={Apps}
-          dropdownList={[
-            <Link to="/" className={classes.dropdownLink}>
-              ETH
-            </Link>,
-            <Link to="/invest" className={classes.dropdownLink}>
-              Polygon
-            </Link>
-            ,
-          ]}
-        />
+        <Button
+          color="transparent"
+          target="_blank"
+          href="https://piggyfinance.github.io/docs/zh/docs/"
+          className={classes.navLink}
+        >
+          <LibraryBooksIcon className={classes.icons} ></LibraryBooksIcon> Document
+        </Button>
       </ListItem>
       <ListItem className={classes.listItem}>
         <Button
@@ -70,14 +60,23 @@ export default function HeaderLinks(props) {
         </Button>
       </ListItem>
       <ListItem className={classes.listItem}>
-        <Button
-          color="transparent"
-          target="_blank"
-          href="https://piggyfinance.github.io/docs/zh/docs/"
-          className={classes.navLink}
-        >
-          <LibraryBooksIcon className={classes.icons} ></LibraryBooksIcon> Document
-        </Button>
+        <CustomDropdown
+          noLiPadding
+          buttonText="Networks"
+          buttonProps={{
+            className: classes.navLink,
+            color: "transparent",
+          }}
+          buttonIcon={Apps}
+          dropdownList={[
+            <Link to="/" className={classes.dropdownLink}>
+              ETH
+            </Link>,
+            <Link to="/invest" className={classes.dropdownLink}>
+              Polygon
+            </Link>
+          ]}
+        />
       </ListItem>
       <ListItem className={classes.listItem}>
         {

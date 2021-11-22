@@ -22,6 +22,9 @@ const productStyle = {
     lineHeight: '1.55em',
     textAlign: "left",
   },
+  descriptionItem: {
+    display: 'inline-block'
+  }
 };
 
 export default productStyle;

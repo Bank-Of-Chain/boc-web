@@ -22,8 +22,7 @@ export default function ProductSection() {
       <GridContainer justify="center">
         <GridItem xs={12} sm={12} md={8}>
           <h5 className={classes.description}>
-            BOC 项目，全称Bank Of Chain。是通过进行稳定币投资，获取稳定收益的平台。底层对接Yearn、Uniswap、Dodo、Curve等众多知名的第三方平台。
-            定期的矿币提取和调仓，确保平台收益最大化。社区+多签的工作模式，让大家来决定资金的投资方向。
+            区块链银行&nbsp;&nbsp;是帮助普通投资者获取链上“无风险”保本理财的一款去中心化金融协议。针对普通投资者，该协议进行以下优化，以降低使用风险，提升用户体验。
           </h5>
         </GridItem>
       </GridContainer>
@@ -31,8 +30,12 @@ export default function ProductSection() {
         <GridContainer>
           <GridItem xs={12} sm={12} md={4}>
             <InfoArea
-              title="社区多签机制"
-              description="良好的社区建设+多签机制，让项目的每一次投资都变成一次集思广益。"
+              title="安全透明"
+              description={[
+                <span key='item-1' className={classes.descriptionItem}>1. 投资仅限于有由法币提供足额抵押或数字资产提供超额抵押生成的稳定币</span>,
+                <span key='item-2' className={classes.descriptionItem}>2. 投资的理财协议，需要有长期的安全运营记录，并经过社区严格风险评估</span>,
+                <span key='item-3' className={classes.descriptionItem}>3. 严格的安全审计，合约透明，社区维护，保障用户的资金所有权和安全</span>
+              ]}
               icon={Chat}
               iconColor="info"
               vertical
@@ -40,19 +43,26 @@ export default function ProductSection() {
           </GridItem>
           <GridItem xs={12} sm={12} md={4}>
             <InfoArea
-              title="合约审查"
-              description="专业的合约审查团队，给予你等同于一流 Defi 项目的保障，让漏洞无所遁形。"
-              icon={VerifiedUser}
-              iconColor="success"
+              title="收益最大化"
+              description={[
+                <span key='item-4' className={classes.descriptionItem}>1. 不断的搜寻、评估、接入安全可靠的高收益协议，进行投资</span>,
+                <span key='item-5' className={classes.descriptionItem}> 2. 严格的代码评审，减少投资过程中的GAS消耗，兑换消耗，投资路径消耗，最大化耕作收益</span>,
+                <span key='item-6' className={classes.descriptionItem}>3. 优化算法，自动化的进行资金调配，评估了收益、损失，风险，最大化资金投资收益</span>
+              ]}
+              icon={Fingerprint}
+              iconColor="danger"
               vertical
             />
           </GridItem>
           <GridItem xs={12} sm={12} md={4}>
             <InfoArea
-              title="资金安全"
-              description="稳定币保本投资，稳定收益，保障用户资金安全。"
-              icon={Fingerprint}
-              iconColor="danger"
+              title="省心易用"
+              description={[
+                <span key='item-7' className={classes.descriptionItem}>1. 平台仅收取用户收益的提成，无各类隐藏费用，用户可以在任意时间存入或者取回</span>,
+                <span key='item-8' className={classes.descriptionItem}>2. 平台自动在最佳时机耕作，让用户可以明确看到其数字资产在持续获得复利</span>,
+              ]}
+              icon={VerifiedUser}
+              iconColor="success"
               vertical
             />
           </GridItem>
