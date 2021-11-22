@@ -24,11 +24,21 @@ import Alert from '@material-ui/lab/Alert';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import KeyboardHideIcon from '@material-ui/icons/KeyboardHide';
 import KeyboardIcon from '@material-ui/icons/Keyboard';
-import HowToVoteIcon from '@material-ui/icons/HowToVote';
 import ErrorOutlineIcon from '@material-ui/icons/ErrorOutline';
+import AddIcon from '@material-ui/icons/Add';
+import Radio from "@material-ui/core/Radio";
+import AndroidIcon from '@material-ui/icons/Android';
+import FiberManualRecord from "@material-ui/icons/FiberManualRecord";
+import Table from '@material-ui/core/Table';
+import TableBody from '@material-ui/core/TableBody';
+import TableCell from '@material-ui/core/TableCell';
+import TableContainer from '@material-ui/core/TableContainer';
+import TableHead from '@material-ui/core/TableHead';
+import TableRow from '@material-ui/core/TableRow';
+import Paper from '@material-ui/core/Paper';
 
 // === constants === //
-import { VAULT_ADDRESS, VAULT_ABI, IERC20_ABI, USDT_ADDRESS, EXCHANGE_AGGREGATOR_ABI, EXCHANGE_EXTRA_PARAMS, MULTIPLE_OF_GAS } from "../../constants";
+import { VAULT_ADDRESS, VAULT_ABI, IERC20_ABI, USDT_ADDRESS, EXCHANGE_AGGREGATOR_ABI, EXCHANGE_EXTRA_PARAMS, MULTIPLE_OF_GAS, CHAIN_BROWSER_URL } from "../../constants";
 
 // === Utils === //
 import { getBestSwapInfo } from "piggy-finance-utils";
@@ -89,7 +99,7 @@ export default function Invest(props) {
 
   const [vaultApys, setVaultApys] = useState([]);
 
-  const [currentDays] = useState(1);
+  const [currentDays, setCurrentDays] = useState(1);
 
   // 载入账户数据
   const loadBanlance = () => {
@@ -405,6 +415,35 @@ export default function Invest(props) {
   // 展示vault.totalAssets
   const fn = value => <span>{toFixed(value, 10 ** 6, 6)} USDT</span>;
 
+  /**
+   * 将ERC20币添加入metamask账户中
+   */
+  const addToken = async (token) => {
+    try {
+      const tokenContract = new ethers.Contract(token, IERC20_ABI, userProvider);
+      // wasAdded is a boolean. Like any RPC method, an error may be thrown.
+      const wasAdded = await window.ethereum.request({
+        method: 'wallet_watchAsset',
+        params: {
+          type: 'ERC20', // Initially only supports ERC20, but eventually more!
+          options: {
+            address: token, // The address that the token is at.
+            symbol: await tokenContract.symbol(), // A ticker symbol or shorthand, up to 5 chars.
+            decimals: await tokenContract.decimals(), // The number of decimals in the token
+          },
+        },
+      });
+
+      if (wasAdded) {
+        console.log('Thanks for your interest!');
+      } else {
+        console.log('Your loss!');
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
   const renderEstimate = () => {
     if (isEstimate) {
       return <GridItem xs={12} sm={12} md={12} lg={12}>
@@ -423,18 +462,22 @@ export default function Invest(props) {
     }
     if (isEmpty(estimateWithdrawArray) || isEmpty(toValue)) {
       return <GridItem xs={12} sm={12} md={12} lg={12}>
-        <p style={{ textAlign: 'center', minHeight: '100px' }}>
-          <HowToVoteIcon fontSize="large" color="primary" />
-        </p>
+        <div style={{ textAlign: 'center', minHeight: '100px', color: '#fff' }}>
+          <AndroidIcon fontSize="large" />
+          <p style={{ marginTop: 0 }}>暂无预估数值</p>
+        </div>
       </GridItem>
     }
     return map(estimateWithdrawArray, item => {
       return <GridItem key={item.tokenAddress} xs={12} sm={12} md={6} lg={6}>
         <Button
+          title="Add token address to wallet"
           color="transparent"
           target="_blank"
           style={{ fontSize: 20 }}
+          onClick={() => addToken(item.tokenAddress)}
         >
+          <AddIcon fontSize="small" style={{ position: 'absolute', top: 40, left: 63 }} />
           <img className={classes.img} alt="" src={`./images/${item.tokenAddress}.webp`} />&nbsp;&nbsp;~&nbsp;{item.amounts.toString()}
         </Button>
       </GridItem>
@@ -467,10 +510,40 @@ export default function Invest(props) {
                   锁仓量:&nbsp;&nbsp;<CountTo from={beforeTotalAssets.toNumber()} to={totalAssets.toNumber()} speed={3500} >{fn}</CountTo>
                 </h2>
                 <h2 className={classes.subtitle}>
-                  年化收益率:&nbsp;&nbsp;{toFixed(get(vaultApys, currentDays, BigNumber.from(0)), 100, 2)}%
+                  BOC USDT单价:&nbsp;&nbsp;{toFixed(perFullShare, usdtDecimals, 6)} USDT
                 </h2>
                 <h2 className={classes.subtitle}>
-                  Boc Usdt单价:&nbsp;&nbsp;{toFixed(perFullShare, usdtDecimals, 6)} USDT
+                  年化收益率:&nbsp;&nbsp;<span className={classes.apyText}>{toFixed(get(vaultApys, currentDays, BigNumber.from(0)), 100, 2)}%</span>&nbsp;&nbsp;&nbsp;
+                  {
+                    map(days, (day, index) => {
+                      return <FormControlLabel
+                        key={index}
+                        control={
+                          <Radio
+                            checked={index === currentDays}
+                            onChange={() => setCurrentDays(day)}
+                            value={day}
+                            name={`${day}天`}
+                            icon={
+                              <FiberManualRecord className={classes.radioUnchecked} />
+                            }
+                            checkedIcon={
+                              <FiberManualRecord className={classes.radioChecked} />
+                            }
+                            classes={{
+                              checked: classes.radio,
+                              root: classes.radioRoot,
+                            }}
+                          />
+                        }
+                        classes={{
+                          label: classes.label,
+                          root: classes.labelRoot,
+                        }}
+                        label={`${day}天`}
+                      />
+                    })
+                  }
                 </h2>
               </div>
             </GridItem>
@@ -534,7 +607,13 @@ export default function Invest(props) {
                             }}
                           />
                         </GridItem>
-                        <GridItem xs={12} sm={12} md={6} lg={6} />
+                        <GridItem xs={12} sm={12} md={6} lg={6} >
+                          <GridContainer>
+                            <GridItem xs={12} sm={12} md={12} lg={12}>
+                              <Muted><p style={{ fontSize: 18, wordBreak: 'break-all', lineHeight: '62px' }}>份额预估：{isValidFromValueFlag && toFixed(perFullShare.mul(fromValue), usdtDecimals, 6)}</p></Muted>
+                            </GridItem>
+                          </GridContainer>
+                        </GridItem>
                         <GridItem xs={12} sm={12} md={6} lg={6}>
                           <GridContainer>
                             <GridItem xs={6} sm={6} md={6} lg={6}>
@@ -612,6 +691,49 @@ export default function Invest(props) {
               />
             </GridItem>
           </GridContainer>
+          <p style={{ color: '#fff' }}>有关此 Vault 更多的信息</p>
+          <TableContainer component={Paper} style={{ borderRadius: 0 }}>
+            <Table className={classNames(classes.table)} aria-label="simple table">
+              <TableHead>
+                <TableRow>
+                  <TableCell className={classNames(classes.tableCell)}>
+                    Vault 通证符号
+                  </TableCell>
+                  <TableCell className={classNames(classes.tableCell)} align="right">
+                    Vault 合约地址
+                  </TableCell>
+                  <TableCell className={classNames(classes.tableCell)} align="right">
+                    质押通证符号
+                  </TableCell>
+                  <TableCell className={classNames(classes.tableCell)} align="right">
+                    质押合约地址
+                  </TableCell>
+                  <TableCell className={classNames(classes.tableCell)} align="right">
+                    TVL（总锁仓量）
+                  </TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody >
+                <TableRow>
+                  <TableCell className={classNames(classes.tableCell)} component="th" scope="row">
+                    BOC_Vault
+                  </TableCell>
+                  <TableCell className={classNames(classes.tableCell)} align="right">
+                    <a href={CHAIN_BROWSER_URL && `${CHAIN_BROWSER_URL}/address/${VAULT_ADDRESS}`} target="_blank" rel="noopener noreferrer">{VAULT_ADDRESS}</a>
+                  </TableCell>
+                  <TableCell className={classNames(classes.tableCell)} align="right">
+                    USDT
+                  </TableCell>
+                  <TableCell className={classNames(classes.tableCell)} align="right">
+                    <a href={CHAIN_BROWSER_URL && `${CHAIN_BROWSER_URL}/address/${USDT_ADDRESS}`} target="_blank" rel="noopener noreferrer">{USDT_ADDRESS}</a>
+                  </TableCell>
+                  <TableCell className={classNames(classes.tableCell)} align="right">
+                    {toFixed(totalAssets, 10 ** 6, 6)}USDT
+                  </TableCell>
+                </TableRow>
+              </TableBody>
+            </Table>
+          </TableContainer>
         </div>
       </div>
       <Footer whiteFont />
