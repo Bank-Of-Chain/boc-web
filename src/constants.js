@@ -22,9 +22,15 @@ console.log('env config=', ENV_NETWORK_TYPE, config);
 export const APY_SERVER = config.apy_server;
 export const VAULT_ADDRESS = config.vault_address;
 export const EXCHANGE_EXTRA_PARAMS = config.exchange_extra_params;
-export const USDT_ADDRESS = config.underlying_address
-export const RPC_URL = config.rpcUrl
-export const CHAIN_BROWSER_URL = config.chain_browser_url
+export const USDT_ADDRESS = config.underlying_address;
+export const RPC_URL = config.rpcUrl;
+export const CHAIN_BROWSER_URL = config.chain_browser_url;
+
+export const COMMUNITY_URL = config.community_url;
+export const ABOUTUS_URL = config.aboutus_url;
+export const BLOG_URL = config.blog_url;
+export const LICENSES_URL = config.licenses_url;
+export const DOCUMENT_URL = config.document_url;
 
 // === abi === //
 export const VAULT_ABI = vaultAbi;
@@ -36,5 +42,3 @@ export const IERC20_ABI = ierc20Abi;
 export const EXCHANGE_AGGREGATOR_ABI = exchangeAggreatorAbi;
 
 export const TREASURE_ABI = treasureAbi;
-
-

@@ -24,6 +24,9 @@ import CustomDropdown from "../CustomDropdown/CustomDropdown";
 // === Utils === //
 import isEmpty from "lodash/isEmpty";
 
+// === Constants === //
+import { COMMUNITY_URL, BLOG_URL, DOCUMENT_URL } from "./../../constants";
+
 const useStyles = makeStyles(styles);
 
 export default function HeaderLinks(props) {
@@ -35,7 +38,7 @@ export default function HeaderLinks(props) {
         <Button
           color="transparent"
           target="_blank"
-          href="https://piggyfinance.github.io/docs/zh/docs/"
+          href={DOCUMENT_URL}
           className={classes.navLink}
         >
           <LibraryBooksIcon className={classes.icons} ></LibraryBooksIcon> Document
@@ -45,7 +48,7 @@ export default function HeaderLinks(props) {
         <Button
           color="transparent"
           target="_blank"
-          href="https://piggyfinance.github.io/docs/zh/community/"
+          href={COMMUNITY_URL}
         >
           <ChatIcon className={classes.icons} ></ChatIcon> DAO
         </Button>
@@ -54,7 +57,7 @@ export default function HeaderLinks(props) {
         <Button
           color="transparent"
           target="_blank"
-          href="https://piggyfinance.github.io/docs/zh/blog/"
+          href={BLOG_URL}
         >
           <BookIcon className={classes.icons} ></BookIcon> Blog
         </Button>

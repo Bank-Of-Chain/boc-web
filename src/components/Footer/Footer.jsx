@@ -8,8 +8,8 @@ import classNames from "classnames";
 import { List, ListItem } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 
-// @material-ui/icons
-import Favorite from "@material-ui/icons/Favorite";
+// === Constants === //
+import { COMMUNITY_URL, ABOUTUS_URL, BLOG_URL, LICENSES_URL } from "./../../constants";
 
 import styles from "./footerStyle.js";
 
@@ -38,7 +38,7 @@ export default function Footer(props) {
               <a
                 className={classes.block}
                 target="_blank"
-                href="https://piggyfinance.github.io/docs/zh/community/"
+                href={COMMUNITY_URL}
               >
                 Community
               </a>
@@ -47,7 +47,7 @@ export default function Footer(props) {
               <a
                 className={classes.block}
                 target="_blank"
-                href="https://piggyfinance.github.io/docs/zh/aboutus/"
+                href={ABOUTUS_URL}
               >
                 About us
               </a>
@@ -56,7 +56,7 @@ export default function Footer(props) {
               <a
                 className={classes.block}
                 target="_blank"
-                href="https://piggyfinance.github.io/docs/zh/blog/"
+                href={BLOG_URL}
               >
                 Blog
               </a>
@@ -65,7 +65,7 @@ export default function Footer(props) {
               <a
                 className={classes.block}
                 target="_blank"
-                href="https://piggyfinance.github.io/docs/zh/licenses/"
+                href={LICENSES_URL}
               >
                 Licenses
               </a>

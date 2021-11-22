@@ -45,9 +45,9 @@ export default function ProductSection() {
             <InfoArea
               title="收益最大化"
               description={[
-                <span key='item-4' className={classes.descriptionItem}>1. 不断的搜寻、评估、接入安全可靠的高收益协议，进行投资</span>,
+                <span key='item-4' className={classes.descriptionItem}>1. 不断地搜寻、评估、接入安全可靠的高收益协议，进行投资</span>,
                 <span key='item-5' className={classes.descriptionItem}> 2. 严格的代码评审，减少投资过程中的GAS消耗，兑换消耗，投资路径消耗，最大化耕作收益</span>,
-                <span key='item-6' className={classes.descriptionItem}>3. 优化算法，自动化的进行资金调配，评估了收益、损失，风险，最大化资金投资收益</span>
+                <span key='item-6' className={classes.descriptionItem}>3. 优化算法，自动化地进行资金调配，评估了收益、损失，风险，最大化资金投资收益</span>
               ]}
               icon={Fingerprint}
               iconColor="danger"
