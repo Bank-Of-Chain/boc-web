@@ -30,6 +30,9 @@ export default function Footer(props) {
     <footer className={footerClasses}>
       <div className={classes.container}>
         <div className={classes.center}>
+          This project is in beta. Use at your own risk.
+        </div>
+        <div className={classes.center}>
           <List className={classes.list}>
             <ListItem className={classes.inlineBlock}>
               <a

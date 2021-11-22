@@ -24,14 +24,21 @@ import Alert from '@material-ui/lab/Alert';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import KeyboardHideIcon from '@material-ui/icons/KeyboardHide';
 import KeyboardIcon from '@material-ui/icons/Keyboard';
-import HowToVoteIcon from '@material-ui/icons/HowToVote';
 import ErrorOutlineIcon from '@material-ui/icons/ErrorOutline';
 import AddIcon from '@material-ui/icons/Add';
 import Radio from "@material-ui/core/Radio";
+import AndroidIcon from '@material-ui/icons/Android';
 import FiberManualRecord from "@material-ui/icons/FiberManualRecord";
+import Table from '@material-ui/core/Table';
+import TableBody from '@material-ui/core/TableBody';
+import TableCell from '@material-ui/core/TableCell';
+import TableContainer from '@material-ui/core/TableContainer';
+import TableHead from '@material-ui/core/TableHead';
+import TableRow from '@material-ui/core/TableRow';
+import Paper from '@material-ui/core/Paper';
 
 // === constants === //
-import { VAULT_ADDRESS, VAULT_ABI, IERC20_ABI, USDT_ADDRESS, EXCHANGE_AGGREGATOR_ABI, EXCHANGE_EXTRA_PARAMS, MULTIPLE_OF_GAS } from "../../constants";
+import { VAULT_ADDRESS, VAULT_ABI, IERC20_ABI, USDT_ADDRESS, EXCHANGE_AGGREGATOR_ABI, EXCHANGE_EXTRA_PARAMS, MULTIPLE_OF_GAS, CHAIN_BROWSER_URL } from "../../constants";
 
 // === Utils === //
 import { getBestSwapInfo } from "piggy-finance-utils";
@@ -455,9 +462,10 @@ export default function Invest(props) {
     }
     if (isEmpty(estimateWithdrawArray) || isEmpty(toValue)) {
       return <GridItem xs={12} sm={12} md={12} lg={12}>
-        <p style={{ textAlign: 'center', minHeight: '100px' }}>
-          <HowToVoteIcon fontSize="large" color="primary" />
-        </p>
+        <div style={{ textAlign: 'center', minHeight: '100px', color: '#fff' }}>
+          <AndroidIcon fontSize="large" />
+          <p style={{ marginTop: 0 }}>暂无预估数值</p>
+        </div>
       </GridItem>
     }
     return map(estimateWithdrawArray, item => {
@@ -498,9 +506,9 @@ export default function Invest(props) {
           <GridContainer>
             <GridItem>
               <div className={classes.brand}>
-                <h2 className={classes.subtitle}>
+                {/* <h2 className={classes.subtitle}>
                   锁仓量:&nbsp;&nbsp;<CountTo from={beforeTotalAssets.toNumber()} to={totalAssets.toNumber()} speed={3500} >{fn}</CountTo>
-                </h2>
+                </h2> */}
                 <h2 className={classes.subtitle}>
                   BOC USDT单价:&nbsp;&nbsp;{toFixed(perFullShare, usdtDecimals, 6)} USDT
                 </h2>
@@ -509,6 +517,7 @@ export default function Invest(props) {
                   {
                     map(days, (day, index) => {
                       return <FormControlLabel
+                        key={index}
                         control={
                           <Radio
                             checked={index === currentDays}
@@ -598,7 +607,13 @@ export default function Invest(props) {
                             }}
                           />
                         </GridItem>
-                        <GridItem xs={12} sm={12} md={6} lg={6} />
+                        <GridItem xs={12} sm={12} md={6} lg={6} >
+                          <GridContainer>
+                            <GridItem xs={12} sm={12} md={12} lg={12}>
+                              <Muted><p style={{ fontSize: 18, wordBreak: 'break-all', lineHeight: '62px' }}>份额预估：{isValidFromValueFlag && toFixed(perFullShare.mul(fromValue), usdtDecimals, 6)}</p></Muted>
+                            </GridItem>
+                          </GridContainer>
+                        </GridItem>
                         <GridItem xs={12} sm={12} md={6} lg={6}>
                           <GridContainer>
                             <GridItem xs={6} sm={6} md={6} lg={6}>
@@ -676,6 +691,49 @@ export default function Invest(props) {
               />
             </GridItem>
           </GridContainer>
+          <p style={{ color: '#fff' }}>有关此 Vault 更多的信息</p>
+          <TableContainer component={Paper} style={{ borderRadius: 0 }}>
+            <Table className={classNames(classes.table)} aria-label="simple table">
+              <TableHead>
+                <TableRow>
+                  <TableCell className={classNames(classes.tableCell)}>
+                    Vault 通证符号
+                  </TableCell>
+                  <TableCell className={classNames(classes.tableCell)} align="right">
+                    Vault 合约地址
+                  </TableCell>
+                  <TableCell className={classNames(classes.tableCell)} align="right">
+                    质押通证符号
+                  </TableCell>
+                  <TableCell className={classNames(classes.tableCell)} align="right">
+                    质押合约地址
+                  </TableCell>
+                  <TableCell className={classNames(classes.tableCell)} align="right">
+                    TVL（总锁仓量）
+                  </TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody >
+                <TableRow>
+                  <TableCell className={classNames(classes.tableCell)} component="th" scope="row">
+                    BOC_Vault
+                  </TableCell>
+                  <TableCell className={classNames(classes.tableCell)} align="right">
+                    <a href={CHAIN_BROWSER_URL && `${CHAIN_BROWSER_URL}/address/${VAULT_ADDRESS}`} target="_blank" rel="noopener noreferrer">{VAULT_ADDRESS}</a>
+                  </TableCell>
+                  <TableCell className={classNames(classes.tableCell)} align="right">
+                    USDT
+                  </TableCell>
+                  <TableCell className={classNames(classes.tableCell)} align="right">
+                    <a href={CHAIN_BROWSER_URL && `${CHAIN_BROWSER_URL}/address/${USDT_ADDRESS}`} target="_blank" rel="noopener noreferrer">{USDT_ADDRESS}</a>
+                  </TableCell>
+                  <TableCell className={classNames(classes.tableCell)} align="right">
+                    {toFixed(totalAssets, 10 ** 6, 6)}USDT
+                  </TableCell>
+                </TableRow>
+              </TableBody>
+            </Table>
+          </TableContainer>
         </div>
       </div>
       <Footer whiteFont />

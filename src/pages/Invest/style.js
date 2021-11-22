@@ -100,6 +100,13 @@ const componentsStyle = {
     fontSize: '30px',
     fontWeight: 'bold',
     textTransform: 'uppercase'
+  },
+  table: {
+    backgroundColor: 'rgb(19, 24, 35)',
+  },
+  tableCell: {
+    color: '#fff',
+    borderBottom: '1px solid #424560'
   }
 };
 
