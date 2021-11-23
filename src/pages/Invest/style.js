@@ -10,8 +10,7 @@ const componentsStyle = {
   },
   brand: {
     color: "#FFFFFF",
-    textAlign: "left",
-    paddingLeft: 20
+    textAlign: "left"
   },
   title: {
     fontSize: "4.2rem",
@@ -29,7 +28,7 @@ const componentsStyle = {
     backgroundColor: 'rgb(19, 24, 35)'
   },
   mainRaised: {
-    margin: "-180px 30px 0px",
+    margin: "120px 30px",
     borderRadius: "6px",
   },
   link: {
@@ -106,6 +105,7 @@ const componentsStyle = {
   },
   tableCell: {
     color: '#fff',
+    fontSize: '12px',
     borderBottom: '1px solid #424560'
   }
 };

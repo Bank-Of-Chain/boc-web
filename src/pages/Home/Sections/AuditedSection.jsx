@@ -1,21 +1,19 @@
-import React from "react";
-// nodejs library that concatenates classes
-import classNames from "classnames";
+import React from "react"
 // @material-ui/core components
-import { makeStyles } from "@material-ui/core/styles";
+import { makeStyles } from "@material-ui/core/styles"
 
 // @material-ui/icons
 
 // core components
-import GridContainer from "../../../components/Grid/GridContainer";
-import GridItem from "../../../components/Grid/GridItem";
+import GridContainer from "../../../components/Grid/GridContainer"
+import GridItem from "../../../components/Grid/GridItem"
 
-import styles from "./auditedStyle";
+import styles from "./auditedStyle"
 
-const useStyles = makeStyles(styles);
+const useStyles = makeStyles(styles)
 
-export default function TeamSection() {
-  const classes = useStyles();
+export default function TeamSection () {
+  const classes = useStyles()
   return (
     <div className={classes.section}>
       <h2 className={classes.title}>Audited And Verified</h2>
@@ -27,5 +25,5 @@ export default function TeamSection() {
         </GridContainer>
       </div>
     </div>
-  );
+  )
 }

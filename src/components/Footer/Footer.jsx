@@ -40,7 +40,7 @@ export default function Footer(props) {
                 target="_blank"
                 href={COMMUNITY_URL}
               >
-                Community
+                Discord
               </a>
             </ListItem>
             <ListItem className={classes.inlineBlock}>
