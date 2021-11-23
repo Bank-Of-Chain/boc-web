@@ -20,6 +20,7 @@ import styles from "./landingPage";
 
 // Sections for this page
 import ProductSection from "./Sections/ProductSection";
+import AuditedSection from "./Sections/AuditedSection";
 
 const dashboardRoutes = [];
 
@@ -147,7 +148,7 @@ export default function Home(props) {
       <div className={classNames(classes.main, classes.mainRaised)}>
         <div className={classes.container}>
           <ProductSection />
-          {/* <TeamSection /> */}
+          <AuditedSection />
         </div>
       </div>
       <Footer whiteFont />

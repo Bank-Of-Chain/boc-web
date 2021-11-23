@@ -1,4 +1,7 @@
-import { cardTitle, title } from "../../../assets/jss/material-kit-react";
+import {
+  cardTitle,
+  title
+} from "../../../assets/jss/material-kit-react";
 import imagesStyle from "../imagesStyles";
 
 const teamStyle = {
@@ -46,6 +49,14 @@ const teamStyle = {
   },
   margin5: {
     margin: "5px",
+  },
+  text: {
+    background: '-webkit-gradient(linear, left top, left bottom, from(#00acc1), to(#95de64))',
+    '-webkitBackgroundClip': 'text',
+    '-webkitTextFillColor': 'transparent',
+    fontSize: '30px',
+    fontWeight: 'bold',
+    textTransform: 'uppercase'
   },
 };
 
