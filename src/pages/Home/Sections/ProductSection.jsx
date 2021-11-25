@@ -3,9 +3,9 @@ import React from "react";
 import { makeStyles } from "@material-ui/core/styles";
 
 // @material-ui/icons
-import Chat from "@material-ui/icons/Chat";
 import VerifiedUser from "@material-ui/icons/VerifiedUser";
 import Fingerprint from "@material-ui/icons/Fingerprint";
+import TrendingUpIcon from '@material-ui/icons/TrendingUp';
 // core components
 import GridContainer from "../../../components/Grid/GridContainer";
 import GridItem from "../../../components/Grid/GridItem";
@@ -36,8 +36,8 @@ export default function ProductSection() {
                 <span key='item-2' className={classes.descriptionItem}>2. 投资的理财协议，需要有长期的安全运营记录，并经过社区严格风险评估</span>,
                 <span key='item-3' className={classes.descriptionItem}>3. 严格的安全审计，合约透明，社区维护，保障用户的资金所有权和安全</span>
               ]}
-              icon={Chat}
-              iconColor="info"
+              icon={Fingerprint}
+              iconColor="danger"
               vertical
             />
           </GridItem>
@@ -49,8 +49,8 @@ export default function ProductSection() {
                 <span key='item-5' className={classes.descriptionItem}> 2. 严格的代码评审，减少投资过程中的GAS消耗，兑换消耗，投资路径消耗，最大化耕作收益</span>,
                 <span key='item-6' className={classes.descriptionItem}>3. 优化算法，自动化地进行资金调配，评估了收益、损失，风险，最大化资金投资收益</span>
               ]}
-              icon={Fingerprint}
-              iconColor="danger"
+              icon={TrendingUpIcon}
+              iconColor="info"
               vertical
             />
           </GridItem>

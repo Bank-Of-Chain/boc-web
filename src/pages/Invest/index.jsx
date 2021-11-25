@@ -420,7 +420,9 @@ export default function Invest (props) {
       const nextValue = `${toValue * usdtDecimals}`
       const allowMaxLossValue = parseInt(100 * parseFloat(allowMaxLoss))
       const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider)
-      vaultContract.callStatic
+      const signer = userProvider.getSigner();
+      const vaultContractWithSigner = vaultContract.connect(signer);
+      vaultContractWithSigner.callStatic
         .withdraw(nextValue, allowMaxLossValue, shouldExchange, [])
         .then(async ([tokens, amounts]) => {
           let nextEstimateWithdrawArray = compact(
