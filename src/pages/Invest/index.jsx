@@ -81,7 +81,7 @@ const getExchangePlatformAdapters = async exchangeAggregator => {
 export default function Invest (props) {
   const classes = useStyles()
   const { address, userProvider } = props
-  const usdtDecimals = BigNumber.from(1e6)
+  const [usdtDecimals, setUsdtDecimals] = useState(BigNumber.from(1))
   // const [beforeTotalAssets, setBeforeTotalAssets] = useState(BigNumber.from(0))
   const [totalAssets, setTotalAssets] = useState(BigNumber.from(0))
 
@@ -124,6 +124,7 @@ export default function Invest (props) {
         .pricePerShare()
         .then(setPerFullShare)
         .catch(console.error),
+      usdtContract.decimals().then(v => setUsdtDecimals(BigNumber.from(10).pow(v))),
       // vaultContract.token().then(setToken),
       // vaultContract.getTrackedAssets().then(setTrackedAssets)
     ]).catch(() => {
