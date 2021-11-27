@@ -427,20 +427,25 @@ export default function Invest (props) {
         .withdraw(nextValue, allowMaxLossValue, shouldExchange, [])
         .then(async ([tokens, amounts]) => {
           let nextEstimateWithdrawArray = compact(
-            map(tokens, (token, index) => {
-              const amount = get(amounts, index, BigNumber.from(0))
-              if (amount.gt(0)) {
-                return {
-                  tokenAddress: token,
-                  amounts: amount,
+            await Promise.all(
+              map(tokens, async (token, index) => {
+                const tokenContract = new ethers.Contract(token, IERC20_ABI, userProvider)
+                const amount = get(amounts, index, BigNumber.from(0))
+                if (amount.gt(0)) {
+                  return {
+                    tokenAddress: token,
+                    decimals: BigNumber.from(10).pow(await tokenContract.decimals()),
+                    amounts: amount,
+                  }
                 }
-              }
-            }),
+              })
+            )
           )
           if (shouldExchange) {
             nextEstimateWithdrawArray = [
               {
                 tokenAddress: USDT_ADDRESS,
+                decimals: usdtDecimals,
                 amounts: perFullShare.mul((toValue * usdtDecimals).toString()).div(usdtDecimals),
               },
             ]
@@ -534,7 +539,7 @@ export default function Invest (props) {
           >
             <AddIcon fontSize='small' style={{ position: "absolute", top: 40, left: 63 }} />
             <img className={classes.img} alt='' src={`./images/${item.tokenAddress}.webp`} />
-            &nbsp;&nbsp;~&nbsp;{item.amounts.toString()}
+            &nbsp;&nbsp;~&nbsp;{toFixed(item.amounts, item.decimals)}
           </Button>
         </GridItem>
       )
