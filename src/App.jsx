@@ -10,14 +10,16 @@ import Backdrop from '@material-ui/core/Backdrop';
 
 // === Utils === //
 import { useGasPrice, useBalance } from "./hooks";
-import { RPC_URL } from "./constants";
+import { RPC_URL, USDT_ADDRESS } from "./constants";
 import { Transactor } from "./helpers";
 import { makeStyles } from '@material-ui/core/styles';
 import { SafeAppWeb3Modal } from '@gnosis.pm/safe-apps-web3modal';
+import { lendSwap } from 'piggy-finance-utils';
 
 // === Styles === //
 import "./App.css";
 
+lendSwap.setUnderlying(USDT_ADDRESS);
 Date.prototype.format = function (fmt) {
   var o = {
     "M+": this.getMonth() + 1, //月份

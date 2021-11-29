@@ -18,9 +18,7 @@ import {
 export default function getApyByDays(days) {
   return new Promise((resolve, reject) => {
     request.get(`${APY_SERVER}/v3/vault/apy/${days}`, (error, response, body) => {
-      console.log('error=', error, response, body);
       try {
-
         const jsonBody = JSON.parse(body);
         const {
           code

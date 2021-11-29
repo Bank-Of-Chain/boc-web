@@ -81,7 +81,7 @@ const getExchangePlatformAdapters = async exchangeAggregator => {
 export default function Invest (props) {
   const classes = useStyles()
   const { address, userProvider } = props
-  const usdtDecimals = BigNumber.from(1e6)
+  const [usdtDecimals, setUsdtDecimals] = useState(BigNumber.from(1))
   // const [beforeTotalAssets, setBeforeTotalAssets] = useState(BigNumber.from(0))
   const [totalAssets, setTotalAssets] = useState(BigNumber.from(0))
 
@@ -124,6 +124,7 @@ export default function Invest (props) {
         .pricePerShare()
         .then(setPerFullShare)
         .catch(console.error),
+      usdtContract.decimals().then(v => setUsdtDecimals(BigNumber.from(10).pow(v))),
       // vaultContract.token().then(setToken),
       // vaultContract.getTrackedAssets().then(setTrackedAssets)
     ]).catch(() => {
@@ -426,20 +427,25 @@ export default function Invest (props) {
         .withdraw(nextValue, allowMaxLossValue, shouldExchange, [])
         .then(async ([tokens, amounts]) => {
           let nextEstimateWithdrawArray = compact(
-            map(tokens, (token, index) => {
-              const amount = get(amounts, index, BigNumber.from(0))
-              if (amount.gt(0)) {
-                return {
-                  tokenAddress: token,
-                  amounts: amount,
+            await Promise.all(
+              map(tokens, async (token, index) => {
+                const tokenContract = new ethers.Contract(token, IERC20_ABI, userProvider)
+                const amount = get(amounts, index, BigNumber.from(0))
+                if (amount.gt(0)) {
+                  return {
+                    tokenAddress: token,
+                    decimals: BigNumber.from(10).pow(await tokenContract.decimals()),
+                    amounts: amount,
+                  }
                 }
-              }
-            }),
+              })
+            )
           )
           if (shouldExchange) {
             nextEstimateWithdrawArray = [
               {
                 tokenAddress: USDT_ADDRESS,
+                decimals: usdtDecimals,
                 amounts: perFullShare.mul((toValue * usdtDecimals).toString()).div(usdtDecimals),
               },
             ]
@@ -533,7 +539,7 @@ export default function Invest (props) {
           >
             <AddIcon fontSize='small' style={{ position: "absolute", top: 40, left: 63 }} />
             <img className={classes.img} alt='' src={`./images/${item.tokenAddress}.webp`} />
-            &nbsp;&nbsp;~&nbsp;{item.amounts.toString()}
+            &nbsp;&nbsp;~&nbsp;{toFixed(item.amounts, item.decimals)}
           </Button>
         </GridItem>
       )
