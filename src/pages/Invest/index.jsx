@@ -258,7 +258,7 @@ export default function Invest (props) {
     }
     const allowMaxLossValue = parseInt(100 * parseFloat(allowMaxLoss))
     const signer = userProvider.getSigner()
-    const nextValue = BN(toValue).multipliedBy(BigNumber.from(10).pow(usdtDecimals).toString())
+    const nextValue = BigNumber.from(BN(toValue).multipliedBy(BigNumber.from(10).pow(usdtDecimals).toString()).toFixed())
     try {
       const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider)
       const vaultContractWithSigner = vaultContract.connect(signer)
@@ -550,7 +550,7 @@ export default function Invest (props) {
           >
             <AddIcon fontSize='small' style={{ position: "absolute", top: 40, left: 63 }} />
             <img className={classes.img} alt='' src={`./images/${item.tokenAddress}.webp`} />
-            &nbsp;&nbsp;~&nbsp;{toFixed(item.amounts, BigNumber.from(10).pow(item.decimals), 2)}
+            &nbsp;&nbsp;~&nbsp;{toFixed(item.amounts, BigNumber.from(10).pow(item.decimals), item.decimals)}
           </Button>
         </GridItem>
       )
@@ -655,7 +655,7 @@ export default function Invest (props) {
                           <CustomInput
                             labelText={`BOC份额: ${toFixed(toBalance, BigNumber.from(10).pow(usdtDecimals))}${
                               focusInput
-                                ? ` (~${toFixed(toBalance.mul(perFullShare), BigNumber.from(10).pow(usdtDecimals + usdtDecimals), 2)} USDT)`
+                                ? ` (~${toFixed(toBalance.mul(perFullShare), BigNumber.from(10).pow(usdtDecimals + usdtDecimals), usdtDecimals)} USDT)`
                                 : ""
                             }`}
                             inputProps={{
@@ -692,7 +692,7 @@ export default function Invest (props) {
                               <Muted>
                                 <p style={{ fontSize: 18, wordBreak: "break-all", lineHeight: "62px" }}>
                                   份额预估：
-                                  {isValidFromValueFlag && toFixed(BN(fromValue).multipliedBy(BigNumber.from(10).pow(usdtDecimals).toString()).toFixed(), BigNumber.from(10).pow(usdtDecimals), 6)}
+                                  {isValidFromValueFlag && toFixed(BN(fromValue).multipliedBy(BigNumber.from(10).pow(usdtDecimals).toString()).toFixed(), BigNumber.from(10).pow(usdtDecimals), usdtDecimals)}
                                 </p>
                               </Muted>
                             </GridItem>
@@ -819,7 +819,7 @@ export default function Invest (props) {
                     BOC_Vault
                   </TableCell>
                   <TableCell className={classNames(classes.tableCell)} component='th' scope='row'>
-                    {toFixed(perFullShare, BigNumber.from(10).pow(usdtDecimals), 6)}
+                    {toFixed(perFullShare, BigNumber.from(10).pow(usdtDecimals), usdtDecimals)}
                   </TableCell>
                   <TableCell className={classNames(classes.tableCell)}>
                     <a
@@ -843,7 +843,7 @@ export default function Invest (props) {
                     </a>
                   </TableCell>
                   <TableCell className={classNames(classes.tableCell)}>
-                    {toFixed(totalAssets, BigNumber.from(10).pow(usdtDecimals), 6)}USDT
+                    {toFixed(totalAssets, BigNumber.from(10).pow(usdtDecimals), usdtDecimals)}USDT
                   </TableCell>
                 </TableRow>
               </TableBody>
