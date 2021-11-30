@@ -100,6 +100,12 @@
         "internalType": "struct IStrategy.TokenDetail[]",
         "name": "tokenDetails",
         "type": "tuple[]"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "lendValue",
+        "type": "uint256"
       }
     ],
     "name": "LendToStrategy",
@@ -235,6 +241,25 @@
     "anonymous": false,
     "inputs": [
       {
+        "indexed": true,
+        "internalType": "address",
+        "name": "strategy",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "bool",
+        "name": "isForce",
+        "type": "bool"
+      }
+    ],
+    "name": "StrategyRemoved",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
         "indexed": false,
         "internalType": "address",
         "name": "strategy",
@@ -360,6 +385,19 @@
     ],
     "name": "Withdraw",
     "type": "event"
+  },
+  {
+    "inputs": [],
+    "name": "accessControlProxy",
+    "outputs": [
+      {
+        "internalType": "contract IAccessControlProxy",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
   },
   {
     "inputs": [],
@@ -678,29 +716,16 @@
     "type": "function"
   },
   {
-    "inputs": [],
-    "name": "getGovernanceOwner",
-    "outputs": [
+    "inputs": [
       {
         "internalType": "address",
-        "name": "",
+        "name": "_strategy",
         "type": "address"
       }
     ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "getManagement",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
+    "name": "forceRemovewStrategy",
+    "outputs": [],
+    "stateMutability": "nonpayable",
     "type": "function"
   },
   {
@@ -749,19 +774,6 @@
     "type": "function"
   },
   {
-    "inputs": [],
-    "name": "governanceProxy",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
     "inputs": [
       {
         "internalType": "address",
@@ -794,7 +806,7 @@
       },
       {
         "internalType": "address",
-        "name": "_governanceProxy",
+        "name": "_accessControlProxy",
         "type": "address"
       },
       {
@@ -1199,6 +1211,19 @@
       }
     ],
     "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_token",
+        "type": "address"
+      }
+    ],
+    "name": "sweep",
+    "outputs": [],
+    "stateMutability": "nonpayable",
     "type": "function"
   },
   {
