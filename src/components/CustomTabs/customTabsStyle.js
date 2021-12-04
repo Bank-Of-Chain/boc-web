@@ -15,7 +15,7 @@ const customTabsStyle = {
     minHeight: "unset !important",
   },
   tabRootButton: {
-    background: 'linear-gradient(245.22deg,#da2eef 35%,#2b6aff 65.17%,#39d0d8 92.1%)',
+    background: 'transparent',
     minHeight: "unset !important",
     minWidth: "unset !important",
     width: "unset !important",
@@ -35,7 +35,6 @@ const customTabsStyle = {
     },
   },
   tabSelected: {
-    backgroundColor: "rgba(255, 255, 255, 0.2)",
     transition: "0.2s background-color 0.1s",
   },
   tabWrapper: {

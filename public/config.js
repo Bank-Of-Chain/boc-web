@@ -14,7 +14,13 @@ window.config = {
         network: 137,
         excludeContractMethods: ['swapOnZeroXv2', 'swapOnZeroXv4', 'swapOnUniswap', 'swapOnUniswapFork']
       }
-    }
+    },
+    chain_browser_url: '',
+    community_url: 'https://discord.gg/GjT2crrv',
+    aboutus_url: 'https://piggyfinance.github.io/docs/zh/aboutus/',
+    blog_url: 'https://piggyfinance.github.io/docs/zh/blog/',
+    licenses_url: 'https://piggyfinance.github.io/docs/zh/licenses/',
+    document_url: "https://piggyfinance.github.io/docs/zh/docs/"
   },
   // dev
   31337: {
@@ -31,11 +37,17 @@ window.config = {
         network: 137,
         excludeContractMethods: ['swapOnZeroXv2', 'swapOnZeroXv4', 'swapOnUniswap', 'swapOnUniswapFork']
       }
-    }
+    },
+    chain_browser_url: '',
+    community_url: 'https://discord.gg/GjT2crrv',
+    aboutus_url: 'https://piggyfinance.github.io/docs/zh/aboutus/',
+    blog_url: 'https://piggyfinance.github.io/docs/zh/blog/',
+    licenses_url: 'https://piggyfinance.github.io/docs/zh/licenses/',
+    document_url: "https://piggyfinance.github.io/docs/zh/docs/"
   },
   // polygon
   137: {
-    vault_address: "0xB03BE3E9D96c1Ba71d6ed26F62966dAAca288b45",
+    vault_address: "0xFB7f340A7DEfD3bB0072844db6D5EbdFAD765dea",
     underlying_address: "0xc2132D05D31c914a87C6611C10748AEb04B58e8F",
     apy_server: "http://47.243.164.64/api",
     rpcUrl: "https://rpc-mainnet.maticvigil.com",
@@ -48,7 +60,13 @@ window.config = {
         network: 137,
         excludeContractMethods: []
       }
-    }
+    },
+    chain_browser_url: 'https://polygonscan.com',
+    community_url: 'https://discord.gg/GjT2crrv',
+    aboutus_url: 'https://piggyfinance.github.io/docs/zh/aboutus/',
+    blog_url: 'https://piggyfinance.github.io/docs/zh/blog/',
+    licenses_url: 'https://piggyfinance.github.io/docs/zh/licenses/',
+    document_url: "https://piggyfinance.github.io/docs/zh/docs/"
   },
   4: {
     vault_address: "",
@@ -64,7 +82,13 @@ window.config = {
         network: 4,
         excludeContractMethods: ['swapOnZeroXv2', 'swapOnZeroXv4', 'swapOnUniswap', 'swapOnUniswapFork']
       }
-    }
+    },
+    chain_browser_url: 'https://rinkeby.etherscan.io',
+    community_url: 'https://discord.gg/GjT2crrv',
+    aboutus_url: 'https://piggyfinance.github.io/docs/zh/aboutus/',
+    blog_url: 'https://piggyfinance.github.io/docs/zh/blog/',
+    licenses_url: 'https://piggyfinance.github.io/docs/zh/licenses/',
+    document_url: "https://piggyfinance.github.io/docs/zh/docs/"
   },
   // eth
   1: {
@@ -81,6 +105,12 @@ window.config = {
         network: 137,
         excludeContractMethods: []
       }
-    }
+    },
+    chain_browser_url: 'https://etherscan.io',
+    community_url: 'https://discord.gg/GjT2crrv',
+    aboutus_url: 'https://piggyfinance.github.io/docs/zh/aboutus/',
+    blog_url: 'https://piggyfinance.github.io/docs/zh/blog/',
+    licenses_url: 'https://piggyfinance.github.io/docs/zh/licenses/',
+    document_url: "https://piggyfinance.github.io/docs/zh/docs/"
   }
 };

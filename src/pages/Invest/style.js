@@ -10,8 +10,7 @@ const componentsStyle = {
   },
   brand: {
     color: "#FFFFFF",
-    textAlign: "left",
-    paddingLeft: 20
+    textAlign: "left"
   },
   title: {
     fontSize: "4.2rem",
@@ -21,7 +20,7 @@ const componentsStyle = {
   },
   subtitle: {
     fontSize: "1.313rem",
-    maxWidth: "500px",
+    width: 'auto',
     margin: "10px 0 0",
   },
   main: {
@@ -29,7 +28,7 @@ const componentsStyle = {
     backgroundColor: 'rgb(19, 24, 35)'
   },
   mainRaised: {
-    margin: "-180px 30px 0px",
+    margin: "120px 30px",
     borderRadius: "6px",
   },
   link: {
@@ -70,6 +69,44 @@ const componentsStyle = {
   },
   img: {
     width: '40px'
+  },
+  radioUnchecked: {
+    width: "0px",
+    height: "0px",
+    padding: "7px",
+    border: "1px solid #fff",
+    borderRadius: "50%",
+  },
+  radioChecked: {
+    width: "16px",
+    height: "16px",
+    border: "1px solid #fff",
+    borderRadius: "50%",
+  },
+  radioRoot: {
+    padding: "12px",
+    "&:hover": {
+      backgroundColor: "unset",
+    },
+  },
+  radio: {
+    color: "#fff !important",
+  },
+  apyText: {
+    background: '-webkit-gradient(linear, left top, left bottom, from(#da2eef), to(#39d0d8))',
+    '-webkitBackgroundClip': 'text',
+    '-webkitTextFillColor': 'transparent',
+    fontSize: '30px',
+    fontWeight: 'bold',
+    textTransform: 'uppercase'
+  },
+  table: {
+    backgroundColor: 'rgb(19, 24, 35)',
+  },
+  tableCell: {
+    color: '#fff',
+    fontSize: '12px',
+    borderBottom: '1px solid #424560'
   }
 };
 
