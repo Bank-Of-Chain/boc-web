@@ -98,6 +98,7 @@ export default function Invest (props) {
   const [estimateWithdrawArray, setEstimateWithdrawArray] = useState([])
   const [isEstimate, setIsEstimate] = useState(false)
   const [isOpenEstimate, setIsOpenEstimate] = useState(true)
+  const [totalSupply, setTotalSupply] = useState(BigNumber.from(1))
   // 模态框标识位
   const [alertState, setAlertState] = useState({
     open: false,
@@ -120,14 +121,15 @@ export default function Invest (props) {
       vaultContract
         .balanceOf(address)
         .then(setToBalance)
-        .catch(console.error),
+        .catch(noop),
       vaultContract
         .pricePerShare()
         .then(setPerFullShare)
-        .catch(console.error),
+        .catch(noop),
       // TODO:此处的usdtDecimals较特别为10的幂的数值，主要是因为lend方法里的usdtDecimals取幂操作
       // 其他处的usdtDecimals都是为10**18或10**6
       usdtContract.decimals().then(setUsdtDecimals),
+      vaultContract.totalSupply().then(setTotalSupply),
       // vaultContract.token().then(setToken),
       // vaultContract.getTrackedAssets().then(setTrackedAssets)
     ]).catch(() => {
@@ -147,7 +149,11 @@ export default function Invest (props) {
     if (fromValue === "" || fromValue === "-") return
     // 如果不是一个数值
     if (isNaN(Number(fromValue))) return false
-    const nextFromValue = BN(fromValue).multipliedBy(BigNumber.from(10).pow(usdtDecimals).toString())
+    const nextFromValue = BN(fromValue).multipliedBy(
+      BigNumber.from(10)
+        .pow(usdtDecimals)
+        .toString(),
+    )
     // 判断值为正数
     if (nextFromValue.lt(0)) return false
     // 精度处理完之后，应该为整数
@@ -165,7 +171,11 @@ export default function Invest (props) {
     if (toValue === "" || toValue === "-") return
     // 如果不是一个数值
     if (isNaN(Number(toValue))) return false
-    const nextToValue = BN(toValue).multipliedBy(BigNumber.from(10).pow(usdtDecimals).toString())
+    const nextToValue = BN(toValue).multipliedBy(
+      BigNumber.from(10)
+        .pow(usdtDecimals)
+        .toString(),
+    )
     // 判断值为正数
     if (nextToValue.lt(0)) return false
     // 精度处理完之后，应该为整数
@@ -201,7 +211,15 @@ export default function Invest (props) {
     const signer = userProvider.getSigner()
     const usdtContractWithUser = usdtContract.connect(signer)
     const nVaultWithUser = vaultContract.connect(signer)
-    let nextValue = BigNumber.from(BN(fromValue).multipliedBy(BigNumber.from(10).pow(usdtDecimals).toString()).toFixed())
+    let nextValue = BigNumber.from(
+      BN(fromValue)
+        .multipliedBy(
+          BigNumber.from(10)
+            .pow(usdtDecimals)
+            .toString(),
+        )
+        .toFixed(),
+    )
     try {
       // 获取当前允许的额度
       const allowanceAmount = await usdtContractWithUser.allowance(address, VAULT_ADDRESS)
@@ -258,7 +276,15 @@ export default function Invest (props) {
     }
     const allowMaxLossValue = parseInt(100 * parseFloat(allowMaxLoss))
     const signer = userProvider.getSigner()
-    const nextValue = BigNumber.from(BN(toValue).multipliedBy(BigNumber.from(10).pow(usdtDecimals).toString()).toFixed())
+    const nextValue = BigNumber.from(
+      BN(toValue)
+        .multipliedBy(
+          BigNumber.from(10)
+            .pow(usdtDecimals)
+            .toString(),
+        )
+        .toFixed(),
+    )
     try {
       const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider)
       const vaultContractWithSigner = vaultContract.connect(signer)
@@ -397,9 +423,9 @@ export default function Invest (props) {
 
   useEffect(() => {
     loadBanlance()
-    loadApy()
     const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider)
     if (!isEmpty(address)) {
+      loadApy()
       vaultContract.on("Deposit", (a, b, c) => {
         console.log("Deposit=", a, b, c)
         c &&
@@ -427,11 +453,19 @@ export default function Invest (props) {
 
     const estimateWithdraw = debounce(async () => {
       setIsEstimate(true)
-      const nextValue = BigNumber.from(BN(toValue).multipliedBy(BigNumber.from(10).pow(usdtDecimals).toString()).toFixed())
+      const nextValue = BigNumber.from(
+        BN(toValue)
+          .multipliedBy(
+            BigNumber.from(10)
+              .pow(usdtDecimals)
+              .toString(),
+          )
+          .toFixed(),
+      )
       const allowMaxLossValue = parseInt(100 * parseFloat(allowMaxLoss))
       const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider)
-      const signer = userProvider.getSigner();
-      const vaultContractWithSigner = vaultContract.connect(signer);
+      const signer = userProvider.getSigner()
+      const vaultContractWithSigner = vaultContract.connect(signer)
       vaultContractWithSigner.callStatic
         .withdraw(nextValue, allowMaxLossValue, shouldExchange, [])
         .then(async ([tokens, amounts]) => {
@@ -447,11 +481,17 @@ export default function Invest (props) {
                     amounts: amount,
                   }
                 }
-              })
-            )
+              }),
+            ),
           )
           if (shouldExchange) {
-            const toValueString = BN(toValue).multipliedBy(BigNumber.from(10).pow(usdtDecimals).toString()).toFixed()
+            const toValueString = BN(toValue)
+              .multipliedBy(
+                BigNumber.from(10)
+                  .pow(usdtDecimals)
+                  .toString(),
+              )
+              .toFixed()
             const target = BigNumber.from(10).pow(usdtDecimals)
             nextEstimateWithdrawArray = [
               {
@@ -560,6 +600,10 @@ export default function Invest (props) {
   const isValidToValueFlag = isValidToValue()
   const isValidFromValueFlag = isValidFromValue()
   const isValidAllowLossFlag = isValidAllowLoss()
+  let pricePerFullShare = BigNumber.from(10).pow(usdtDecimals)
+  if (!totalSupply.eq(BigNumber.from(0))) {
+    pricePerFullShare = totalAssets.mul(BigNumber.from(10).pow(usdtDecimals)).div(totalSupply)
+  }
 
   return (
     <div>
@@ -631,7 +675,9 @@ export default function Invest (props) {
                               endAdornment: (
                                 <span
                                   style={{ color: "#69c0ff", cursor: "pointer" }}
-                                  onClick={() => setFromValue(toFixed(fromBalance, BigNumber.from(10).pow(usdtDecimals)))}
+                                  onClick={() =>
+                                    setFromValue(toFixed(fromBalance, BigNumber.from(10).pow(usdtDecimals)))
+                                  }
                                 >
                                   Max
                                 </span>
@@ -655,7 +701,11 @@ export default function Invest (props) {
                           <CustomInput
                             labelText={`BOC份额: ${toFixed(toBalance, BigNumber.from(10).pow(usdtDecimals))}${
                               focusInput
-                                ? ` (~${toFixed(toBalance.mul(perFullShare), BigNumber.from(10).pow(usdtDecimals + usdtDecimals), usdtDecimals)} USDT)`
+                                ? ` (~${toFixed(
+                                    toBalance.mul(perFullShare),
+                                    BigNumber.from(10).pow(usdtDecimals + usdtDecimals),
+                                    usdtDecimals,
+                                  )} USDT)`
                                 : ""
                             }`}
                             inputProps={{
@@ -692,7 +742,15 @@ export default function Invest (props) {
                               <Muted>
                                 <p style={{ fontSize: 18, wordBreak: "break-all", lineHeight: "62px" }}>
                                   份额预估：
-                                  {isValidFromValueFlag && toFixed(BN(fromValue).multipliedBy(BigNumber.from(10).pow(usdtDecimals).toString()).toFixed(), BigNumber.from(10).pow(usdtDecimals), usdtDecimals)}
+                                  {isValidFromValueFlag &&
+                                    toFixed(
+                                      BN(fromValue)
+                                        .multipliedBy(BigNumber.from(10).pow(usdtDecimals + usdtDecimals).toString())
+                                        .div(pricePerFullShare.toString())
+                                        .toFixed(),
+                                      BigNumber.from(10).pow(usdtDecimals),
+                                      usdtDecimals,
+                                    )}
                                 </p>
                               </Muted>
                             </GridItem>

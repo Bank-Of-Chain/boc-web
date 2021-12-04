@@ -47,7 +47,7 @@ window.config = {
   },
   // polygon
   137: {
-    vault_address: "0xB03BE3E9D96c1Ba71d6ed26F62966dAAca288b45",
+    vault_address: "0xFB7f340A7DEfD3bB0072844db6D5EbdFAD765dea",
     underlying_address: "0xc2132D05D31c914a87C6611C10748AEb04B58e8F",
     apy_server: "http://47.243.164.64/api",
     rpcUrl: "https://rpc-mainnet.maticvigil.com",
