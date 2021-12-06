@@ -42,3 +42,30 @@ export const IERC20_ABI = ierc20Abi;
 export const EXCHANGE_AGGREGATOR_ABI = exchangeAggreatorAbi;
 
 export const TREASURE_ABI = treasureAbi;
+
+export const NET_WORKS = [{
+    name: "Eth Mainnet",
+    color: "#ff8b9e",
+    chainId: 1,
+    rpcUrl: `https://eth-mainnet.alchemyapi.io/v2/mainnet`,
+    blockExplorer: "https://etherscan.io/",
+  },
+  {
+    name: "Matic Mainnet",
+    color: "#2bbdf7",
+    chainId: 137,
+    price: 1,
+    gasPrice: 1000000000,
+    rpcUrl: "https://rpc-mainnet.maticvigil.com",
+    faucet: "https://faucet.matic.network/",
+    blockExplorer: "https://explorer-mainnet.maticvigil.com//",
+  },
+  {
+    name: "BSC Mainnet",
+    color: "#e0d068",
+    chainId: 56,
+    rpcUrl: `https://speedy-nodes-nyc.moralis.io/f2cbcaf720c374313b5543f8/bsc/mainnet/archive`,
+    faucet: "",
+    blockExplorer: "https://bscscan.com/",
+  },
+]
