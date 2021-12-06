@@ -1,8 +1,8 @@
-name: Release Pro
+name: Release Debug
 on:
   pull_request:
     branches:
-      - master
+      - develop
 jobs:
   release:
     name: Release
@@ -16,7 +16,7 @@ jobs:
       - name: Release
         uses: borales/actions-yarn@master
         with:
-          cmd: build:pro
+          cmd: build:debug
       - name: Zip&Upload
         uses: actions/upload-artifact@v2
         with:

@@ -83,7 +83,11 @@
     "extends": "react-app"
   },
   "scripts": {
-    "build": "react-scripts build",
+    "build:dev": "cross-env REACT_APP_ENV=dev react-scripts build",
+    "build:debug": "cross-env REACT_APP_ENV=debug react-scripts build",
+    "build:inte": "cross-env REACT_APP_ENV=inte react-scripts build",
+    "build:pre": "cross-env REACT_APP_ENV=pre react-scripts build",
+    "build:pro": "cross-env REACT_APP_ENV=pro react-scripts build",
     "eject": "react-scripts eject",
     "start": "set PORT=3001 && react-scripts start",
     "test": "react-scripts test",
