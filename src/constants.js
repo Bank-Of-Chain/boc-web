@@ -12,11 +12,14 @@ export const ETHERSCAN_KEY = "PSW8C433Q667DVEX5BCRMGNAH9FSGFZ7Q8";
 // gas limit设置为平常的2倍
 export const MULTIPLE_OF_GAS = 2;
 
-const localNetworkCode = 99999
 // EXTERNAL CONTRACTS
-export const ENV_NETWORK_TYPE = process.env.REACT_APP_NETWORK_TYPE || localStorage.REACT_APP_NETWORK_TYPE || localNetworkCode;
-const config = window.config[ENV_NETWORK_TYPE] || window.config[localNetworkCode]
+export const ENV_NETWORK_TYPE = process.env.REACT_APP_NETWORK_TYPE || localStorage.REACT_APP_NETWORK_TYPE
+const config = window.config[ENV_NETWORK_TYPE]
 console.log('env config=', ENV_NETWORK_TYPE, config);
+
+if (!config) {
+  throw new Error('配置未正确加载');
+}
 
 // === configs === //
 export const APY_SERVER = config.apy_server;

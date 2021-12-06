@@ -2,6 +2,29 @@
  * 开发环境配置文件
  */
 window.config = {
+  // 本地链
+  31337: {
+    vault_address: "0x737b8F095E3c575a6Ae5FE1711AdB8F271E20269",
+    underlying_address: "0xc2132D05D31c914a87C6611C10748AEb04B58e8F",
+    apy_server: "http://localhost:3000",
+    rpcUrl: "http://localhost:8545",
+    exchange_extra_params: {
+      oneInch: {
+        network: 137,
+        excludeProtocols: ['POLYGON_ONE_INCH_LIMIT_ORDER']
+      },
+      paraswap: {
+        network: 137,
+        excludeContractMethods: []
+      }
+    },
+    chain_browser_url: 'https://polygonscan.com',
+    community_url: 'https://discord.gg/GjT2crrv',
+    aboutus_url: 'https://piggyfinance.github.io/docs/zh/aboutus/',
+    blog_url: 'https://piggyfinance.github.io/docs/zh/blog/',
+    licenses_url: 'https://piggyfinance.github.io/docs/zh/licenses/',
+    document_url: "https://piggyfinance.github.io/docs/zh/docs/"
+  },
   // polygon
   137: {
     vault_address: "0xFB7f340A7DEfD3bB0072844db6D5EbdFAD765dea",
