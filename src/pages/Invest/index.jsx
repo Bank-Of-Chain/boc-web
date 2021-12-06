@@ -6,6 +6,7 @@ import classNames from "classnames"
 import { makeStyles } from "@material-ui/core/styles"
 import Switch from "@material-ui/core/Switch"
 import FormControlLabel from "@material-ui/core/FormControlLabel"
+import CountTo from "react-count-to"
 // core components
 import Header from "../../components/Header/Header"
 import Footer from "../../components/Footer/Footer"
@@ -78,18 +79,18 @@ export default function Invest (props) {
   const classes = useStyles()
   const { address, userProvider } = props
   const [usdtDecimals, setUsdtDecimals] = useState(1)
-  // const [beforeTotalAssets, setBeforeTotalAssets] = useState(BigNumber.from(0))
+  const [beforeTotalAssets, setBeforeTotalAssets] = useState(BigNumber.from(0))
   const [totalAssets, setTotalAssets] = useState(BigNumber.from(0))
 
   const [fromValue, setFromValue] = useState("")
   const [toValue, setToValue] = useState("")
   const [fromBalance, setFromBalance] = useState(BigNumber.from(0))
   const [toBalance, setToBalance] = useState(BigNumber.from(0))
+  const [beforePerFullShare, setBeforePerFullShare] = useState(BigNumber.from(1))
   const [perFullShare, setPerFullShare] = useState(BigNumber.from(1))
 
   const [allowMaxLoss, setAllowMaxLoss] = useState("0.3")
   const [shouldExchange, setShouldExchange] = useState(true)
-  const [focusInput, setFocusInput] = useState(false)
   const [estimateWithdrawArray, setEstimateWithdrawArray] = useState([])
   const [isEstimate, setIsEstimate] = useState(false)
   const [isOpenEstimate, setIsOpenEstimate] = useState(false)
@@ -113,10 +114,12 @@ export default function Invest (props) {
         .balanceOf(address)
         .then(setToBalance)
         .catch(noop),
-      vaultContract
-        .pricePerShare()
-        .then(setPerFullShare)
-        .catch(noop),
+      loadTotalAssets().then(([afterTotalAssets, afterPerFullShare]) => {
+        setBeforeTotalAssets(afterTotalAssets)
+        setTotalAssets(afterTotalAssets)
+        setBeforePerFullShare(afterPerFullShare)
+        setPerFullShare(afterPerFullShare)
+      }),
       // TODO:此处的usdtDecimals较特别为10的幂的数值，主要是因为lend方法里的usdtDecimals取幂操作
       // 其他处的usdtDecimals都是为10**18或10**6
       usdtContract.decimals().then(setUsdtDecimals),
@@ -376,10 +379,7 @@ export default function Invest (props) {
   }
   const loadTotalAssets = () => {
     const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider)
-    vaultContract
-      .totalAssets()
-      .then(setTotalAssets)
-      .catch(noop)
+    return Promise.all([vaultContract.totalAssets(), vaultContract.pricePerShare()])
   }
   /**
    * 关闭提示框的方法回调
@@ -398,10 +398,21 @@ export default function Invest (props) {
     })
   }
   useEffect(() => {
-    const timer = setInterval(loadTotalAssets, 3000)
+    const loadTotalAssetsFn = () =>
+      loadTotalAssets().then(([afterTotalAssets, afterPerFullShare]) => {
+        if (!afterTotalAssets.eq(beforeTotalAssets)) {
+          setBeforeTotalAssets(totalAssets)
+          setTotalAssets(afterTotalAssets)
+        }
+        if (!afterPerFullShare.eq(beforePerFullShare)) {
+          setBeforePerFullShare(perFullShare)
+          setPerFullShare(afterPerFullShare)
+        }
+      })
+    const timer = setInterval(loadTotalAssetsFn, 3000)
     return () => clearInterval(timer)
     // eslint-disable-next-line
-  }, [totalAssets.toString()])
+  }, [totalAssets.toString(), perFullShare.toString()])
 
   useEffect(() => {
     loadBanlance()
@@ -561,12 +572,12 @@ export default function Invest (props) {
     }
     return map(estimateWithdrawArray, item => {
       return (
-        <GridItem key={item.tokenAddress} xs={12} sm={12} md={6} lg={6}>
+        <GridItem key={item.tokenAddress} xs={12} sm={12} md={12} lg={12}>
           <Button
             title='Add token address to wallet'
             color='transparent'
             target='_blank'
-            style={{ fontSize: 20 }}
+            style={{ fontSize: 20, paddingBottom: 20 }}
             onClick={() => addToken(item.tokenAddress)}
           >
             <AddIcon fontSize='small' style={{ position: "absolute", top: 40, left: 63 }} />
@@ -645,7 +656,7 @@ export default function Invest (props) {
                           <GridContainer>
                             <GridItem xs={12} sm={12} md={12} lg={12}>
                               <Muted>
-                                <p style={{ fontSize: 18, wordBreak: "break-all", lineHeight: "62px" }}>
+                                <p style={{ fontSize: 18, wordBreak: "break-all", lineHeight: "62px", marginBottom: 0 }}>
                                   份额预估：
                                   {isValidFromValueFlag &&
                                     toFixed(
@@ -667,18 +678,19 @@ export default function Invest (props) {
                         </GridItem>
                         <GridItem xs={12} sm={12} md={12} lg={12}>
                           <CustomInput
-                            labelText={`BOC份额: ${toFixed(toBalance, BigNumber.from(10).pow(usdtDecimals))}${
-                              focusInput
-                                ? ` (~${toFixed(
-                                    toBalance.mul(perFullShare),
+                            labelText={
+                              <CountTo from={beforePerFullShare.toNumber()} to={perFullShare.toNumber()} speed={3500}>
+                                {v =>
+                                  `BOC份额: ${toFixed(toBalance, BigNumber.from(10).pow(usdtDecimals))}${` (~${toFixed(
+                                    toBalance.mul(v),
                                     BigNumber.from(10).pow(usdtDecimals + usdtDecimals),
                                     usdtDecimals,
-                                  )} USDT)`
-                                : ""
-                            }`}
+                                  )} USDT)`}`
+                                }
+                              </CountTo>
+                            }
+                            // <CountTo from={beforeTotalAssets.toNumber()} to={totalAssets.toNumber()} speed={3500} >{fn}</CountTo>
                             inputProps={{
-                              onFocus: () => setFocusInput(true),
-                              onBlur: () => setFocusInput(false),
                               placeholder: "withdraw amount",
                               value: toValue,
                               endAdornment: (
@@ -735,14 +747,20 @@ export default function Invest (props) {
                                           }}
                                         />
                                       }
-                                      style={{ padding: "24px 0" }}
+                                      style={{ padding: "24px 0px 24px 30px" }}
                                       classes={{
                                         label: classes.label,
                                       }}
                                       label={<Muted>{shouldExchange ? "开启兑换" : "关闭兑换"}</Muted>}
                                     />
                                   </GridItem>
-                                  <GridItem xs={8} sm={8} md={8} lg={8} style={shouldExchange ? {} : { visibility: "hidden" }} >
+                                  <GridItem
+                                    xs={8}
+                                    sm={8}
+                                    md={8}
+                                    lg={8}
+                                    style={shouldExchange ? {} : { visibility: "hidden" }}
+                                  >
                                     <CustomInput
                                       labelText='Max Loss'
                                       inputProps={{
@@ -825,7 +843,9 @@ export default function Invest (props) {
                     BOC_Vault
                   </TableCell>
                   <TableCell className={classNames(classes.tableCell)} component='th' scope='row'>
-                    {toFixed(perFullShare, BigNumber.from(10).pow(usdtDecimals), usdtDecimals)}
+                    <CountTo from={beforePerFullShare.toNumber()} to={perFullShare.toNumber()} speed={3500}>
+                      {v => toFixed(v, BigNumber.from(10).pow(usdtDecimals), usdtDecimals)}
+                    </CountTo>
                   </TableCell>
                   <TableCell className={classNames(classes.tableCell)}>
                     <a
@@ -849,7 +869,11 @@ export default function Invest (props) {
                     </a>
                   </TableCell>
                   <TableCell className={classNames(classes.tableCell)}>
-                    {toFixed(totalAssets, BigNumber.from(10).pow(usdtDecimals), usdtDecimals)}USDT
+                    <CountTo from={beforeTotalAssets.toNumber()} to={totalAssets.toNumber()} speed={3500}>
+                      {v => {
+                        return `${toFixed(v, BigNumber.from(10).pow(usdtDecimals), usdtDecimals)}USDT`
+                      }}
+                    </CountTo>
                   </TableCell>
                 </TableRow>
               </TableBody>
