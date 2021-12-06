@@ -24,9 +24,12 @@ import CustomDropdown from "../CustomDropdown/CustomDropdown";
 
 // === Utils === //
 import isEmpty from "lodash/isEmpty";
+import map from "lodash/map";
+import get from "lodash/get";
+import find from "lodash/find";
 
 // === Constants === //
-import { COMMUNITY_URL, BLOG_URL, DOCUMENT_URL } from "./../../constants";
+import { COMMUNITY_URL, BLOG_URL, DOCUMENT_URL, NET_WORKS } from "./../../constants";
 
 const useStyles = makeStyles(styles);
 
@@ -72,25 +75,22 @@ export default function HeaderLinks(props) {
           <Transform className={classes.icons} ></Transform> Polygon Bridge
         </Button>
       </ListItem>
-      {/* <ListItem className={classes.listItem}>
+      <ListItem className={classes.listItem}>
         <CustomDropdown
           noLiPadding
-          buttonText="Networks"
+          buttonText={get(find(NET_WORKS, { chainId: props.localChainId }), 'name', 'Networks')}
           buttonProps={{
             className: classes.navLink,
             color: "transparent",
           }}
           buttonIcon={Apps}
-          dropdownList={[
-            <Link to="/" className={classes.dropdownLink}>
-              ETH
-            </Link>,
-            <Link to="/invest" className={classes.dropdownLink}>
-              Polygon
-            </Link>
-          ]}
+          dropdownList={map(NET_WORKS, i => (
+            <p onClick={() => props.changeNetwork(i)} className={classes.dropdownLink}>
+              {i.name}
+            </p>
+          ))}
         />
-      </ListItem> */}
+      </ListItem>
       <ListItem className={classes.listItem}>
         {
           isEmpty(userProvider)
