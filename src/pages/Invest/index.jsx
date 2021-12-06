@@ -24,9 +24,7 @@ import KeyboardHideIcon from "@material-ui/icons/KeyboardHide"
 import KeyboardIcon from "@material-ui/icons/Keyboard"
 import ErrorOutlineIcon from "@material-ui/icons/ErrorOutline"
 import AddIcon from "@material-ui/icons/Add"
-import Radio from "@material-ui/core/Radio"
 import AndroidIcon from "@material-ui/icons/Android"
-import FiberManualRecord from "@material-ui/icons/FiberManualRecord"
 import Table from "@material-ui/core/Table"
 import TableBody from "@material-ui/core/TableBody"
 import TableCell from "@material-ui/core/TableCell"
@@ -59,7 +57,6 @@ import filter from "lodash/filter"
 import isUndefined from "lodash/isUndefined"
 import noop from "lodash/noop"
 import * as ethers from "ethers"
-import getApyByDays from "./../../helpers/api-service"
 import BN from "bignumber.js"
 
 // === Styles === //
@@ -67,8 +64,6 @@ import styles from "./style"
 
 const useStyles = makeStyles(styles)
 const { BigNumber } = ethers
-
-const days = [1, 3, 7, 30, 90, 365]
 
 const getExchangePlatformAdapters = async exchangeAggregator => {
   const adapters = await exchangeAggregator.getExchangeAdapters()
@@ -97,7 +92,7 @@ export default function Invest (props) {
   const [focusInput, setFocusInput] = useState(false)
   const [estimateWithdrawArray, setEstimateWithdrawArray] = useState([])
   const [isEstimate, setIsEstimate] = useState(false)
-  const [isOpenEstimate, setIsOpenEstimate] = useState(true)
+  const [isOpenEstimate, setIsOpenEstimate] = useState(false)
   const [totalSupply, setTotalSupply] = useState(BigNumber.from(1))
   // 模态框标识位
   const [alertState, setAlertState] = useState({
@@ -105,10 +100,6 @@ export default function Invest (props) {
     type: "",
     message: "",
   })
-
-  const [vaultApys, setVaultApys] = useState([])
-
-  const [currentDays, setCurrentDays] = useState(1)
 
   // 载入账户数据
   const loadBanlance = () => {
@@ -387,11 +378,7 @@ export default function Invest (props) {
     const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider)
     vaultContract
       .totalAssets()
-      .then(resp => {
-        if (resp.eq(totalAssets)) return
-        // setBeforeTotalAssets(totalAssets)
-        setTotalAssets(resp)
-      })
+      .then(setTotalAssets)
       .catch(noop)
   }
   /**
@@ -410,11 +397,6 @@ export default function Invest (props) {
       open: false,
     })
   }
-  // 加载apy数据
-  const loadApy = async () => {
-    const requestArray = await Promise.all(map(days, day => getApyByDays(day).catch(error => 0)))
-    setVaultApys(requestArray)
-  }
   useEffect(() => {
     const timer = setInterval(loadTotalAssets, 3000)
     return () => clearInterval(timer)
@@ -425,7 +407,6 @@ export default function Invest (props) {
     loadBanlance()
     const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider)
     if (!isEmpty(address)) {
-      loadApy()
       vaultContract.on("Deposit", (a, b, c) => {
         console.log("Deposit=", a, b, c)
         c &&
@@ -561,7 +542,7 @@ export default function Invest (props) {
     if (isUndefined(estimateWithdrawArray)) {
       return (
         <GridItem xs={12} sm={12} md={12} lg={12}>
-          <div style={{ textAlign: "center", minHeight: "100px", color: "#fff" }}>
+          <div style={{ textAlign: "center", minHeight: "100px", color: "#fff", padding: 50 }}>
             <ErrorOutlineIcon fontSize='large' />
             <p>数额预估失败，请重新获取！</p>
           </div>
@@ -571,7 +552,7 @@ export default function Invest (props) {
     if (isEmpty(estimateWithdrawArray) || isEmpty(toValue)) {
       return (
         <GridItem xs={12} sm={12} md={12} lg={12}>
-          <div style={{ textAlign: "center", minHeight: "100px", color: "#fff" }}>
+          <div style={{ textAlign: "center", minHeight: "100px", color: "#fff", padding: 50 }}>
             <AndroidIcon fontSize='large' />
             <p style={{ marginTop: 0 }}>暂无预估数值</p>
           </div>
@@ -630,43 +611,6 @@ export default function Invest (props) {
                     tabContent: (
                       <GridContainer>
                         <GridItem xs={12} sm={12} md={12} lg={12}>
-                          <div className={classes.brand}>
-                            <h2 style={{ marginBottom: 0 }}>
-                              Apy:&nbsp;
-                              <span className={classes.apyText}>
-                                {toFixed(get(vaultApys, currentDays, BigNumber.from(0)), 100, 2)}%
-                              </span>
-                              &nbsp;&nbsp;
-                              {map(days, (day, index) => {
-                                return (
-                                  <FormControlLabel
-                                    key={index}
-                                    control={
-                                      <Radio
-                                        checked={index === currentDays}
-                                        onChange={() => setCurrentDays(index)}
-                                        value={day}
-                                        name={`${day}天`}
-                                        icon={<FiberManualRecord className={classes.radioUnchecked} />}
-                                        checkedIcon={<FiberManualRecord className={classes.radioChecked} />}
-                                        classes={{
-                                          checked: classes.radio,
-                                          root: classes.radioRoot,
-                                        }}
-                                      />
-                                    }
-                                    classes={{
-                                      label: classes.label,
-                                      root: classes.labelRoot,
-                                    }}
-                                    label={`${day}天`}
-                                  />
-                                )
-                              })}
-                            </h2>
-                          </div>
-                        </GridItem>
-                        <GridItem xs={12} sm={12} md={6} lg={6}>
                           <CustomInput
                             labelText={`Balance: ${toFixed(fromBalance, BigNumber.from(10).pow(usdtDecimals))}`}
                             inputProps={{
@@ -697,7 +641,31 @@ export default function Invest (props) {
                             }}
                           />
                         </GridItem>
-                        <GridItem xs={12} sm={12} md={6} lg={6}>
+                        <GridItem xs={12} sm={12} md={12} lg={12}>
+                          <GridContainer>
+                            <GridItem xs={12} sm={12} md={12} lg={12}>
+                              <Muted>
+                                <p style={{ fontSize: 18, wordBreak: "break-all", lineHeight: "62px" }}>
+                                  份额预估：
+                                  {isValidFromValueFlag &&
+                                    toFixed(
+                                      BN(fromValue)
+                                        .multipliedBy(
+                                          BigNumber.from(10)
+                                            .pow(usdtDecimals + usdtDecimals)
+                                            .toString(),
+                                        )
+                                        .div(pricePerFullShare.toString())
+                                        .toFixed(),
+                                      BigNumber.from(10).pow(usdtDecimals),
+                                      usdtDecimals,
+                                    )}
+                                </p>
+                              </Muted>
+                            </GridItem>
+                          </GridContainer>
+                        </GridItem>
+                        <GridItem xs={12} sm={12} md={12} lg={12}>
                           <CustomInput
                             labelText={`BOC份额: ${toFixed(toBalance, BigNumber.from(10).pow(usdtDecimals))}${
                               focusInput
@@ -736,84 +704,13 @@ export default function Invest (props) {
                             }}
                           />
                         </GridItem>
-                        <GridItem xs={12} sm={12} md={6} lg={6}>
-                          <GridContainer>
-                            <GridItem xs={12} sm={12} md={12} lg={12}>
-                              <Muted>
-                                <p style={{ fontSize: 18, wordBreak: "break-all", lineHeight: "62px" }}>
-                                  份额预估：
-                                  {isValidFromValueFlag &&
-                                    toFixed(
-                                      BN(fromValue)
-                                        .multipliedBy(BigNumber.from(10).pow(usdtDecimals + usdtDecimals).toString())
-                                        .div(pricePerFullShare.toString())
-                                        .toFixed(),
-                                      BigNumber.from(10).pow(usdtDecimals),
-                                      usdtDecimals,
-                                    )}
-                                </p>
-                              </Muted>
-                            </GridItem>
-                          </GridContainer>
-                        </GridItem>
-                        <GridItem xs={12} sm={12} md={6} lg={6}>
-                          <GridContainer>
-                            <GridItem xs={6} sm={6} md={6} lg={6}>
-                              <FormControlLabel
-                                control={
-                                  <Switch
-                                    checked={shouldExchange}
-                                    onChange={event => setShouldExchange(event.target.checked)}
-                                    classes={{
-                                      switchBase: classes.switchBase,
-                                      checked: classes.switchChecked,
-                                      thumb: classes.switchIcon,
-                                      track: classes.switchBar,
-                                    }}
-                                  />
-                                }
-                                style={{ padding: "24px 0" }}
-                                classes={{
-                                  label: classes.label,
-                                }}
-                                label={<Muted>{shouldExchange ? "开启兑换" : "关闭兑换"}</Muted>}
-                              />
-                            </GridItem>
-                            <GridItem xs={6} sm={6} md={6} style={shouldExchange ? {} : { visibility: "hidden" }}>
-                              <CustomInput
-                                labelText='Max Loss'
-                                inputProps={{
-                                  placeholder: "Allow loss percent",
-                                  value: allowMaxLoss,
-                                  endAdornment: (
-                                    <span style={{ color: "#69c0ff" }}>
-                                      %&nbsp;&nbsp;&nbsp;
-                                      <span style={{ cursor: "pointer" }} onClick={() => setAllowMaxLoss(50)}>
-                                        Max
-                                      </span>
-                                    </span>
-                                  ),
-                                  onChange: event => {
-                                    const value = event.target.value
-                                    setAllowMaxLoss(value)
-                                  },
-                                }}
-                                error={!isUndefined(isValidAllowLossFlag) && !isValidAllowLossFlag}
-                                success={!isUndefined(isValidAllowLossFlag) && isValidAllowLossFlag}
-                                formControlProps={{
-                                  fullWidth: true,
-                                }}
-                              />
-                            </GridItem>
-                          </GridContainer>
-                        </GridItem>
                         <GridItem xs={12} sm={12} md={12} lg={12}>
                           {isOpenEstimate ? (
                             <GridContainer>
                               <GridItem xs={12} sm={12} md={12} lg={12}>
                                 <Muted>
-                                  <p style={{ fontSize: 18 }}>
-                                    提取数额预估：
+                                  <p style={{ fontSize: 18, padding: "20px 0" }}>
+                                    高级设置
                                     <KeyboardIcon
                                       fontSize='large'
                                       style={{ float: "right", cursor: "pointer" }}
@@ -822,14 +719,65 @@ export default function Invest (props) {
                                   </p>
                                 </Muted>
                               </GridItem>
+                              <GridItem xs={12} sm={12} md={12} lg={12}>
+                                <GridContainer>
+                                  <GridItem xs={4} sm={4} md={4} lg={4}>
+                                    <FormControlLabel
+                                      control={
+                                        <Switch
+                                          checked={shouldExchange}
+                                          onChange={event => setShouldExchange(event.target.checked)}
+                                          classes={{
+                                            switchBase: classes.switchBase,
+                                            checked: classes.switchChecked,
+                                            thumb: classes.switchIcon,
+                                            track: classes.switchBar,
+                                          }}
+                                        />
+                                      }
+                                      style={{ padding: "24px 0" }}
+                                      classes={{
+                                        label: classes.label,
+                                      }}
+                                      label={<Muted>{shouldExchange ? "开启兑换" : "关闭兑换"}</Muted>}
+                                    />
+                                  </GridItem>
+                                  <GridItem xs={8} sm={8} md={8} lg={8} style={shouldExchange ? {} : { visibility: "hidden" }} >
+                                    <CustomInput
+                                      labelText='Max Loss'
+                                      inputProps={{
+                                        placeholder: "Allow loss percent",
+                                        value: allowMaxLoss,
+                                        endAdornment: (
+                                          <span style={{ color: "#69c0ff" }}>
+                                            %&nbsp;&nbsp;&nbsp;
+                                            <span style={{ cursor: "pointer" }} onClick={() => setAllowMaxLoss(50)}>
+                                              Max
+                                            </span>
+                                          </span>
+                                        ),
+                                        onChange: event => {
+                                          const value = event.target.value
+                                          setAllowMaxLoss(value)
+                                        },
+                                      }}
+                                      error={!isUndefined(isValidAllowLossFlag) && !isValidAllowLossFlag}
+                                      success={!isUndefined(isValidAllowLossFlag) && isValidAllowLossFlag}
+                                      formControlProps={{
+                                        fullWidth: true,
+                                      }}
+                                    />
+                                  </GridItem>
+                                </GridContainer>
+                              </GridItem>
                               {renderEstimate()}
                             </GridContainer>
                           ) : (
                             <GridContainer>
                               <GridItem xs={12} sm={12} md={12} lg={12}>
                                 <Muted>
-                                  <p style={{ fontSize: 18 }}>
-                                    开启提取份额预估计算
+                                  <p style={{ fontSize: 18, padding: "20px 0" }}>
+                                    高级设置
                                     <KeyboardHideIcon
                                       fontSize='large'
                                       style={{ float: "right", cursor: "pointer" }}
