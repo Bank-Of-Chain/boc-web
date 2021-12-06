@@ -734,7 +734,7 @@ export default function Invest (props) {
                               >
                                 <CropIcon
                                   fontSize='large'
-                                  style={{ float: "right", cursor: "pointer", float: "right" }}
+                                  style={{ float: "right", cursor: "pointer" }}
                                   onClick={() => setIsOpenEstimate(false)}
                                 ></CropIcon>
                                 <span style={{ cursor: "pointer" }} onClick={() => setIsOpenEstimate(false)}>

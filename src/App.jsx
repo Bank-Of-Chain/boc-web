@@ -10,11 +10,12 @@ import Backdrop from '@material-ui/core/Backdrop';
 
 // === Utils === //
 import { useGasPrice, useBalance } from "./hooks";
-import { RPC_URL, USDT_ADDRESS } from "./constants";
+import { RPC_URL, USDT_ADDRESS, NET_WORKS } from "./constants";
 import { Transactor } from "./helpers";
 import { makeStyles } from '@material-ui/core/styles';
 import { SafeAppWeb3Modal } from '@gnosis.pm/safe-apps-web3modal';
 import { lendSwap } from 'piggy-finance-utils';
+import isEmpty from 'lodash/isEmpty';
 
 // === Styles === //
 import "./App.css";
@@ -101,6 +102,13 @@ function App() {
 
   useEffect(() => {
     if (web3Modal.cachedProvider) {
+      if(isEmpty(USDT_ADDRESS)){
+        localStorage.REACT_APP_NETWORK_TYPE = NET_WORKS[0].chainId
+        setTimeout(() => {
+          window.location.reload()
+        }, 100)
+        return 
+      }
       loadWeb3Modal();
     }
   }, [loadWeb3Modal]);
