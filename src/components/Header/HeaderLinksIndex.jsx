@@ -11,6 +11,7 @@ import LibraryBooksIcon from "@material-ui/icons/LibraryBooks";
 import Apps from "@material-ui/icons/Apps";
 import BookIcon from '@material-ui/icons/Book';
 import ChatIcon from '@material-ui/icons/Chat';
+import Transform from '@material-ui/icons/Transform';
 import AccountBalanceWallet from "@material-ui/icons/AccountBalanceWallet";
 import AccountBalanceWalletOutlined from "@material-ui/icons/AccountBalanceWalletOutlined";
 // core components
@@ -62,6 +63,15 @@ export default function HeaderLinksIndex(props) {
         </Button>
       </ListItem>
       <ListItem className={classes.listItem}>
+        <Button
+          color="transparent"
+          target="_blank"
+          href="https://wallet.polygon.technology/bridge"
+        >
+          <Transform className={classes.icons} ></Transform> Polygon Bridge
+        </Button>
+      </ListItem>
+      {/* <ListItem className={classes.listItem}>
         <CustomDropdown
           noLiPadding
           buttonText="Networks"
@@ -79,7 +89,7 @@ export default function HeaderLinksIndex(props) {
             </Link>
           ]}
         />
-      </ListItem>
+      </ListItem> */}
       <ListItem className={classes.listItem}>
         {
           isEmpty(userProvider)
