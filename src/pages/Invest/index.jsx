@@ -656,7 +656,9 @@ export default function Invest (props) {
                           <GridContainer>
                             <GridItem xs={12} sm={12} md={12} lg={12}>
                               <Muted>
-                                <p style={{ fontSize: 18, wordBreak: "break-all", lineHeight: "62px", marginBottom: 0 }}>
+                                <p
+                                  style={{ fontSize: 14, wordBreak: "break-all", lineHeight: "62px", marginBottom: 0 }}
+                                >
                                   份额预估：
                                   {isValidFromValueFlag &&
                                     toFixed(
@@ -717,11 +719,16 @@ export default function Invest (props) {
                           />
                         </GridItem>
                         <GridItem xs={12} sm={12} md={12} lg={12}>
+                          <Muted>
+                            <p style={{ fontSize: 14, padding: "20px 0" }}>打开高级设置页面，获取更多兑换信息</p>
+                          </Muted>
+                        </GridItem>
+                        <GridItem xs={12} sm={12} md={12} lg={12}>
                           {isOpenEstimate ? (
                             <GridContainer>
                               <GridItem xs={12} sm={12} md={12} lg={12}>
                                 <Muted>
-                                  <p style={{ fontSize: 18, padding: "20px 0" }}>
+                                  <p style={{ fontSize: 14, padding: "20px 0" }}>
                                     高级设置
                                     <KeyboardIcon
                                       fontSize='large'
@@ -794,7 +801,7 @@ export default function Invest (props) {
                             <GridContainer>
                               <GridItem xs={12} sm={12} md={12} lg={12}>
                                 <Muted>
-                                  <p style={{ fontSize: 18, padding: "20px 0" }}>
+                                  <p style={{ fontSize: 14, padding: "20px 0" }}>
                                     高级设置
                                     <KeyboardHideIcon
                                       fontSize='large'
