@@ -18,6 +18,7 @@ import { lendSwap } from 'piggy-finance-utils';
 
 // === Styles === //
 import "./App.css";
+const { ethers } = require("ethers");
 
 lendSwap.setUnderlying(USDT_ADDRESS);
 Date.prototype.format = function (fmt) {
@@ -73,6 +74,22 @@ function App() {
     const provider = await web3Modal.requestProvider();
     const library = new Web3Provider(provider);
     setUserProvider(library);
+    provider.on("chainChanged", chainId => {
+      console.log(`chain changed to ${chainId}! updating providers`);
+      localStorage.REACT_APP_NETWORK_TYPE = parseInt(chainId);
+      setUserProvider(new ethers.providers.Web3Provider(provider));
+    });
+
+    provider.on("accountsChanged", () => {
+      console.log(`account changed!`);
+      setUserProvider(new ethers.providers.Web3Provider(provider));
+    });
+
+    // Subscribe to session disconnection
+    provider.on("disconnect", (code, reason) => {
+      console.log(code, reason);
+      logoutOfWeb3Modal();
+    });
   }, [setUserProvider]);
 
   const logoutOfWeb3Modal = async () => {
@@ -91,8 +108,47 @@ function App() {
   const gasPrice = useGasPrice();
   const tx = Transactor(userProvider, gasPrice);
   const address = useUserAddress(userProvider);
+  const localChainId = userProvider && userProvider._network && userProvider._network.chainId;
 
   const balance = useBalance(userProvider, address);
+
+  const changeNetwork = async (targetNetwork) => {
+    const ethereum = window.ethereum;
+    const data = [
+      {
+        chainId: "0x" + targetNetwork.chainId.toString(16),
+        chainName: targetNetwork.name,
+        nativeCurrency: targetNetwork.nativeCurrency,
+        rpcUrls: [targetNetwork.rpcUrl],
+        blockExplorerUrls: [targetNetwork.blockExplorer],
+      },
+    ];
+    console.log("data", data);
+
+    let switchTx;
+    // https://docs.metamask.io/guide/rpc-api.html#other-rpc-methods
+    try {
+      switchTx = await ethereum.request({
+        method: "wallet_switchEthereumChain",
+        params: [{ chainId: data[0].chainId }],
+      });
+    } catch (switchError) {
+      // not checking specific error code, because maybe we're not using MetaMask
+      try {
+        switchTx = await ethereum.request({
+          method: "wallet_addEthereumChain",
+          params: data,
+        });
+      } catch (addError) {
+        console.log('addError=', addError)
+        // handle "add" error
+      }
+    }
+
+    if (switchTx) {
+      console.log(switchTx);
+    }
+  }
   const nextProps = {
     web3Modal,
     address,
@@ -101,7 +157,9 @@ function App() {
     userProvider,
     localProvider,
     tx,
-    balance
+    balance,
+    localChainId,
+    changeNetwork
   };
 
   return (
@@ -143,7 +201,7 @@ window.ethereum &&
       reload();
     }
     function reload() {
-      setTimeout(() => {
+      web3Modal.cachedProvider && setTimeout(() => {
         window.location.reload();
       }, 100);
     }

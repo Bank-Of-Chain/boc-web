@@ -21,8 +21,6 @@ import Muted from "../../components/Typography/Muted"
 import Snackbar from "@material-ui/core/Snackbar"
 import Alert from "@material-ui/lab/Alert"
 import CircularProgress from "@material-ui/core/CircularProgress"
-import KeyboardHideIcon from "@material-ui/icons/KeyboardHide"
-import KeyboardIcon from "@material-ui/icons/Keyboard"
 import ErrorOutlineIcon from "@material-ui/icons/ErrorOutline"
 import AddIcon from "@material-ui/icons/Add"
 import AndroidIcon from "@material-ui/icons/Android"
@@ -33,6 +31,8 @@ import TableContainer from "@material-ui/core/TableContainer"
 import TableHead from "@material-ui/core/TableHead"
 import TableRow from "@material-ui/core/TableRow"
 import Paper from "@material-ui/core/Paper"
+import CropFreeIcon from "@material-ui/icons/CropFree"
+import CropIcon from "@material-ui/icons/Crop"
 
 // === constants === //
 import {
@@ -114,12 +114,14 @@ export default function Invest (props) {
         .balanceOf(address)
         .then(setToBalance)
         .catch(noop),
-      loadTotalAssets().then(([afterTotalAssets, afterPerFullShare]) => {
-        setBeforeTotalAssets(afterTotalAssets)
-        setTotalAssets(afterTotalAssets)
-        setBeforePerFullShare(afterPerFullShare)
-        setPerFullShare(afterPerFullShare)
-      }),
+      loadTotalAssets()
+        .then(([afterTotalAssets, afterPerFullShare]) => {
+          setBeforeTotalAssets(afterTotalAssets)
+          setTotalAssets(afterTotalAssets)
+          setBeforePerFullShare(afterPerFullShare)
+          setPerFullShare(afterPerFullShare)
+        })
+        .catch(noop),
       // TODO:此处的usdtDecimals较特别为10的幂的数值，主要是因为lend方法里的usdtDecimals取幂操作
       // 其他处的usdtDecimals都是为10**18或10**6
       usdtContract.decimals().then(setUsdtDecimals),
@@ -399,16 +401,18 @@ export default function Invest (props) {
   }
   useEffect(() => {
     const loadTotalAssetsFn = () =>
-      loadTotalAssets().then(([afterTotalAssets, afterPerFullShare]) => {
-        if (!afterTotalAssets.eq(beforeTotalAssets)) {
-          setBeforeTotalAssets(totalAssets)
-          setTotalAssets(afterTotalAssets)
-        }
-        if (!afterPerFullShare.eq(beforePerFullShare)) {
-          setBeforePerFullShare(perFullShare)
-          setPerFullShare(afterPerFullShare)
-        }
-      })
+      loadTotalAssets()
+        .then(([afterTotalAssets, afterPerFullShare]) => {
+          if (!afterTotalAssets.eq(beforeTotalAssets)) {
+            setBeforeTotalAssets(totalAssets)
+            setTotalAssets(afterTotalAssets)
+          }
+          if (!afterPerFullShare.eq(beforePerFullShare)) {
+            setBeforePerFullShare(perFullShare)
+            setPerFullShare(afterPerFullShare)
+          }
+        })
+        .catch(noop)
     const timer = setInterval(loadTotalAssetsFn, 3000)
     return () => clearInterval(timer)
     // eslint-disable-next-line
@@ -719,24 +723,23 @@ export default function Invest (props) {
                           />
                         </GridItem>
                         <GridItem xs={12} sm={12} md={12} lg={12}>
-                          <Muted>
-                            <p style={{ fontSize: 14, padding: "20px 0" }}>打开高级设置页面，获取更多兑换信息</p>
-                          </Muted>
-                        </GridItem>
-                        <GridItem xs={12} sm={12} md={12} lg={12}>
                           {isOpenEstimate ? (
                             <GridContainer>
-                              <GridItem xs={12} sm={12} md={12} lg={12}>
-                                <Muted>
-                                  <p style={{ fontSize: 14, padding: "20px 0" }}>
-                                    高级设置
-                                    <KeyboardIcon
-                                      fontSize='large'
-                                      style={{ float: "right", cursor: "pointer" }}
-                                      onClick={() => setIsOpenEstimate(false)}
-                                    ></KeyboardIcon>
-                                  </p>
-                                </Muted>
+                              <GridItem
+                                xs={12}
+                                sm={12}
+                                md={12}
+                                lg={12}
+                                style={{ color: "#39d0d8", textAlign: "right", lineHeight: "35px", padding: "20px 0" }}
+                              >
+                                <CropIcon
+                                  fontSize='large'
+                                  style={{ float: "right", cursor: "pointer", float: "right" }}
+                                  onClick={() => setIsOpenEstimate(false)}
+                                ></CropIcon>
+                                <span style={{ cursor: "pointer" }} onClick={() => setIsOpenEstimate(false)}>
+                                  Advanced Settings
+                                </span>
                               </GridItem>
                               <GridItem xs={12} sm={12} md={12} lg={12}>
                                 <GridContainer>
@@ -799,17 +802,21 @@ export default function Invest (props) {
                             </GridContainer>
                           ) : (
                             <GridContainer>
-                              <GridItem xs={12} sm={12} md={12} lg={12}>
-                                <Muted>
-                                  <p style={{ fontSize: 14, padding: "20px 0" }}>
-                                    高级设置
-                                    <KeyboardHideIcon
-                                      fontSize='large'
-                                      style={{ float: "right", cursor: "pointer" }}
-                                      onClick={() => setIsOpenEstimate(true)}
-                                    ></KeyboardHideIcon>
-                                  </p>
-                                </Muted>
+                              <GridItem
+                                xs={12}
+                                sm={12}
+                                md={12}
+                                lg={12}
+                                style={{ color: "#da2eef", textAlign: "right", lineHeight: "35px", padding: "20px 0" }}
+                              >
+                                <CropFreeIcon
+                                  fontSize='large'
+                                  style={{ cursor: "pointer", float: "right" }}
+                                  onClick={() => setIsOpenEstimate(true)}
+                                ></CropFreeIcon>
+                                <span style={{ cursor: "pointer" }} onClick={() => setIsOpenEstimate(true)}>
+                                  Advanced Settings
+                                </span>
                               </GridItem>
                             </GridContainer>
                           )}
