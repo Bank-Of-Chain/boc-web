@@ -75,7 +75,6 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-console.log('VAULT_ADDRESS=', VAULT_ADDRESS)
 function App() {
 
   const classes = useStyles();
@@ -109,19 +108,19 @@ function App() {
       window.location.reload();
     }, 1);
   };
+  const localChainId = localProvider && localProvider._network && localProvider._network.chainId;
+  const selectedChainId = userProvider && userProvider._network && userProvider._network.chainId;
+  console.log('localChainId=', localChainId, 'selectedChainId=', selectedChainId, localProvider);
 
   useEffect(() => {
     if (web3Modal.cachedProvider) {
       loadWeb3Modal();
     }
-  }, [loadWeb3Modal]);
+  }, [loadWeb3Modal, localChainId]);
 
   const gasPrice = useGasPrice();
   const tx = Transactor(userProvider, gasPrice);
   const address = useUserAddress(userProvider);
-  const localChainId = localProvider && localProvider._network && localProvider._network.chainId;
-  const selectedChainId = userProvider && userProvider._network && userProvider._network.chainId;
-  console.log('localChainId=', localChainId, 'selectedChainId=', selectedChainId)
   const balance = useBalance(userProvider, address);
 
   const changeNetwork = async (targetNetwork) => {
