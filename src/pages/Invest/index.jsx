@@ -507,7 +507,7 @@ export default function Invest (props) {
             setIsEstimate(false)
           }, 1000)
         })
-    }, 1000)
+    }, 100)
     estimateWithdraw()
     // eslint-disable-next-line
   }, [toValue, allowMaxLoss, shouldExchange, isOpenEstimate])
@@ -658,10 +658,10 @@ export default function Invest (props) {
                         </GridItem>
                         <GridItem xs={12} sm={12} md={12} lg={12}>
                           <GridContainer>
-                            <GridItem xs={12} sm={12} md={12} lg={12}>
+                            <GridItem xs={8} sm={8} md={9} lg={9}>
                               <Muted>
                                 <p
-                                  style={{ fontSize: 14, wordBreak: "break-all", lineHeight: "62px", marginBottom: 0 }}
+                                  style={{ fontSize: 14, wordBreak: "break-all" }}
                                 >
                                   份额预估：
                                   {isValidFromValueFlag &&
@@ -679,6 +679,11 @@ export default function Invest (props) {
                                     )}
                                 </p>
                               </Muted>
+                            </GridItem>
+                            <GridItem xs={4} sm={4} md={3} lg={3}>
+                              <Button color='colorfull' onClick={diposit}>
+                                Deposit
+                              </Button>
                             </GridItem>
                           </GridContainer>
                         </GridItem>
@@ -726,11 +731,11 @@ export default function Invest (props) {
                           {isOpenEstimate ? (
                             <GridContainer>
                               <GridItem
-                                xs={12}
-                                sm={12}
-                                md={12}
-                                lg={12}
-                                style={{ color: "#39d0d8", textAlign: "right", lineHeight: "35px", padding: "20px 0" }}
+                                xs={8}
+                                sm={8}
+                                md={9}
+                                lg={9}
+                                style={{ color: "#39d0d8", textAlign: "right", lineHeight: "35px", padding: "10px 0" }}
                               >
                                 <CropIcon
                                   fontSize='large'
@@ -740,6 +745,11 @@ export default function Invest (props) {
                                 <span style={{ cursor: "pointer" }} onClick={() => setIsOpenEstimate(false)}>
                                   Advanced Settings
                                 </span>
+                              </GridItem>
+                              <GridItem xs={4} sm={4} md={3} lg={3}>
+                                <Button color='colorfull' onClick={withdraw}>
+                                  Withdraw
+                                </Button>
                               </GridItem>
                               <GridItem xs={12} sm={12} md={12} lg={12}>
                                 <GridContainer>
@@ -803,11 +813,11 @@ export default function Invest (props) {
                           ) : (
                             <GridContainer>
                               <GridItem
-                                xs={12}
-                                sm={12}
-                                md={12}
-                                lg={12}
-                                style={{ color: "#da2eef", textAlign: "right", lineHeight: "35px", padding: "20px 0" }}
+                                xs={8}
+                                sm={8}
+                                md={9}
+                                lg={9}
+                                style={{ color: "#da2eef", textAlign: "right", lineHeight: "35px", padding: "10px 0" }}
                               >
                                 <CropFreeIcon
                                   fontSize='large'
@@ -818,18 +828,13 @@ export default function Invest (props) {
                                   Advanced Settings
                                 </span>
                               </GridItem>
+                              <GridItem xs={4} sm={4} md={3} lg={3}>
+                                <Button color='colorfull' onClick={withdraw}>
+                                  Withdraw
+                                </Button>
+                              </GridItem>
                             </GridContainer>
                           )}
-                        </GridItem>
-                        <GridItem xs={6} sm={6} md={6} lg={6}>
-                          <Button color='colorfull' onClick={diposit}>
-                            Deposit
-                          </Button>
-                        </GridItem>
-                        <GridItem xs={6} sm={6} md={6} lg={6}>
-                          <Button color='colorfull' onClick={withdraw}>
-                            Withdraw
-                          </Button>
                         </GridItem>
                       </GridContainer>
                     ),
