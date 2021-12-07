@@ -68,7 +68,7 @@ const componentsStyle = {
     lineBreak: "auto",
   },
   img: {
-    width: '40px'
+    width: '25px'
   },
   radioUnchecked: {
     width: "0px",
