@@ -27,7 +27,7 @@ export default function Chains (props) {
   const { array, handleClick } = props
   const classes = useStyles()
   return (
-    <div>
+    <div style={{ textAlign: 'center' }}>
       {map(array, item => (
         <Tooltip
           key={item.chainId}
@@ -35,9 +35,9 @@ export default function Chains (props) {
           placement={window.innerWidth > 959 ? "top" : "left"}
           classes={{ tooltip: classes.tooltip }}
         >
-          <a onClick={() => handleClick(item)}>
+          <span onClick={() => handleClick(item)}>
             <img className={classes.img} src={require(`./images/${item.chainId}.svg`)} alt='' />
-          </a>
+          </span>
         </Tooltip>
       ))}
     </div>

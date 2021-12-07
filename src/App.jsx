@@ -9,8 +9,6 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import Backdrop from '@material-ui/core/Backdrop';
 import Chains from "./components/Chains/Chains";
 import Modal from '@material-ui/core/Modal';
-import GridContainer from "./components/Grid/GridContainer"
-import GridItem from "./components/Grid/GridItem"
 import Paper from '@material-ui/core/Paper';
 
 // === Utils === //
@@ -184,7 +182,7 @@ function App() {
         aria-describedby="simple-modal-description"
       >
         <Paper elevation={3} style={{padding: 20}}>
-          <p>[ChainId = {localChainId}]您当前的网络暂不支持或无法识别，请重新设置您的网络！</p>
+          <p>您当前的网络暂不支持或无法识别，请重新设置您的网络！</p>
           <Chains array={NET_WORKS} handleClick={changeNetwork} />
         </Paper>
       </Modal>

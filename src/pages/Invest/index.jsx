@@ -241,8 +241,7 @@ export default function Invest (props) {
     } catch (error) {
       if (error && error.data) {
         if (
-          error.data.message ===
-          "Error: VM Exception while processing transaction: reverted with reason string 'ES or AD'"
+          error.data.message && error.data.message.indexOf('ES or AD')
         ) {
           setAlertState({
             open: true,
@@ -356,8 +355,7 @@ export default function Invest (props) {
       console.error(error)
       if (error && error.data) {
         if (
-          error.data.message ===
-          "Error: VM Exception while processing transaction: reverted with reason string 'ES or AD'"
+          error.data.message && error.data.message.indexOf('ES or AD')
         ) {
           setAlertState({
             open: true,
