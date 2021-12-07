@@ -575,15 +575,15 @@ export default function Invest (props) {
     }
     return map(estimateWithdrawArray, item => {
       return (
-        <GridItem key={item.tokenAddress} xs={12} sm={12} md={12} lg={12}>
+        <GridItem key={item.tokenAddress} xs={12} sm={12} md={6} lg={6}>
           <Button
             title='Add token address to wallet'
             color='transparent'
             target='_blank'
-            style={{ fontSize: 20, paddingBottom: 20 }}
+            style={{ fontSize: 14, paddingBottom: 20 }}
             onClick={() => addToken(item.tokenAddress)}
           >
-            <AddIcon fontSize='small' style={{ position: "absolute", top: 40, left: 63 }} />
+            <AddIcon fontSize='small' style={{ position: "absolute", top: 25, left: 45 }} />
             <img className={classes.img} alt='' src={`./images/${item.tokenAddress}.webp`} />
             &nbsp;&nbsp;~&nbsp;{toFixed(item.amounts, BigNumber.from(10).pow(item.decimals), item.decimals)}
           </Button>
@@ -680,7 +680,7 @@ export default function Invest (props) {
                               </Muted>
                             </GridItem>
                             <GridItem xs={4} sm={4} md={3} lg={3}>
-                              <Button color='colorfull' onClick={diposit}>
+                              <Button color='colorfull' onClick={diposit} style={{ width:122 }}>
                                 Deposit
                               </Button>
                             </GridItem>
@@ -753,6 +753,9 @@ export default function Invest (props) {
                               <GridItem xs={12} sm={12} md={12} lg={12}>
                                 <GridContainer>
                                   <GridItem xs={4} sm={4} md={4} lg={4}>
+                                    <p style={{ color:'#fff', lineHeight: '62px', fontSize: 14, marginLeft: 30 }}>提取币种及数额预估</p>
+                                  </GridItem>
+                                  <GridItem xs={4} sm={4} md={4} lg={4}>
                                     <FormControlLabel
                                       control={
                                         <Switch
@@ -774,10 +777,10 @@ export default function Invest (props) {
                                     />
                                   </GridItem>
                                   <GridItem
-                                    xs={8}
-                                    sm={8}
-                                    md={8}
-                                    lg={8}
+                                    xs={4}
+                                    sm={4}
+                                    md={4}
+                                    lg={4}
                                     style={shouldExchange ? {} : { visibility: "hidden" }}
                                   >
                                     <CustomInput
