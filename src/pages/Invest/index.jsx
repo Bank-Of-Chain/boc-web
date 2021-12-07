@@ -241,7 +241,7 @@ export default function Invest (props) {
     } catch (error) {
       if (error && error.data) {
         if (
-          error.data.message && error.data.message.indexOf('ES or AD')
+          error.data.message && error.data.message.endsWith('\'ES or AD\'')
         ) {
           setAlertState({
             open: true,
@@ -353,9 +353,9 @@ export default function Invest (props) {
       })
     } catch (error) {
       console.error(error)
-      if (error && error.data) {
+      if (error && error.data && error.data.message) {
         if (
-          error.data.message && error.data.message.indexOf('ES or AD')
+          error.data.message && error.data.message.endsWith('\'ES or AD\'')
         ) {
           setAlertState({
             open: true,
@@ -363,10 +363,9 @@ export default function Invest (props) {
             message: "服务已关停，请稍后再试！",
           })
         } else if (
-          error.data.message ===
-            "Error: VM Exception while processing transaction: reverted with reason string 'Return amount is not enough'" ||
-          error.data.message ===
-            "Error: VM Exception while processing transaction: reverted with reason string 'Received amount of tokens are less then expected'"
+          error.data.message.endsWith('\'loss much\'') ||
+          error.data.message.endsWith('\'Return amount is not enough\'') || 
+          error.data.message.endsWith('\'Received amount of tokens are less then expected\'')
         ) {
           setAlertState({
             open: true,

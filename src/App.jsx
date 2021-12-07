@@ -81,7 +81,6 @@ function App() {
   const [userProvider, setUserProvider] = useState();
   const [localChainId, setChainId] = useState();
   const [isLoadingChainId, setIsLoadingChainId] = useState(false);
-  console.log('chainId=', localChainId);
   const loadWeb3Modal = useCallback(async () => {
     const provider = await web3Modal.requestProvider();
     const library = new Web3Provider(provider);
