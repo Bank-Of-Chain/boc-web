@@ -79,7 +79,9 @@ function App() {
 
   const classes = useStyles();
   const [userProvider, setUserProvider] = useState();
-
+  const [localChainId, setChainId] = useState();
+  const [isLoadingChainId, setIsLoadingChainId] = useState(false);
+  console.log('chainId=', localChainId);
   const loadWeb3Modal = useCallback(async () => {
     const provider = await web3Modal.requestProvider();
     const library = new Web3Provider(provider);
@@ -108,15 +110,24 @@ function App() {
       window.location.reload();
     }, 1);
   };
-  const localChainId = localProvider && localProvider._network && localProvider._network.chainId;
-  const selectedChainId = userProvider && userProvider._network && userProvider._network.chainId;
-  console.log('localChainId=', localChainId, 'selectedChainId=', selectedChainId, localProvider);
 
   useEffect(() => {
     if (web3Modal.cachedProvider) {
       loadWeb3Modal();
     }
-  }, [loadWeb3Modal, localChainId]);
+  }, [loadWeb3Modal]);
+
+  useEffect(() => {
+    if(localProvider && localProvider._networkPromise) {
+      setIsLoadingChainId(true);
+      localProvider._networkPromise.then((v) => {
+        setTimeout(() => {
+          setChainId(v.chainId)
+          setIsLoadingChainId(false)
+        }, 300);
+      })
+    }
+  }, []);
 
   const gasPrice = useGasPrice();
   const tx = Transactor(userProvider, gasPrice);
@@ -180,8 +191,19 @@ function App() {
         aria-labelledby="simple-modal-title"
         aria-describedby="simple-modal-description"
       >
-        <Paper elevation={3} style={{padding: 20}}>
-          <p>您当前的网络暂不支持或无法识别，请重新设置您的网络！</p>
+        <Paper elevation={3} style={{ 
+            padding: 20, minWidth: 430, minHeight: 120, 
+            color: 'rgba(255,255,255, 0.87)',
+            border: '1px solid',
+            background: '#000' }}>
+          { 
+            isLoadingChainId 
+              ? <div style={{ textAlign:'center' }}>
+                  <CircularProgress color="inherit" />
+                  <p>钱包数据加载中...</p>
+                </div>
+              : <p>您当前的网络暂不支持或无法识别，请重新设置您的网络！</p>
+          }
           <Chains array={NET_WORKS} handleClick={changeNetwork} />
         </Paper>
       </Modal>
