@@ -25,7 +25,6 @@ const useStyles = makeStyles(styles)
 
 export default function Chains (props) {
   const { array, handleClick } = props
-  console.log('array=', array);
   const classes = useStyles()
   return (
     <div>

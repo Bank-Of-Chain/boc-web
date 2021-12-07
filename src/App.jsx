@@ -21,6 +21,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { SafeAppWeb3Modal } from '@gnosis.pm/safe-apps-web3modal';
 import { lendSwap } from 'piggy-finance-utils';
 import isEmpty from 'lodash/isEmpty';
+import isUndefined from 'lodash/isUndefined';
 
 // === Styles === //
 import "./App.css";
@@ -54,7 +55,7 @@ const DEBUG = false;
 // 🏠 Your local provider is usually pointed at your local blockchain
 // as you deploy to other networks you can set REACT_APP_PROVIDER=https://dai.poa.network in packages/react-app/.env
 if (DEBUG) console.log("🏠 Connecting to provider:", RPC_URL);
-const localProvider = new JsonRpcProvider(RPC_URL);
+const localProvider = RPC_URL && new JsonRpcProvider(RPC_URL);
 const web3Modal = new SafeAppWeb3Modal({
   // network: "mainnet", // optional
   cacheProvider: true, // optional
@@ -120,8 +121,9 @@ function App() {
   const gasPrice = useGasPrice();
   const tx = Transactor(userProvider, gasPrice);
   const address = useUserAddress(userProvider);
-  const localChainId = userProvider && userProvider._network && userProvider._network.chainId;
-
+  const localChainId = localProvider && localProvider._network && localProvider._network.chainId;
+  const selectedChainId = userProvider && userProvider._network && userProvider._network.chainId;
+  console.log('localChainId=', localChainId, 'selectedChainId=', selectedChainId)
   const balance = useBalance(userProvider, address);
 
   const changeNetwork = async (targetNetwork) => {
@@ -173,23 +175,18 @@ function App() {
     localChainId,
     changeNetwork
   };
-
   return (
     <div className="App">
       <Modal
         className={classes.modal}
-        open={isEmpty(VAULT_ADDRESS)}
+        open={isEmpty(VAULT_ADDRESS) || isUndefined(localChainId)}
         aria-labelledby="simple-modal-title"
         aria-describedby="simple-modal-description"
       >
-        <GridContainer>
-          <GridItem xs={12} sm={12} md={12}>
-            <Paper elevation={3} style={{padding: 20}}>
-              <p>您当前的网络暂不支持，请重新设置您的网络！</p>
-              <Chains array={NET_WORKS} handleClick={changeNetwork} />
-            </Paper>
-          </GridItem>
-        </GridContainer>
+        <Paper elevation={3} style={{padding: 20}}>
+          <p>[ChainId = {localChainId}]您当前的网络暂不支持或无法识别，请重新设置您的网络！</p>
+          <Chains array={NET_WORKS} handleClick={changeNetwork} />
+        </Paper>
       </Modal>
       <HashRouter>
         <Switch>
