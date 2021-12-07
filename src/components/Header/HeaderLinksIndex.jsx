@@ -25,9 +25,10 @@ import Address from "../Address/Address";
 import isEmpty from "lodash/isEmpty";
 import get from "lodash/get";
 import find from "lodash/find";
+import map from "lodash/map";
 
 // === Constants === //
-import { COMMUNITY_URL, BLOG_URL, DOCUMENT_URL } from "./../../constants";
+import { COMMUNITY_URL, BLOG_URL, DOCUMENT_URL, NET_WORKS } from "./../../constants";
 
 const useStyles = makeStyles(styles);
 

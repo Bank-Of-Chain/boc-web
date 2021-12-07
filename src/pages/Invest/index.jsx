@@ -400,6 +400,7 @@ export default function Invest (props) {
     })
   }
   useEffect(() => {
+    if (isEmpty(VAULT_ADDRESS)) return
     const loadTotalAssetsFn = () =>
       loadTotalAssets()
         .then(([afterTotalAssets, afterPerFullShare]) => {
@@ -419,6 +420,7 @@ export default function Invest (props) {
   }, [totalAssets.toString(), perFullShare.toString()])
 
   useEffect(() => {
+    if (isEmpty(VAULT_ADDRESS)) return
     loadBanlance()
     const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider)
     if (!isEmpty(address)) {
