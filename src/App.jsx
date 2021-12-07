@@ -7,10 +7,15 @@ import { useUserAddress } from "eth-hooks";
 // === Components === //
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Backdrop from '@material-ui/core/Backdrop';
+import Chains from "./components/Chains/Chains";
+import Modal from '@material-ui/core/Modal';
+import GridContainer from "./components/Grid/GridContainer"
+import GridItem from "./components/Grid/GridItem"
+import Paper from '@material-ui/core/Paper';
 
 // === Utils === //
 import { useGasPrice, useBalance } from "./hooks";
-import { RPC_URL, USDT_ADDRESS, NET_WORKS } from "./constants";
+import { RPC_URL, USDT_ADDRESS, NET_WORKS, VAULT_ADDRESS } from "./constants";
 import { Transactor } from "./helpers";
 import { makeStyles } from '@material-ui/core/styles';
 import { SafeAppWeb3Modal } from '@gnosis.pm/safe-apps-web3modal';
@@ -64,8 +69,14 @@ const useStyles = makeStyles((theme) => ({
     color: '#BBB',
     backgroundColor: 'rgb(19, 24, 35)'
   },
+  modal: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+  }
 }));
 
+console.log('VAULT_ADDRESS=', VAULT_ADDRESS)
 function App() {
 
   const classes = useStyles();
@@ -102,13 +113,6 @@ function App() {
 
   useEffect(() => {
     if (web3Modal.cachedProvider) {
-      if(isEmpty(USDT_ADDRESS)){
-        localStorage.REACT_APP_NETWORK_TYPE = NET_WORKS[0].chainId
-        setTimeout(() => {
-          window.location.reload()
-        }, 100)
-        return 
-      }
       loadWeb3Modal();
     }
   }, [loadWeb3Modal]);
@@ -172,6 +176,21 @@ function App() {
 
   return (
     <div className="App">
+      <Modal
+        className={classes.modal}
+        open={isEmpty(VAULT_ADDRESS)}
+        aria-labelledby="simple-modal-title"
+        aria-describedby="simple-modal-description"
+      >
+        <GridContainer>
+          <GridItem xs={12} sm={12} md={12}>
+            <Paper elevation={3} style={{padding: 20}}>
+              <p>您当前的网络暂不支持，请重新设置您的网络！</p>
+              <Chains array={NET_WORKS} handleClick={changeNetwork} />
+            </Paper>
+          </GridItem>
+        </GridContainer>
+      </Modal>
       <HashRouter>
         <Switch>
           <Route exact path="/">
@@ -209,7 +228,7 @@ window.ethereum &&
       reload();
     }
     function reload() {
-      web3Modal.cachedProvider && setTimeout(() => {
+      setTimeout(() => {
         window.location.reload();
       }, 100);
     }
