@@ -78,7 +78,7 @@ const getExchangePlatformAdapters = async exchangeAggregator => {
 export default function Invest (props) {
   const classes = useStyles()
   const { address, userProvider } = props
-  const [usdtDecimals, setUsdtDecimals] = useState(1)
+  const [usdtDecimals, setUsdtDecimals] = useState(0)
   const [beforeTotalAssets, setBeforeTotalAssets] = useState(BigNumber.from(0))
   const [totalAssets, setTotalAssets] = useState(BigNumber.from(0))
 
@@ -94,7 +94,7 @@ export default function Invest (props) {
   const [estimateWithdrawArray, setEstimateWithdrawArray] = useState([])
   const [isEstimate, setIsEstimate] = useState(false)
   const [isOpenEstimate, setIsOpenEstimate] = useState(false)
-  const [totalSupply, setTotalSupply] = useState(BigNumber.from(1))
+  const [totalSupply, setTotalSupply] = useState(BigNumber.from(0))
   // 模态框标识位
   const [alertState, setAlertState] = useState({
     open: false,
