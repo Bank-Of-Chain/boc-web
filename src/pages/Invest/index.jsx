@@ -337,11 +337,14 @@ export default function Invest (props) {
       const nextArray = filter(exchangeArray, i => !isEmpty(i))
       console.log("nextArray=", nextArray)
       const gas = await vaultContractWithSigner.estimateGas.withdraw(nextValue, allowMaxLossValue, true, nextArray)
+      const gasLimit = gas * MULTIPLE_OF_GAS
+      // 乘以倍数后，如果大于3千万gas，则按3千万执行
+      const maxGasLimit = gasLimit < 30000000 ? gasLimit : 30000000
       await vaultContractWithSigner.callStatic.withdraw(nextValue, allowMaxLossValue, true, nextArray, {
-        gasLimit: gas * MULTIPLE_OF_GAS,
+        gasLimit: maxGasLimit
       })
       const tx = await vaultContractWithSigner.withdraw(nextValue, allowMaxLossValue, true, nextArray, {
-        gasLimit: gas * MULTIPLE_OF_GAS,
+        gasLimit: maxGasLimit
       })
 
       await tx.wait()
