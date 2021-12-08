@@ -98,8 +98,7 @@ function App() {
 
     // Subscribe to session disconnection
     provider.on("disconnect", (code, reason) => {
-      console.log(code, reason);
-      logoutOfWeb3Modal();
+      console.log('disconnect', code, reason);
     });
   }, [setUserProvider]);
 
@@ -245,7 +244,7 @@ window.ethereum &&
     function reload() {
       setTimeout(() => {
         window.location.reload();
-      }, 100);
+      }, 1);
     }
     window.ethereum.on("chainChanged", chainChangedReload);
     window.ethereum.on("accountsChanged", reload);
