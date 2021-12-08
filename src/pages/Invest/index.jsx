@@ -753,7 +753,7 @@ export default function Invest (props) {
                               <GridItem xs={12} sm={12} md={12} lg={12}>
                                 <GridContainer>
                                   <GridItem xs={4} sm={4} md={4} lg={4}>
-                                    <p style={{ color:'#fff', lineHeight: '62px', fontSize: 14, marginLeft: 30 }}>提取币种及数额预估</p>
+                                    <p style={{ color:'#fff', lineHeight: '70px', fontSize: 14, marginLeft: 30 }}>提取币种及数额预估</p>
                                   </GridItem>
                                   <GridItem xs={4} sm={4} md={4} lg={4}>
                                     <FormControlLabel
@@ -769,7 +769,7 @@ export default function Invest (props) {
                                           }}
                                         />
                                       }
-                                      style={{ padding: "24px 0px 24px 30px" }}
+                                      style={{ padding: "30px 0px 30px 30px" }}
                                       classes={{
                                         label: classes.label,
                                       }}
