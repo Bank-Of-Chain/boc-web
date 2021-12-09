@@ -116,9 +116,7 @@ export default function Invest (props) {
         .catch(noop),
       loadTotalAssets()
         .then(([afterTotalAssets, afterPerFullShare]) => {
-          setBeforeTotalAssets(afterTotalAssets)
           setTotalAssets(afterTotalAssets)
-          setBeforePerFullShare(afterPerFullShare)
           setPerFullShare(afterPerFullShare)
         })
         .catch(noop),
@@ -691,23 +689,17 @@ export default function Invest (props) {
                         </GridItem>
                         <GridItem xs={12} sm={12} md={12} lg={12}>
                           <CustomInput
-                            // labelText={
-                            //   <CountTo from={beforePerFullShare.toNumber()} to={perFullShare.toNumber()} speed={3500}>
-                            //     {v =>
-                            //       `BOC份额: ${toFixed(toBalance, BigNumber.from(10).pow(usdtDecimals))}${` (~${toFixed(
-                            //         toBalance.mul(v),
-                            //         BigNumber.from(10).pow(usdtDecimals + usdtDecimals),
-                            //         usdtDecimals,
-                            //       )} USDT)`}`
-                            //     }
-                            //   </CountTo>
-                            // }
-                            labelText= {`BOC份额: ${toFixed(toBalance, BigNumber.from(10).pow(usdtDecimals), 6)}${` (~${toFixed(
-                              toBalance.mul(perFullShare),
-                              BigNumber.from(10).pow(usdtDecimals + usdtDecimals),
-                              6,
-                            )} USDT)`}`}
-                            // <CountTo from={beforeTotalAssets.toNumber()} to={totalAssets.toNumber()} speed={3500} >{fn}</CountTo>
+                            labelText={
+                              <CountTo from={Number(beforePerFullShare.toBigInt())} to={Number(perFullShare.toBigInt())} speed={3500}>
+                                {v =>
+                                  `BOC份额: ${toFixed(toBalance, BigNumber.from(10).pow(usdtDecimals), 6)}${` (~${toFixed(
+                                    toBalance.mul(v),
+                                    BigNumber.from(10).pow(usdtDecimals + usdtDecimals),
+                                    6,
+                                  )} USDT)`}`
+                                }
+                              </CountTo>
+                            }
                             inputProps={{
                               placeholder: "withdraw amount",
                               value: toValue,
@@ -872,10 +864,9 @@ export default function Invest (props) {
                     BOC_Vault
                   </TableCell>
                   <TableCell className={classNames(classes.tableCell)} component='th' scope='row'>
-                    {/* <CountTo from={beforePerFullShare.toNumber()} to={perFullShare.toNumber()} speed={3500}>
-                      {v => toFixed(v, BigNumber.from(10).pow(usdtDecimals), usdtDecimals)}
-                    </CountTo> */}
-                    {toFixed(perFullShare, BigNumber.from(10).pow(usdtDecimals), 6)}
+                    <CountTo from={Number(beforePerFullShare.toBigInt())} to={Number(perFullShare.toBigInt())} speed={3500}>
+                      {v => toFixed(v, BigNumber.from(10).pow(usdtDecimals), 6)}
+                    </CountTo>
                   </TableCell>
                   <TableCell className={classNames(classes.tableCell)}>
                     <a
@@ -899,12 +890,11 @@ export default function Invest (props) {
                     </a>
                   </TableCell>
                   <TableCell className={classNames(classes.tableCell)}>
-                    {/* <CountTo from={beforeTotalAssets.toNumber()} to={totalAssets.toNumber()} speed={3500}>
+                    <CountTo from={Number(beforeTotalAssets.toBigInt())} to={Number(totalAssets.toBigInt())} speed={3500}>
                       {v => {
-                        return `${toFixed(v, BigNumber.from(10).pow(usdtDecimals), usdtDecimals)}USDT`
+                        return `${toFixed(v, BigNumber.from(10).pow(usdtDecimals), 6)}USDT`
                       }}
-                    </CountTo> */}
-                    {toFixed(totalAssets, BigNumber.from(10).pow(usdtDecimals), 6)}USDT
+                    </CountTo>
                   </TableCell>
                 </TableRow>
               </TableBody>
