@@ -14,9 +14,12 @@ import GridItem from "../../components/Grid/GridItem";
 import Button from "../../components/CustomButtons/Button";
 import Parallax from "../../components/Parallax/Parallax";
 import HeaderLinksIndex from "../../components/Header/HeaderLinksIndex";
-import Tooltip from "@material-ui/core/Tooltip";
+import Chains from "../../components/Chains/Chains";
 
 import styles from "./landingPage";
+
+// === Constants === //
+import { NET_WORKS } from './../../constants';
 
 // Sections for this page
 import ProductSection from "./Sections/ProductSection";
@@ -27,6 +30,7 @@ const dashboardRoutes = [];
 const useStyles = makeStyles(styles);
 
 export default function Home(props) {
+  const { changeNetwork } = props
   const classes = useStyles();
 
   return (
@@ -60,15 +64,7 @@ export default function Home(props) {
               <h4 className={classes.text}>
               </h4>
               <br />
-              <Tooltip
-                title="POLYGON"
-                placement={window.innerWidth > 959 ? "top" : "left"}
-                classes={{ tooltip: classes.tooltip }}
-              >
-                <a href="/#/invest">
-                  <img className={classes.img} src={require('./images/POLYGON.svg')} alt="" />
-                </a>
-              </Tooltip>
+              <Chains array={NET_WORKS} handleClick={changeNetwork} />
               {/* <Tooltip
                 title="ARBITRUM"
                 placement={window.innerWidth > 959 ? "top" : "left"}

@@ -6,6 +6,7 @@ import classNames from "classnames"
 import { makeStyles } from "@material-ui/core/styles"
 import Switch from "@material-ui/core/Switch"
 import FormControlLabel from "@material-ui/core/FormControlLabel"
+import CountTo from "react-count-to"
 // core components
 import Header from "../../components/Header/Header"
 import Footer from "../../components/Footer/Footer"
@@ -20,13 +21,9 @@ import Muted from "../../components/Typography/Muted"
 import Snackbar from "@material-ui/core/Snackbar"
 import Alert from "@material-ui/lab/Alert"
 import CircularProgress from "@material-ui/core/CircularProgress"
-import KeyboardHideIcon from "@material-ui/icons/KeyboardHide"
-import KeyboardIcon from "@material-ui/icons/Keyboard"
 import ErrorOutlineIcon from "@material-ui/icons/ErrorOutline"
 import AddIcon from "@material-ui/icons/Add"
-import Radio from "@material-ui/core/Radio"
 import AndroidIcon from "@material-ui/icons/Android"
-import FiberManualRecord from "@material-ui/icons/FiberManualRecord"
 import Table from "@material-ui/core/Table"
 import TableBody from "@material-ui/core/TableBody"
 import TableCell from "@material-ui/core/TableCell"
@@ -34,6 +31,8 @@ import TableContainer from "@material-ui/core/TableContainer"
 import TableHead from "@material-ui/core/TableHead"
 import TableRow from "@material-ui/core/TableRow"
 import Paper from "@material-ui/core/Paper"
+import CropFreeIcon from "@material-ui/icons/CropFree"
+import CropIcon from "@material-ui/icons/Crop"
 
 // === constants === //
 import {
@@ -59,7 +58,6 @@ import filter from "lodash/filter"
 import isUndefined from "lodash/isUndefined"
 import noop from "lodash/noop"
 import * as ethers from "ethers"
-import getApyByDays from "./../../helpers/api-service"
 import BN from "bignumber.js"
 
 // === Styles === //
@@ -67,8 +65,6 @@ import styles from "./style"
 
 const useStyles = makeStyles(styles)
 const { BigNumber } = ethers
-
-const days = [1, 3, 7, 30, 90, 365]
 
 const getExchangePlatformAdapters = async exchangeAggregator => {
   const adapters = await exchangeAggregator.getExchangeAdapters()
@@ -82,33 +78,29 @@ const getExchangePlatformAdapters = async exchangeAggregator => {
 export default function Invest (props) {
   const classes = useStyles()
   const { address, userProvider } = props
-  const [usdtDecimals, setUsdtDecimals] = useState(1)
-  // const [beforeTotalAssets, setBeforeTotalAssets] = useState(BigNumber.from(0))
+  const [usdtDecimals, setUsdtDecimals] = useState(0)
+  const [beforeTotalAssets, setBeforeTotalAssets] = useState(BigNumber.from(0))
   const [totalAssets, setTotalAssets] = useState(BigNumber.from(0))
 
   const [fromValue, setFromValue] = useState("")
   const [toValue, setToValue] = useState("")
   const [fromBalance, setFromBalance] = useState(BigNumber.from(0))
   const [toBalance, setToBalance] = useState(BigNumber.from(0))
+  const [beforePerFullShare, setBeforePerFullShare] = useState(BigNumber.from(1))
   const [perFullShare, setPerFullShare] = useState(BigNumber.from(1))
 
   const [allowMaxLoss, setAllowMaxLoss] = useState("0.3")
   const [shouldExchange, setShouldExchange] = useState(true)
-  const [focusInput, setFocusInput] = useState(false)
   const [estimateWithdrawArray, setEstimateWithdrawArray] = useState([])
   const [isEstimate, setIsEstimate] = useState(false)
-  const [isOpenEstimate, setIsOpenEstimate] = useState(true)
-  const [totalSupply, setTotalSupply] = useState(BigNumber.from(1))
+  const [isOpenEstimate, setIsOpenEstimate] = useState(false)
+  const [totalSupply, setTotalSupply] = useState(BigNumber.from(0))
   // 模态框标识位
   const [alertState, setAlertState] = useState({
     open: false,
     type: "",
     message: "",
   })
-
-  const [vaultApys, setVaultApys] = useState([])
-
-  const [currentDays, setCurrentDays] = useState(1)
 
   // 载入账户数据
   const loadBanlance = () => {
@@ -122,9 +114,13 @@ export default function Invest (props) {
         .balanceOf(address)
         .then(setToBalance)
         .catch(noop),
-      vaultContract
-        .pricePerShare()
-        .then(setPerFullShare)
+      loadTotalAssets()
+        .then(([afterTotalAssets, afterPerFullShare]) => {
+          setBeforeTotalAssets(afterTotalAssets)
+          setTotalAssets(afterTotalAssets)
+          setBeforePerFullShare(afterPerFullShare)
+          setPerFullShare(afterPerFullShare)
+        })
         .catch(noop),
       // TODO:此处的usdtDecimals较特别为10的幂的数值，主要是因为lend方法里的usdtDecimals取幂操作
       // 其他处的usdtDecimals都是为10**18或10**6
@@ -245,8 +241,7 @@ export default function Invest (props) {
     } catch (error) {
       if (error && error.data) {
         if (
-          error.data.message ===
-          "Error: VM Exception while processing transaction: reverted with reason string 'ES or AD'"
+          error.data.message && error.data.message.endsWith('\'ES or AD\'')
         ) {
           setAlertState({
             open: true,
@@ -342,11 +337,14 @@ export default function Invest (props) {
       const nextArray = filter(exchangeArray, i => !isEmpty(i))
       console.log("nextArray=", nextArray)
       const gas = await vaultContractWithSigner.estimateGas.withdraw(nextValue, allowMaxLossValue, true, nextArray)
+      const gasLimit = gas * MULTIPLE_OF_GAS
+      // 乘以倍数后，如果大于3千万gas，则按3千万执行
+      const maxGasLimit = gasLimit < 30000000 ? gasLimit : 30000000
       await vaultContractWithSigner.callStatic.withdraw(nextValue, allowMaxLossValue, true, nextArray, {
-        gasLimit: gas * MULTIPLE_OF_GAS,
+        gasLimit: maxGasLimit
       })
       const tx = await vaultContractWithSigner.withdraw(nextValue, allowMaxLossValue, true, nextArray, {
-        gasLimit: gas * MULTIPLE_OF_GAS,
+        gasLimit: maxGasLimit
       })
 
       await tx.wait()
@@ -358,10 +356,9 @@ export default function Invest (props) {
       })
     } catch (error) {
       console.error(error)
-      if (error && error.data) {
+      if (error && error.data && error.data.message) {
         if (
-          error.data.message ===
-          "Error: VM Exception while processing transaction: reverted with reason string 'ES or AD'"
+          error.data.message && error.data.message.endsWith('\'ES or AD\'')
         ) {
           setAlertState({
             open: true,
@@ -369,10 +366,9 @@ export default function Invest (props) {
             message: "服务已关停，请稍后再试！",
           })
         } else if (
-          error.data.message ===
-            "Error: VM Exception while processing transaction: reverted with reason string 'Return amount is not enough'" ||
-          error.data.message ===
-            "Error: VM Exception while processing transaction: reverted with reason string 'Received amount of tokens are less then expected'"
+          error.data.message.endsWith('\'loss much\'') ||
+          error.data.message.endsWith('\'Return amount is not enough\'') || 
+          error.data.message.endsWith('\'Received amount of tokens are less then expected\'')
         ) {
           setAlertState({
             open: true,
@@ -385,14 +381,7 @@ export default function Invest (props) {
   }
   const loadTotalAssets = () => {
     const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider)
-    vaultContract
-      .totalAssets()
-      .then(resp => {
-        if (resp.eq(totalAssets)) return
-        // setBeforeTotalAssets(totalAssets)
-        setTotalAssets(resp)
-      })
-      .catch(noop)
+    return Promise.all([vaultContract.totalAssets(), vaultContract.pricePerShare()])
   }
   /**
    * 关闭提示框的方法回调
@@ -410,22 +399,31 @@ export default function Invest (props) {
       open: false,
     })
   }
-  // 加载apy数据
-  const loadApy = async () => {
-    const requestArray = await Promise.all(map(days, day => getApyByDays(day).catch(error => 0)))
-    setVaultApys(requestArray)
-  }
   useEffect(() => {
-    const timer = setInterval(loadTotalAssets, 3000)
+    if (isEmpty(VAULT_ADDRESS)) return
+    const loadTotalAssetsFn = () =>
+      loadTotalAssets()
+        .then(([afterTotalAssets, afterPerFullShare]) => {
+          if (!afterTotalAssets.eq(beforeTotalAssets)) {
+            setBeforeTotalAssets(totalAssets)
+            setTotalAssets(afterTotalAssets)
+          }
+          if (!afterPerFullShare.eq(beforePerFullShare)) {
+            setBeforePerFullShare(perFullShare)
+            setPerFullShare(afterPerFullShare)
+          }
+        })
+        .catch(noop)
+    const timer = setInterval(loadTotalAssetsFn, 3000)
     return () => clearInterval(timer)
     // eslint-disable-next-line
-  }, [totalAssets.toString()])
+  }, [totalAssets.toString(), perFullShare.toString()])
 
   useEffect(() => {
+    if (isEmpty(VAULT_ADDRESS)) return
     loadBanlance()
     const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider)
     if (!isEmpty(address)) {
-      loadApy()
       vaultContract.on("Deposit", (a, b, c) => {
         console.log("Deposit=", a, b, c)
         c &&
@@ -511,7 +509,7 @@ export default function Invest (props) {
             setIsEstimate(false)
           }, 1000)
         })
-    }, 1000)
+    }, 100)
     estimateWithdraw()
     // eslint-disable-next-line
   }, [toValue, allowMaxLoss, shouldExchange, isOpenEstimate])
@@ -561,7 +559,7 @@ export default function Invest (props) {
     if (isUndefined(estimateWithdrawArray)) {
       return (
         <GridItem xs={12} sm={12} md={12} lg={12}>
-          <div style={{ textAlign: "center", minHeight: "100px", color: "#fff" }}>
+          <div style={{ textAlign: "center", minHeight: "100px", color: "#fff", padding: 50 }}>
             <ErrorOutlineIcon fontSize='large' />
             <p>数额预估失败，请重新获取！</p>
           </div>
@@ -571,7 +569,7 @@ export default function Invest (props) {
     if (isEmpty(estimateWithdrawArray) || isEmpty(toValue)) {
       return (
         <GridItem xs={12} sm={12} md={12} lg={12}>
-          <div style={{ textAlign: "center", minHeight: "100px", color: "#fff" }}>
+          <div style={{ textAlign: "center", minHeight: "100px", color: "#fff", padding: 50 }}>
             <AndroidIcon fontSize='large' />
             <p style={{ marginTop: 0 }}>暂无预估数值</p>
           </div>
@@ -585,10 +583,10 @@ export default function Invest (props) {
             title='Add token address to wallet'
             color='transparent'
             target='_blank'
-            style={{ fontSize: 20 }}
+            style={{ fontSize: 14, paddingBottom: 20 }}
             onClick={() => addToken(item.tokenAddress)}
           >
-            <AddIcon fontSize='small' style={{ position: "absolute", top: 40, left: 63 }} />
+            <AddIcon fontSize='small' style={{ position: "absolute", top: 25, left: 45 }} />
             <img className={classes.img} alt='' src={`./images/${item.tokenAddress}.webp`} />
             &nbsp;&nbsp;~&nbsp;{toFixed(item.amounts, BigNumber.from(10).pow(item.decimals), item.decimals)}
           </Button>
@@ -630,43 +628,6 @@ export default function Invest (props) {
                     tabContent: (
                       <GridContainer>
                         <GridItem xs={12} sm={12} md={12} lg={12}>
-                          <div className={classes.brand}>
-                            <h2 style={{ marginBottom: 0 }}>
-                              Apy:&nbsp;
-                              <span className={classes.apyText}>
-                                {toFixed(get(vaultApys, currentDays, BigNumber.from(0)), 100, 2)}%
-                              </span>
-                              &nbsp;&nbsp;
-                              {map(days, (day, index) => {
-                                return (
-                                  <FormControlLabel
-                                    key={index}
-                                    control={
-                                      <Radio
-                                        checked={index === currentDays}
-                                        onChange={() => setCurrentDays(index)}
-                                        value={day}
-                                        name={`${day}天`}
-                                        icon={<FiberManualRecord className={classes.radioUnchecked} />}
-                                        checkedIcon={<FiberManualRecord className={classes.radioChecked} />}
-                                        classes={{
-                                          checked: classes.radio,
-                                          root: classes.radioRoot,
-                                        }}
-                                      />
-                                    }
-                                    classes={{
-                                      label: classes.label,
-                                      root: classes.labelRoot,
-                                    }}
-                                    label={`${day}天`}
-                                  />
-                                )
-                              })}
-                            </h2>
-                          </div>
-                        </GridItem>
-                        <GridItem xs={12} sm={12} md={6} lg={6}>
                           <CustomInput
                             labelText={`Balance: ${toFixed(fromBalance, BigNumber.from(10).pow(usdtDecimals))}`}
                             inputProps={{
@@ -697,20 +658,52 @@ export default function Invest (props) {
                             }}
                           />
                         </GridItem>
-                        <GridItem xs={12} sm={12} md={6} lg={6}>
+                        <GridItem xs={12} sm={12} md={12} lg={12}>
+                          <GridContainer>
+                            <GridItem xs={8} sm={8} md={9} lg={9}>
+                              <Muted>
+                                <p
+                                  style={{ fontSize: 14, wordBreak: "break-all" }}
+                                >
+                                  份额预估：
+                                  {isValidFromValueFlag &&
+                                    toFixed(
+                                      BN(fromValue)
+                                        .multipliedBy(
+                                          BigNumber.from(10)
+                                            .pow(usdtDecimals + usdtDecimals)
+                                            .toString(),
+                                        )
+                                        .div(pricePerFullShare.toString())
+                                        .toFixed(),
+                                      BigNumber.from(10).pow(usdtDecimals),
+                                      usdtDecimals,
+                                    )}
+                                </p>
+                              </Muted>
+                            </GridItem>
+                            <GridItem xs={4} sm={4} md={3} lg={3}>
+                              <Button color='colorfull' onClick={diposit} style={{ width:122 }}>
+                                Deposit
+                              </Button>
+                            </GridItem>
+                          </GridContainer>
+                        </GridItem>
+                        <GridItem xs={12} sm={12} md={12} lg={12}>
                           <CustomInput
-                            labelText={`BOC份额: ${toFixed(toBalance, BigNumber.from(10).pow(usdtDecimals))}${
-                              focusInput
-                                ? ` (~${toFixed(
-                                    toBalance.mul(perFullShare),
+                            labelText={
+                              <CountTo from={beforePerFullShare.toNumber()} to={perFullShare.toNumber()} speed={3500}>
+                                {v =>
+                                  `BOC份额: ${toFixed(toBalance, BigNumber.from(10).pow(usdtDecimals))}${` (~${toFixed(
+                                    toBalance.mul(v),
                                     BigNumber.from(10).pow(usdtDecimals + usdtDecimals),
                                     usdtDecimals,
-                                  )} USDT)`
-                                : ""
-                            }`}
+                                  )} USDT)`}`
+                                }
+                              </CountTo>
+                            }
+                            // <CountTo from={beforeTotalAssets.toNumber()} to={totalAssets.toNumber()} speed={3500} >{fn}</CountTo>
                             inputProps={{
-                              onFocus: () => setFocusInput(true),
-                              onBlur: () => setFocusInput(false),
                               placeholder: "withdraw amount",
                               value: toValue,
                               endAdornment: (
@@ -736,120 +729,117 @@ export default function Invest (props) {
                             }}
                           />
                         </GridItem>
-                        <GridItem xs={12} sm={12} md={6} lg={6}>
-                          <GridContainer>
-                            <GridItem xs={12} sm={12} md={12} lg={12}>
-                              <Muted>
-                                <p style={{ fontSize: 18, wordBreak: "break-all", lineHeight: "62px" }}>
-                                  份额预估：
-                                  {isValidFromValueFlag &&
-                                    toFixed(
-                                      BN(fromValue)
-                                        .multipliedBy(BigNumber.from(10).pow(usdtDecimals + usdtDecimals).toString())
-                                        .div(pricePerFullShare.toString())
-                                        .toFixed(),
-                                      BigNumber.from(10).pow(usdtDecimals),
-                                      usdtDecimals,
-                                    )}
-                                </p>
-                              </Muted>
-                            </GridItem>
-                          </GridContainer>
-                        </GridItem>
-                        <GridItem xs={12} sm={12} md={6} lg={6}>
-                          <GridContainer>
-                            <GridItem xs={6} sm={6} md={6} lg={6}>
-                              <FormControlLabel
-                                control={
-                                  <Switch
-                                    checked={shouldExchange}
-                                    onChange={event => setShouldExchange(event.target.checked)}
-                                    classes={{
-                                      switchBase: classes.switchBase,
-                                      checked: classes.switchChecked,
-                                      thumb: classes.switchIcon,
-                                      track: classes.switchBar,
-                                    }}
-                                  />
-                                }
-                                style={{ padding: "24px 0" }}
-                                classes={{
-                                  label: classes.label,
-                                }}
-                                label={<Muted>{shouldExchange ? "开启兑换" : "关闭兑换"}</Muted>}
-                              />
-                            </GridItem>
-                            <GridItem xs={6} sm={6} md={6} style={shouldExchange ? {} : { visibility: "hidden" }}>
-                              <CustomInput
-                                labelText='Max Loss'
-                                inputProps={{
-                                  placeholder: "Allow loss percent",
-                                  value: allowMaxLoss,
-                                  endAdornment: (
-                                    <span style={{ color: "#69c0ff" }}>
-                                      %&nbsp;&nbsp;&nbsp;
-                                      <span style={{ cursor: "pointer" }} onClick={() => setAllowMaxLoss(50)}>
-                                        Max
-                                      </span>
-                                    </span>
-                                  ),
-                                  onChange: event => {
-                                    const value = event.target.value
-                                    setAllowMaxLoss(value)
-                                  },
-                                }}
-                                error={!isUndefined(isValidAllowLossFlag) && !isValidAllowLossFlag}
-                                success={!isUndefined(isValidAllowLossFlag) && isValidAllowLossFlag}
-                                formControlProps={{
-                                  fullWidth: true,
-                                }}
-                              />
-                            </GridItem>
-                          </GridContainer>
-                        </GridItem>
                         <GridItem xs={12} sm={12} md={12} lg={12}>
                           {isOpenEstimate ? (
                             <GridContainer>
+                              <GridItem
+                                xs={8}
+                                sm={8}
+                                md={9}
+                                lg={9}
+                                style={{ color: "#39d0d8", textAlign: "right", lineHeight: "35px", padding: "10px 0" }}
+                              >
+                                <CropIcon
+                                  fontSize='large'
+                                  style={{ float: "right", cursor: "pointer" }}
+                                  onClick={() => setIsOpenEstimate(false)}
+                                ></CropIcon>
+                                <span style={{ cursor: "pointer" }} onClick={() => setIsOpenEstimate(false)}>
+                                  Advanced Settings
+                                </span>
+                              </GridItem>
+                              <GridItem xs={4} sm={4} md={3} lg={3}>
+                                <Button color='colorfull' onClick={withdraw}>
+                                  Withdraw
+                                </Button>
+                              </GridItem>
                               <GridItem xs={12} sm={12} md={12} lg={12}>
-                                <Muted>
-                                  <p style={{ fontSize: 18 }}>
-                                    提取数额预估：
-                                    <KeyboardIcon
-                                      fontSize='large'
-                                      style={{ float: "right", cursor: "pointer" }}
-                                      onClick={() => setIsOpenEstimate(false)}
-                                    ></KeyboardIcon>
-                                  </p>
-                                </Muted>
+                                <GridContainer>
+                                  <GridItem xs={4} sm={4} md={4} lg={4}>
+                                    <p style={{ color:'#fff', lineHeight: '70px', fontSize: 14, marginLeft: 30 }}>提取币种及数额预估</p>
+                                  </GridItem>
+                                  <GridItem xs={4} sm={4} md={4} lg={4}>
+                                    <FormControlLabel
+                                      control={
+                                        <Switch
+                                          checked={shouldExchange}
+                                          onChange={event => setShouldExchange(event.target.checked)}
+                                          classes={{
+                                            switchBase: classes.switchBase,
+                                            checked: classes.switchChecked,
+                                            thumb: classes.switchIcon,
+                                            track: classes.switchBar,
+                                          }}
+                                        />
+                                      }
+                                      style={{ padding: "30px 0px 30px 30px" }}
+                                      classes={{
+                                        label: classes.label,
+                                      }}
+                                      label={<Muted>{shouldExchange ? "开启兑换" : "关闭兑换"}</Muted>}
+                                    />
+                                  </GridItem>
+                                  <GridItem
+                                    xs={4}
+                                    sm={4}
+                                    md={4}
+                                    lg={4}
+                                    style={shouldExchange ? {} : { visibility: "hidden" }}
+                                  >
+                                    <CustomInput
+                                      labelText='Max Loss'
+                                      inputProps={{
+                                        placeholder: "Allow loss percent",
+                                        value: allowMaxLoss,
+                                        endAdornment: (
+                                          <span style={{ color: "#69c0ff" }}>
+                                            %&nbsp;&nbsp;&nbsp;
+                                            <span style={{ cursor: "pointer" }} onClick={() => setAllowMaxLoss(50)}>
+                                              Max
+                                            </span>
+                                          </span>
+                                        ),
+                                        onChange: event => {
+                                          const value = event.target.value
+                                          setAllowMaxLoss(value)
+                                        },
+                                      }}
+                                      error={!isUndefined(isValidAllowLossFlag) && !isValidAllowLossFlag}
+                                      success={!isUndefined(isValidAllowLossFlag) && isValidAllowLossFlag}
+                                      formControlProps={{
+                                        fullWidth: true,
+                                      }}
+                                    />
+                                  </GridItem>
+                                </GridContainer>
                               </GridItem>
                               {renderEstimate()}
                             </GridContainer>
                           ) : (
                             <GridContainer>
-                              <GridItem xs={12} sm={12} md={12} lg={12}>
-                                <Muted>
-                                  <p style={{ fontSize: 18 }}>
-                                    开启提取份额预估计算
-                                    <KeyboardHideIcon
-                                      fontSize='large'
-                                      style={{ float: "right", cursor: "pointer" }}
-                                      onClick={() => setIsOpenEstimate(true)}
-                                    ></KeyboardHideIcon>
-                                  </p>
-                                </Muted>
+                              <GridItem
+                                xs={8}
+                                sm={8}
+                                md={9}
+                                lg={9}
+                                style={{ color: "#da2eef", textAlign: "right", lineHeight: "35px", padding: "10px 0" }}
+                              >
+                                <CropFreeIcon
+                                  fontSize='large'
+                                  style={{ cursor: "pointer", float: "right" }}
+                                  onClick={() => setIsOpenEstimate(true)}
+                                ></CropFreeIcon>
+                                <span style={{ cursor: "pointer" }} onClick={() => setIsOpenEstimate(true)}>
+                                  Advanced Settings
+                                </span>
+                              </GridItem>
+                              <GridItem xs={4} sm={4} md={3} lg={3}>
+                                <Button color='colorfull' onClick={withdraw}>
+                                  Withdraw
+                                </Button>
                               </GridItem>
                             </GridContainer>
                           )}
-                        </GridItem>
-                        <GridItem xs={6} sm={6} md={6} lg={6}>
-                          <Button color='colorfull' onClick={diposit}>
-                            Deposit
-                          </Button>
-                        </GridItem>
-                        <GridItem xs={6} sm={6} md={6} lg={6}>
-                          <Button color='colorfull' onClick={withdraw}>
-                            Withdraw
-                          </Button>
                         </GridItem>
                       </GridContainer>
                     ),
@@ -877,7 +867,9 @@ export default function Invest (props) {
                     BOC_Vault
                   </TableCell>
                   <TableCell className={classNames(classes.tableCell)} component='th' scope='row'>
-                    {toFixed(perFullShare, BigNumber.from(10).pow(usdtDecimals), usdtDecimals)}
+                    <CountTo from={beforePerFullShare.toNumber()} to={perFullShare.toNumber()} speed={3500}>
+                      {v => toFixed(v, BigNumber.from(10).pow(usdtDecimals), usdtDecimals)}
+                    </CountTo>
                   </TableCell>
                   <TableCell className={classNames(classes.tableCell)}>
                     <a
@@ -901,7 +893,11 @@ export default function Invest (props) {
                     </a>
                   </TableCell>
                   <TableCell className={classNames(classes.tableCell)}>
-                    {toFixed(totalAssets, BigNumber.from(10).pow(usdtDecimals), usdtDecimals)}USDT
+                    <CountTo from={beforeTotalAssets.toNumber()} to={totalAssets.toNumber()} speed={3500}>
+                      {v => {
+                        return `${toFixed(v, BigNumber.from(10).pow(usdtDecimals), usdtDecimals)}USDT`
+                      }}
+                    </CountTo>
                   </TableCell>
                 </TableRow>
               </TableBody>
