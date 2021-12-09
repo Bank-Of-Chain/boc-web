@@ -7,7 +7,7 @@ export const toFixed = (value, precision = 1, ...args) => {
   }
   const results = BN(value.toString()).div(BN(precision.toString()));
   if (isEmpty(args)) {
-    return results.toString()
+    return results.toFixed()
   }
   return results.toFixed(...args);
 }
