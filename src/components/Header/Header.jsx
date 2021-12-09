@@ -24,7 +24,7 @@ import SnackbarContent from "../Snackbar/SnackbarContent";
 const useStyles = makeStyles(styles);
 
 // 允许的chainId
-const allowChainId = [1, 4, 56, 137];
+const allowChainId = [56, 137];
 
 export default function Header(props) {
   const classes = useStyles();
