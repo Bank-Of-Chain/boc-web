@@ -200,7 +200,7 @@ function App() {
                   <CircularProgress color="inherit" />
                   <p>钱包数据加载中...</p>
                 </div>
-              : <p>您当前的网络暂不支持或无法识别，请重新设置您的网络！</p>
+              : <p>您当前的网络暂不支持，请重新设置您的网络！</p>
           }
           <Chains array={NET_WORKS} handleClick={changeNetwork} />
         </Paper>
