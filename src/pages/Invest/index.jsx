@@ -691,17 +691,22 @@ export default function Invest (props) {
                         </GridItem>
                         <GridItem xs={12} sm={12} md={12} lg={12}>
                           <CustomInput
-                            labelText={
-                              <CountTo from={beforePerFullShare.toNumber()} to={perFullShare.toNumber()} speed={3500}>
-                                {v =>
-                                  `BOC份额: ${toFixed(toBalance, BigNumber.from(10).pow(usdtDecimals))}${` (~${toFixed(
-                                    toBalance.mul(v),
-                                    BigNumber.from(10).pow(usdtDecimals + usdtDecimals),
-                                    usdtDecimals,
-                                  )} USDT)`}`
-                                }
-                              </CountTo>
-                            }
+                            // labelText={
+                            //   <CountTo from={beforePerFullShare.toNumber()} to={perFullShare.toNumber()} speed={3500}>
+                            //     {v =>
+                            //       `BOC份额: ${toFixed(toBalance, BigNumber.from(10).pow(usdtDecimals))}${` (~${toFixed(
+                            //         toBalance.mul(v),
+                            //         BigNumber.from(10).pow(usdtDecimals + usdtDecimals),
+                            //         usdtDecimals,
+                            //       )} USDT)`}`
+                            //     }
+                            //   </CountTo>
+                            // }
+                            labelText= {`BOC份额: ${toFixed(toBalance, BigNumber.from(10).pow(usdtDecimals), 6)}${` (~${toFixed(
+                              toBalance.mul(perFullShare),
+                              BigNumber.from(10).pow(usdtDecimals + usdtDecimals),
+                              6,
+                            )} USDT)`}`}
                             // <CountTo from={beforeTotalAssets.toNumber()} to={totalAssets.toNumber()} speed={3500} >{fn}</CountTo>
                             inputProps={{
                               placeholder: "withdraw amount",
@@ -867,9 +872,10 @@ export default function Invest (props) {
                     BOC_Vault
                   </TableCell>
                   <TableCell className={classNames(classes.tableCell)} component='th' scope='row'>
-                    <CountTo from={beforePerFullShare.toNumber()} to={perFullShare.toNumber()} speed={3500}>
+                    {/* <CountTo from={beforePerFullShare.toNumber()} to={perFullShare.toNumber()} speed={3500}>
                       {v => toFixed(v, BigNumber.from(10).pow(usdtDecimals), usdtDecimals)}
-                    </CountTo>
+                    </CountTo> */}
+                    {toFixed(perFullShare, BigNumber.from(10).pow(usdtDecimals), 6)}
                   </TableCell>
                   <TableCell className={classNames(classes.tableCell)}>
                     <a
@@ -893,11 +899,12 @@ export default function Invest (props) {
                     </a>
                   </TableCell>
                   <TableCell className={classNames(classes.tableCell)}>
-                    <CountTo from={beforeTotalAssets.toNumber()} to={totalAssets.toNumber()} speed={3500}>
+                    {/* <CountTo from={beforeTotalAssets.toNumber()} to={totalAssets.toNumber()} speed={3500}>
                       {v => {
                         return `${toFixed(v, BigNumber.from(10).pow(usdtDecimals), usdtDecimals)}USDT`
                       }}
-                    </CountTo>
+                    </CountTo> */}
+                    {toFixed(totalAssets, BigNumber.from(10).pow(usdtDecimals), 6)}USDT
                   </TableCell>
                 </TableRow>
               </TableBody>
