@@ -6,5 +6,8 @@ export const toFixed = (value, precision = 1, ...args) => {
     return 0;
   }
   const results = BN(value.toString()).div(BN(precision.toString()));
+  if(results.isInteger()){
+    return results.toFixed()
+  }
   return results.toFixed(...args);
 }

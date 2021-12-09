@@ -627,7 +627,7 @@ export default function Invest (props) {
                       <GridContainer>
                         <GridItem xs={12} sm={12} md={12} lg={12}>
                           <CustomInput
-                            labelText={`Balance: ${toFixed(fromBalance, BigNumber.from(10).pow(usdtDecimals))}`}
+                            labelText={`Balance: ${toFixed(fromBalance, BigNumber.from(10).pow(usdtDecimals), 6)}`}
                             inputProps={{
                               placeholder: "deposit amount",
                               value: fromValue,
