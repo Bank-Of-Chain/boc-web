@@ -28,7 +28,7 @@ const componentsStyle = {
     backgroundColor: 'rgb(19, 24, 35)'
   },
   mainRaised: {
-    margin: "120px 30px",
+    margin: "280px 30px",
     borderRadius: "6px",
   },
   link: {
