@@ -143,7 +143,8 @@ export default function Invest (props) {
     if (fromValue === "" || fromValue === "-") return
     // 如果不是一个数值
     if (isNaN(Number(fromValue))) return false
-    const nextFromValue = BN(fromValue).multipliedBy(
+    const nextValue = BN(fromValue);
+    const nextFromValue = nextValue.multipliedBy(
       BigNumber.from(10)
         .pow(usdtDecimals)
         .toString(),
@@ -151,7 +152,12 @@ export default function Invest (props) {
     // 判断值为正数
     if (nextFromValue.lt(0)) return false
     // 精度处理完之后，应该为整数
-    if (nextFromValue.toFixed().indexOf(".") !== -1) return false
+    const nextFromValueString = nextValue.multipliedBy(
+      BigNumber.from(10)
+        .pow(6)
+        .toString(),
+    )
+    if (nextFromValueString.toFixed().indexOf(".") !== -1) return false
     // 数值小于最大数量
     if (fromBalance.lt(BigNumber.from(nextFromValue.toFixed()))) return false
     return true
@@ -165,7 +171,8 @@ export default function Invest (props) {
     if (toValue === "" || toValue === "-") return
     // 如果不是一个数值
     if (isNaN(Number(toValue))) return false
-    const nextToValue = BN(toValue).multipliedBy(
+    const nextValue = BN(toValue);
+    const nextToValue = nextValue.multipliedBy(
       BigNumber.from(10)
         .pow(usdtDecimals)
         .toString(),
@@ -173,7 +180,12 @@ export default function Invest (props) {
     // 判断值为正数
     if (nextToValue.lt(0)) return false
     // 精度处理完之后，应该为整数
-    if (nextToValue.toFixed().indexOf(".") !== -1) return false
+    const nextToValueString = nextValue.multipliedBy(
+      BigNumber.from(10)
+        .pow(6)
+        .toString(),
+    )
+    if (nextToValueString.toFixed().indexOf(".") !== -1) return false
     // 数值小于最大数量
     if (toBalance.lt(BigNumber.from(nextToValue.toFixed()))) return false
     return true
@@ -586,7 +598,7 @@ export default function Invest (props) {
           >
             <AddIcon fontSize='small' style={{ position: "absolute", top: 25, left: 45 }} />
             <img className={classes.img} alt='' src={`./images/${item.tokenAddress}.webp`} />
-            &nbsp;&nbsp;~&nbsp;{toFixed(item.amounts, BigNumber.from(10).pow(item.decimals), item.decimals)}
+            &nbsp;&nbsp;~&nbsp;{toFixed(item.amounts, BigNumber.from(10).pow(item.decimals), 6)}
           </Button>
         </GridItem>
       )
@@ -627,7 +639,7 @@ export default function Invest (props) {
                       <GridContainer>
                         <GridItem xs={12} sm={12} md={12} lg={12}>
                           <CustomInput
-                            labelText={`Balance: ${toFixed(fromBalance, BigNumber.from(10).pow(usdtDecimals), 6)}`}
+                            labelText={`Balance: ${toFixed(fromBalance, BigNumber.from(10).pow(usdtDecimals), 6, 1)}`}
                             inputProps={{
                               placeholder: "deposit amount",
                               value: fromValue,
@@ -635,7 +647,7 @@ export default function Invest (props) {
                                 <span
                                   style={{ color: "#69c0ff", cursor: "pointer" }}
                                   onClick={() =>
-                                    setFromValue(toFixed(fromBalance, BigNumber.from(10).pow(usdtDecimals)))
+                                    setFromValue(toFixed(fromBalance, BigNumber.from(10).pow(usdtDecimals), 6, 1))
                                   }
                                 >
                                   Max
@@ -675,7 +687,7 @@ export default function Invest (props) {
                                         .div(pricePerFullShare.toString())
                                         .toFixed(),
                                       BigNumber.from(10).pow(usdtDecimals),
-                                      usdtDecimals,
+                                      6,
                                     )}
                                 </p>
                               </Muted>
@@ -692,7 +704,7 @@ export default function Invest (props) {
                             labelText={
                               <CountTo from={Number(beforePerFullShare.toBigInt())} to={Number(perFullShare.toBigInt())} speed={3500}>
                                 {v =>
-                                  `BOC份额: ${toFixed(toBalance, BigNumber.from(10).pow(usdtDecimals), 6)}${` (~${toFixed(
+                                  `BOC份额: ${toFixed(toBalance, BigNumber.from(10).pow(usdtDecimals), 6, 1)}${` (~${toFixed(
                                     toBalance.mul(v),
                                     BigNumber.from(10).pow(usdtDecimals + usdtDecimals),
                                     6,
@@ -706,7 +718,7 @@ export default function Invest (props) {
                               endAdornment: (
                                 <span
                                   style={{ color: "#69c0ff", cursor: "pointer" }}
-                                  onClick={() => setToValue(toFixed(toBalance, BigNumber.from(10).pow(usdtDecimals)))}
+                                  onClick={() => setToValue(toFixed(toBalance, BigNumber.from(10).pow(usdtDecimals), 6, 1))}
                                 >
                                   Max
                                 </span>
