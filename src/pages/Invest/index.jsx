@@ -102,6 +102,9 @@ export default function Invest (props) {
     message: "",
   })
 
+  const [isFromValueMax, setIsFromValueMax] = useState(false)
+  const [isToValueMax, setIsToValueMax] = useState(false)
+
   // 载入账户数据
   const loadBanlance = () => {
     if (isEmpty(address)) return loadBanlance
@@ -150,14 +153,16 @@ export default function Invest (props) {
         .toString(),
     )
     // 判断值为正数
-    if (nextFromValue.lt(0)) return false
-    // 精度处理完之后，应该为整数
-    const nextFromValueString = nextValue.multipliedBy(
-      BigNumber.from(10)
+    if (nextFromValue.lte(0)) return false
+    if(!isFromValueMax){
+      // 精度处理完之后，应该为整数
+      const nextFromValueString = nextValue.multipliedBy(
+        BigNumber.from(10)
         .pow(6)
         .toString(),
-    )
-    if (nextFromValueString.toFixed().indexOf(".") !== -1) return false
+        )
+        if (nextFromValueString.toFixed().indexOf(".") !== -1) return false
+    }
     // 数值小于最大数量
     if (fromBalance.lt(BigNumber.from(nextFromValue.toFixed()))) return false
     return true
@@ -178,14 +183,16 @@ export default function Invest (props) {
         .toString(),
     )
     // 判断值为正数
-    if (nextToValue.lt(0)) return false
-    // 精度处理完之后，应该为整数
-    const nextToValueString = nextValue.multipliedBy(
-      BigNumber.from(10)
-        .pow(6)
-        .toString(),
-    )
-    if (nextToValueString.toFixed().indexOf(".") !== -1) return false
+    if (nextToValue.lte(0)) return false
+    if(!isToValueMax){
+      // 精度处理完之后，应该为整数
+      const nextToValueString = nextValue.multipliedBy(
+        BigNumber.from(10)
+          .pow(6)
+          .toString(),
+      )
+      if (nextToValueString.toFixed().indexOf(".") !== -1) return false
+    }
     // 数值小于最大数量
     if (toBalance.lt(BigNumber.from(nextToValue.toFixed()))) return false
     return true
@@ -645,9 +652,11 @@ export default function Invest (props) {
                               value: fromValue,
                               endAdornment: (
                                 <span
-                                  style={{ color: "#69c0ff", cursor: "pointer" }}
-                                  onClick={() =>
-                                    setFromValue(toFixed(fromBalance, BigNumber.from(10).pow(usdtDecimals), 6, 1))
+                                  style={isFromValueMax ? { color: "#da2eef", cursor: "pointer", fontWeight: 'bold' } : { color: "#69c0ff", cursor: "pointer" }}
+                                  onClick={() => {
+                                      setFromValue(toFixed(fromBalance, BigNumber.from(10).pow(usdtDecimals), usdtDecimals))
+                                      setIsFromValueMax(true)
+                                    }
                                   }
                                 >
                                   Max
@@ -659,6 +668,7 @@ export default function Invest (props) {
                                 } catch (error) {
                                   setFromValue("")
                                 }
+                                setIsFromValueMax(false)
                               },
                             }}
                             error={!isUndefined(isValidFromValueFlag) && !isValidFromValueFlag}
@@ -717,8 +727,11 @@ export default function Invest (props) {
                               value: toValue,
                               endAdornment: (
                                 <span
-                                  style={{ color: "#69c0ff", cursor: "pointer" }}
-                                  onClick={() => setToValue(toFixed(toBalance, BigNumber.from(10).pow(usdtDecimals), 6, 1))}
+                                  style={isToValueMax ? { color: "#da2eef", cursor: "pointer", fontWeight: 'bold' } : { color: "#69c0ff", cursor: "pointer" }}
+                                  onClick={() => {
+                                    setToValue(toFixed(toBalance, BigNumber.from(10).pow(usdtDecimals), usdtDecimals))
+                                    setIsToValueMax(true)
+                                  }}
                                 >
                                   Max
                                 </span>
@@ -729,6 +742,7 @@ export default function Invest (props) {
                                 } catch (error) {
                                   setToValue("")
                                 }
+                                setIsToValueMax(false)
                               },
                             }}
                             error={!isUndefined(isValidToValueFlag) && !isValidToValueFlag}
