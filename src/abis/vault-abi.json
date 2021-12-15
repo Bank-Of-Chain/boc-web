@@ -288,12 +288,6 @@
         "internalType": "uint256",
         "name": "nowStrategyTotalDebt",
         "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "totalFee",
-        "type": "uint256"
       }
     ],
     "name": "StrategyReported",
@@ -372,6 +366,12 @@
       },
       {
         "indexed": false,
+        "internalType": "uint256",
+        "name": "profitFeeShare",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
         "internalType": "address[]",
         "name": "withdrawTokens",
         "type": "address[]"
@@ -381,6 +381,18 @@
         "internalType": "uint256[]",
         "name": "withdrawAmounts",
         "type": "uint256[]"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "totalValue",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "userCost",
+        "type": "uint256"
       }
     ],
     "name": "Withdraw",
@@ -723,7 +735,7 @@
         "type": "address"
       }
     ],
-    "name": "forceRemovewStrategy",
+    "name": "forceRemoveStrategy",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -1373,6 +1385,25 @@
     "name": "updateStrategyApy",
     "outputs": [],
     "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "name": "userDebts",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
     "type": "function"
   },
   {

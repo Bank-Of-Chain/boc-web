@@ -449,10 +449,10 @@ export default function Invest (props) {
             .then(tx => tx.wait())
             .then(loadBanlance)
       })
-      vaultContract.on("Withdraw", (a, b, c, d, e, f) => {
-        console.log("Withdraw=", a, b, c, d, e, f)
-        f &&
-          f
+      vaultContract.on("Withdraw", (a, b, c, d, e, f, g, h, i) => {
+        console.log("Withdraw=", a, b, c, d, e, f, g, h, i)
+        i &&
+          i
             .getTransaction()
             .then(tx => tx.wait())
             .then(loadBanlance)
