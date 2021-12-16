@@ -877,7 +877,7 @@ export default function Invest (props) {
               <TableHead>
                 <TableRow>
                   <TableCell className={classNames(classes.tableCell)}>Vault 通证符号</TableCell>
-                  <TableCell className={classNames(classes.tableCell)}>单价</TableCell>
+                  <TableCell className={classNames(classes.tableCell)}>净值</TableCell>
                   <TableCell className={classNames(classes.tableCell)}>Vault 合约地址</TableCell>
                   <TableCell className={classNames(classes.tableCell)}>质押通证符号</TableCell>
                   <TableCell className={classNames(classes.tableCell)}>质押合约地址</TableCell>
