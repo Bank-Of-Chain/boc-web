@@ -54,6 +54,7 @@ import get from "lodash/get"
 import debounce from "lodash/debounce"
 import compact from "lodash/compact"
 import isEmpty from "lodash/isEmpty"
+import some from "lodash/some"
 import filter from "lodash/filter"
 import isUndefined from "lodash/isUndefined"
 import noop from "lodash/noop"
@@ -318,7 +319,7 @@ export default function Invest (props) {
           map(tokens, async (tokenItem, index) => {
             const exchangeAmounts = amounts[index].toString()
             if (tokenItem === USDT_ADDRESS || exchangeAmounts === "0") {
-              return undefined
+              return {}
             }
             const fromConstrat = new ethers.Contract(tokenItem, IERC20_ABI, userProvider)
             const fromToken = {
@@ -351,7 +352,16 @@ export default function Invest (props) {
           }),
         )
       }
-      const nextArray = filter(exchangeArray, i => !isEmpty(i))
+      console.log("exchangeArray=", exchangeArray);
+      if(some(exchangeArray, isUndefined)){
+        setAlertState({
+          open: true,
+          type: "error",
+          message: "兑换路径获取失败，请取消兑换或稍后重试",
+        })
+        return;
+      }
+      const nextArray = filter(exchangeArray, i => !isEmpty(i));
       console.log("nextArray=", nextArray)
       const gas = await vaultContractWithSigner.estimateGas.withdraw(nextValue, allowMaxLossValue, true, nextArray)
       const gasLimit = gas * MULTIPLE_OF_GAS
