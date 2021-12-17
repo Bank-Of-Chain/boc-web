@@ -55,6 +55,7 @@ import debounce from "lodash/debounce"
 import compact from "lodash/compact"
 import isEmpty from "lodash/isEmpty"
 import some from "lodash/some"
+import last from 'lodash/last'
 import filter from "lodash/filter"
 import isUndefined from "lodash/isUndefined"
 import noop from "lodash/noop"
@@ -451,18 +452,20 @@ export default function Invest (props) {
     loadBanlance()
     const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider)
     if (!isEmpty(address)) {
-      vaultContract.on("Deposit", (a, b, c) => {
-        console.log("Deposit=", a, b, c)
-        c &&
-          c
+      vaultContract.on("Deposit", (...eventArgs) => {
+        console.log("Deposit=", eventArgs)
+        const block = last(eventArgs)
+        block &&
+          block
             .getTransaction()
             .then(tx => tx.wait())
             .then(loadBanlance)
       })
-      vaultContract.on("Withdraw", (a, b, c, d, e, f, g, h, i) => {
-        console.log("Withdraw=", a, b, c, d, e, f, g, h, i)
-        i &&
-          i
+      vaultContract.on("Withdraw", (...eventArgs) => {
+        console.log("Withdraw=", eventArgs)
+        const block = last(eventArgs)
+        block &&
+          block
             .getTransaction()
             .then(tx => tx.wait())
             .then(loadBanlance)
