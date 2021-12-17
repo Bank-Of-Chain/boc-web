@@ -67,13 +67,23 @@ export default function HeaderLinks(props) {
         </Button>
       </ListItem>
       <ListItem className={classes.listItem}>
-        <Button
-          color="transparent"
-          target="_blank"
-          href="https://wallet.polygon.technology/bridge"
-        >
-          <Transform className={classes.icons} ></Transform> Polygon Bridge
-        </Button>
+        <CustomDropdown
+          noLiPadding
+          buttonText="Bridge"
+          buttonProps={{
+            className: classes.navLink,
+            color: "transparent",
+          }}
+          buttonIcon={Transform}
+          dropdownList={[
+            <a target="_blank" href="https://wallet.polygon.technology/bridge" className={classes.dropdownLink}>
+              Polygon Bridge
+            </a>,
+            <a target="_blank" href="https://www.binance.org/en/bridge" className={classes.dropdownLink}>
+              Binance Bridge
+            </a>
+          ]}
+        />
       </ListItem>
       <ListItem className={classes.listItem}>
         <CustomDropdown
