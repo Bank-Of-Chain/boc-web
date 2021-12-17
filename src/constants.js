@@ -16,7 +16,7 @@ if (!config) {
   throw new Error('配置未正确加载');
 }
 
-const abiPrefix = config.abi_version
+const abiPrefix = config.abi_version || 'v4.3'
 
 const vaultAbi = require(`./abis/${abiPrefix}/vault-abi.json`);
 const strategyAbi = require(`./abis/${abiPrefix}/strategy-abi.json`);
