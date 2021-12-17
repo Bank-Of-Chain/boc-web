@@ -35,7 +35,7 @@ const config56 = {
   ...configBase,
   apy_server: 'https://bankofchain.io/api/56',
   rpcUrl: 'https://speedy-nodes-nyc.moralis.io/f2cbcaf720c374313b5543f8/bsc/mainnet/archive',
-  vault_address: "",
+  vault_address: "0x699F86dd50224544E6c23670Af44682CAe9db3c5",
   abi_version: 'v4.4',
   underlying_address: "0x55d398326f99059fF775485246999027B3197955",
   chain_browser_url:'https://bscscan.com',
