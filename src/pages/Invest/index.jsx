@@ -341,6 +341,9 @@ export default function Invest (props) {
                 exchangePlatformAdapters,
                 EXCHANGE_EXTRA_PARAMS,
               )
+              if(isEmpty(bestSwapInfo)){
+                throw new Error('兑换路径获取失败')
+              }
               return {
                 fromToken: tokenItem,
                 toToken: USDT_ADDRESS,

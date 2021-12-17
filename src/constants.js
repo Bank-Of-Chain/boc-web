@@ -67,12 +67,12 @@ export const NET_WORKS = [
     faucet: "https://faucet.matic.network/",
     blockExplorer: "https://explorer-mainnet.maticvigil.com//",
   },
-  // {
-  //   name: "BSC Mainnet",
-  //   color: "#e0d068",
-  //   chainId: 56,
-  //   rpcUrl: `https://speedy-nodes-nyc.moralis.io/f2cbcaf720c374313b5543f8/bsc/mainnet/archive`,
-  //   faucet: "",
-  //   blockExplorer: "https://bscscan.com/",
-  // },
+  {
+    name: "BSC Mainnet",
+    color: "#e0d068",
+    chainId: 56,
+    rpcUrl: `https://speedy-nodes-nyc.moralis.io/f2cbcaf720c374313b5543f8/bsc/mainnet/archive`,
+    faucet: "",
+    blockExplorer: "https://bscscan.com/",
+  },
 ]
