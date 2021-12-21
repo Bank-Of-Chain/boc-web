@@ -4,8 +4,8 @@ export const INFURA_ID = "3be290dd5c1a46f894bdf28625c000ce";
 // MY ETHERSCAN_ID, SWAP IN YOURS FROM https://etherscan.io/myapikey
 export const ETHERSCAN_KEY = "PSW8C433Q667DVEX5BCRMGNAH9FSGFZ7Q8";
 
-// gas limit设置为平常的10倍
-export const MULTIPLE_OF_GAS = 10;
+// gas limit设置为平常的2倍
+export const MULTIPLE_OF_GAS = 2;
 
 // EXTERNAL CONTRACTS
 export const ENV_NETWORK_TYPE = process.env.REACT_APP_NETWORK_TYPE || localStorage.REACT_APP_NETWORK_TYPE
