@@ -37,6 +37,7 @@ export const ABOUTUS_URL = config.aboutus_url;
 export const BLOG_URL = config.blog_url;
 export const LICENSES_URL = config.licenses_url;
 export const DOCUMENT_URL = config.document_url;
+export const MAX_GAS_LIMIT = config.max_gas_limit;
 
 // === abi === //
 export const VAULT_ABI = vaultAbi;

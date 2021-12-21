@@ -29,6 +29,8 @@ const config137 = {
       excludeContractMethods: []
     }
   },
+  // 币安链一个区块2千万，使用90%的空间即可，过大会造成打块过慢
+  max_gas_limit: 1800 * 10 ** 4
 }
 
 const config56 = {
@@ -49,6 +51,8 @@ const config56 = {
       excludeContractMethods: []
     }
   },
+  // 币安链一个区块8千万，使用90%的空间即可，过大会造成打块过慢
+  max_gas_limit: 7200 * 10 ** 4
 }
 
 window.config = {
