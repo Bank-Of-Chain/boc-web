@@ -44,6 +44,7 @@ import {
   EXCHANGE_EXTRA_PARAMS,
   MULTIPLE_OF_GAS,
   CHAIN_BROWSER_URL,
+  MAX_GAS_LIMIT
 } from "../../constants"
 
 // === Utils === //
@@ -370,7 +371,7 @@ export default function Invest (props) {
       const gas = await vaultContractWithSigner.estimateGas.withdraw(nextValue, allowMaxLossValue, true, nextArray)
       const gasLimit = gas * MULTIPLE_OF_GAS
       // 乘以倍数后，如果大于3千万gas，则按3千万执行
-      const maxGasLimit = gasLimit < 30000000 ? gasLimit : 30000000
+      const maxGasLimit = gasLimit < MAX_GAS_LIMIT ? gasLimit : MAX_GAS_LIMIT
       await vaultContractWithSigner.callStatic.withdraw(nextValue, allowMaxLossValue, true, nextArray, {
         gasLimit: maxGasLimit
       })
