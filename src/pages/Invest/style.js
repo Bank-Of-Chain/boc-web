@@ -28,7 +28,7 @@ const componentsStyle = {
     backgroundColor: 'rgb(19, 24, 35)'
   },
   mainRaised: {
-    margin: "120px 30px",
+    margin: "280px 30px",
     borderRadius: "6px",
   },
   link: {
@@ -101,12 +101,13 @@ const componentsStyle = {
     textTransform: 'uppercase'
   },
   table: {
-    backgroundColor: 'rgb(19, 24, 35)',
+    backgroundColor: 'rgb(12, 18, 26)',
+    border: '1px solid rgb(222, 217, 213)',
   },
   tableCell: {
     color: '#fff',
     fontSize: '12px',
-    borderBottom: '1px solid #424560'
+    letterSpacing: '0.01071em'
   }
 };
 
