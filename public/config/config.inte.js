@@ -35,6 +35,27 @@ const config137 = {
   max_gas_limit: 1800 * 10 ** 4
 }
 
+const config56 = {
+  ...configBase,
+  apy_server: 'http://localhost/api/56',
+  rpcUrl,
+  abi_version: 'v4.4',
+  vault_address: "0x2C328D592819524F741A88A18572372CCE196782",
+  underlying_address: "0x55d398326f99059fF775485246999027B3197955",
+  exchange_extra_params: {
+    oneInch: {
+      network: 56,
+      excludeProtocols: ['BSC_ONE_INCH_LIMIT_ORDER', 'BSC_ONE_INCH_LIMIT_ORDER_V2']
+    },
+    paraswap: {
+      network: 56,
+      excludeContractMethods: ['swapOnZeroXv2', 'swapOnZeroXv4']
+    }
+  },
+  // 币安链一个区块8千万，使用90%的空间即可，过大会造成打块过慢
+  max_gas_limit: 7200 * 10 ** 4
+}
+
 const config1 = {
   ...configBase,
   apy_server: 'http://localhost/api/1',
