@@ -58,7 +58,7 @@ const config56 = {
 
 const config1 = {
   ...configBase,
-  apy_server: 'https://bankofchain.io/api/56',
+  apy_server: 'https://bankofchain.io/api/1',
   rpcUrl: '',
   abi_version: 'v4.4',
   vault_address: "",
