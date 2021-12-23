@@ -42,11 +42,11 @@ const customInputStyle = {
     ...defaultFont,
     color: "#fff !important",
     fontWeight: "400",
-    fontSize: "20px",
+    fontSize: "18px",
     lineHeight: "2.42857",
     top: "10px",
-    letterSpacing: "unset",
     whiteSpace: "nowrap",
+    letterSpacing: '0.01071em', 
     "& + $underline": {
       marginTop: "0px",
     },

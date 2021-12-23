@@ -34,9 +34,6 @@ import CropFreeIcon from "@material-ui/icons/CropFree"
 import CropIcon from "@material-ui/icons/Crop"
 import Card from "@material-ui/core/Card"
 import CardHeader from "@material-ui/core/CardHeader"
-import Avatar from "@material-ui/core/Avatar"
-import MoreVertIcon from "@material-ui/icons/MoreVert"
-import IconButton from "@material-ui/core/IconButton"
 
 // === constants === //
 import {
@@ -48,6 +45,7 @@ import {
   EXCHANGE_EXTRA_PARAMS,
   MULTIPLE_OF_GAS,
   CHAIN_BROWSER_URL,
+  MAX_GAS_LIMIT,
 } from "../../constants"
 
 // === Utils === //
@@ -58,6 +56,8 @@ import get from "lodash/get"
 import debounce from "lodash/debounce"
 import compact from "lodash/compact"
 import isEmpty from "lodash/isEmpty"
+import some from "lodash/some"
+import last from "lodash/last"
 import filter from "lodash/filter"
 import isUndefined from "lodash/isUndefined"
 import noop from "lodash/noop"
@@ -106,6 +106,9 @@ export default function Invest (props) {
     message: "",
   })
 
+  const [isFromValueMax, setIsFromValueMax] = useState(false)
+  const [isToValueMax, setIsToValueMax] = useState(false)
+
   // 载入账户数据
   const loadBanlance = () => {
     if (isEmpty(address)) return loadBanlance
@@ -147,15 +150,23 @@ export default function Invest (props) {
     if (fromValue === "" || fromValue === "-") return
     // 如果不是一个数值
     if (isNaN(Number(fromValue))) return false
-    const nextFromValue = BN(fromValue).multipliedBy(
+    const nextValue = BN(fromValue)
+    const nextFromValue = nextValue.multipliedBy(
       BigNumber.from(10)
         .pow(usdtDecimals)
         .toString(),
     )
     // 判断值为正数
-    if (nextFromValue.lt(0)) return false
-    // 精度处理完之后，应该为整数
-    if (nextFromValue.toFixed().indexOf(".") !== -1) return false
+    if (nextFromValue.lte(0)) return false
+    if (!isFromValueMax) {
+      // 精度处理完之后，应该为整数
+      const nextFromValueString = nextValue.multipliedBy(
+        BigNumber.from(10)
+          .pow(6)
+          .toString(),
+      )
+      if (nextFromValueString.toFixed().indexOf(".") !== -1) return false
+    }
     // 数值小于最大数量
     if (fromBalance.lt(BigNumber.from(nextFromValue.toFixed()))) return false
     return true
@@ -169,15 +180,23 @@ export default function Invest (props) {
     if (toValue === "" || toValue === "-") return
     // 如果不是一个数值
     if (isNaN(Number(toValue))) return false
-    const nextToValue = BN(toValue).multipliedBy(
+    const nextValue = BN(toValue)
+    const nextToValue = nextValue.multipliedBy(
       BigNumber.from(10)
         .pow(usdtDecimals)
         .toString(),
     )
     // 判断值为正数
-    if (nextToValue.lt(0)) return false
-    // 精度处理完之后，应该为整数
-    if (nextToValue.toFixed().indexOf(".") !== -1) return false
+    if (nextToValue.lte(0)) return false
+    if (!isToValueMax) {
+      // 精度处理完之后，应该为整数
+      const nextToValueString = nextValue.multipliedBy(
+        BigNumber.from(10)
+          .pow(6)
+          .toString(),
+      )
+      if (nextToValueString.toFixed().indexOf(".") !== -1) return false
+    }
     // 数值小于最大数量
     if (toBalance.lt(BigNumber.from(nextToValue.toFixed()))) return false
     return true
@@ -242,9 +261,7 @@ export default function Invest (props) {
       })
     } catch (error) {
       if (error && error.data) {
-        if (
-          error.data.message && error.data.message.endsWith('\'ES or AD\'')
-        ) {
+        if (error.data.message && error.data.message.endsWith("'ES or AD'")) {
           setAlertState({
             open: true,
             type: "error",
@@ -303,7 +320,7 @@ export default function Invest (props) {
           map(tokens, async (tokenItem, index) => {
             const exchangeAmounts = amounts[index].toString()
             if (tokenItem === USDT_ADDRESS || exchangeAmounts === "0") {
-              return undefined
+              return {}
             }
             const fromConstrat = new ethers.Contract(tokenItem, IERC20_ABI, userProvider)
             const fromToken = {
@@ -324,6 +341,9 @@ export default function Invest (props) {
                 exchangePlatformAdapters,
                 EXCHANGE_EXTRA_PARAMS,
               )
+              if (isEmpty(bestSwapInfo)) {
+                throw new Error("兑换路径获取失败")
+              }
               return {
                 fromToken: tokenItem,
                 toToken: USDT_ADDRESS,
@@ -336,17 +356,26 @@ export default function Invest (props) {
           }),
         )
       }
+      console.log("exchangeArray=", exchangeArray)
+      if (some(exchangeArray, isUndefined)) {
+        setAlertState({
+          open: true,
+          type: "error",
+          message: "兑换路径获取失败，请取消兑换或稍后重试",
+        })
+        return
+      }
       const nextArray = filter(exchangeArray, i => !isEmpty(i))
       console.log("nextArray=", nextArray)
       const gas = await vaultContractWithSigner.estimateGas.withdraw(nextValue, allowMaxLossValue, true, nextArray)
       const gasLimit = gas * MULTIPLE_OF_GAS
       // 乘以倍数后，如果大于3千万gas，则按3千万执行
-      const maxGasLimit = gasLimit < 30000000 ? gasLimit : 30000000
+      const maxGasLimit = gasLimit < MAX_GAS_LIMIT ? gasLimit : MAX_GAS_LIMIT
       await vaultContractWithSigner.callStatic.withdraw(nextValue, allowMaxLossValue, true, nextArray, {
-        gasLimit: maxGasLimit
+        gasLimit: maxGasLimit,
       })
       const tx = await vaultContractWithSigner.withdraw(nextValue, allowMaxLossValue, true, nextArray, {
-        gasLimit: maxGasLimit
+        gasLimit: maxGasLimit,
       })
 
       await tx.wait()
@@ -359,18 +388,16 @@ export default function Invest (props) {
     } catch (error) {
       console.error(error)
       if (error && error.data && error.data.message) {
-        if (
-          error.data.message && error.data.message.endsWith('\'ES or AD\'')
-        ) {
+        if (error.data.message && error.data.message.endsWith("'ES or AD'")) {
           setAlertState({
             open: true,
             type: "error",
             message: "服务已关停，请稍后再试！",
           })
         } else if (
-          error.data.message.endsWith('\'loss much\'') ||
-          error.data.message.endsWith('\'Return amount is not enough\'') || 
-          error.data.message.endsWith('\'Received amount of tokens are less then expected\'')
+          error.data.message.endsWith("'loss much'") ||
+          error.data.message.endsWith("'Return amount is not enough'") ||
+          error.data.message.endsWith("'Received amount of tokens are less then expected'")
         ) {
           setAlertState({
             open: true,
@@ -426,18 +453,20 @@ export default function Invest (props) {
     loadBanlance()
     const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider)
     if (!isEmpty(address)) {
-      vaultContract.on("Deposit", (a, b, c) => {
-        console.log("Deposit=", a, b, c)
-        c &&
-          c
+      vaultContract.on("Deposit", (...eventArgs) => {
+        console.log("Deposit=", eventArgs)
+        const block = last(eventArgs)
+        block &&
+          block
             .getTransaction()
             .then(tx => tx.wait())
             .then(loadBanlance)
       })
-      vaultContract.on("Withdraw", (a, b, c, d, e, f) => {
-        console.log("Withdraw=", a, b, c, d, e, f)
-        f &&
-          f
+      vaultContract.on("Withdraw", (...eventArgs) => {
+        console.log("Withdraw=", eventArgs)
+        const block = last(eventArgs)
+        block &&
+          block
             .getTransaction()
             .then(tx => tx.wait())
             .then(loadBanlance)
@@ -573,7 +602,7 @@ export default function Invest (props) {
         <GridItem xs={12} sm={12} md={12} lg={12}>
           <div style={{ textAlign: "center", minHeight: "100px", color: "#fff", padding: 50 }}>
             <AndroidIcon fontSize='large' />
-            <p style={{ marginTop: 0 }}>暂无预估数值</p>
+            <p style={{ marginTop: 0, letterSpacing: "0.01071em" }}>暂无预估数值</p>
           </div>
         </GridItem>
       )
@@ -590,7 +619,7 @@ export default function Invest (props) {
           >
             <AddIcon fontSize='small' style={{ position: "absolute", top: 25, left: 45 }} />
             <img className={classes.img} alt='' src={`./images/${item.tokenAddress}.webp`} />
-            &nbsp;&nbsp;~&nbsp;{toFixed(item.amounts, BigNumber.from(10).pow(item.decimals), item.decimals)}
+            &nbsp;&nbsp;~&nbsp;{toFixed(item.amounts, BigNumber.from(10).pow(item.decimals), 6)}
           </Button>
         </GridItem>
       )
@@ -622,15 +651,13 @@ export default function Invest (props) {
         <div className={classes.container}>
           <GridContainer className={classNames(classes.center)}>
             <GridItem xs={12} sm={12} md={8}>
-              <Card style={{ border: "1px solid #fff", padding: 20, background: "transparent" }}>
+              <Card style={{ border: "1px solid #fff", padding: 20, backgroundColor: "rgb(12, 18, 26)" }}>
                 <CardHeader
                   style={{ color: "#fff" }}
-                  avatar={
-                    <img style={{ width: 35 }} alt='' src={`./images/${USDT_ADDRESS}.webp`} />
-                  }
-                  title="USDT VAULT"
+                  avatar={<img style={{ width: 35 }} alt='' src={`./images/${USDT_ADDRESS}.webp`} />}
+                  title={<span style={{ fontWeight: 700, fontSize: "16px", lineHeight: "20px" }}>USDT VAULT</span>}
                 />
-                <GridContainer>
+                <GridContainer style={{ padding: "0 20px" }}>
                   <GridItem xs={12} sm={12} md={12} lg={12}>
                     <CustomInput
                       labelText={`Balance: ${toFixed(fromBalance, BigNumber.from(10).pow(usdtDecimals), 6)}`}
@@ -639,8 +666,15 @@ export default function Invest (props) {
                         value: fromValue,
                         endAdornment: (
                           <span
-                            style={{ color: "#69c0ff", cursor: "pointer" }}
-                            onClick={() => setFromValue(toFixed(fromBalance, BigNumber.from(10).pow(usdtDecimals)))}
+                            style={
+                              isFromValueMax
+                                ? { color: "#da2eef", cursor: "pointer", fontWeight: "bold" }
+                                : { color: "#69c0ff", cursor: "pointer" }
+                            }
+                            onClick={() => {
+                              setFromValue(toFixed(fromBalance, BigNumber.from(10).pow(usdtDecimals), usdtDecimals))
+                              setIsFromValueMax(true)
+                            }}
                           >
                             Max
                           </span>
@@ -651,6 +685,7 @@ export default function Invest (props) {
                           } catch (error) {
                             setFromValue("")
                           }
+                          setIsFromValueMax(false)
                         },
                       }}
                       error={!isUndefined(isValidFromValueFlag) && !isValidFromValueFlag}
@@ -664,7 +699,7 @@ export default function Invest (props) {
                     <GridContainer>
                       <GridItem xs={8} sm={8} md={9} lg={9}>
                         <Muted>
-                          <p style={{ fontSize: 14, wordBreak: "break-all" }}>
+                          <p style={{ fontSize: 16, wordBreak: "break-all", letterSpacing: "0.01071em" }}>
                             份额预估：
                             {isValidFromValueFlag &&
                               toFixed(
@@ -711,8 +746,15 @@ export default function Invest (props) {
                         value: toValue,
                         endAdornment: (
                           <span
-                            style={{ color: "#69c0ff", cursor: "pointer" }}
-                            onClick={() => setToValue(toFixed(toBalance, BigNumber.from(10).pow(usdtDecimals)))}
+                            style={
+                              isToValueMax
+                                ? { color: "#da2eef", cursor: "pointer", fontWeight: "bold" }
+                                : { color: "#69c0ff", cursor: "pointer" }
+                            }
+                            onClick={() => {
+                              setToValue(toFixed(toBalance, BigNumber.from(10).pow(usdtDecimals), usdtDecimals))
+                              setIsToValueMax(true)
+                            }}
                           >
                             Max
                           </span>
@@ -723,6 +765,7 @@ export default function Invest (props) {
                           } catch (error) {
                             setToValue("")
                           }
+                          setIsToValueMax(false)
                         },
                       }}
                       error={!isUndefined(isValidToValueFlag) && !isValidToValueFlag}
@@ -759,7 +802,9 @@ export default function Invest (props) {
                         <GridItem xs={12} sm={12} md={12} lg={12}>
                           <GridContainer>
                             <GridItem xs={4} sm={4} md={4} lg={4}>
-                              <p style={{ color: "#fff", lineHeight: "70px", fontSize: 14, marginLeft: 30 }}>
+                              <p
+                                style={{ color: "#fff", lineHeight: "70px", fontSize: 16, letterSpacing: "0.01071em" }}
+                              >
                                 提取币种及数额预估
                               </p>
                             </GridItem>
@@ -777,10 +822,7 @@ export default function Invest (props) {
                                     }}
                                   />
                                 }
-                                style={{ padding: "30px 0px 30px 30px" }}
-                                classes={{
-                                  label: classes.label,
-                                }}
+                                style={{ padding: "32px 0px 32px 0px" }}
                                 label={<Muted>{shouldExchange ? "开启兑换" : "关闭兑换"}</Muted>}
                               />
                             </GridItem>
@@ -850,13 +892,13 @@ export default function Invest (props) {
               </Card>
             </GridItem>
           </GridContainer>
-          <p style={{ color: "#fff" }}>有关此 Vault 更多的信息</p>
+          <p style={{ color: "#fff", letterSpacing: "0.01071em" }}>有关此 Vault 更多的信息</p>
           <TableContainer component={Paper} style={{ borderRadius: 0 }}>
             <Table className={classNames(classes.table)} aria-label='simple table'>
               <TableHead>
                 <TableRow>
                   <TableCell className={classNames(classes.tableCell)}>Vault 通证符号</TableCell>
-                  <TableCell className={classNames(classes.tableCell)}>单价</TableCell>
+                  <TableCell className={classNames(classes.tableCell)}>净值</TableCell>
                   <TableCell className={classNames(classes.tableCell)}>Vault 合约地址</TableCell>
                   <TableCell className={classNames(classes.tableCell)}>质押通证符号</TableCell>
                   <TableCell className={classNames(classes.tableCell)}>质押合约地址</TableCell>
@@ -869,7 +911,11 @@ export default function Invest (props) {
                     BOC_Vault
                   </TableCell>
                   <TableCell className={classNames(classes.tableCell)} component='th' scope='row'>
-                    <CountTo from={Number(beforePerFullShare.toBigInt())} to={Number(perFullShare.toBigInt())} speed={3500}>
+                    <CountTo
+                      from={Number(beforePerFullShare.toBigInt())}
+                      to={Number(perFullShare.toBigInt())}
+                      speed={3500}
+                    >
                       {v => toFixed(v, BigNumber.from(10).pow(usdtDecimals), 6)}
                     </CountTo>
                   </TableCell>
@@ -895,7 +941,11 @@ export default function Invest (props) {
                     </a>
                   </TableCell>
                   <TableCell className={classNames(classes.tableCell)}>
-                    <CountTo from={Number(beforeTotalAssets.toBigInt())} to={Number(totalAssets.toBigInt())} speed={3500}>
+                    <CountTo
+                      from={Number(beforeTotalAssets.toBigInt())}
+                      to={Number(totalAssets.toBigInt())}
+                      speed={3500}
+                    >
                       {v => {
                         return `${toFixed(v, BigNumber.from(10).pow(usdtDecimals), 6)}USDT`
                       }}

@@ -4,6 +4,7 @@
  const configBase = {
   vault_address: '',
   underlying_address: '',
+  abi_version: 'v4.3',
   community_url: 'https://discord.gg/GjT2crrv',
   aboutus_url: 'https://piggyfinance.github.io/docs/zh/aboutus/',
   blog_url: 'https://piggyfinance.github.io/docs/zh/blog/',
@@ -20,33 +21,38 @@ const config137 = {
   chain_browser_url:'https://polygonscan.com',
   exchange_extra_params: {
     oneInch: {
-      network: 56,
-      excludeProtocols: ['POLYGON_ONE_INCH_LIMIT_ORDER']
+      network: 137,
+      excludeProtocols: ['POLYGON_ONE_INCH_LIMIT_ORDER', 'POLYGON_ONE_INCH_LIMIT_ORDER_V2']
     },
     paraswap: {
-      network: 56,
+      network: 137,
       excludeContractMethods: []
     }
   },
+  // 币安链一个区块2千万，使用90%的空间即可，过大会造成打块过慢
+  max_gas_limit: 1800 * 10 ** 4
 }
 
 const config56 = {
   ...configBase,
   apy_server: 'https://bankofchain.io/api/56',
   rpcUrl: 'https://speedy-nodes-nyc.moralis.io/f2cbcaf720c374313b5543f8/bsc/mainnet/archive',
-  vault_address: "",
+  vault_address: "0x699F86dd50224544E6c23670Af44682CAe9db3c5",
+  abi_version: 'v4.4',
   underlying_address: "0x55d398326f99059fF775485246999027B3197955",
   chain_browser_url:'https://bscscan.com',
   exchange_extra_params: {
     oneInch: {
       network: 56,
-      excludeProtocols: ['BSC_ONE_INCH_LIMIT_ORDER']
+      excludeProtocols: ['BSC_ONE_INCH_LIMIT_ORDER', 'BSC_ONE_INCH_LIMIT_ORDER_V2']
     },
     paraswap: {
       network: 56,
       excludeContractMethods: []
     }
   },
+  // 币安链一个区块8千万，使用90%的空间即可，过大会造成打块过慢
+  max_gas_limit: 7200 * 10 ** 4
 }
 
 window.config = {

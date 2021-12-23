@@ -5,6 +5,7 @@ const configBase = {
   vault_address: "",
   underlying_address: "",
   chain_browser_url: '',
+  abi_version: 'v4.3',
   community_url: 'https://discord.gg/GjT2crrv',
   aboutus_url: 'https://piggyfinance.github.io/docs/zh/aboutus/',
   blog_url: 'https://piggyfinance.github.io/docs/zh/blog/',
@@ -19,35 +20,40 @@ const config137 = {
   apy_server: 'http://localhost/api/137',
   rpcUrl,
   vault_address: "0x2C328D592819524F741A88A18572372CCE196782",
-  underlying_address: "0x55d398326f99059fF775485246999027B3197955",
+  underlying_address: "0xc2132D05D31c914a87C6611C10748AEb04B58e8F",
   exchange_extra_params: {
     oneInch: {
-      network: 56,
-      excludeProtocols: ['POLYGON_ONE_INCH_LIMIT_ORDER']
+      network: 137,
+      excludeProtocols: ['POLYGON_ONE_INCH_LIMIT_ORDER', 'POLYGON_ONE_INCH_LIMIT_ORDER_V2']
     },
     paraswap: {
-      network: 56,
+      network: 137,
       excludeContractMethods: ['swapOnZeroXv2', 'swapOnZeroXv4']
     }
   },
+  // 币安链一个区块2千万，使用90%的空间即可，过大会造成打块过慢
+  max_gas_limit: 1800 * 10 ** 4
 }
 
 const config56 = {
   ...configBase,
   apy_server: 'http://localhost/api/56',
   rpcUrl,
+  abi_version: 'v4.4',
   vault_address: "0x2C328D592819524F741A88A18572372CCE196782",
   underlying_address: "0x55d398326f99059fF775485246999027B3197955",
   exchange_extra_params: {
     oneInch: {
       network: 56,
-      excludeProtocols: ['BSC_ONE_INCH_LIMIT_ORDER']
+      excludeProtocols: ['BSC_ONE_INCH_LIMIT_ORDER', 'BSC_ONE_INCH_LIMIT_ORDER_V2']
     },
     paraswap: {
       network: 56,
       excludeContractMethods: ['swapOnZeroXv2', 'swapOnZeroXv4']
     }
   },
+  // 币安链一个区块8千万，使用90%的空间即可，过大会造成打块过慢
+  max_gas_limit: 7200 * 10 ** 4
 }
 
 window.config = {

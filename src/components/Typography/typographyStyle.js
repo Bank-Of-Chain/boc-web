@@ -34,6 +34,8 @@ const typographyStyle = {
   },
   mutedText: {
     color: "#fff",
+    fontSize: '16px',
+    letterSpacing: '0.01071em'
   },
   primaryText: {
     color: primaryColor,
