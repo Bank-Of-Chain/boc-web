@@ -56,11 +56,34 @@ const config56 = {
   max_gas_limit: 7200 * 10 ** 4
 }
 
+const config1 = {
+  ...configBase,
+  apy_server: 'http://localhost:5000',
+  rpcUrl,
+  abi_version: 'v4.4',
+  vault_address: "",
+  underlying_address: "",
+  exchange_extra_params: {
+    oneInch: {
+      network: 1,
+      excludeProtocols: ['ONE_INCH_LIMIT_ORDER', 'ONE_INCH_LIMIT_ORDER_V2']
+    },
+    paraswap: {
+      network: 1,
+      excludeContractMethods: ['swapOnZeroXv2', 'swapOnZeroXv4']
+    }
+  },
+  // ETH链一个区块3千万，使用90%的空间即可，过大会造成打块过慢
+  max_gas_limit: 2700 * 10 ** 4
+}
+
 window.config = {
   // 本地链
   31337: config56,
   // polygon
   137: config137,
   // bsc
-  56: config56
+  56: config56,
+  // eth
+  1: config1
 };
