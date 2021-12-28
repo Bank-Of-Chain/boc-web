@@ -672,7 +672,7 @@ export default function Invest (props) {
                                 : { color: "#69c0ff", cursor: "pointer" }
                             }
                             onClick={() => {
-                              setFromValue(toFixed(fromBalance, BigNumber.from(10).pow(usdtDecimals), usdtDecimals))
+                              setFromValue(toFixed(fromBalance, BigNumber.from(10).pow(usdtDecimals), 6, 1))
                               setIsFromValueMax(true)
                             }}
                           >
@@ -752,7 +752,7 @@ export default function Invest (props) {
                                 : { color: "#69c0ff", cursor: "pointer" }
                             }
                             onClick={() => {
-                              setToValue(toFixed(toBalance, BigNumber.from(10).pow(usdtDecimals), usdtDecimals))
+                              setToValue(toFixed(toBalance, BigNumber.from(10).pow(usdtDecimals), 6, 1))
                               setIsToValueMax(true)
                             }}
                           >
