@@ -62,7 +62,7 @@ const config1 = {
   rpcUrl,
   abi_version: 'v4.4',
   vault_address: "",
-  underlying_address: "",
+  underlying_address: "0xdAC17F958D2ee523a2206206994597C13D831ec7",
   exchange_extra_params: {
     oneInch: {
       network: 1,
@@ -79,7 +79,7 @@ const config1 = {
 
 window.config = {
   // 本地链
-  31337: config56,
+  31337: config1,
   // polygon
   137: config137,
   // bsc

@@ -40,7 +40,7 @@ const config56 = {
   apy_server: 'http://localhost:4000',
   rpcUrl,
   abi_version: 'v4.4',
-  vault_address: "0x47CD4297b04621b2CE041eAe635416e1b65f147f",
+  vault_address: "0xf2Bf7C00B4696726B3c1f6E7b87d1a4acB050a8F",
   underlying_address: "0x55d398326f99059fF775485246999027B3197955",
   exchange_extra_params: {
     oneInch: {
@@ -61,8 +61,8 @@ const config1 = {
   apy_server: 'http://localhost:5000',
   rpcUrl,
   abi_version: 'v4.4',
-  vault_address: "",
-  underlying_address: "",
+  vault_address: "0x07882Ae1ecB7429a84f1D53048d35c4bB2056877",
+  underlying_address: "0xdAC17F958D2ee523a2206206994597C13D831ec7",
   exchange_extra_params: {
     oneInch: {
       network: 1,
@@ -79,7 +79,7 @@ const config1 = {
 
 window.config = {
   // 本地链
-  31337: config56,
+  31337: config1,
   // polygon
   137: config137,
   // bsc
