@@ -66,7 +66,7 @@ export const NET_WORKS = [
     gasPrice: 1000000000,
     rpcUrl: "https://rpc-mainnet.maticvigil.com",
     faucet: "https://faucet.matic.network/",
-    blockExplorer: "https://explorer-mainnet.maticvigil.com//",
+    blockExplorer: "https://explorer-mainnet.maticvigil.com/",
   },
   {
     name: "BSC Mainnet",
@@ -75,5 +75,14 @@ export const NET_WORKS = [
     rpcUrl: `https://speedy-nodes-nyc.moralis.io/f2cbcaf720c374313b5543f8/bsc/mainnet/archive`,
     faucet: "",
     blockExplorer: "https://bscscan.com/",
+  },
+
+  {
+    name: "ETH Mainnet",
+    color: "#e0d068",
+    chainId: 1,
+    rpcUrl: `https://mainnet.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161`,
+    faucet: "",
+    blockExplorer: "https://etherscan.io/",
   },
 ]
