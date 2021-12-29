@@ -51,22 +51,13 @@ export const EXCHANGE_AGGREGATOR_ABI = exchangeAggreatorAbi;
 export const TREASURE_ABI = treasureAbi;
 
 export const NET_WORKS = [
-  // {
-  //   name: "Eth Mainnet",
-  //   color: "#ff8b9e",
-  //   chainId: 1,
-  //   rpcUrl: `https://eth-mainnet.alchemyapi.io/v2/mainnet`,
-  //   blockExplorer: "https://etherscan.io/",
-  // },
   {
-    name: "Matic Mainnet",
-    color: "#2bbdf7",
-    chainId: 137,
-    price: 1,
-    gasPrice: 1000000000,
-    rpcUrl: "https://rpc-mainnet.maticvigil.com",
-    faucet: "https://faucet.matic.network/",
-    blockExplorer: "https://explorer-mainnet.maticvigil.com/",
+    name: "ETH Mainnet",
+    color: "#e0d068",
+    chainId: 1,
+    rpcUrl: `https://mainnet.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161`,
+    faucet: "",
+    blockExplorer: "https://etherscan.io/",
   },
   {
     name: "BSC Mainnet",
@@ -76,13 +67,14 @@ export const NET_WORKS = [
     faucet: "",
     blockExplorer: "https://bscscan.com/",
   },
-
   {
-    name: "ETH Mainnet",
-    color: "#e0d068",
-    chainId: 1,
-    rpcUrl: `https://mainnet.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161`,
-    faucet: "",
-    blockExplorer: "https://etherscan.io/",
-  },
+    name: "Matic Mainnet",
+    color: "#2bbdf7",
+    chainId: 137,
+    price: 1,
+    gasPrice: 1000000000,
+    rpcUrl: "https://rpc-mainnet.maticvigil.com",
+    faucet: "https://faucet.matic.network/",
+    blockExplorer: "https://explorer-mainnet.maticvigil.com/",
+  }
 ]
