@@ -61,15 +61,17 @@ const config1 = {
   apy_server: 'http://localhost:5000',
   rpcUrl,
   abi_version: 'v4.4',
-  vault_address: "0x07882Ae1ecB7429a84f1D53048d35c4bB2056877",
+  vault_address: "0xfaAddC93baf78e89DCf37bA67943E1bE8F37Bb8c",
   underlying_address: "0xdAC17F958D2ee523a2206206994597C13D831ec7",
   exchange_extra_params: {
     oneInch: {
+      useHttp: true,
       network: 1,
-      excludeProtocols: ['ONE_INCH_LIMIT_ORDER', 'ONE_INCH_LIMIT_ORDER_V2']
+      protocols: ['CURVE', 'CURVE_V2', 'SUSHI', 'UNISWAP_V2', 'UNISWAP_V3', 'DODO_V2', 'COMPOUND', 'AAVE', 'BALANCER', 'BANCOR', 'MSTABLE', 'AAVE_V2', 'BALANCER_V2']
     },
     paraswap: {
       network: 1,
+      includeDEXS: 'UniswapV2,UniswapV3,SushiSwap,mStable,DODOV2,DODOV1,Curve,CurveV2,Compound,Bancor,BalancerV2,Aave2',
       excludeContractMethods: ['swapOnZeroXv2', 'swapOnZeroXv4']
     }
   },
