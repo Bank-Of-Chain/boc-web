@@ -59,10 +59,10 @@ const config56 = {
 const config1 = {
   ...configBase,
   apy_server: 'https://bankofchain.io/api/1',
-  rpcUrl: '',
+  rpcUrl: 'https://mainnet.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161',
   abi_version: 'v4.4',
-  vault_address: "",
-  underlying_address: "",
+  vault_address: "0x008586B7f6768EDc269D9e5cd276316d33CECE6d",
+  underlying_address: "0xdAC17F958D2ee523a2206206994597C13D831ec7",
   exchange_extra_params: {
     oneInch: {
       network: 1,
