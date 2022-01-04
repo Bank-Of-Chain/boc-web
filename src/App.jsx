@@ -144,7 +144,6 @@ function App() {
     }
   },[selectedChainId])
   const changeNetwork = async targetNetwork => {
-    debugger
     if (isEmpty(targetNetwork)) return
     // 如果metamask已经使用的是targetNetwork的话，则修改localStorage.REACT_APP_NETWORK_TYPE之后，进行页面刷新。
     if (targetNetwork.chainId === selectedChainId) {
