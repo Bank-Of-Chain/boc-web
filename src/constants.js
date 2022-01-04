@@ -73,7 +73,7 @@ export const NET_WORKS = [
     chainId: 137,
     price: 1,
     gasPrice: 1000000000,
-    rpcUrl: "https://rpc-mainnet.maticvigil.com",
+    rpcUrl: "https://matic-mainnet.chainstacklabs.com",
     faucet: "https://faucet.matic.network/",
     blockExplorer: "https://explorer-mainnet.maticvigil.com/",
   }
