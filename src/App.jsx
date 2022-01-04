@@ -99,6 +99,7 @@ function App() {
     // Subscribe to session disconnection
     provider.on("disconnect", (code, reason) => {
       console.log('disconnect', code, reason);
+      localStorage.REACT_APP_NETWORK_TYPE = ''
     });
   }, [setUserProvider]);
 
@@ -132,8 +133,28 @@ function App() {
   const address = useUserAddress(userProvider);
   const balance = useBalance(userProvider, address);
 
-  const changeNetwork = async (targetNetwork) => {
-    const ethereum = window.ethereum;
+  const selectedChainId =  userProvider && userProvider._network && userProvider._network.chainId
+
+  useEffect(()=>{
+    if(isEmpty(localStorage.REACT_APP_NETWORK_TYPE) && selectedChainId>0){
+      localStorage.REACT_APP_NETWORK_TYPE = selectedChainId
+      setTimeout(() => {
+        window.location.reload()
+      }, 1);
+    }
+  },[selectedChainId])
+  const changeNetwork = async targetNetwork => {
+    debugger
+    if (isEmpty(targetNetwork)) return
+    // 如果metamask已经使用的是targetNetwork的话，则修改localStorage.REACT_APP_NETWORK_TYPE之后，进行页面刷新。
+    if (targetNetwork.chainId === selectedChainId) {
+      localStorage.REACT_APP_NETWORK_TYPE = targetNetwork.chainId
+      setTimeout(() => {
+        window.location.reload()
+      }, 1)
+      return
+    }
+    const ethereum = window.ethereum
     const data = [
       {
         chainId: "0x" + targetNetwork.chainId.toString(16),
@@ -200,7 +221,7 @@ function App() {
                   <CircularProgress color="inherit" />
                   <p>钱包数据加载中...</p>
                 </div>
-              : <p>您当前的网络暂不支持，请重新设置您的网络！</p>
+              : <p style={{ textAlign: "center" }} >您当前的网络暂不支持，请重新设置您的网络！</p>
           }
           <Chains array={NET_WORKS} handleClick={changeNetwork} />
         </Paper>

@@ -21,10 +21,17 @@ import styles from "./headerStyle.js";
 // === Components === //
 import SnackbarContent from "../Snackbar/SnackbarContent";
 
+// === Constants === //
+import { NET_WORKS } from './../../constants';
+
+// === Utils === //
+import find from 'lodash/find'
+import map from 'lodash/map'
+
 const useStyles = makeStyles(styles);
 
 // 允许的chainId
-const allowChainId = [1, 56, 137];
+const allowChainId = map(NET_WORKS, 'chainId');
 
 export default function Header(props) {
   const classes = useStyles();
@@ -81,7 +88,11 @@ export default function Header(props) {
           style={{ width: '100%' }}
           message={
             <span>
-              <b>WARNING ALERT:</b> 当前链与钱包不匹配，请切换后使用
+              <b>WARNING ALERT:</b> 当前链与钱包不匹配，请 <span onClick={() => props.changeNetwork(find(NET_WORKS, { chainId: selectedChainId }))} style={{
+                color:'rgb(105, 192, 255)',
+                textDecoration: 'underline',
+                cursor: 'pointer'
+              }}>切换</span> 后使用
             </span>
           }
           close
