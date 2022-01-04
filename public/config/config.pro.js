@@ -29,6 +29,8 @@ const config137 = {
       excludeContractMethods: []
     }
   },
+  // 币安链一个区块2千万，使用90%的空间即可，过大会造成打块过慢
+  max_gas_limit: 1800 * 10 ** 4
 }
 
 const config56 = {
@@ -49,11 +51,37 @@ const config56 = {
       excludeContractMethods: []
     }
   },
+  // 币安链一个区块8千万，使用90%的空间即可，过大会造成打块过慢
+  max_gas_limit: 7200 * 10 ** 4
+}
+
+
+const config1 = {
+  ...configBase,
+  apy_server: 'https://bankofchain.io/api/1',
+  rpcUrl: 'https://mainnet.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161',
+  abi_version: 'v4.4',
+  vault_address: "0x008586B7f6768EDc269D9e5cd276316d33CECE6d",
+  underlying_address: "0xdAC17F958D2ee523a2206206994597C13D831ec7",
+  exchange_extra_params: {
+    oneInch: {
+      network: 1,
+      excludeProtocols: ['ONE_INCH_LIMIT_ORDER', 'ONE_INCH_LIMIT_ORDER_V2']
+    },
+    paraswap: {
+      network: 1,
+      excludeContractMethods: ['swapOnZeroXv2', 'swapOnZeroXv4']
+    }
+  },
+  // ETH链一个区块3千万，使用90%的空间即可，过大会造成打块过慢
+  max_gas_limit: 2700 * 10 ** 4
 }
 
 window.config = {
   // polygon
   137: config137,
   // bsc
-  56: config56
+  56: config56,
+  // eth
+  1: config1
 };

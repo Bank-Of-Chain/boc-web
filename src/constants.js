@@ -4,8 +4,8 @@ export const INFURA_ID = "3be290dd5c1a46f894bdf28625c000ce";
 // MY ETHERSCAN_ID, SWAP IN YOURS FROM https://etherscan.io/myapikey
 export const ETHERSCAN_KEY = "PSW8C433Q667DVEX5BCRMGNAH9FSGFZ7Q8";
 
-// gas limit设置为平常的10倍
-export const MULTIPLE_OF_GAS = 10;
+// gas limit设置为平常的2倍
+export const MULTIPLE_OF_GAS = 2;
 
 // EXTERNAL CONTRACTS
 export const ENV_NETWORK_TYPE = process.env.REACT_APP_NETWORK_TYPE || localStorage.REACT_APP_NETWORK_TYPE
@@ -37,6 +37,7 @@ export const ABOUTUS_URL = config.aboutus_url;
 export const BLOG_URL = config.blog_url;
 export const LICENSES_URL = config.licenses_url;
 export const DOCUMENT_URL = config.document_url;
+export const MAX_GAS_LIMIT = config.max_gas_limit;
 
 // === abi === //
 export const VAULT_ABI = vaultAbi;
@@ -50,22 +51,13 @@ export const EXCHANGE_AGGREGATOR_ABI = exchangeAggreatorAbi;
 export const TREASURE_ABI = treasureAbi;
 
 export const NET_WORKS = [
-  // {
-  //   name: "Eth Mainnet",
-  //   color: "#ff8b9e",
-  //   chainId: 1,
-  //   rpcUrl: `https://eth-mainnet.alchemyapi.io/v2/mainnet`,
-  //   blockExplorer: "https://etherscan.io/",
-  // },
   {
-    name: "Matic Mainnet",
-    color: "#2bbdf7",
-    chainId: 137,
-    price: 1,
-    gasPrice: 1000000000,
-    rpcUrl: "https://rpc-mainnet.maticvigil.com",
-    faucet: "https://faucet.matic.network/",
-    blockExplorer: "https://explorer-mainnet.maticvigil.com//",
+    name: "ETH Mainnet",
+    color: "#e0d068",
+    chainId: 1,
+    rpcUrl: `https://mainnet.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161`,
+    faucet: "",
+    blockExplorer: "https://etherscan.io/",
   },
   {
     name: "BSC Mainnet",
@@ -75,4 +67,14 @@ export const NET_WORKS = [
     faucet: "",
     blockExplorer: "https://bscscan.com/",
   },
+  {
+    name: "Matic Mainnet",
+    color: "#2bbdf7",
+    chainId: 137,
+    price: 1,
+    gasPrice: 1000000000,
+    rpcUrl: "https://rpc-mainnet.maticvigil.com",
+    faucet: "https://faucet.matic.network/",
+    blockExplorer: "https://explorer-mainnet.maticvigil.com/",
+  }
 ]

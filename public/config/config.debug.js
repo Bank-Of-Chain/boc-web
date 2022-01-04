@@ -13,11 +13,11 @@ const configBase = {
   document_url: "https://piggyfinance.github.io/docs/zh/docs/"
 }
 
-const rpcUrl = 'http://localhost:8545'
+const rpcUrl = 'http://192.168.60.12:8545'
 
 const config137 = {
   ...configBase,
-  apy_server: 'http://localhost/api/137',
+  apy_server: 'http://192.168.60.12/api/137',
   rpcUrl,
   vault_address: "0x2C328D592819524F741A88A18572372CCE196782",
   underlying_address: "0xc2132D05D31c914a87C6611C10748AEb04B58e8F",
@@ -31,11 +31,13 @@ const config137 = {
       excludeContractMethods: ['swapOnZeroXv2', 'swapOnZeroXv4']
     }
   },
+  // 币安链一个区块2千万，使用90%的空间即可，过大会造成打块过慢
+  max_gas_limit: 1800 * 10 ** 4
 }
 
 const config56 = {
   ...configBase,
-  apy_server: 'http://localhost/api/56',
+  apy_server: 'http://192.168.60.12/api/56',
   rpcUrl,
   abi_version: 'v4.4',
   vault_address: "0x2C328D592819524F741A88A18572372CCE196782",
@@ -50,13 +52,40 @@ const config56 = {
       excludeContractMethods: ['swapOnZeroXv2', 'swapOnZeroXv4']
     }
   },
+  // 币安链一个区块8千万，使用90%的空间即可，过大会造成打块过慢
+  max_gas_limit: 7200 * 10 ** 4
+}
+
+const config1 = {
+  ...configBase,
+  apy_server: 'http://192.168.60.12/api/1',
+  rpcUrl,
+  abi_version: 'v4.4',
+  vault_address: "",
+  underlying_address: "0xdAC17F958D2ee523a2206206994597C13D831ec7",
+  exchange_extra_params: {
+    oneInch: {
+      useHttp: true,
+      network: 1,
+      protocols: ['CURVE', 'CURVE_V2', 'SUSHI', 'UNISWAP_V2', 'UNISWAP_V3', 'DODO_V2', 'COMPOUND', 'AAVE', 'BALANCER', 'BANCOR', 'MSTABLE', 'AAVE_V2', 'BALANCER_V2']
+    },
+    paraswap: {
+      network: 1,
+      includeDEXS: 'UniswapV2,UniswapV3,SushiSwap,mStable,DODOV2,DODOV1,Curve,CurveV2,Compound,Bancor,BalancerV2,Aave2',
+      excludeContractMethods: ['swapOnZeroXv2', 'swapOnZeroXv4']
+    }
+  },
+  // ETH链一个区块3千万，使用90%的空间即可，过大会造成打块过慢
+  max_gas_limit: 2700 * 10 ** 4
 }
 
 window.config = {
   // 本地链
-  31337: config56,
+  31337: config1,
   // polygon
   137: config137,
   // bsc
-  56: config56
+  56: config56,
+  // eth
+  1: config1
 };
