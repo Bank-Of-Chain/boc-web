@@ -24,6 +24,10 @@ const config137 = {
       network: 137,
       excludeProtocols: ['POLYGON_ONE_INCH_LIMIT_ORDER', 'POLYGON_ONE_INCH_LIMIT_ORDER_V2']
     },
+    oneInchV4: {
+      network: 137,
+      excludeProtocols: ['POLYGON_ONE_INCH_LIMIT_ORDER', 'POLYGON_ONE_INCH_LIMIT_ORDER_V2']
+    },
     paraswap: {
       network: 137,
       excludeContractMethods: []
@@ -43,6 +47,10 @@ const config56 = {
   chain_browser_url:'https://bscscan.com',
   exchange_extra_params: {
     oneInch: {
+      network: 56,
+      excludeProtocols: ['BSC_ONE_INCH_LIMIT_ORDER', 'BSC_ONE_INCH_LIMIT_ORDER_V2']
+    },
+    oneInchV4: {
       network: 56,
       excludeProtocols: ['BSC_ONE_INCH_LIMIT_ORDER', 'BSC_ONE_INCH_LIMIT_ORDER_V2']
     },
@@ -66,6 +74,10 @@ const config1 = {
   chain_browser_url:'https://etherscan.io',
   exchange_extra_params: {
     oneInch: {
+      network: 1,
+      excludeProtocols: ['ONE_INCH_LIMIT_ORDER', 'ONE_INCH_LIMIT_ORDER_V2']
+    },
+    oneInchV4: {
       network: 1,
       excludeProtocols: ['ONE_INCH_LIMIT_ORDER', 'ONE_INCH_LIMIT_ORDER_V2']
     },

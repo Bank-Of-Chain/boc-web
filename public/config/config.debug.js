@@ -26,6 +26,10 @@ const config137 = {
       network: 137,
       excludeProtocols: ['POLYGON_ONE_INCH_LIMIT_ORDER', 'POLYGON_ONE_INCH_LIMIT_ORDER_V2']
     },
+    oneInchV4: {
+      network: 137,
+      excludeProtocols: ['POLYGON_ONE_INCH_LIMIT_ORDER', 'POLYGON_ONE_INCH_LIMIT_ORDER_V2']
+    },
     paraswap: {
       network: 137,
       excludeContractMethods: ['swapOnZeroXv2', 'swapOnZeroXv4']
@@ -44,6 +48,10 @@ const config56 = {
   underlying_address: "0x55d398326f99059fF775485246999027B3197955",
   exchange_extra_params: {
     oneInch: {
+      network: 56,
+      excludeProtocols: ['BSC_ONE_INCH_LIMIT_ORDER', 'BSC_ONE_INCH_LIMIT_ORDER_V2']
+    },
+    oneInchV4: {
       network: 56,
       excludeProtocols: ['BSC_ONE_INCH_LIMIT_ORDER', 'BSC_ONE_INCH_LIMIT_ORDER_V2']
     },
@@ -66,6 +74,11 @@ const config1 = {
   chain_browser_url:'https://etherscan.io',
   exchange_extra_params: {
     oneInch: {
+      useHttp: true,
+      network: 1,
+      protocols: ['CURVE', 'CURVE_V2', 'SUSHI', 'UNISWAP_V2', 'UNISWAP_V3', 'DODO_V2', 'COMPOUND', 'AAVE', 'BALANCER', 'BANCOR', 'MSTABLE', 'AAVE_V2', 'BALANCER_V2']
+    },
+    oneInchV4: {
       useHttp: true,
       network: 1,
       protocols: ['CURVE', 'CURVE_V2', 'SUSHI', 'UNISWAP_V2', 'UNISWAP_V3', 'DODO_V2', 'COMPOUND', 'AAVE', 'BALANCER', 'BANCOR', 'MSTABLE', 'AAVE_V2', 'BALANCER_V2']
