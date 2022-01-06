@@ -15,7 +15,7 @@
 const config137 = {
   ...configBase,
   apy_server: 'https://bankofchain.io/api/137',
-  rpcUrl: 'https://rpc-mainnet.maticvigil.com',
+  rpcUrl: 'https://polygon-rpc.com/',
   vault_address: "0xFB7f340A7DEfD3bB0072844db6D5EbdFAD765dea",
   underlying_address: "0xc2132D05D31c914a87C6611C10748AEb04B58e8F",
   chain_browser_url:'https://polygonscan.com',
@@ -40,7 +40,7 @@ const config137 = {
 const config56 = {
   ...configBase,
   apy_server: 'https://bankofchain.io/api/56',
-  rpcUrl: 'https://speedy-nodes-nyc.moralis.io/f2cbcaf720c374313b5543f8/bsc/mainnet/archive',
+  rpcUrl: 'https://bsc-dataseed.binance.org/',
   vault_address: "0x699F86dd50224544E6c23670Af44682CAe9db3c5",
   abi_version: 'v4.4',
   underlying_address: "0x55d398326f99059fF775485246999027B3197955",
@@ -67,10 +67,11 @@ const config56 = {
 const config1 = {
   ...configBase,
   apy_server: 'https://bankofchain.io/api/1',
-  rpcUrl: 'https://mainnet.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161',
+  rpcUrl: 'https://cloudflare-eth.com',
   abi_version: 'v4.4',
   vault_address: "0x008586B7f6768EDc269D9e5cd276316d33CECE6d",
   underlying_address: "0xdAC17F958D2ee523a2206206994597C13D831ec7",
+  chain_browser_url:'https://etherscan.io',
   exchange_extra_params: {
     oneInch: {
       network: 1,
