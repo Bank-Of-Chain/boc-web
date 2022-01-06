@@ -26,6 +26,10 @@ const config137 = {
       network: 137,
       excludeProtocols: ['POLYGON_ONE_INCH_LIMIT_ORDER', 'POLYGON_ONE_INCH_LIMIT_ORDER_V2']
     },
+    oneInchV4: {
+      network: 137,
+      excludeProtocols: ['POLYGON_ONE_INCH_LIMIT_ORDER', 'POLYGON_ONE_INCH_LIMIT_ORDER_V2']
+    },
     paraswap: {
       network: 137,
       excludeContractMethods: ['swapOnZeroXv2', 'swapOnZeroXv4']
@@ -47,6 +51,10 @@ const config56 = {
       network: 56,
       excludeProtocols: ['BSC_ONE_INCH_LIMIT_ORDER', 'BSC_ONE_INCH_LIMIT_ORDER_V2']
     },
+    oneInchV4: {
+      network: 56,
+      excludeProtocols: ['BSC_ONE_INCH_LIMIT_ORDER', 'BSC_ONE_INCH_LIMIT_ORDER_V2']
+    },
     paraswap: {
       network: 56,
       excludeContractMethods: ['swapOnZeroXv2', 'swapOnZeroXv4']
@@ -61,10 +69,15 @@ const config1 = {
   apy_server: 'http://localhost:5000',
   rpcUrl,
   abi_version: 'v4.4',
-  vault_address: "0xfaAddC93baf78e89DCf37bA67943E1bE8F37Bb8c",
+  vault_address: "0x2C328D592819524F741A88A18572372CCE196782",
   underlying_address: "0xdAC17F958D2ee523a2206206994597C13D831ec7",
   exchange_extra_params: {
     oneInch: {
+      useHttp: true,
+      network: 1,
+      protocols: ['CURVE', 'CURVE_V2', 'SUSHI', 'UNISWAP_V2', 'UNISWAP_V3', 'DODO_V2', 'COMPOUND', 'AAVE', 'BALANCER', 'BANCOR', 'MSTABLE', 'AAVE_V2', 'BALANCER_V2']
+    },
+    oneInchV4: {
       useHttp: true,
       network: 1,
       protocols: ['CURVE', 'CURVE_V2', 'SUSHI', 'UNISWAP_V2', 'UNISWAP_V3', 'DODO_V2', 'COMPOUND', 'AAVE', 'BALANCER', 'BANCOR', 'MSTABLE', 'AAVE_V2', 'BALANCER_V2']

@@ -24,6 +24,10 @@ const config137 = {
       network: 137,
       excludeProtocols: ['POLYGON_ONE_INCH_LIMIT_ORDER', 'POLYGON_ONE_INCH_LIMIT_ORDER_V2']
     },
+    oneInchV4: {
+      network: 137,
+      excludeProtocols: ['POLYGON_ONE_INCH_LIMIT_ORDER', 'POLYGON_ONE_INCH_LIMIT_ORDER_V2']
+    },
     paraswap: {
       network: 137,
       excludeContractMethods: []
@@ -46,6 +50,10 @@ const config56 = {
       network: 56,
       excludeProtocols: ['BSC_ONE_INCH_LIMIT_ORDER', 'BSC_ONE_INCH_LIMIT_ORDER_V2']
     },
+    oneInchV4: {
+      network: 56,
+      excludeProtocols: ['BSC_ONE_INCH_LIMIT_ORDER', 'BSC_ONE_INCH_LIMIT_ORDER_V2']
+    },
     paraswap: {
       network: 56,
       excludeContractMethods: []
@@ -65,6 +73,10 @@ const config1 = {
   underlying_address: "0xdAC17F958D2ee523a2206206994597C13D831ec7",
   exchange_extra_params: {
     oneInch: {
+      network: 1,
+      excludeProtocols: ['ONE_INCH_LIMIT_ORDER', 'ONE_INCH_LIMIT_ORDER_V2']
+    },
+    oneInchV4: {
       network: 1,
       excludeProtocols: ['ONE_INCH_LIMIT_ORDER', 'ONE_INCH_LIMIT_ORDER_V2']
     },
