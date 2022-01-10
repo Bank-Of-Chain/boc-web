@@ -1,7 +1,7 @@
 /* eslint-disable no-extend-native */
 import React, { useState, useCallback, useEffect, Suspense, lazy } from "react";
 import { Switch, Route, Redirect, HashRouter } from "react-router-dom";
-import { JsonRpcProvider, Web3Provider } from "@ethersproject/providers";
+import { Web3Provider } from "@ethersproject/providers";
 import { useUserAddress } from "eth-hooks";
 
 // === Components === //
@@ -12,9 +12,7 @@ import Modal from '@material-ui/core/Modal';
 import Paper from '@material-ui/core/Paper';
 
 // === Utils === //
-import { useGasPrice, useBalance } from "./hooks";
-import { RPC_URL, USDT_ADDRESS, NET_WORKS, VAULT_ADDRESS } from "./constants";
-import { Transactor } from "./helpers";
+import { USDT_ADDRESS, NET_WORKS, VAULT_ADDRESS } from "./constants";
 import { makeStyles } from '@material-ui/core/styles';
 import { SafeAppWeb3Modal } from '@gnosis.pm/safe-apps-web3modal';
 import { lendSwap } from 'piggy-finance-utils';
@@ -47,13 +45,8 @@ Date.prototype.format = function (fmt) {
 
 const Home = lazy(() => import('./pages/Home/index'));
 const Invest = lazy(() => import('./pages/Invest/index'));
+const Index = lazy(() => import('./pages/Index/index'));
 
-const DEBUG = false;
-
-// 🏠 Your local provider is usually pointed at your local blockchain
-// as you deploy to other networks you can set REACT_APP_PROVIDER=https://dai.poa.network in packages/react-app/.env
-if (DEBUG) console.log("🏠 Connecting to provider:", RPC_URL);
-const localProvider = RPC_URL && new JsonRpcProvider(RPC_URL);
 const web3Modal = new SafeAppWeb3Modal({
   // network: "mainnet", // optional
   cacheProvider: true, // optional
@@ -116,22 +109,7 @@ function App() {
     }
   }, [loadWeb3Modal]);
 
-  useEffect(() => {
-    if(localProvider && localProvider._networkPromise) {
-      setIsLoadingChainId(true);
-      localProvider._networkPromise.then((v) => {
-        setTimeout(() => {
-          setChainId(v.chainId)
-          setIsLoadingChainId(false)
-        }, 300);
-      })
-    }
-  }, []);
-
-  const gasPrice = useGasPrice();
-  const tx = Transactor(userProvider, gasPrice);
   const address = useUserAddress(userProvider);
-  const balance = useBalance(userProvider, address);
 
   const selectedChainId =  userProvider && userProvider._network && userProvider._network.chainId
 
@@ -195,12 +173,9 @@ function App() {
     loadWeb3Modal,
     logoutOfWeb3Modal,
     userProvider,
-    localProvider,
-    tx,
-    balance,
-    localChainId,
     changeNetwork
   };
+  console.log('nextProps=', nextProps);
   return (
     <div className="App">
       <Modal
@@ -239,6 +214,13 @@ function App() {
               <CircularProgress color="inherit" />
             </Backdrop>}>
               <Invest {...nextProps} />
+            </Suspense>
+          </Route>
+          <Route path="/index">
+            <Suspense fallback={<Backdrop className={classes.backdrop} open>
+              <CircularProgress color="inherit" />
+            </Backdrop>}>
+              <Index {...nextProps} />
             </Suspense>
           </Route>
           <Route path="*">
