@@ -95,9 +95,9 @@ export default function HeaderLinks(props) {
           }}
           buttonIcon={Apps}
           dropdownList={map(NET_WORKS, i => (
-            <p onClick={() => props.changeNetwork(i)} className={classes.dropdownLink}>
+            <a onClick={() => props.changeNetwork(i)} className={classes.dropdownLink}>
               {i.name}
-            </p>
+            </a>
           ))}
         />
       </ListItem>

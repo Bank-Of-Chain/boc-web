@@ -10,6 +10,7 @@ import Backdrop from "@material-ui/core/Backdrop"
 import Chains from "./components/Chains/Chains"
 import Modal from "@material-ui/core/Modal"
 import Paper from "@material-ui/core/Paper"
+import Frame from "./components/Frame/Frame"
 
 // === Utils === //
 import { USDT_ADDRESS, NET_WORKS, VAULT_ADDRESS } from "./constants"
@@ -18,6 +19,7 @@ import { SafeAppWeb3Modal } from "@gnosis.pm/safe-apps-web3modal"
 import { lendSwap } from "piggy-finance-utils"
 import isEmpty from "lodash/isEmpty"
 import isUndefined from "lodash/isUndefined"
+import map from "lodash/map"
 
 // === Styles === //
 import "./App.css"
@@ -76,27 +78,27 @@ function App () {
   const loadWeb3Modal = useCallback(async () => {
     const provider = await web3Modal.requestProvider()
 
-    const tututu = p => {
+    const updateProvider = p => {
       setIsLoadingChainId(true)
       setUserProvider(p)
       p._networkPromise.then(v => {
         setTimeout(() => {
           setChainId(v.chainId)
           setIsLoadingChainId(false)
-        }, 2000)
+        }, 200)
       })
     }
 
-    tututu(new Web3Provider(provider))
+    updateProvider(new Web3Provider(provider))
     provider.on("chainChanged", chainId => {
       console.log(`chain changed to ${chainId}! updating providers`)
       localStorage.REACT_APP_NETWORK_TYPE = parseInt(chainId)
-      tututu(new Web3Provider(provider))
+      updateProvider(new Web3Provider(provider))
     })
 
     provider.on("accountsChanged", () => {
       console.log(`account changed!`)
-      tututu(new Web3Provider(provider))
+      updateProvider(new Web3Provider(provider))
     })
 
     // Subscribe to session disconnection
@@ -176,21 +178,12 @@ function App () {
       console.log(switchTx)
     }
   }
-  const nextProps = {
-    web3Modal,
-    address,
-    loadWeb3Modal,
-    logoutOfWeb3Modal,
-    userProvider,
-    changeNetwork,
-  }
 
-  console.log("nextProps=", nextProps)
-  return (
-    <div className='App'>
+  const modalJsx = (isOpen, renderText) => {
+    return (
       <Modal
         className={classes.modal}
-        open={isEmpty(VAULT_ADDRESS) || isUndefined(localChainId)}
+        open={isOpen}
         aria-labelledby='simple-modal-title'
         aria-describedby='simple-modal-description'
       >
@@ -205,17 +198,56 @@ function App () {
             background: "#000",
           }}
         >
-          {isLoadingChainId ? (
-            <div style={{ textAlign: "center" }}>
-              <CircularProgress color='inherit' />
-              <p>钱包数据加载中...</p>
-            </div>
-          ) : (
-            <p style={{ textAlign: "center" }}>您当前的网络暂不支持，请重新设置您的网络！</p>
-          )}
-          <Chains array={NET_WORKS} handleClick={changeNetwork} />
+          {renderText}
         </Paper>
       </Modal>
+    )
+  }
+  const renderModalValid = () => {
+    if (isEmpty(window.ethereum)) {
+      return modalJsx(
+        true,
+        <div style={{ textAlign: "center" }}>
+          <p style={{ textAlign: "center" }}>
+            请先安装Metamask插件!{" "}
+            <a href='https://chrome.google.com/webstore/detail/metamask/nkbihfbeogaeaoehlefnkodbefgpgknn?hl=zh-CN'>
+              【插件地址】
+            </a>
+          </p>
+        </div>,
+      )
+    }
+    if (isLoadingChainId) {
+      return modalJsx(true, [
+        <div key='1' style={{ textAlign: "center" }}>
+          <CircularProgress color='inherit' />
+          <p>钱包数据加载中...</p>
+        </div>,
+        <Chains key='2' array={NET_WORKS} handleClick={changeNetwork} />,
+      ])
+    }
+    if (!isUndefined(localChainId) && !map(NET_WORKS, "chainId").includes(localChainId)) {
+      if (localChainId === 31337) return
+      return modalJsx(true, [
+        <p key='1' style={{ textAlign: "center" }}>
+          您当前的网络暂不支持，请重新设置您的网络！
+        </p>,
+        <Chains key='2' array={NET_WORKS} handleClick={changeNetwork} />,
+      ])
+    }
+  }
+  const nextProps = {
+    web3Modal,
+    address,
+    loadWeb3Modal,
+    logoutOfWeb3Modal,
+    userProvider,
+    changeNetwork,
+  }
+
+  return (
+    <div className='App'>
+      {renderModalValid()}
       <HashRouter>
         <Switch>
           <Route exact path='/'>
@@ -226,7 +258,9 @@ function App () {
                 </Backdrop>
               }
             >
-              <Home {...nextProps} />
+              <Frame {...nextProps}>
+                <Home {...nextProps} />
+              </Frame>
             </Suspense>
           </Route>
           <Route path='/invest'>
@@ -237,7 +271,9 @@ function App () {
                 </Backdrop>
               }
             >
-              <Invest {...nextProps} />
+              <Frame {...nextProps}>
+                <Invest {...nextProps} />
+              </Frame>
             </Suspense>
           </Route>
           <Route path='/index'>
@@ -248,7 +284,9 @@ function App () {
                 </Backdrop>
               }
             >
-              <Index {...nextProps} />
+              <Frame {...nextProps}>
+                <Index {...nextProps} />
+              </Frame>
             </Suspense>
           </Route>
           <Route path='*'>
