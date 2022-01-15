@@ -13,12 +13,9 @@ const configBase = {
   document_url: "https://piggyfinance.github.io/docs/zh/docs/"
 }
 
-const rpcUrl = 'http://localhost:8545'
-
 const config137 = {
   ...configBase,
   apy_server: 'http://localhost:3000',
-  rpcUrl,
   vault_address: "0xA343B1FC2897b8C49A72A9A0B2675cB9c7664e8c",
   underlying_address: "0xc2132D05D31c914a87C6611C10748AEb04B58e8F",
   exchange_extra_params: {
@@ -42,7 +39,6 @@ const config137 = {
 const config56 = {
   ...configBase,
   apy_server: 'http://localhost:4000',
-  rpcUrl,
   abi_version: 'v4.4',
   vault_address: "0xf2Bf7C00B4696726B3c1f6E7b87d1a4acB050a8F",
   underlying_address: "0x55d398326f99059fF775485246999027B3197955",
@@ -67,9 +63,8 @@ const config56 = {
 const config1 = {
   ...configBase,
   apy_server: 'http://localhost:5000',
-  rpcUrl,
-  abi_version: 'v4.4',
-  vault_address: "0x2C328D592819524F741A88A18572372CCE196782",
+  abi_version: 'v4.5',
+  vault_address: "0x3aAde2dCD2Df6a8cAc689EE797591b2913658659",
   underlying_address: "0xdAC17F958D2ee523a2206206994597C13D831ec7",
   exchange_extra_params: {
     oneInch: {

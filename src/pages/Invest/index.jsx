@@ -8,17 +8,12 @@ import Switch from "@material-ui/core/Switch"
 import FormControlLabel from "@material-ui/core/FormControlLabel"
 import CountTo from "react-count-to"
 // core components
-import Header from "../../components/Header/Header"
-import Footer from "../../components/Footer/Footer"
 import GridContainer from "../../components/Grid/GridContainer"
 import GridItem from "../../components/Grid/GridItem"
 // sections for this page
-import HeaderLinks from "../../components/Header/HeaderLinks"
 import CustomInput from "../../components/CustomInput/CustomInput"
 import Button from "../../components/CustomButtons/Button"
 import Muted from "../../components/Typography/Muted"
-import Snackbar from "@material-ui/core/Snackbar"
-import Alert from "@material-ui/lab/Alert"
 import CircularProgress from "@material-ui/core/CircularProgress"
 import ErrorOutlineIcon from "@material-ui/icons/ErrorOutline"
 import AddIcon from "@material-ui/icons/Add"
@@ -34,6 +29,11 @@ import CropFreeIcon from "@material-ui/icons/CropFree"
 import CropIcon from "@material-ui/icons/Crop"
 import Card from "@material-ui/core/Card"
 import CardHeader from "@material-ui/core/CardHeader"
+
+import { useDispatch } from "react-redux"
+
+// === Reducers === //
+import { warmDialog } from "./../../reducers/meta-reducer"
 
 // === constants === //
 import {
@@ -81,6 +81,7 @@ const getExchangePlatformAdapters = async exchangeAggregator => {
 
 export default function Invest (props) {
   const classes = useStyles()
+  const dispatch = useDispatch()
   const { address, userProvider } = props
   const [usdtDecimals, setUsdtDecimals] = useState(0)
   const [beforeTotalAssets, setBeforeTotalAssets] = useState(BigNumber.from(0))
@@ -99,12 +100,6 @@ export default function Invest (props) {
   const [isEstimate, setIsEstimate] = useState(false)
   const [isOpenEstimate, setIsOpenEstimate] = useState(false)
   const [totalSupply, setTotalSupply] = useState(BigNumber.from(0))
-  // 模态框标识位
-  const [alertState, setAlertState] = useState({
-    open: false,
-    type: "",
-    message: "",
-  })
 
   const [isFromValueMax, setIsFromValueMax] = useState(false)
   const [isToValueMax, setIsToValueMax] = useState(false)
@@ -134,11 +129,13 @@ export default function Invest (props) {
       // vaultContract.token().then(setToken),
       // vaultContract.getTrackedAssets().then(setTrackedAssets)
     ]).catch(() => {
-      setAlertState({
-        open: true,
-        type: "warning",
-        message: "请确认MetaMask的当前网络！",
-      })
+      dispatch(
+        warmDialog({
+          open: true,
+          type: "warning",
+          message: "请确认MetaMask的当前网络！",
+        }),
+      )
     })
   }
 
@@ -216,11 +213,13 @@ export default function Invest (props) {
   const diposit = async () => {
     // 如果输入的数字不合法，弹出提示框
     if (!isValidFromValue()) {
-      return setAlertState({
-        open: true,
-        type: "warning",
-        message: "请输入正确的数值",
-      })
+      return dispatch(
+        warmDialog({
+          open: true,
+          type: "warning",
+          message: "请输入正确的数值",
+        }),
+      )
     }
     // 获取usdc的合约
     const usdtContract = new ethers.Contract(USDT_ADDRESS, IERC20_ABI, userProvider)
@@ -254,19 +253,23 @@ export default function Invest (props) {
       const depositTx = await nVaultWithUser.deposit(nextValue)
       await depositTx.wait()
       setFromValue("")
-      setAlertState({
-        open: true,
-        type: "success",
-        message: "数据提交成功",
-      })
+      dispatch(
+        warmDialog({
+          open: true,
+          type: "success",
+          message: "数据提交成功",
+        }),
+      )
     } catch (error) {
       if (error && error.data) {
         if (error.data.message && error.data.message.endsWith("'ES or AD'")) {
-          setAlertState({
-            open: true,
-            type: "error",
-            message: "服务已关停，请稍后再试！",
-          })
+          dispatch(
+            warmDialog({
+              open: true,
+              type: "error",
+              message: "服务已关停，请稍后再试！",
+            }),
+          )
         }
       }
     }
@@ -274,19 +277,23 @@ export default function Invest (props) {
 
   const withdraw = async () => {
     if (!isValidToValue()) {
-      return setAlertState({
-        open: true,
-        type: "warning",
-        message: "请输入正确的数值",
-      })
+      return dispatch(
+        warmDialog({
+          open: true,
+          type: "warning",
+          message: "请输入正确的数值",
+        }),
+      )
     }
 
     if (shouldExchange && !isValidAllowLoss()) {
-      return setAlertState({
-        open: true,
-        type: "warning",
-        message: "请输入正确的Max Loss数值",
-      })
+      return dispatch(
+        warmDialog({
+          open: true,
+          type: "warning",
+          message: "请输入正确的Max Loss数值",
+        }),
+      )
     }
     const allowMaxLossValue = parseInt(100 * parseFloat(allowMaxLoss))
     const signer = userProvider.getSigner()
@@ -358,11 +365,13 @@ export default function Invest (props) {
       }
       console.log("exchangeArray=", exchangeArray)
       if (some(exchangeArray, isUndefined)) {
-        setAlertState({
-          open: true,
-          type: "error",
-          message: "兑换路径获取失败，请取消兑换或稍后重试",
-        })
+        dispatch(
+          warmDialog({
+            open: true,
+            type: "error",
+            message: "兑换路径获取失败，请取消兑换或稍后重试",
+          }),
+        )
         return
       }
       const nextArray = filter(exchangeArray, i => !isEmpty(i))
@@ -380,30 +389,36 @@ export default function Invest (props) {
 
       await tx.wait()
       setToValue("")
-      setAlertState({
-        open: true,
-        type: "success",
-        message: "数据提交成功",
-      })
+      dispatch(
+        warmDialog({
+          open: true,
+          type: "success",
+          message: "数据提交成功",
+        }),
+      )
     } catch (error) {
       console.error(error)
       if (error && error.data && error.data.message) {
         if (error.data.message && error.data.message.endsWith("'ES or AD'")) {
-          setAlertState({
-            open: true,
-            type: "error",
-            message: "服务已关停，请稍后再试！",
-          })
+          dispatch(
+            warmDialog({
+              open: true,
+              type: "error",
+              message: "服务已关停，请稍后再试！",
+            }),
+          )
         } else if (
           error.data.message.endsWith("'loss much'") ||
           error.data.message.endsWith("'Return amount is not enough'") ||
           error.data.message.endsWith("'Received amount of tokens are less then expected'")
         ) {
-          setAlertState({
-            open: true,
-            type: "error",
-            message: "兑换失败，请加大兑换滑点或关闭兑换功能！",
-          })
+          dispatch(
+            warmDialog({
+              open: true,
+              type: "error",
+              message: "兑换失败，请加大兑换滑点或关闭兑换功能！",
+            }),
+          )
         }
       }
     }
@@ -411,22 +426,6 @@ export default function Invest (props) {
   const loadTotalAssets = () => {
     const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider)
     return Promise.all([vaultContract.totalAssets(), vaultContract.pricePerShare()])
-  }
-  /**
-   * 关闭提示框的方法回调
-   * @param {*} event
-   * @param {*} reason
-   * @returns
-   */
-  const handleClose = (event, reason) => {
-    if (reason === "clickaway") {
-      return
-    }
-
-    setAlertState({
-      ...alertState,
-      open: false,
-    })
   }
   useEffect(() => {
     if (isEmpty(VAULT_ADDRESS)) return
@@ -635,337 +634,303 @@ export default function Invest (props) {
   }
 
   return (
-    <div>
-      <Header
-        color='transparent'
-        brand='Bank Of Chain'
-        rightLinks={<HeaderLinks {...props} />}
-        fixed
-        changeColorOnScroll={{
-          height: 200,
-          color: "white",
-        }}
-        {...props}
-      />
-      <div className={classNames(classes.main, classes.mainRaised)}>
-        <div className={classes.container}>
-          <GridContainer className={classNames(classes.center)}>
-            <GridItem xs={12} sm={12} md={8}>
-              <Card style={{ border: "1px solid #fff", padding: 20, backgroundColor: "rgb(12, 18, 26)" }}>
-                <CardHeader
-                  style={{ color: "#fff" }}
-                  avatar={<img style={{ width: 35 }} alt='' src={`./images/${USDT_ADDRESS}.webp`} />}
-                  title={<span style={{ fontWeight: 700, fontSize: "16px", lineHeight: "20px" }}>USDT VAULT</span>}
-                />
-                <GridContainer style={{ padding: "0 20px" }}>
-                  <GridItem xs={12} sm={12} md={12} lg={12}>
-                    <CustomInput
-                      labelText={`Balance: ${toFixed(fromBalance, BigNumber.from(10).pow(usdtDecimals), 6)}`}
-                      inputProps={{
-                        placeholder: "deposit amount",
-                        value: fromValue,
-                        endAdornment: (
-                          <span
-                            style={
-                              isFromValueMax
-                                ? { color: "#da2eef", cursor: "pointer", fontWeight: "bold" }
-                                : { color: "#69c0ff", cursor: "pointer" }
-                            }
-                            onClick={() => {
-                              setFromValue(toFixed(fromBalance, BigNumber.from(10).pow(usdtDecimals), 6, 1))
-                              setIsFromValueMax(true)
-                            }}
-                          >
-                            Max
-                          </span>
-                        ),
-                        onChange: event => {
-                          try {
-                            setFromValue(event.target.value)
-                          } catch (error) {
-                            setFromValue("")
+    <div className={classNames(classes.main, classes.mainRaised)}>
+      <div className={classes.container}>
+        <GridContainer className={classNames(classes.center)}>
+          <GridItem xs={12} sm={12} md={8}>
+            <Card style={{ border: "1px solid #fff", padding: 20, backgroundColor: "rgb(12, 18, 26)" }}>
+              <CardHeader
+                style={{ color: "#fff" }}
+                avatar={<img style={{ width: 35 }} alt='' src={`./images/${USDT_ADDRESS}.webp`} />}
+                title={<span style={{ fontWeight: 700, fontSize: "16px", lineHeight: "20px" }}>USDT VAULT</span>}
+              />
+              <GridContainer style={{ padding: "0 20px" }}>
+                <GridItem xs={12} sm={12} md={12} lg={12}>
+                  <CustomInput
+                    labelText={`Balance: ${toFixed(fromBalance, BigNumber.from(10).pow(usdtDecimals), 6)}`}
+                    inputProps={{
+                      placeholder: "deposit amount",
+                      value: fromValue,
+                      endAdornment: (
+                        <span
+                          style={
+                            isFromValueMax
+                              ? { color: "#da2eef", cursor: "pointer", fontWeight: "bold" }
+                              : { color: "#69c0ff", cursor: "pointer" }
                           }
-                          setIsFromValueMax(false)
-                        },
-                      }}
-                      error={!isUndefined(isValidFromValueFlag) && !isValidFromValueFlag}
-                      success={!isUndefined(isValidFromValueFlag) && isValidFromValueFlag}
-                      formControlProps={{
-                        fullWidth: true,
-                      }}
-                    />
-                  </GridItem>
-                  <GridItem xs={12} sm={12} md={12} lg={12}>
+                          onClick={() => {
+                            setFromValue(toFixed(fromBalance, BigNumber.from(10).pow(usdtDecimals), 6, 1))
+                            setIsFromValueMax(true)
+                          }}
+                        >
+                          Max
+                        </span>
+                      ),
+                      onChange: event => {
+                        try {
+                          setFromValue(event.target.value)
+                        } catch (error) {
+                          setFromValue("")
+                        }
+                        setIsFromValueMax(false)
+                      },
+                    }}
+                    error={!isUndefined(isValidFromValueFlag) && !isValidFromValueFlag}
+                    success={!isUndefined(isValidFromValueFlag) && isValidFromValueFlag}
+                    formControlProps={{
+                      fullWidth: true,
+                    }}
+                  />
+                </GridItem>
+                <GridItem xs={12} sm={12} md={12} lg={12}>
+                  <GridContainer>
+                    <GridItem xs={8} sm={8} md={9} lg={9}>
+                      <Muted>
+                        <p style={{ fontSize: 16, wordBreak: "break-all", letterSpacing: "0.01071em" }}>
+                          份额预估：
+                          {isValidFromValueFlag &&
+                            toFixed(
+                              BN(fromValue)
+                                .multipliedBy(
+                                  BigNumber.from(10)
+                                    .pow(usdtDecimals + usdtDecimals)
+                                    .toString(),
+                                )
+                                .div(pricePerFullShare.toString())
+                                .toFixed(),
+                              BigNumber.from(10).pow(usdtDecimals),
+                              usdtDecimals,
+                            )}
+                        </p>
+                      </Muted>
+                    </GridItem>
+                    <GridItem xs={4} sm={4} md={3} lg={3}>
+                      <Button color='colorfull' onClick={diposit} style={{ width: 122 }}>
+                        Deposit
+                      </Button>
+                    </GridItem>
+                  </GridContainer>
+                </GridItem>
+                <GridItem xs={12} sm={12} md={12} lg={12}>
+                  <CustomInput
+                    labelText={
+                      <CountTo
+                        from={Number(beforePerFullShare.toBigInt())}
+                        to={Number(perFullShare.toBigInt())}
+                        speed={3500}
+                      >
+                        {v =>
+                          `BOC份额: ${toFixed(toBalance, BigNumber.from(10).pow(usdtDecimals), 6)}${` (~${toFixed(
+                            toBalance.mul(v),
+                            BigNumber.from(10).pow(usdtDecimals + usdtDecimals),
+                            6,
+                          )} USDT)`}`
+                        }
+                      </CountTo>
+                    }
+                    inputProps={{
+                      placeholder: "withdraw amount",
+                      value: toValue,
+                      endAdornment: (
+                        <span
+                          style={
+                            isToValueMax
+                              ? { color: "#da2eef", cursor: "pointer", fontWeight: "bold" }
+                              : { color: "#69c0ff", cursor: "pointer" }
+                          }
+                          onClick={() => {
+                            setToValue(toFixed(toBalance, BigNumber.from(10).pow(usdtDecimals), 6, 1))
+                            setIsToValueMax(true)
+                          }}
+                        >
+                          Max
+                        </span>
+                      ),
+                      onChange: event => {
+                        try {
+                          setToValue(event.target.value)
+                        } catch (error) {
+                          setToValue("")
+                        }
+                        setIsToValueMax(false)
+                      },
+                    }}
+                    error={!isUndefined(isValidToValueFlag) && !isValidToValueFlag}
+                    success={!isUndefined(isValidToValueFlag) && isValidToValueFlag}
+                    formControlProps={{
+                      fullWidth: true,
+                    }}
+                  />
+                </GridItem>
+                <GridItem xs={12} sm={12} md={12} lg={12}>
+                  {isOpenEstimate ? (
                     <GridContainer>
-                      <GridItem xs={8} sm={8} md={9} lg={9}>
-                        <Muted>
-                          <p style={{ fontSize: 16, wordBreak: "break-all", letterSpacing: "0.01071em" }}>
-                            份额预估：
-                            {isValidFromValueFlag &&
-                              toFixed(
-                                BN(fromValue)
-                                  .multipliedBy(
-                                    BigNumber.from(10)
-                                      .pow(usdtDecimals + usdtDecimals)
-                                      .toString(),
-                                  )
-                                  .div(pricePerFullShare.toString())
-                                  .toFixed(),
-                                BigNumber.from(10).pow(usdtDecimals),
-                                usdtDecimals,
-                              )}
-                          </p>
-                        </Muted>
+                      <GridItem
+                        xs={8}
+                        sm={8}
+                        md={9}
+                        lg={9}
+                        style={{ color: "#39d0d8", textAlign: "right", lineHeight: "35px", padding: "10px 0" }}
+                      >
+                        <CropIcon
+                          fontSize='large'
+                          style={{ float: "right", cursor: "pointer" }}
+                          onClick={() => setIsOpenEstimate(false)}
+                        ></CropIcon>
+                        <span style={{ cursor: "pointer" }} onClick={() => setIsOpenEstimate(false)}>
+                          Advanced Settings
+                        </span>
                       </GridItem>
                       <GridItem xs={4} sm={4} md={3} lg={3}>
-                        <Button color='colorfull' onClick={diposit} style={{ width: 122 }}>
-                          Deposit
+                        <Button color='colorfull' onClick={withdraw}>
+                          Withdraw
+                        </Button>
+                      </GridItem>
+                      <GridItem xs={12} sm={12} md={12} lg={12}>
+                        <GridContainer>
+                          <GridItem xs={4} sm={4} md={4} lg={4}>
+                            <p style={{ color: "#fff", lineHeight: "70px", fontSize: 16, letterSpacing: "0.01071em" }}>
+                              提取币种及数额预估
+                            </p>
+                          </GridItem>
+                          <GridItem xs={4} sm={4} md={4} lg={4}>
+                            <FormControlLabel
+                              control={
+                                <Switch
+                                  checked={shouldExchange}
+                                  onChange={event => setShouldExchange(event.target.checked)}
+                                  classes={{
+                                    switchBase: classes.switchBase,
+                                    checked: classes.switchChecked,
+                                    thumb: classes.switchIcon,
+                                    track: classes.switchBar,
+                                  }}
+                                />
+                              }
+                              style={{ padding: "32px 0px 32px 0px" }}
+                              label={<Muted>{shouldExchange ? "开启兑换" : "关闭兑换"}</Muted>}
+                            />
+                          </GridItem>
+                          <GridItem xs={4} sm={4} md={4} lg={4} style={shouldExchange ? {} : { visibility: "hidden" }}>
+                            <CustomInput
+                              labelText='Max Loss'
+                              inputProps={{
+                                placeholder: "Allow loss percent",
+                                value: allowMaxLoss,
+                                endAdornment: (
+                                  <span style={{ color: "#69c0ff" }}>
+                                    %&nbsp;&nbsp;&nbsp;
+                                    <span style={{ cursor: "pointer" }} onClick={() => setAllowMaxLoss(50)}>
+                                      Max
+                                    </span>
+                                  </span>
+                                ),
+                                onChange: event => {
+                                  const value = event.target.value
+                                  setAllowMaxLoss(value)
+                                },
+                              }}
+                              error={!isUndefined(isValidAllowLossFlag) && !isValidAllowLossFlag}
+                              success={!isUndefined(isValidAllowLossFlag) && isValidAllowLossFlag}
+                              formControlProps={{
+                                fullWidth: true,
+                              }}
+                            />
+                          </GridItem>
+                        </GridContainer>
+                      </GridItem>
+                      {renderEstimate()}
+                    </GridContainer>
+                  ) : (
+                    <GridContainer>
+                      <GridItem
+                        xs={8}
+                        sm={8}
+                        md={9}
+                        lg={9}
+                        style={{ color: "#da2eef", textAlign: "right", lineHeight: "35px", padding: "10px 0" }}
+                      >
+                        <CropFreeIcon
+                          fontSize='large'
+                          style={{ cursor: "pointer", float: "right" }}
+                          onClick={() => setIsOpenEstimate(true)}
+                        ></CropFreeIcon>
+                        <span style={{ cursor: "pointer" }} onClick={() => setIsOpenEstimate(true)}>
+                          Advanced Settings
+                        </span>
+                      </GridItem>
+                      <GridItem xs={4} sm={4} md={3} lg={3}>
+                        <Button color='colorfull' onClick={withdraw}>
+                          Withdraw
                         </Button>
                       </GridItem>
                     </GridContainer>
-                  </GridItem>
-                  <GridItem xs={12} sm={12} md={12} lg={12}>
-                    <CustomInput
-                      labelText={
-                        <CountTo
-                          from={Number(beforePerFullShare.toBigInt())}
-                          to={Number(perFullShare.toBigInt())}
-                          speed={3500}
-                        >
-                          {v =>
-                            `BOC份额: ${toFixed(toBalance, BigNumber.from(10).pow(usdtDecimals), 6)}${` (~${toFixed(
-                              toBalance.mul(v),
-                              BigNumber.from(10).pow(usdtDecimals + usdtDecimals),
-                              6,
-                            )} USDT)`}`
-                          }
-                        </CountTo>
-                      }
-                      inputProps={{
-                        placeholder: "withdraw amount",
-                        value: toValue,
-                        endAdornment: (
-                          <span
-                            style={
-                              isToValueMax
-                                ? { color: "#da2eef", cursor: "pointer", fontWeight: "bold" }
-                                : { color: "#69c0ff", cursor: "pointer" }
-                            }
-                            onClick={() => {
-                              setToValue(toFixed(toBalance, BigNumber.from(10).pow(usdtDecimals), 6, 1))
-                              setIsToValueMax(true)
-                            }}
-                          >
-                            Max
-                          </span>
-                        ),
-                        onChange: event => {
-                          try {
-                            setToValue(event.target.value)
-                          } catch (error) {
-                            setToValue("")
-                          }
-                          setIsToValueMax(false)
-                        },
-                      }}
-                      error={!isUndefined(isValidToValueFlag) && !isValidToValueFlag}
-                      success={!isUndefined(isValidToValueFlag) && isValidToValueFlag}
-                      formControlProps={{
-                        fullWidth: true,
-                      }}
-                    />
-                  </GridItem>
-                  <GridItem xs={12} sm={12} md={12} lg={12}>
-                    {isOpenEstimate ? (
-                      <GridContainer>
-                        <GridItem
-                          xs={8}
-                          sm={8}
-                          md={9}
-                          lg={9}
-                          style={{ color: "#39d0d8", textAlign: "right", lineHeight: "35px", padding: "10px 0" }}
-                        >
-                          <CropIcon
-                            fontSize='large'
-                            style={{ float: "right", cursor: "pointer" }}
-                            onClick={() => setIsOpenEstimate(false)}
-                          ></CropIcon>
-                          <span style={{ cursor: "pointer" }} onClick={() => setIsOpenEstimate(false)}>
-                            Advanced Settings
-                          </span>
-                        </GridItem>
-                        <GridItem xs={4} sm={4} md={3} lg={3}>
-                          <Button color='colorfull' onClick={withdraw}>
-                            Withdraw
-                          </Button>
-                        </GridItem>
-                        <GridItem xs={12} sm={12} md={12} lg={12}>
-                          <GridContainer>
-                            <GridItem xs={4} sm={4} md={4} lg={4}>
-                              <p
-                                style={{ color: "#fff", lineHeight: "70px", fontSize: 16, letterSpacing: "0.01071em" }}
-                              >
-                                提取币种及数额预估
-                              </p>
-                            </GridItem>
-                            <GridItem xs={4} sm={4} md={4} lg={4}>
-                              <FormControlLabel
-                                control={
-                                  <Switch
-                                    checked={shouldExchange}
-                                    onChange={event => setShouldExchange(event.target.checked)}
-                                    classes={{
-                                      switchBase: classes.switchBase,
-                                      checked: classes.switchChecked,
-                                      thumb: classes.switchIcon,
-                                      track: classes.switchBar,
-                                    }}
-                                  />
-                                }
-                                style={{ padding: "32px 0px 32px 0px" }}
-                                label={<Muted>{shouldExchange ? "开启兑换" : "关闭兑换"}</Muted>}
-                              />
-                            </GridItem>
-                            <GridItem
-                              xs={4}
-                              sm={4}
-                              md={4}
-                              lg={4}
-                              style={shouldExchange ? {} : { visibility: "hidden" }}
-                            >
-                              <CustomInput
-                                labelText='Max Loss'
-                                inputProps={{
-                                  placeholder: "Allow loss percent",
-                                  value: allowMaxLoss,
-                                  endAdornment: (
-                                    <span style={{ color: "#69c0ff" }}>
-                                      %&nbsp;&nbsp;&nbsp;
-                                      <span style={{ cursor: "pointer" }} onClick={() => setAllowMaxLoss(50)}>
-                                        Max
-                                      </span>
-                                    </span>
-                                  ),
-                                  onChange: event => {
-                                    const value = event.target.value
-                                    setAllowMaxLoss(value)
-                                  },
-                                }}
-                                error={!isUndefined(isValidAllowLossFlag) && !isValidAllowLossFlag}
-                                success={!isUndefined(isValidAllowLossFlag) && isValidAllowLossFlag}
-                                formControlProps={{
-                                  fullWidth: true,
-                                }}
-                              />
-                            </GridItem>
-                          </GridContainer>
-                        </GridItem>
-                        {renderEstimate()}
-                      </GridContainer>
-                    ) : (
-                      <GridContainer>
-                        <GridItem
-                          xs={8}
-                          sm={8}
-                          md={9}
-                          lg={9}
-                          style={{ color: "#da2eef", textAlign: "right", lineHeight: "35px", padding: "10px 0" }}
-                        >
-                          <CropFreeIcon
-                            fontSize='large'
-                            style={{ cursor: "pointer", float: "right" }}
-                            onClick={() => setIsOpenEstimate(true)}
-                          ></CropFreeIcon>
-                          <span style={{ cursor: "pointer" }} onClick={() => setIsOpenEstimate(true)}>
-                            Advanced Settings
-                          </span>
-                        </GridItem>
-                        <GridItem xs={4} sm={4} md={3} lg={3}>
-                          <Button color='colorfull' onClick={withdraw}>
-                            Withdraw
-                          </Button>
-                        </GridItem>
-                      </GridContainer>
-                    )}
-                  </GridItem>
-                </GridContainer>
-              </Card>
-            </GridItem>
-          </GridContainer>
-          <p style={{ color: "#fff", letterSpacing: "0.01071em" }}>有关此 Vault 更多的信息</p>
-          <TableContainer component={Paper} style={{ borderRadius: 0 }}>
-            <Table className={classNames(classes.table)} aria-label='simple table'>
-              <TableHead>
-                <TableRow>
-                  <TableCell className={classNames(classes.tableCell)}>Vault 通证符号</TableCell>
-                  <TableCell className={classNames(classes.tableCell)}>净值</TableCell>
-                  <TableCell className={classNames(classes.tableCell)}>Vault 合约地址</TableCell>
-                  <TableCell className={classNames(classes.tableCell)}>质押通证符号</TableCell>
-                  <TableCell className={classNames(classes.tableCell)}>质押合约地址</TableCell>
-                  <TableCell className={classNames(classes.tableCell)}>TVL（总锁仓量）</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                <TableRow>
-                  <TableCell className={classNames(classes.tableCell)} component='th' scope='row'>
-                    BOC_Vault
-                  </TableCell>
-                  <TableCell className={classNames(classes.tableCell)} component='th' scope='row'>
-                    <CountTo
-                      from={Number(beforePerFullShare.toBigInt())}
-                      to={Number(perFullShare.toBigInt())}
-                      speed={3500}
-                    >
-                      {v => toFixed(v, BigNumber.from(10).pow(usdtDecimals), 6)}
-                    </CountTo>
-                  </TableCell>
-                  <TableCell className={classNames(classes.tableCell)}>
-                    <a
-                      style={{ color: "rgb(105, 192, 255)" }}
-                      href={CHAIN_BROWSER_URL && `${CHAIN_BROWSER_URL}/address/${VAULT_ADDRESS}`}
-                      target='_blank'
-                      rel='noopener noreferrer'
-                    >
-                      {VAULT_ADDRESS}
-                    </a>
-                  </TableCell>
-                  <TableCell className={classNames(classes.tableCell)}>USDT</TableCell>
-                  <TableCell className={classNames(classes.tableCell)}>
-                    <a
-                      style={{ color: "rgb(105, 192, 255)" }}
-                      href={CHAIN_BROWSER_URL && `${CHAIN_BROWSER_URL}/address/${USDT_ADDRESS}`}
-                      target='_blank'
-                      rel='noopener noreferrer'
-                    >
-                      {USDT_ADDRESS}
-                    </a>
-                  </TableCell>
-                  <TableCell className={classNames(classes.tableCell)}>
-                    <CountTo
-                      from={Number(beforeTotalAssets.toBigInt())}
-                      to={Number(totalAssets.toBigInt())}
-                      speed={3500}
-                    >
-                      {v => {
-                        return `${toFixed(v, BigNumber.from(10).pow(usdtDecimals), 6)}USDT`
-                      }}
-                    </CountTo>
-                  </TableCell>
-                </TableRow>
-              </TableBody>
-            </Table>
-          </TableContainer>
-        </div>
+                  )}
+                </GridItem>
+              </GridContainer>
+            </Card>
+          </GridItem>
+        </GridContainer>
+        <p style={{ color: "#fff", letterSpacing: "0.01071em" }}>有关此 Vault 更多的信息</p>
+        <TableContainer component={Paper} style={{ borderRadius: 0 }}>
+          <Table className={classNames(classes.table)} aria-label='simple table'>
+            <TableHead>
+              <TableRow>
+                <TableCell className={classNames(classes.tableCell)}>Vault 通证符号</TableCell>
+                <TableCell className={classNames(classes.tableCell)}>净值</TableCell>
+                <TableCell className={classNames(classes.tableCell)}>Vault 合约地址</TableCell>
+                <TableCell className={classNames(classes.tableCell)}>质押通证符号</TableCell>
+                <TableCell className={classNames(classes.tableCell)}>质押合约地址</TableCell>
+                <TableCell className={classNames(classes.tableCell)}>TVL（总锁仓量）</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              <TableRow>
+                <TableCell className={classNames(classes.tableCell)} component='th' scope='row'>
+                  BOC_Vault
+                </TableCell>
+                <TableCell className={classNames(classes.tableCell)} component='th' scope='row'>
+                  <CountTo
+                    from={Number(beforePerFullShare.toBigInt())}
+                    to={Number(perFullShare.toBigInt())}
+                    speed={3500}
+                  >
+                    {v => toFixed(v, BigNumber.from(10).pow(usdtDecimals), 6)}
+                  </CountTo>
+                </TableCell>
+                <TableCell className={classNames(classes.tableCell)}>
+                  <a
+                    style={{ color: "rgb(105, 192, 255)" }}
+                    href={CHAIN_BROWSER_URL && `${CHAIN_BROWSER_URL}/address/${VAULT_ADDRESS}`}
+                    target='_blank'
+                    rel='noopener noreferrer'
+                  >
+                    {VAULT_ADDRESS}
+                  </a>
+                </TableCell>
+                <TableCell className={classNames(classes.tableCell)}>USDT</TableCell>
+                <TableCell className={classNames(classes.tableCell)}>
+                  <a
+                    style={{ color: "rgb(105, 192, 255)" }}
+                    href={CHAIN_BROWSER_URL && `${CHAIN_BROWSER_URL}/address/${USDT_ADDRESS}`}
+                    target='_blank'
+                    rel='noopener noreferrer'
+                  >
+                    {USDT_ADDRESS}
+                  </a>
+                </TableCell>
+                <TableCell className={classNames(classes.tableCell)}>
+                  <CountTo from={Number(beforeTotalAssets.toBigInt())} to={Number(totalAssets.toBigInt())} speed={3500}>
+                    {v => {
+                      return `${toFixed(v, BigNumber.from(10).pow(usdtDecimals), 6)}USDT`
+                    }}
+                  </CountTo>
+                </TableCell>
+              </TableRow>
+            </TableBody>
+          </Table>
+        </TableContainer>
       </div>
-      <Footer whiteFont />
-      <Snackbar
-        open={alertState.open}
-        autoHideDuration={3000}
-        onClose={handleClose}
-        anchorOrigin={{ vertical: "top", horizontal: "center" }}
-      >
-        <Alert severity={alertState.type}>{alertState.message}</Alert>
-      </Snackbar>
     </div>
   )
 }
