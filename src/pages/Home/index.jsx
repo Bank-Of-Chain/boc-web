@@ -36,12 +36,12 @@ export default function Home (props) {
             <GridContainer>
               <GridItem xs={12} sm={12} md={12} style={{ textAlign: "center" }}>
                 <h1 className={classes.title}>The Multichain Yield Optimizer</h1>
-                <h4 className={classes.text}></h4>
+                <br />
                 <br />
                 <Button color='colorfull' size='lg' href='/#/invest'>
                   go inverst
                 </Button>
-                <h4 className={classes.text}></h4>
+                <br />
                 <br />
                 <Chains array={NET_WORKS} handleClick={changeNetwork} />
               </GridItem>

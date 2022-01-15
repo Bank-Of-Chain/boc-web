@@ -20,7 +20,6 @@ import styles from "./headerStyle.js"
 const useStyles = makeStyles(styles)
 export default function Header (props) {
   const classes = useStyles()
-  const { localProvider, userProvider } = props
   const [mobileOpen, setMobileOpen] = React.useState(false)
   React.useEffect(() => {
     if (props.changeColorOnScroll) {

@@ -3,6 +3,10 @@ import React, { useState, useCallback, useEffect, Suspense, lazy } from "react"
 import { Switch, Route, Redirect, HashRouter } from "react-router-dom"
 import { Web3Provider } from "@ethersproject/providers"
 import { useUserAddress } from "eth-hooks"
+import { useSelector, useDispatch } from "react-redux"
+
+// === Reducers === //
+import { warmDialog } from "./reducers/meta-reducer"
 
 // === Components === //
 import CircularProgress from "@material-ui/core/CircularProgress"
@@ -11,9 +15,11 @@ import Chains from "./components/Chains/Chains"
 import Modal from "@material-ui/core/Modal"
 import Paper from "@material-ui/core/Paper"
 import Frame from "./components/Frame/Frame"
+import Snackbar from "@material-ui/core/Snackbar"
+import Alert from "@material-ui/lab/Alert"
 
 // === Utils === //
-import { USDT_ADDRESS, NET_WORKS, VAULT_ADDRESS } from "./constants"
+import { USDT_ADDRESS, NET_WORKS } from "./constants"
 import { makeStyles } from "@material-ui/core/styles"
 import { SafeAppWeb3Modal } from "@gnosis.pm/safe-apps-web3modal"
 import { lendSwap } from "piggy-finance-utils"
@@ -75,6 +81,9 @@ function App () {
   const [userProvider, setUserProvider] = useState()
   const [localChainId, setChainId] = useState()
   const [isLoadingChainId, setIsLoadingChainId] = useState(false)
+
+  const alertState = useSelector(state => state.metaReducer.warmMsg)
+  const dispatch = useDispatch()
   const loadWeb3Modal = useCallback(async () => {
     const provider = await web3Modal.requestProvider()
 
@@ -203,6 +212,15 @@ function App () {
       </Modal>
     )
   }
+  const handleClose = (event, reason) => {
+    if (reason === "clickaway") {
+      return
+    }
+    dispatch(warmDialog({
+      ...alertState,
+      open: false,
+    }))
+  }
   const renderModalValid = () => {
     if (isEmpty(window.ethereum)) {
       return modalJsx(
@@ -248,6 +266,14 @@ function App () {
   return (
     <div className='App'>
       {renderModalValid()}
+      <Snackbar
+        open={alertState.open}
+        autoHideDuration={alertState.timeout}
+        onClose={handleClose}
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+      >
+        <Alert severity={alertState.type}>{alertState.message}</Alert>
+      </Snackbar>
       <HashRouter>
         <Switch>
           <Route exact path='/'>

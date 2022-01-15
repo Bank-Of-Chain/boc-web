@@ -30,6 +30,11 @@ import CropIcon from "@material-ui/icons/Crop"
 import Card from "@material-ui/core/Card"
 import CardHeader from "@material-ui/core/CardHeader"
 
+import { useDispatch } from "react-redux"
+
+// === Reducers === //
+import { warmDialog } from "./../../reducers/meta-reducer"
+
 // === constants === //
 import {
   VAULT_ADDRESS,
@@ -76,6 +81,7 @@ const getExchangePlatformAdapters = async exchangeAggregator => {
 
 export default function Invest (props) {
   const classes = useStyles()
+  const dispatch = useDispatch()
   const { address, userProvider } = props
   const [usdtDecimals, setUsdtDecimals] = useState(0)
   const [beforeTotalAssets, setBeforeTotalAssets] = useState(BigNumber.from(0))
@@ -94,12 +100,6 @@ export default function Invest (props) {
   const [isEstimate, setIsEstimate] = useState(false)
   const [isOpenEstimate, setIsOpenEstimate] = useState(false)
   const [totalSupply, setTotalSupply] = useState(BigNumber.from(0))
-  // 模态框标识位
-  const [alertState, setAlertState] = useState({
-    open: false,
-    type: "",
-    message: "",
-  })
 
   const [isFromValueMax, setIsFromValueMax] = useState(false)
   const [isToValueMax, setIsToValueMax] = useState(false)
@@ -129,11 +129,13 @@ export default function Invest (props) {
       // vaultContract.token().then(setToken),
       // vaultContract.getTrackedAssets().then(setTrackedAssets)
     ]).catch(() => {
-      setAlertState({
-        open: true,
-        type: "warning",
-        message: "请确认MetaMask的当前网络！",
-      })
+      dispatch(
+        warmDialog({
+          open: true,
+          type: "warning",
+          message: "请确认MetaMask的当前网络！",
+        }),
+      )
     })
   }
 
@@ -211,11 +213,13 @@ export default function Invest (props) {
   const diposit = async () => {
     // 如果输入的数字不合法，弹出提示框
     if (!isValidFromValue()) {
-      return setAlertState({
-        open: true,
-        type: "warning",
-        message: "请输入正确的数值",
-      })
+      return dispatch(
+        warmDialog({
+          open: true,
+          type: "warning",
+          message: "请输入正确的数值",
+        }),
+      )
     }
     // 获取usdc的合约
     const usdtContract = new ethers.Contract(USDT_ADDRESS, IERC20_ABI, userProvider)
@@ -249,19 +253,23 @@ export default function Invest (props) {
       const depositTx = await nVaultWithUser.deposit(nextValue)
       await depositTx.wait()
       setFromValue("")
-      setAlertState({
-        open: true,
-        type: "success",
-        message: "数据提交成功",
-      })
+      dispatch(
+        warmDialog({
+          open: true,
+          type: "success",
+          message: "数据提交成功",
+        }),
+      )
     } catch (error) {
       if (error && error.data) {
         if (error.data.message && error.data.message.endsWith("'ES or AD'")) {
-          setAlertState({
-            open: true,
-            type: "error",
-            message: "服务已关停，请稍后再试！",
-          })
+          dispatch(
+            warmDialog({
+              open: true,
+              type: "error",
+              message: "服务已关停，请稍后再试！",
+            }),
+          )
         }
       }
     }
@@ -269,19 +277,23 @@ export default function Invest (props) {
 
   const withdraw = async () => {
     if (!isValidToValue()) {
-      return setAlertState({
-        open: true,
-        type: "warning",
-        message: "请输入正确的数值",
-      })
+      return dispatch(
+        warmDialog({
+          open: true,
+          type: "warning",
+          message: "请输入正确的数值",
+        }),
+      )
     }
 
     if (shouldExchange && !isValidAllowLoss()) {
-      return setAlertState({
-        open: true,
-        type: "warning",
-        message: "请输入正确的Max Loss数值",
-      })
+      return dispatch(
+        warmDialog({
+          open: true,
+          type: "warning",
+          message: "请输入正确的Max Loss数值",
+        }),
+      )
     }
     const allowMaxLossValue = parseInt(100 * parseFloat(allowMaxLoss))
     const signer = userProvider.getSigner()
@@ -353,11 +365,13 @@ export default function Invest (props) {
       }
       console.log("exchangeArray=", exchangeArray)
       if (some(exchangeArray, isUndefined)) {
-        setAlertState({
-          open: true,
-          type: "error",
-          message: "兑换路径获取失败，请取消兑换或稍后重试",
-        })
+        dispatch(
+          warmDialog({
+            open: true,
+            type: "error",
+            message: "兑换路径获取失败，请取消兑换或稍后重试",
+          }),
+        )
         return
       }
       const nextArray = filter(exchangeArray, i => !isEmpty(i))
@@ -375,30 +389,36 @@ export default function Invest (props) {
 
       await tx.wait()
       setToValue("")
-      setAlertState({
-        open: true,
-        type: "success",
-        message: "数据提交成功",
-      })
+      dispatch(
+        warmDialog({
+          open: true,
+          type: "success",
+          message: "数据提交成功",
+        }),
+      )
     } catch (error) {
       console.error(error)
       if (error && error.data && error.data.message) {
         if (error.data.message && error.data.message.endsWith("'ES or AD'")) {
-          setAlertState({
-            open: true,
-            type: "error",
-            message: "服务已关停，请稍后再试！",
-          })
+          dispatch(
+            warmDialog({
+              open: true,
+              type: "error",
+              message: "服务已关停，请稍后再试！",
+            }),
+          )
         } else if (
           error.data.message.endsWith("'loss much'") ||
           error.data.message.endsWith("'Return amount is not enough'") ||
           error.data.message.endsWith("'Received amount of tokens are less then expected'")
         ) {
-          setAlertState({
-            open: true,
-            type: "error",
-            message: "兑换失败，请加大兑换滑点或关闭兑换功能！",
-          })
+          dispatch(
+            warmDialog({
+              open: true,
+              type: "error",
+              message: "兑换失败，请加大兑换滑点或关闭兑换功能！",
+            }),
+          )
         }
       }
     }
