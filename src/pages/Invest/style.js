@@ -25,10 +25,10 @@ const componentsStyle = {
   },
   main: {
     position: "relative",
-    backgroundColor: 'rgb(19, 24, 35)'
+    backgroundColor: 'transparent'
   },
   mainRaised: {
-    margin: "280px 30px",
+    margin: "120px 30px 30px 30px",
     borderRadius: "6px",
   },
   link: {
@@ -92,16 +92,8 @@ const componentsStyle = {
   radio: {
     color: "#fff !important",
   },
-  apyText: {
-    background: '-webkit-gradient(linear, left top, left bottom, from(#da2eef), to(#39d0d8))',
-    '-webkitBackgroundClip': 'text',
-    '-webkitTextFillColor': 'transparent',
-    fontSize: '30px',
-    fontWeight: 'bold',
-    textTransform: 'uppercase'
-  },
   table: {
-    backgroundColor: 'rgb(12, 18, 26)',
+    backgroundColor: '#150752',
     border: '1px solid rgb(222, 217, 213)',
   },
   tableCell: {

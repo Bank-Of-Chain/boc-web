@@ -15,9 +15,7 @@ const styles = {
     maxWidth: "100%",
     padding: 2,
     verticalAlign: "middle",
-    background: "#fff",
     cursor: "pointer",
-    border: "1px solid #000",
   },
 }
 
