@@ -8,7 +8,7 @@ import { makeStyles } from "@material-ui/core/styles"
 import GridContainer from "../../../components/Grid/GridContainer"
 import GridItem from "../../../components/Grid/GridItem"
 
-import styles from "./auditedStyle"
+import styles from "./ammStyle"
 
 const useStyles = makeStyles(styles)
 
