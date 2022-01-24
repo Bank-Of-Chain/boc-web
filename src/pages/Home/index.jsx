@@ -1,17 +1,5 @@
 import React from "react"
-// nodejs library that concatenates classes
-import classNames from "classnames"
-// @material-ui/core components
 import { makeStyles } from "@material-ui/core/styles"
-
-// @material-ui/icons
-
-// core components
-import GridContainer from "../../components/Grid/GridContainer"
-import GridItem from "../../components/Grid/GridItem"
-import Button from "../../components/CustomButtons/Button"
-import Parallax from "../../components/Parallax/Parallax"
-import Chains from "../../components/Chains/Chains"
 
 // === Constants === //
 import { NET_WORKS } from "./../../constants"
@@ -22,6 +10,10 @@ import AuditedSection from "./Sections/AuditedSection"
 import AmmSection from "./Sections/AmmSection"
 import TvlSection from "./Sections/TvlSection"
 import LendingSection from "./Sections/LendingSection"
+import GridContainer from "../../components/Grid/GridContainer"
+import GridItem from "../../components/Grid/GridItem"
+import Button from "../../components/CustomButtons/Button"
+import Chains from "../../components/Chains/Chains"
 
 // === Styles === //
 import styles from "./landingPage"

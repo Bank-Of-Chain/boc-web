@@ -18,10 +18,6 @@ export default function InfoArea(props) {
     [classes[iconColor]]: true,
     [classes.iconWrapperVertical]: vertical,
   });
-  const iconClasses = classNames({
-    [classes.icon]: true,
-    [classes.iconVertical]: vertical,
-  });
   return (
     <div className={classes.infoArea}>
       <div className={iconWrapper}>
