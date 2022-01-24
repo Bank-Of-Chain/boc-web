@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useState } from "react"
 import { makeStyles } from "@material-ui/core/styles"
 
 // === Components === //
@@ -19,6 +19,8 @@ import styles from "./styles"
 const useStyles = makeStyles(styles)
 export default function Amms () {
   const classes = useStyles()
+
+  const [showMore, setShowMore] = useState(false)
 
   function imgError (e) {
     const evn = e
@@ -51,6 +53,7 @@ export default function Amms () {
       </GridItem>
       <GridItem>
         {map(amms, (colume, index) => {
+          if (!showMore && index > 2) return
           return (
             <div key={index}>
               {map(colume, a => (
@@ -62,6 +65,11 @@ export default function Amms () {
             </div>
           )
         })}
+        {!showMore && (
+          <p className={classes.more} onClick={() => setShowMore(true)}>
+            ...and more
+          </p>
+        )}
       </GridItem>
     </GridContainer>
   )

@@ -25,6 +25,9 @@ const styles = {
     lineHeight: '3rem',
     verticalAlign: 'top',
     marginLeft: '0.5rem'
+  },
+  more: {
+    cursor: 'pointer'
   }
 }
 

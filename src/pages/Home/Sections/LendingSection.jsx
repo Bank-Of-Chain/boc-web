@@ -8,7 +8,7 @@ import { makeStyles } from "@material-ui/core/styles"
 import GridContainer from "../../../components/Grid/GridContainer"
 import GridItem from "../../../components/Grid/GridItem"
 
-import styles from "./ammStyle"
+import styles from "./lendingStyle"
 
 const useStyles = makeStyles(styles)
 
@@ -22,7 +22,7 @@ export default function LendingSection () {
       <div>
         <GridContainer>
           <GridItem xs={12} sm={12} md={12}>
-            <h2 className={classes.text}>lending sections</h2>
+            <h2>lending sections</h2>
           </GridItem>
         </GridContainer>
       </div>
