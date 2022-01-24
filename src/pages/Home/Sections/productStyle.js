@@ -4,27 +4,24 @@ import {
 
 const productStyle = {
   section: {
-    padding: "70px 0",
     textAlign: "center",
+    backgroundColor: '#261964',
+    height: '30rem',
+    padding: '1.625rem',
+    opacity: '0.7'
   },
   title: {
     ...title,
-    marginBottom: "1rem",
-    marginTop: "30px",
-    minHeight: "32px",
-    textDecoration: "none",
-    fontSize: '2.25rem',
-    lineHeight: '1.5em'
+    fontSize: '1.5rem',
+    color: '#fff',
+    margin: 0
   },
   description: {
-    color: "#fff",
-    fontSize: '1.0625rem',
-    lineHeight: '1.55em',
-    textAlign: "left",
+    fontSize: '0.875rem',
+    color: '#fff',
+    display: 'inline-block',
+    lineHeight: '2rem'
   },
-  descriptionItem: {
-    display: 'inline-block'
-  }
 };
 
 export default productStyle;
