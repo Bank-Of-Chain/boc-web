@@ -7,13 +7,14 @@ const landingPageStyle = {
   container: {
     zIndex: "12",
     color: "#FFFFFF",
+    marginTop: 90,
     ...container,
   },
   title: {
     ...title,
     display: "inline-block",
     position: "relative",
-    marginTop: "30px",
+    margin: "88px 0 0 0",
     minHeight: "32px",
     color: "#FFFFFF",
     textDecoration: "none",
@@ -28,7 +29,10 @@ const landingPageStyle = {
   text: {
     fontWeight: 300,
     fontSize: '1.125rem',
-    lineHeight: '1.5em'
+    lineHeight: '1.5em',
+    marginTop: '48px',
+    color: '#b2add1',
+    marginBottom: '80px'
   },
   main: {
     background: "#FFFFFF",
@@ -65,8 +69,8 @@ const landingPageStyle = {
     lineBreak: "auto",
   },
   img: {
-    width: 'auto',
-    height: '2rem',
+    width: '56px',
+    height: '56px',
     marginRight: 'auto',
     maxWidth: '100%',
     padding: 2,
@@ -74,6 +78,13 @@ const landingPageStyle = {
     background: '#fff',
     marginLeft: 10,
     cursor: 'pointer'
+  },
+  inverst: {
+    width: '17.875rem',
+    height: '6.25rem',
+    borderRadio: '0.25rem',
+    fontSize: '1.5rem',
+    fontWeight: 'bold'
   }
 };
 
