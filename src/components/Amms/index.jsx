@@ -7,6 +7,8 @@ import GridItem from "../Grid/GridItem"
 
 // === Utils === //
 import map from "lodash/map"
+import groupBy from "lodash/groupBy"
+import values from "lodash/values"
 
 // === Constants === //
 import AMMS from "./../../constants/amms"
@@ -23,7 +25,20 @@ export default function Amms () {
     const img = evn.srcElement ? evn.srcElement : evn.target
     img.src = "/default.webp"
   }
-
+  // 需要将一维数组转化成二维数组进行展示，每个数组4或5个平台
+  const amms = values(
+    groupBy(
+      map(AMMS, (item, i) => {
+        return {
+          name: item,
+          index: i,
+        }
+      }),
+      item => {
+        return `${Math.floor(item.index / 9)}-${item.index % 9 >= 4}`
+      },
+    ),
+  )
   return (
     <GridContainer>
       <GridItem xs={12} sm={12} md={12}>
@@ -35,12 +50,18 @@ export default function Amms () {
         ))}
       </GridItem>
       <GridItem>
-        {map(AMMS, a => (
-          <div key={a} className={classes.item}>
-            <img className={classes.img} src={`/images/amms/${a}.png`} alt={a} onError={imgError} />
-            <span className={classes.text}>{a}</span>
-          </div>
-        ))}
+        {map(amms, (colume, index) => {
+          return (
+            <div key={index}>
+              {map(colume, a => (
+                <div key={a.name} className={classes.item}>
+                  <img className={classes.img} src={`/images/amms/${a.name}.png`} alt={a.name} onError={imgError} />
+                  <span className={classes.text}>{a.name}</span>
+                </div>
+              ))}
+            </div>
+          )
+        })}
       </GridItem>
     </GridContainer>
   )
