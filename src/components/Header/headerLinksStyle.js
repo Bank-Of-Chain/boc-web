@@ -1,4 +1,6 @@
-import { defaultFont } from "../../assets/jss/material-kit-react.js";
+import {
+  defaultFont
+} from "../../assets/jss/material-kit-react.js";
 
 import tooltip from "./tooltipsStyle.js";
 
@@ -39,7 +41,7 @@ const headerLinksStyle = (theme) => ({
   navLink: {
     color: "#fff",
     position: "relative",
-    padding: "0.9375rem",
+    padding: "1.275rem",
     fontWeight: "400",
     fontSize: "12px",
     textTransform: "uppercase",

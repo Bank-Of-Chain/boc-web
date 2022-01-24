@@ -25,14 +25,12 @@ export default function Frame (props) {
         rightLinks={<HeaderLinks {...props} />}
         fixed
         changeColorOnScroll={{
-          height: 200,
+          height: 90,
           color: "white",
         }}
         {...props}
       />
-      <div className={classNames(classes.main, classes.mainRaised)}>
-        <div className={classes.container}>{props.children}</div>
-      </div>
+      {props.children}
       <Footer whiteFont />
     </div>
   )
