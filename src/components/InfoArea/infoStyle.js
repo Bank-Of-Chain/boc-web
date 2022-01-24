@@ -49,7 +49,11 @@ const infoStyle = {
     color: grayColor,
     overflow: "hidden",
   },
-  title,
+  title:{
+    ...title,
+    color: '#fff',
+    fontSize: '1.5rem',
+  },
   description: {
     color: '#fff',
     overflow: "hidden",

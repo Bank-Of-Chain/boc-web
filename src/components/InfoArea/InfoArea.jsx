@@ -25,7 +25,7 @@ export default function InfoArea(props) {
   return (
     <div className={classes.infoArea}>
       <div className={iconWrapper}>
-        <props.icon className={iconClasses} />
+        {props.icon}
       </div>
       <div className={classes.descriptionWrapper}>
         <h4 className={classes.title}>{title}</h4>
@@ -40,7 +40,7 @@ InfoArea.defaultProps = {
 };
 
 InfoArea.propTypes = {
-  icon: PropTypes.object.isRequired,
+  icon: PropTypes.element.isRequired,
   title: PropTypes.string.isRequired,
   description: PropTypes.array.isRequired || PropTypes.string.isRequired,
   iconColor: PropTypes.oneOf([
