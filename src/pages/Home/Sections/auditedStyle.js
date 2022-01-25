@@ -1,7 +1,9 @@
 const auditedStyle = {
   section: {
     textAlign: "center",
-    padding: '5rem 0'
+    padding: '5rem 0',
+    backgroundColor: '#271f72',
+    opacity: 0.5
   },
   title: {
     fontSize: '2rem',

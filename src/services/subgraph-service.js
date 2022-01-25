@@ -11,6 +11,11 @@ import {
     maticClient
 } from "../apollo/client";
 
+// === Services === //
+import {
+    arrayAppendOfDay
+} from './../helpers/array-append'
+
 /**
  * TVL
  * Total Profit
@@ -22,6 +27,8 @@ query($yesterdayTimestamp: BigInt) {
         id
         tvl
         totalProfit
+        decimals
+        holderCount
     }
     vaultDailyData(id: $yesterdayTimestamp) {
         totalProfit
@@ -41,7 +48,9 @@ const getVaultData = async (client) => {
     return {
         address: data.vaults[0].id,
         tvl: data.vaults[0].tvl,
+        holderCount: data.vaults[0].holderCount,
         totalProfit: data.vaults[0].totalProfit,
+        decimals: data.vaults[0].decimals,
         yesterdayProfit: data.vaultDailyData.totalProfit
     };
 };
@@ -60,29 +69,33 @@ export const getMaticVaultData = async () => {
 
 const VAULT_DAILY_QUERY = `
 query($beginDayTimestamp: BigInt) {
-  vaultDailyDatas (where: {
-    id_gt: $beginDayTimestamp
-  }) {
-    id
-    tvl
-    totalShares
-    usdtPrice
-  }
-}
+     vaultDailyDatas (
+      orderBy: id,
+      orderDirection: asc,
+      where: {
+      id_gt: $beginDayTimestamp
+     }) {
+      id
+      tvl
+      totalShares
+      usdtPrice,
+      pricePerShare
+     }
+    }
 `;
 export const getETHLast30DaysVaultData = async () => {
     return await ethClient
-      .query({
-        query: gql(VAULT_DAILY_QUERY),
-        variables: {
-          beginDayTimestamp: getDaysAgoTimestamp(30),
-        },
-      })
-      .then((resp) => get(resp, 'data.vaultDailyDatas'));
+        .query({
+            query: gql(VAULT_DAILY_QUERY),
+            variables: {
+                beginDayTimestamp: getDaysAgoTimestamp(30),
+            },
+        })
+        .then((resp) => get(resp, 'data.vaultDailyDatas')).then(a => arrayAppendOfDay(a, 30));
 }
 
 function getDaysAgoTimestamp(daysAgo) {
     const currentTimestamp = Math.floor(Date.now() / 1000);
     const daysAgoTimestamp = currentTimestamp - daysAgo * 86400;
     return daysAgoTimestamp - (daysAgoTimestamp % 86400);
-  }
+}

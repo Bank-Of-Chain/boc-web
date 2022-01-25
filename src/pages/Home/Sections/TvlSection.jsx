@@ -1,15 +1,42 @@
-import React from "react"
+import React, { useEffect, useState } from "react"
 import { makeStyles } from "@material-ui/core/styles"
+
+// === Services === //
+import { getETHVaultData, getBSCVaultData, getMaticVaultData } from "./../../../services/subgraph-service"
+import { toFixed } from "../../../helpers/number-format"
 
 // === Components === //
 import GridContainer from "../../../components/Grid/GridContainer"
 import GridItem from "../../../components/Grid/GridItem"
+
+// === Utils === //
+import sumBy from "lodash/sumBy"
 
 import styles from "./tvlStyle"
 
 const useStyles = makeStyles(styles)
 
 export default function TvlSection () {
+  const [obj, setObj] = useState({
+    totalTvl: 0,
+    earn: 0,
+    totalEarn: 0,
+    holders: 0,
+  })
+  useEffect(() => {
+    Promise.all([getETHVaultData(), getBSCVaultData(), getMaticVaultData()])
+      .then(array => {
+        const nextTotalTvl = sumBy(array, i => parseFloat(toFixed(i.tvl, 10 ** i.decimals, 2)))
+        const nextEarn = sumBy(array, i => parseFloat(toFixed(i.yesterdayProfit, 10 ** i.decimals, 2)))
+        const nextTotalEarn = sumBy(array, i => parseFloat(toFixed(i.totalProfit, 10 ** i.decimals, 2)))
+        const nextHoldCount = sumBy(array, i => parseFloat(i.holderCount))
+
+        return { totalTvl: nextTotalTvl, earn: nextEarn, totalEarn: nextTotalEarn, holders: nextHoldCount }
+      })
+      .then(setObj)
+  }, [])
+
+  const { totalTvl, earn, totalEarn, holders } = obj
   const classes = useStyles()
   return (
     <div className={classes.section}>
@@ -17,22 +44,22 @@ export default function TvlSection () {
         <GridItem xs={12} sm={12} md={6}>
           <GridContainer>
             <GridItem xs={6} sm={6} md={6}>
-              <p className={classes.title}>$ 204242.1</p>
+              <p className={classes.title}>$ {totalTvl}</p>
               <p className={classes.subTitle}>TVL</p>
             </GridItem>
             <GridItem xs={6} sm={6} md={6}>
-              <p className={classes.title}>$ 567.3m</p>
-              <p className={classes.subTitle}>TOTAL REVENUE</p>
+              <p className={classes.title}>{holders}</p>
+              <p className={classes.subTitle}>HOLDERS</p>
             </GridItem>
           </GridContainer>
           <GridContainer>
             <GridItem xs={6} sm={6} md={6}>
-              <p className={classes.title}>118m CRV</p>
-              <p className={classes.subTitle}>TOTAL CRV EARNED</p>
+              <p className={classes.title}>$ {totalEarn}</p>
+              <p className={classes.subTitle}>EARNINGS TOTAL</p>
             </GridItem>
             <GridItem xs={6} sm={6} md={6}>
-              <p className={classes.title}>9.2 %</p>
-              <p className={classes.subTitle}>% OF CVXLOCKED</p>
+              <p className={classes.title}>$ {earn}</p>
+              <p className={classes.subTitle}>EARNINGS LAST DAY</p>
             </GridItem>
           </GridContainer>
         </GridItem>

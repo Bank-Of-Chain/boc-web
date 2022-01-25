@@ -30,7 +30,6 @@ const componentsStyle = {
   mainRaised: {
     margin: "250px 30px 30px 30px",
     borderRadius: "6px",
-    height: '100vh'
   },
   link: {
     textDecoration: "none",
