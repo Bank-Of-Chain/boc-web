@@ -15,7 +15,7 @@
     ]
   },
   "dependencies": {
-    "@apollo/client": "^3.3.16",
+    "@apollo/client": "^3.5.7",
     "@apollo/react-hooks": "^4.0.0",
     "@esri/react-arcgis": "^5.1.0",
     "@ethersproject/address": "^5.0.5",
