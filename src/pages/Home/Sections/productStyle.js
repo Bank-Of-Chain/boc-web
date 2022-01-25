@@ -1,4 +1,3 @@
-
 const productStyle = {
   section: {
     textAlign: "center",
@@ -19,10 +18,10 @@ const productStyle = {
   item: {
     cursor: 'pointer',
     padding: '2.5rem',
-    // borderLeft: '1px solid #19ccff',
-    // '&:first-child': {
-    //   borderLeft: 0
-    // }
+    borderLeft: '1px solid rgba(255, 255, 255, .1)',
+    '&:first-child': {
+      borderLeft: 0
+    }
   },
   checked: {
     backgroundColor: '#271f72',

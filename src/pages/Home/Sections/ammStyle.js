@@ -1,7 +1,3 @@
-import {
-  title
-} from "../../../assets/jss/material-kit-react.js";
-
 const ammSectionStyle = {
   section: {
     textAlign: "center",

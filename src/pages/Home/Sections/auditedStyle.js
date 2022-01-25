@@ -1,7 +1,3 @@
-import {
-  title
-} from "../../../assets/jss/material-kit-react";
-
 const auditedStyle = {
   section: {
     textAlign: "center",
