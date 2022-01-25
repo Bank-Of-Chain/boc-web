@@ -39,7 +39,8 @@ const lendingSectionStyle = {
   footer: {
     '&>img': {
       width: '3rem',
-      paddingTop: '1.25rem'
+      borderRadius: '1.5rem',
+      marginTop: '1.25rem'
     }
   }
 };
