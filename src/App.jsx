@@ -216,10 +216,12 @@ function App () {
     if (reason === "clickaway") {
       return
     }
-    dispatch(warmDialog({
-      ...alertState,
-      open: false,
-    }))
+    dispatch(
+      warmDialog({
+        ...alertState,
+        open: false,
+      }),
+    )
   }
   const renderModalValid = () => {
     if (isEmpty(window.ethereum)) {
@@ -241,7 +243,7 @@ function App () {
           <CircularProgress color='inherit' />
           <p>钱包数据加载中...</p>
         </div>,
-        <Chains key='2' array={NET_WORKS} handleClick={changeNetwork} />,
+        <Chains key='2' maskStyle={{ textAlign: "center" }} array={NET_WORKS} handleClick={changeNetwork} />,
       ])
     }
     if (!isUndefined(localChainId) && !map(NET_WORKS, "chainId").includes(localChainId)) {
@@ -250,7 +252,7 @@ function App () {
         <p key='1' style={{ textAlign: "center" }}>
           您当前的网络暂不支持，请重新设置您的网络！
         </p>,
-        <Chains key='2' array={NET_WORKS} handleClick={changeNetwork} />,
+        <Chains key='3' maskStyle={{ textAlign: "center" }} array={NET_WORKS} handleClick={changeNetwork} />,
       ])
     }
   }
