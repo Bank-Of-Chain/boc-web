@@ -66,7 +66,7 @@ export default function LendingSection () {
             const nextPercent = percent / displayMaxValue
             const percentText = `${toFixed(nextPercent.toString(), 1e-2, 2)}%`
             return (
-              <GridItem className={classNames(classes.item)} key={`${i}`} xs={12} sm={12} md={3}>
+              <GridItem className={classNames(classes.item)} key={`${i}`} xs={3} sm={3} md={3}>
                 <GridContainer className={classes.body}>
                   <GridItem className={classes.header} style={i === 0 ? { borderLeft: 0 } : {}}>
                     <div className={classes.bar} style={{ height: percentText }}>

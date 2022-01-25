@@ -17,52 +17,56 @@ const useStyles = makeStyles(styles)
 
 const data = [
   {
-    title: "Fund allocation",
+    title: "Funds Allocation",
     subTitle: "Fund allocation title",
     descriptions: [
-      "投资仅限于有由法币提供足额抵押或数字资产提供超额抵押生成的稳定币",
-      "投资的理财协议，需要有长期的安全运营记录，并经过社区严格风险评估",
-      "严格的安全审计，合约透明，社区维护，保障用户的资金所有权和安全",
+      "The investment for a single agreement shall not exceed 30% of the total.",
+      "The investment for a single capital pool shall not exceed 20% of the total.",
+      "The investment for a single capital pool shall not exceed 50% of the existing capital in the capital pool.",
     ],
     imagePath: require("./../images/point-4.png"),
   },
   {
-    title: "Easy to use",
+    title: "Easy to Use",
     subTitle: "Easy to use title",
     descriptions: [
-      "投资仅限于有由法币提供足额抵押或数字资产提供超额抵押生成的稳定币",
-      "投资的理财协议，需要有长期的安全运营记录，并经过社区严格风险评估",
-      "严格的安全审计，合约透明，社区维护，保障用户的资金所有权和安全",
+      "There are only two operations to be made, deposit and withdraw, and there is no need to perform and pay for complex operations such as harvest, exchange, and reallocation.",
+      "The income is automatically reinvested, and the funds can be deposited and withdrawn at any time.",
+      "Historical and dynamic returns are visible.",
     ],
     imagePath: require("./../images/point-3.png"),
   },
   {
-    title: "Security",
+    title: "Safe",
     subTitle: "Security title",
     descriptions: [
-      "投资仅限于有由法币提供足额抵押或数字资产提供超额抵押生成的稳定币",
-      "投资的理财协议，需要有长期的安全运营记录，并经过社区严格风险评估",
-      "严格的安全审计，合约透明，社区维护，保障用户的资金所有权和安全",
+      "A third party audit.",
+      "The scale of issued eligible stable-coins/USDT? exceeds 1 billion US dollars, and the quotation is based on Chain Link.",
+      "The scale of locked eligible stable-coins/USDT? exceeds 5 billion US dollars, and the connected DEX and lending protocols are its first-line protocols.",
+      "No third-party cross-chain bridge is used.",
     ],
     imagePath: require("./../images/point-1.png"),
   },
   {
-    title: "Protect",
+    title: "Risk control",
     subTitle: "Protect title",
     descriptions: [
-      "投资仅限于有由法币提供足额抵押或数字资产提供超额抵押生成的稳定币",
-      "投资的理财协议，需要有长期的安全运营记录，并经过社区严格风险评估",
-      "严格的安全审计，合约透明，社区维护，保障用户的资金所有权和安全",
+      "Stable-coin de-anchoring risk: not using algorithmic stable-coins, partially mortgaged stable-coins, and stable-coins generated from long-tail asset mortgages.",
+      "Risk of unpaid loss: market-making is limited to stable-coin asset trading pairs.",
+      "Knock-on systemic risk: excluding nested tokens and the Lego Protocol.",
+      "Long-tail risk: not getting returns by providing risky services, such as insurance, share options.",
+      "Leverage risk: not using leverage to amplify risk and reward.",
     ],
     imagePath: require("./../images/point-5.png"),
   },
   {
-    title: "Intelligence",
+    title: "Smart",
     subTitle: "Intelligence title",
     descriptions: [
-      "投资仅限于有由法币提供足额抵押或数字资产提供超额抵押生成的稳定币",
-      "投资的理财协议，需要有长期的安全运营记录，并经过社区严格风险评估",
-      "严格的安全审计，合约透明，社区维护，保障用户的资金所有权和安全",
+      "Regularly evaluate the changes of income in each capital pool, and weigh the cost and income of reallocation.",
+      "Search for the best path for exchange through aggregators.",
+      "Carry out foreign exchange income arbitrage, and automatically increase or decrease leverage according to the exchange rate and income fluctuations.",
+      "Set complex parameters for market-making and lending strategy.",
     ],
     imagePath: require("./../images/point-6.png"),
   },
@@ -72,8 +76,7 @@ export default function ProductSection () {
   const classes = useStyles()
   const [hoverItem, setHoverItem] = useState(0)
   return (
-    // onMouseLeave={() => setHoverItem(0)}
-    <div className={classes.section}>
+    <div className={classes.section} onMouseLeave={() => setHoverItem(0)}>
       <GridContainer style={{ margin: "0 auto" }}>
         {map(data, (item, i) => {
           const { title, subTitle, descriptions = [], imagePath } = item
