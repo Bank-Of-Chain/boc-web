@@ -29,15 +29,7 @@ export default function Home (props) {
       <GridContainer>
         <GridItem xs={12} sm={12} md={12} style={{ textAlign: "left" }}>
           <h1 className={classes.title}>The Multichain Yield Optimizer</h1>
-          <h4 className={classes.text}>
-            qweqwrerrwer rewtretyrytrytry trutyiiyuoyowrwrwerwe qewqeqeqeqweqeqr tetwterteryerryqweqweqwqweqwrerrwer
-            rewtretyrytrytry trutyiiyuoyowrwrwerwe qewqeqeqeqweqeqr tetwterteryerryqweqweqwqweqwrerrwer rewtretyrytrytry
-            trutyiiyuoyowrwrwerwe qewqeqeqeqweqeqr tetwterteryerryqweqweqwqweqwrerrwer rewtretyrytrytry
-            trutyiiyuoyowrwrwerwe qewqeqeqeqweqeqr tetwterteryerryqweqweqwqweqwrerrwer rewtretyrytrytry
-            trutyiiyuoyowrwrwerwe qewqeqeqeqweqeqr tetwterteryerryqweqweqwqweqwrerrwer rewtretyrytrytry
-            trutyiiyuoyowrwrwerwe qewqeqeqeqweqeqr tetwterteryerryqweqweqwqweqwrerrwer rewtretyrytrytry
-            trutyiiyuoyowrwrwerwe qewqeqeqeqweqeqr tetwterteryerryqweqweqw
-          </h4>
+          <h4 className={classes.text}>Blockchain bank is a decentralized financial protocol that helps ordinary investors get access to "risk-free" capital preservation financing on the chain. For ordinary investors, the protocol is optimized as follows to reduce the risk of use and improve the user experience.</h4>
           <div className={classes.earth}>
             <Button className={classes.inverst} color='colorfull' size='lg' href='/#/invest'>
               inverst

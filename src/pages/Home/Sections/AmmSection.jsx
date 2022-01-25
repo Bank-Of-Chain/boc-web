@@ -5,7 +5,7 @@ import { makeStyles } from "@material-ui/core/styles"
 // === Components === //
 import Amms from "../../../components/Amms/index"
 
-import styles from "./auditedStyle"
+import styles from "./ammStyle"
 
 const useStyles = makeStyles(styles)
 

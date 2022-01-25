@@ -2,20 +2,26 @@ import {
   title
 } from "../../../assets/jss/material-kit-react";
 
-const teamStyle = {
+const auditedStyle = {
   section: {
-    padding: "70px 0",
     textAlign: "center",
+    padding: '5rem 0'
   },
   title: {
-    ...title,
-    marginBottom: "1rem",
-    marginTop: "30px",
-    minHeight: "32px",
-    textDecoration: "none",
-    fontSize: '2.25rem',
-    lineHeight: '1.5em'
+    fontSize: '2rem',
+    margin: 0
   },
+  container: {
+    paddingTop: '6.125rem'
+  },
+  text: {
+    fontSize: '1.125rem',
+    color: '#b2add1'
+  },
+  img: {
+    marginRight: '1rem',
+    verticalAlign: 'text-bottom'
+  }
 };
 
-export default teamStyle;
+export default auditedStyle;

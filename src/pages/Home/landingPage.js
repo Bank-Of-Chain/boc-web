@@ -11,7 +11,6 @@ const landingPageStyle = {
     ...container,
   },
   title: {
-    ...title,
     display: "inline-block",
     position: "relative",
     margin: "88px 0 0 0",

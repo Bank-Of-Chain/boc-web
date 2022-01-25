@@ -1,16 +1,11 @@
-import {
-  title
-} from "../../../assets/jss/material-kit-react.js";
 
 const productStyle = {
   section: {
     textAlign: "center",
-    backgroundColor: '#261964',
-    padding: '1.625rem',
-    opacity: '0.7'
+    backgroundColor: '#0c0735',
+    opacity: '0.7',
   },
   title: {
-    ...title,
     fontSize: '1.5rem',
     color: '#fff',
     margin: 0
@@ -21,6 +16,18 @@ const productStyle = {
     display: 'inline-block',
     lineHeight: '2rem'
   },
+  item: {
+    cursor: 'pointer',
+    padding: '2.5rem',
+    // borderLeft: '1px solid #19ccff',
+    // '&:first-child': {
+    //   borderLeft: 0
+    // }
+  },
+  checked: {
+    backgroundColor: '#271f72',
+    opacity: 0.8,
+  }
 };
 
 export default productStyle;
