@@ -28,8 +28,9 @@ const componentsStyle = {
     backgroundColor: 'transparent'
   },
   mainRaised: {
-    margin: "120px 30px 30px 30px",
+    margin: "250px 30px 30px 30px",
     borderRadius: "6px",
+    height: '100vh'
   },
   link: {
     textDecoration: "none",

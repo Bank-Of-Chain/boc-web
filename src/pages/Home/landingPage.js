@@ -85,6 +85,11 @@ const landingPageStyle = {
     borderRadio: '0.25rem',
     fontSize: '1.5rem',
     fontWeight: 'bold'
+  },
+  earth: {
+    backgroundImage: 'url(./images/earth.png)',
+    backgroundSize: '90%',
+    backgroundRepeat: 'no-repeat',
   }
 };
 

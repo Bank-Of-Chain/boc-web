@@ -6,7 +6,6 @@ const productStyle = {
   section: {
     textAlign: "center",
     backgroundColor: '#261964',
-    height: '30rem',
     padding: '1.625rem',
     opacity: '0.7'
   },

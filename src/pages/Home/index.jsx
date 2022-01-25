@@ -38,7 +38,7 @@ export default function Home (props) {
             trutyiiyuoyowrwrwerwe qewqeqeqeqweqeqr tetwterteryerryqweqweqwqweqwrerrwer rewtretyrytrytry
             trutyiiyuoyowrwrwerwe qewqeqeqeqweqeqr tetwterteryerryqweqweqw
           </h4>
-          <div>
+          <div className={classes.earth}>
             <Button className={classes.inverst} color='colorfull' size='lg' href='/#/invest'>
               inverst
             </Button>
@@ -47,8 +47,8 @@ export default function Home (props) {
               array={NET_WORKS}
               handleClick={changeNetwork}
             />
+            <TvlSection />
           </div>
-          <TvlSection />
         </GridItem>
       </GridContainer>
       <ProductSection />

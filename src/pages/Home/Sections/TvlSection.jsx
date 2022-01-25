@@ -14,7 +14,7 @@ export default function TvlSection () {
   return (
     <div className={classes.section}>
       <GridContainer>
-        <GridItem xs={6} sm={6} md={6}>
+        <GridItem xs={12} sm={12} md={6}>
           <GridContainer>
             <GridItem xs={6} sm={6} md={6}>
               <p className={classes.title}>$ 204242.1</p>
@@ -35,9 +35,6 @@ export default function TvlSection () {
               <p className={classes.subTitle}>% OF CVXLOCKED</p>
             </GridItem>
           </GridContainer>
-        </GridItem>
-        <GridItem xs={6} sm={6} md={6}>
-          <div className={classes.earth} />
         </GridItem>
       </GridContainer>
     </div>
