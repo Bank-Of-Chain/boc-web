@@ -18,8 +18,9 @@ const styles = {
   },
   img: {
     height: '2.4rem',
-    padding: '0.3rem',
-    borderRadius: '1.5rem'
+    margin: '0.3rem',
+    borderRadius: '1.5rem',
+    backgroundColor: '#fff',
   },
   text: {
     lineHeight: '3rem',

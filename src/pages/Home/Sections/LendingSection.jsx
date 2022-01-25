@@ -74,7 +74,7 @@ export default function LendingSection () {
                     </div>
                   </GridItem>
                   <GridItem className={classes.footer}>
-                    <img src={imagePath} alt={title} />
+                    <img title={title} src={imagePath} alt={title} />
                   </GridItem>
                 </GridContainer>
               </GridItem>

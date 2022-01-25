@@ -43,7 +43,7 @@ export default function Amms () {
   )
   return (
     <GridContainer>
-      <GridItem xs={12} sm={12} md={12}>
+      <GridItem xs={12} sm={12} md={12} style={{ paddingBottom: 20 }}>
         {map(CHAINS, c => (
           <div key={c.id} className={classes.item}>
             <img className={classes.img} src={`/images/chains/${c.id}.png`} alt={c.name} />
