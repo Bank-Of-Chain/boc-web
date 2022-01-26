@@ -28,8 +28,8 @@ const data = [
   {
     title: "Easy to Use",
     descriptions: [
-      "There are only two operations to be made, deposit and withdraw, and there is no need to perform and pay for complex operations such as harvest, exchange, and reallocation.",
-      "The income is automatically reinvested, and the funds can be deposited and withdrawn at any time.",
+      "There are only two operations, deposit and withdraw, no necessary to implement those complex operations such as harvest, exchange, and reallocation and so that avoid the cost against the corresponding implement.",
+      "The revenue is automatically reinvested, and the funds can be deposited and withdrawn at any time.",
       "Historical and dynamic returns are visible.",
     ],
     imagePath: require("./../images/point-3.png"),
@@ -38,16 +38,16 @@ const data = [
     title: "Safe",
     descriptions: [
       "A third party audit.",
-      "The scale of issued eligible stable-coins/USDT? exceeds 1 billion US dollars, and the quotation is based on Chain Link.",
-      "The scale of locked eligible stable-coins/USDT? exceeds 5 billion US dollars, and the connected DEX and lending protocols are its first-line protocols.",
-      "No third-party cross-chain bridge is used.",
+      "The scale of issued eligible Stablecoin exceeds 1 billion US dollars, and the quotation is based on Chain Link.",
+      "The scale of locked eligible Stablecoin exceeds 5 billion US dollars, and the connected DEX and lending protocols are its first-line protocols.",
+      "No any third-party cross-chain bridge is used.",
     ],
     imagePath: require("./../images/point-1.png"),
   },
   {
     title: "Risk control",
     descriptions: [
-      "Stable-coin de-anchoring risk: not using algorithmic stable-coins, partially mortgaged stable-coins, and stable-coins generated from long-tail asset mortgages.",
+      "Stablecoin de-anchoring risk: not using algorithmic Stablecoin, partially mortgaged Stablecoin, and Stablecoin generated from long-tail asset mortgages.",
       "Risk of unpaid loss: market-making is limited to stable-coin asset trading pairs.",
       "Knock-on systemic risk: excluding nested tokens and the Lego Protocol.",
       "Long-tail risk: not getting returns by providing risky services, such as insurance, share options.",

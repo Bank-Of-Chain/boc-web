@@ -13,8 +13,7 @@ export default function TeamSection () {
       <h2 className={classes.title}>Audited And Verified</h2>
       <div className={classes.container}>
         <h2 className={classes.text}>
-          <img className={classes.img} src={require("./../images/un-audit.png")} alt=''></img>This audit is in the
-          testing phase...
+          <img className={classes.img} src={require("./../images/un-audit.png")} alt=''></img>Audit coming soon...
         </h2>
       </div>
     </div>

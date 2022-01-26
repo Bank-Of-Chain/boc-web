@@ -54,11 +54,11 @@ export default function HeaderLinks (props) {
           <ChatIcon className={classes.icons}></ChatIcon> DAO
         </Button>
       </ListItem>
-      <ListItem className={classes.listItem}>
+      {/* <ListItem className={classes.listItem}>
         <Button color='transparent' target='_blank' href={BLOG_URL} className={classes.navLink}>
           <BookIcon className={classes.icons}></BookIcon> Blog
         </Button>
-      </ListItem>
+      </ListItem> */}
       <ListItem className={classes.listItem}>
         <CustomDropdown
           noLiPadding

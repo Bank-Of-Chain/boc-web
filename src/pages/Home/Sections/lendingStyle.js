@@ -1,8 +1,7 @@
 const lendingSectionStyle = {
   section: {
     textAlign: "center",
-    backgroundColor: '#070c35',
-    opacity: 0.8,
+    backgroundColor: 'rgba(7, 12, 53, .8)',
     padding: '3.5rem'
   },
   text: {

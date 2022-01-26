@@ -229,9 +229,9 @@ function App () {
         true,
         <div style={{ textAlign: "center" }}>
           <p style={{ textAlign: "center" }}>
-            请先安装Metamask插件!{" "}
+            Please install the plugin Metamask first!{" "}
             <a href='https://chrome.google.com/webstore/detail/metamask/nkbihfbeogaeaoehlefnkodbefgpgknn?hl=zh-CN'>
-              【插件地址】
+              LINK
             </a>
           </p>
         </div>,
@@ -241,7 +241,7 @@ function App () {
       return modalJsx(true, [
         <div key='1' style={{ textAlign: "center" }}>
           <CircularProgress color='inherit' />
-          <p>钱包数据加载中...</p>
+          <p>loading...</p>
         </div>,
         <Chains key='2' maskStyle={{ textAlign: "center" }} array={NET_WORKS} handleClick={changeNetwork} />,
       ])
@@ -250,7 +250,7 @@ function App () {
       if (localChainId === 31337) return
       return modalJsx(true, [
         <p key='1' style={{ textAlign: "center" }}>
-          您当前的网络暂不支持，请重新设置您的网络！
+          You may need to manually switch network via your wallet.
         </p>,
         <Chains key='3' maskStyle={{ textAlign: "center" }} array={NET_WORKS} handleClick={changeNetwork} />,
       ])

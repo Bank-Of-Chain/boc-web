@@ -1,8 +1,7 @@
 const productStyle = {
   section: {
     textAlign: "center",
-    backgroundColor: '#0c0735',
-    opacity: '0.7',
+    backgroundColor: 'rgba(12, 7, 53, .8)',
   },
   title: {
     fontSize: '1.5rem',
@@ -25,7 +24,7 @@ const productStyle = {
   },
   checked: {
     backgroundColor: '#271f72',
-    opacity: 0.8,
+    color: '#fff'
   }
 };
 

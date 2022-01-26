@@ -37,9 +37,6 @@ const componentsStyle = {
   textCenter: {
     textAlign: "center",
   },
-  switchIcon: {
-    color: '#40a9ff !important'
-  },
   switchBar: {
     backgroundColor: '#91d5ff !important'
   },
@@ -100,6 +97,12 @@ const componentsStyle = {
     color: '#fff',
     fontSize: '12px',
     letterSpacing: '0.01071em'
+  },
+  switchBase:{
+    color: '#ddd'
+  },
+  switchChecked:{
+    color: '#40a9ff'
   }
 };
 

@@ -32,7 +32,7 @@ import CardHeader from "@material-ui/core/CardHeader"
 import RadioGroup from "@material-ui/core/RadioGroup"
 import CustomRadio from "./../../components/Radio/Radio"
 import Tooltip from "@material-ui/core/Tooltip"
-import ContactSupportIcon from "@material-ui/icons/ContactSupport"
+import InfoIcon from '@material-ui/icons/Info';
 
 import { useDispatch } from "react-redux"
 
@@ -605,7 +605,7 @@ export default function Invest (props) {
     if (isEstimate) {
       return (
         <GridItem xs={12} sm={12} md={12} lg={12}>
-          <div style={{ textAlign: "center", padding: "50px 0" }}>
+          <div style={{ textAlign: "center", padding: "70px 0 50px" }}>
             <CircularProgress fontSize='large' color='primary' />
           </div>
         </GridItem>
@@ -614,9 +614,9 @@ export default function Invest (props) {
     if (isUndefined(estimateWithdrawArray)) {
       return (
         <GridItem xs={12} sm={12} md={12} lg={12}>
-          <div style={{ textAlign: "center", minHeight: "100px", color: "#fff", padding: 50 }}>
+          <div style={{ textAlign: "center", minHeight: "100px", color: "#fff", padding: '70px 0 50px' }}>
             <ErrorOutlineIcon fontSize='large' />
-            <p>数额预估失败，请重新获取！</p>
+            <p>Amount estimate failed, please try again!</p>
           </div>
         </GridItem>
       )
@@ -624,9 +624,9 @@ export default function Invest (props) {
     if (isEmpty(estimateWithdrawArray) || isEmpty(toValue)) {
       return (
         <GridItem xs={12} sm={12} md={12} lg={12}>
-          <div style={{ textAlign: "center", minHeight: "100px", color: "#fff", padding: 50 }}>
+          <div style={{ textAlign: "center", minHeight: "100px", color: "#fff", padding: '70px 0 50px' }}>
             <AndroidIcon fontSize='large' />
-            <p style={{ marginTop: 0, letterSpacing: "0.01071em" }}>暂无预估数值</p>
+            <p style={{ marginTop: 0, letterSpacing: "0.01071em" }}>No estimated value available</p>
           </div>
         </GridItem>
       )
@@ -713,7 +713,7 @@ export default function Invest (props) {
                     <GridItem xs={8} sm={8} md={9} lg={9}>
                       <Muted>
                         <p style={{ fontSize: 16, wordBreak: "break-all", letterSpacing: "0.01071em" }}>
-                          份额预估：
+                          Estimated Shares：
                           {isValidFromValueFlag &&
                             toFixed(
                               BN(fromValue)
@@ -731,7 +731,7 @@ export default function Invest (props) {
                       </Muted>
                     </GridItem>
                     <GridItem xs={4} sm={4} md={3} lg={3}>
-                      <Button color='colorfull' onClick={diposit} style={{ width: 122 }}>
+                      <Button color='colorfull' onClick={diposit} style={{ width: 122, margin: '6px 0' }}>
                         Deposit
                       </Button>
                     </GridItem>
@@ -746,7 +746,7 @@ export default function Invest (props) {
                         speed={3500}
                       >
                         {v =>
-                          `BOC份额: ${toFixed(toBalance, BigNumber.from(10).pow(usdtDecimals), 6)}${` (~${toFixed(
+                          `Shares: ${toFixed(toBalance, BigNumber.from(10).pow(usdtDecimals), 6)}${` (~${toFixed(
                             toBalance.mul(v),
                             BigNumber.from(10).pow(usdtDecimals + usdtDecimals),
                             6,
@@ -814,15 +814,25 @@ export default function Invest (props) {
                       </GridItem>
                       <GridItem xs={12} sm={12} md={12} lg={12}>
                         <GridContainer>
-                          <GridItem xs={4} sm={4} md={4} lg={4}>
-                            <p style={{ color: "#fff", lineHeight: "70px", fontSize: 16, letterSpacing: "0.01071em" }}>
-                              提取币种及数额预估
-                            </p>
+                          <GridItem xs={12} sm={12} md={4} lg={4} style={{ padding: "34px 0px 33px 15px" }}>
+                            <span
+                              title='Withdrawal tokens and estimated amount'
+                              style={{
+                                color: "#fff",
+                                fontSize: 16,
+                                letterSpacing: "0.01071em",
+                                lineHeight: 1.5
+                              }}
+                            >
+                              Withdrawal tokens and estimated amount
+                            </span>
                           </GridItem>
-                          <GridItem xs={4} sm={4} md={4} lg={4}>
+                          <GridItem xs={8} sm={8} md={4} lg={4}>
                             <FormControlLabel
+                              labelPlacement='start'
                               control={
                                 <Switch
+                                  color="default"
                                   checked={shouldExchange}
                                   onChange={event => setShouldExchange(event.target.checked)}
                                   classes={{
@@ -833,12 +843,16 @@ export default function Invest (props) {
                                   }}
                                 />
                               }
-                              style={{ padding: "32px 0px 32px 0px" }}
-                              label={<Muted>{shouldExchange ? "开启兑换" : "关闭兑换"}</Muted>}
+                              style={{ padding: "38px 0px", marginLeft: 0 }}
+                              label={
+                                <Muted>
+                                  Exchanged:
+                                  <Tooltip placement='top' title='Please pre-set the acceptable exchange loss when the exchange is enabled'>
+                                    <InfoIcon style={{ color: "#fff", verticalAlign: "middle", fontSize: 16 }} />
+                                  </Tooltip>
+                                </Muted>
+                              }
                             />
-                            <Tooltip placement='top-end' title='开启兑换时，请预先设置可接受的兑换损失'>
-                              <ContactSupportIcon style={{ color: "#fff", verticalAlign: "middle" }} />
-                            </Tooltip>
                           </GridItem>
                           <GridItem xs={4} sm={4} md={4} lg={4}>
                             <CustomInput
@@ -871,11 +885,11 @@ export default function Invest (props) {
                       {shouldExchange && (
                         <GridItem xs={12} sm={12} md={12} lg={12}>
                           <GridContainer>
-                            <GridItem xs={6} sm={6} md={6} lg={6}>
+                            <GridItem xs={8} sm={8} md={6} lg={6}>
                               <RadioGroup
                                 row
                                 value={slipper}
-                                style={{ padding: "28px 0" }}
+                                style={{ padding: "36px 0" }}
                                 onChange={event => setSlipper(event.target.value)}
                               >
                                 <FormControlLabel
@@ -898,7 +912,7 @@ export default function Invest (props) {
                                 />
                               </RadioGroup>
                             </GridItem>
-                            <GridItem xs={6} sm={6} md={6} lg={6}>
+                            <GridItem xs={4} sm={4} md={6} lg={6}>
                               <CustomInput
                                 labelText='Slipper'
                                 inputProps={{
@@ -959,32 +973,23 @@ export default function Invest (props) {
             </Card>
           </GridItem>
         </GridContainer>
-        <p style={{ color: "#fff", letterSpacing: "0.01071em" }}>有关此 Vault 更多的信息</p>
+        <p style={{ color: "#fff", letterSpacing: "0.01071em" }}>More Details</p>
         <TableContainer component={Paper} style={{ borderRadius: 0 }}>
           <Table className={classNames(classes.table)} aria-label='simple table'>
             <TableHead>
               <TableRow>
-                <TableCell className={classNames(classes.tableCell)}>Vault 通证符号</TableCell>
-                <TableCell className={classNames(classes.tableCell)}>净值</TableCell>
-                <TableCell className={classNames(classes.tableCell)}>Vault 合约地址</TableCell>
-                <TableCell className={classNames(classes.tableCell)}>质押通证符号</TableCell>
-                <TableCell className={classNames(classes.tableCell)}>质押合约地址</TableCell>
-                <TableCell className={classNames(classes.tableCell)}>TVL（总锁仓量）</TableCell>
+                <TableCell className={classNames(classes.tableCell)}>Vault Symbol</TableCell>
+                <TableCell className={classNames(classes.tableCell)}>Vault Address</TableCell>
+                <TableCell className={classNames(classes.tableCell)}>PricePerShare</TableCell>
+                {/* <TableCell className={classNames(classes.tableCell)}>质押通证符号</TableCell>
+                <TableCell className={classNames(classes.tableCell)}>质押合约地址</TableCell> */}
+                <TableCell className={classNames(classes.tableCell)}>TVL</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
               <TableRow>
                 <TableCell className={classNames(classes.tableCell)} component='th' scope='row'>
                   BOC_Vault
-                </TableCell>
-                <TableCell className={classNames(classes.tableCell)} component='th' scope='row'>
-                  <CountTo
-                    from={Number(beforePerFullShare.toBigInt())}
-                    to={Number(perFullShare.toBigInt())}
-                    speed={3500}
-                  >
-                    {v => toFixed(v, BigNumber.from(10).pow(usdtDecimals), 6)}
-                  </CountTo>
                 </TableCell>
                 <TableCell className={classNames(classes.tableCell)}>
                   <a
@@ -996,7 +1001,16 @@ export default function Invest (props) {
                     {VAULT_ADDRESS}
                   </a>
                 </TableCell>
-                <TableCell className={classNames(classes.tableCell)}>USDT</TableCell>
+                <TableCell className={classNames(classes.tableCell)} component='th' scope='row'>
+                  <CountTo
+                    from={Number(beforePerFullShare.toBigInt())}
+                    to={Number(perFullShare.toBigInt())}
+                    speed={3500}
+                  >
+                    {v => toFixed(v, BigNumber.from(10).pow(usdtDecimals), 6)}
+                  </CountTo>
+                </TableCell>
+                {/* <TableCell className={classNames(classes.tableCell)}>USDT</TableCell>
                 <TableCell className={classNames(classes.tableCell)}>
                   <a
                     style={{ color: "rgb(105, 192, 255)" }}
@@ -1006,11 +1020,11 @@ export default function Invest (props) {
                   >
                     {USDT_ADDRESS}
                   </a>
-                </TableCell>
+                </TableCell> */}
                 <TableCell className={classNames(classes.tableCell)}>
                   <CountTo from={Number(beforeTotalAssets.toBigInt())} to={Number(totalAssets.toBigInt())} speed={3500}>
                     {v => {
-                      return `${toFixed(v, BigNumber.from(10).pow(usdtDecimals), 6)}USDT`
+                      return `${toFixed(v, BigNumber.from(10).pow(usdtDecimals), 6)} USDT`
                     }}
                   </CountTo>
                 </TableCell>

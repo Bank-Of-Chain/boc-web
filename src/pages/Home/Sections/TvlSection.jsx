@@ -51,22 +51,22 @@ export default function TvlSection () {
         <GridItem xs={12} sm={12} md={6}>
           <GridContainer>
             <GridItem xs={6} sm={6} md={6}>
-              <p className={classes.title}>$ {totalTvl}</p>
               <p className={classes.subTitle}>TVL</p>
+              <p className={classes.title}>$ {totalTvl}</p>
             </GridItem>
             <GridItem xs={6} sm={6} md={6}>
-              <p className={classes.title}>{holders}</p>
               <p className={classes.subTitle}>HOLDERS</p>
+              <p className={classes.title}>{holders}</p>
             </GridItem>
           </GridContainer>
           <GridContainer>
             <GridItem xs={6} sm={6} md={6}>
-              <p className={classes.title}>$ {totalEarn}</p>
               <p className={classes.subTitle}>EARNINGS TOTAL</p>
+              <p className={classes.title}>$ {totalEarn}</p>
             </GridItem>
             <GridItem xs={6} sm={6} md={6}>
+              <p className={classes.subTitle}>EARNINGS (2 WEEKS)</p>
               <p className={classes.title}>$ {earn}</p>
-              <p className={classes.subTitle}>EARNINGS(2 WEEKS)</p>
             </GridItem>
           </GridContainer>
         </GridItem>

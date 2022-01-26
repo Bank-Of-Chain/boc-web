@@ -37,9 +37,6 @@ const componentsStyle = {
   textCenter: {
     textAlign: "center",
   },
-  switchIcon: {
-    color: '#40a9ff !important'
-  },
   switchBar: {
     backgroundColor: '#91d5ff !important'
   },

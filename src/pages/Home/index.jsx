@@ -39,6 +39,7 @@ export default function Home (props) {
               array={NET_WORKS}
               handleClick={changeNetwork}
             />
+            <p>You may need to manually switch network via your wallet.</p>
             <TvlSection />
           </div>
         </GridItem>

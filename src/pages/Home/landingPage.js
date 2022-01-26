@@ -26,10 +26,10 @@ const landingPageStyle = {
   },
   text: {
     fontWeight: 300,
-    fontSize: '1.125rem',
+    fontSize: '1.4rem',
     lineHeight: '1.5em',
-    marginTop: '48px',
-    color: '#b2add1',
+    marginTop: '2.6rem',
+    color: '#fff',
     marginBottom: '80px'
   },
   main: {
@@ -78,16 +78,17 @@ const landingPageStyle = {
     cursor: 'pointer'
   },
   inverst: {
-    width: '17.875rem',
-    height: '6.25rem',
+    width: '14.875rem',
+    height: '5.25rem',
     borderRadio: '0.25rem',
     fontSize: '1.5rem',
     fontWeight: 'bold'
   },
   earth: {
     backgroundImage: 'url(./images/earth.png)',
-    backgroundSize: '90%',
+    backgroundSize: '80%',
     backgroundRepeat: 'no-repeat',
+    backgroundPosition: '210px'
   }
 };
 

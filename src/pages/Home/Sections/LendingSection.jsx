@@ -29,7 +29,7 @@ export default function LendingSection () {
     Promise.all([
       getETHLast30DaysVaultData().then(a => {
         return {
-          title: "boc",
+          title: "BOC",
           imagePath: "/logo.png",
           percent: (100 * calVaultAPY(a)).toFixed(2),
         }
