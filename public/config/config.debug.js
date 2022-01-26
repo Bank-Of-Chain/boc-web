@@ -64,7 +64,7 @@ const config56 = {
 const config1 = {
   ...configBase,
   apy_server: 'http://192.168.60.12/api/1',
-  abi_version: 'v4.4',
+  abi_version: 'v4.5',
   vault_address: "",
   underlying_address: "0xdAC17F958D2ee523a2206206994597C13D831ec7",
   chain_browser_url:'https://etherscan.io',

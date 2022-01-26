@@ -65,7 +65,7 @@ const config1 = {
   ...configBase,
   apy_server: 'http://localhost:5000',
   abi_version: 'v4.5',
-  vault_address: "0x3aAde2dCD2Df6a8cAc689EE797591b2913658659",
+  vault_address: "0x6F6f570F45833E249e27022648a26F4076F48f78",
   underlying_address: "0xdAC17F958D2ee523a2206206994597C13D831ec7",
   exchange_extra_params: {
     oneInch: {
