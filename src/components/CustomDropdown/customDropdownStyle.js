@@ -126,8 +126,8 @@ const customDropdownStyle = (theme) => ({
     overflow: "hidden",
   },
   buttonIcon: {
-    width: "20px",
-    height: "20px",
+    width: "24px !important",
+    height: "24px !important",
   },
   caret: {
     transition: "all 150ms ease-in",

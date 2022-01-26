@@ -1,29 +1,31 @@
-import {
-  title
-} from "../../../assets/jss/material-kit-react.js";
-
 const productStyle = {
   section: {
-    padding: "70px 0",
     textAlign: "center",
+    backgroundColor: '#0c0735',
+    opacity: '0.7',
   },
   title: {
-    ...title,
-    marginBottom: "1rem",
-    marginTop: "30px",
-    minHeight: "32px",
-    textDecoration: "none",
-    fontSize: '2.25rem',
-    lineHeight: '1.5em'
+    fontSize: '1.5rem',
+    color: '#fff',
+    margin: 0
   },
   description: {
-    color: "#fff",
-    fontSize: '1.0625rem',
-    lineHeight: '1.55em',
-    textAlign: "left",
+    fontSize: '0.875rem',
+    color: '#fff',
+    display: 'inline-block',
+    lineHeight: '2rem'
   },
-  descriptionItem: {
-    display: 'inline-block'
+  item: {
+    cursor: 'pointer',
+    padding: '2.5rem',
+    borderLeft: '1px solid rgba(255, 255, 255, .1)',
+    '&:first-child': {
+      borderLeft: 0
+    }
+  },
+  checked: {
+    backgroundColor: '#271f72',
+    opacity: 0.8,
   }
 };
 

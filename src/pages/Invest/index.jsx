@@ -638,7 +638,7 @@ export default function Invest (props) {
       <div className={classes.container}>
         <GridContainer className={classNames(classes.center)}>
           <GridItem xs={12} sm={12} md={8}>
-            <Card style={{ border: "1px solid #fff", padding: 20, backgroundColor: "rgb(12, 18, 26)" }}>
+            <Card style={{ border: "1px solid #fff", padding: 20, backgroundColor: "transparent" }}>
               <CardHeader
                 style={{ color: "#fff" }}
                 avatar={<img style={{ width: 35 }} alt='' src={`./images/${USDT_ADDRESS}.webp`} />}

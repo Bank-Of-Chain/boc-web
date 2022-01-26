@@ -9,7 +9,8 @@
   aboutus_url: 'https://piggyfinance.github.io/docs/zh/aboutus/',
   blog_url: 'https://piggyfinance.github.io/docs/zh/blog/',
   licenses_url: 'https://piggyfinance.github.io/docs/zh/licenses/',
-  document_url: "https://piggyfinance.github.io/docs/zh/docs/"
+  document_url: "https://piggyfinance.github.io/docs/zh/docs/",
+  boc_server: 'http://localhost:8080'
 }
 
 const config137 = {

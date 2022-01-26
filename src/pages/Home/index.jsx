@@ -1,26 +1,22 @@
 import React from "react"
-// nodejs library that concatenates classes
-import classNames from "classnames"
-// @material-ui/core components
 import { makeStyles } from "@material-ui/core/styles"
-
-// @material-ui/icons
-
-// core components
-import GridContainer from "../../components/Grid/GridContainer"
-import GridItem from "../../components/Grid/GridItem"
-import Button from "../../components/CustomButtons/Button"
-import Parallax from "../../components/Parallax/Parallax"
-import Chains from "../../components/Chains/Chains"
-
-import styles from "./landingPage"
 
 // === Constants === //
 import { NET_WORKS } from "./../../constants"
 
-// Sections for this page
+// === Components === //
 import ProductSection from "./Sections/ProductSection"
 import AuditedSection from "./Sections/AuditedSection"
+import AmmSection from "./Sections/AmmSection"
+import TvlSection from "./Sections/TvlSection"
+import LendingSection from "./Sections/LendingSection"
+import GridContainer from "../../components/Grid/GridContainer"
+import GridItem from "../../components/Grid/GridItem"
+import Button from "../../components/CustomButtons/Button"
+import Chains from "../../components/Chains/Chains"
+
+// === Styles === //
+import styles from "./landingPage"
 
 const useStyles = makeStyles(styles)
 
@@ -29,32 +25,28 @@ export default function Home (props) {
   const classes = useStyles()
 
   return (
-    <GridContainer>
-      <GridItem xs={12} sm={12} md={12}>
-        <Parallax filter>
-          <div className={classes.container}>
-            <GridContainer>
-              <GridItem xs={12} sm={12} md={12} style={{ textAlign: "center" }}>
-                <h1 className={classes.title}>The Multichain Yield Optimizer</h1>
-                <br />
-                <br />
-                <Button color='colorfull' size='lg' href='/#/invest'>
-                  go inverst
-                </Button>
-                <br />
-                <br />
-                <Chains array={NET_WORKS} handleClick={changeNetwork} />
-              </GridItem>
-            </GridContainer>
+    <div className={classes.container}>
+      <GridContainer>
+        <GridItem xs={12} sm={12} md={12} style={{ textAlign: "left" }}>
+          <h1 className={classes.title}>The Multichain Yield Optimizer</h1>
+          <h4 className={classes.text}>BOC is a Defi protocol that provides the best long-term ‘risk-free’ return in USD (compared to other protocols).</h4>
+          <div className={classes.earth}>
+            <Button className={classes.inverst} color='colorfull' size='lg' href='/#/invest'>
+              inverst
+            </Button>
+            <Chains
+              maskStyle={{ display: "inline-block", paddingLeft: 10 }}
+              array={NET_WORKS}
+              handleClick={changeNetwork}
+            />
+            <TvlSection />
           </div>
-        </Parallax>
-        <div className={classNames(classes.main, classes.mainRaised)}>
-          <div className={classes.container}>
-            <ProductSection />
-            <AuditedSection />
-          </div>
-        </div>
-      </GridItem>
-    </GridContainer>
+        </GridItem>
+      </GridContainer>
+      <ProductSection />
+      <AmmSection />
+      <LendingSection />
+      <AuditedSection />
+    </div>
   )
 }

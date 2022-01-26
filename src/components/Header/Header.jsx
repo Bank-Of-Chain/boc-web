@@ -59,7 +59,7 @@ export default function Header (props) {
   )
 
   return (
-    <AppBar className={appBarClasses} style={{ flexDirection: "column" }}>
+    <AppBar className={appBarClasses} style={{ flexDirection: "column", height: 110 }}>
       <Toolbar className={classes.container} style={{ paddingTop: 20 }}>
         {leftLinks !== undefined ? brandComponent : null}
         <div className={classes.flex}>
