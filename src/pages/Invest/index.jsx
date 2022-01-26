@@ -138,7 +138,7 @@ export default function Invest (props) {
         warmDialog({
           open: true,
           type: "warning",
-          message: "请确认MetaMask的当前网络！",
+          message: "Please confirm MetaMask's network!",
         }),
       )
     })
@@ -229,7 +229,7 @@ export default function Invest (props) {
         warmDialog({
           open: true,
           type: "warning",
-          message: "请输入正确的数值",
+          message: "Please enter the correct value",
         }),
       )
     }
@@ -269,7 +269,7 @@ export default function Invest (props) {
         warmDialog({
           open: true,
           type: "success",
-          message: "数据提交成功",
+          message: "Success!",
         }),
       )
     } catch (error) {
@@ -279,7 +279,7 @@ export default function Invest (props) {
             warmDialog({
               open: true,
               type: "error",
-              message: "服务已关停，请稍后再试！",
+              message: "Vault has been shut down, please try again later!",
             }),
           )
         }
@@ -293,7 +293,7 @@ export default function Invest (props) {
         warmDialog({
           open: true,
           type: "warning",
-          message: "请输入正确的数值",
+          message: "Please enter the correct value.",
         }),
       )
     }
@@ -303,7 +303,7 @@ export default function Invest (props) {
         warmDialog({
           open: true,
           type: "warning",
-          message: "请输入正确的Max Loss数值",
+          message: "Enter the correct Max Loss value.",
         }),
       )
     }
@@ -313,7 +313,7 @@ export default function Invest (props) {
         warmDialog({
           open: true,
           type: "warning",
-          message: "请输入正确的Slipper数值",
+          message: "Please enter the correct Slipper value.",
         }),
       )
     }
@@ -392,7 +392,7 @@ export default function Invest (props) {
           warmDialog({
             open: true,
             type: "error",
-            message: "兑换路径获取失败，请取消兑换或稍后重试",
+            message: "Failed to fetch the exchange path. Please cancel the exchange or try again later.",
           }),
         )
         return
@@ -416,7 +416,7 @@ export default function Invest (props) {
         warmDialog({
           open: true,
           type: "success",
-          message: "数据提交成功",
+          message: "Success!",
         }),
       )
     } catch (error) {
@@ -427,11 +427,18 @@ export default function Invest (props) {
             warmDialog({
               open: true,
               type: "error",
-              message: "服务已关停，请稍后再试！",
+              message: "Vault has been shut down, please try again later!",
+            }),
+          )
+        } else if(error.data.message.endsWith("'loss much'")){
+          dispatch(
+            warmDialog({
+              open: true,
+              type: "error",
+              message: "Failed to withdraw, please increase the Max Loss!",
             }),
           )
         } else if (
-          error.data.message.endsWith("'loss much'") ||
           error.data.message.endsWith("'Return amount is not enough'") ||
           error.data.message.endsWith("'callBytes failed: Error(Uniswap: INSUFFICIENT_OUTPUT_AMOUNT)'") ||
           error.data.message.endsWith("'1inch V4 swap failed: Error(Min return not reached)'") ||
@@ -441,7 +448,7 @@ export default function Invest (props) {
             warmDialog({
               open: true,
               type: "error",
-              message: "兑换失败，请加大兑换滑点或关闭兑换功能！",
+              message: "Failed to exchange, please increase the exchange slipper or close exchange!",
             }),
           )
         }
