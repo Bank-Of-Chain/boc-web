@@ -30,7 +30,7 @@ query($last2WeeksTimestamp: BigInt) {
         decimals
         holderCount
     }
-    vaultDailyData(where: {
+    vaultDailyDatas(where: {
         id_gt: $last2WeeksTimestamp
     }) {
         totalProfit
@@ -61,6 +61,7 @@ const getVaultData = async (client) => {
         holderCount: holderCount,
         totalProfit: totalProfit,
         decimals: decimals,
+        weeksData: get(data, 'vaultDailyDatas', [])
         // yesterdayProfit: get(data, 'vaultDailyData.totalProfit', '0')
     };
 };
