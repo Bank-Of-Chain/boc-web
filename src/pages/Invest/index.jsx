@@ -29,6 +29,10 @@ import CropFreeIcon from "@material-ui/icons/CropFree"
 import CropIcon from "@material-ui/icons/Crop"
 import Card from "@material-ui/core/Card"
 import CardHeader from "@material-ui/core/CardHeader"
+import RadioGroup from "@material-ui/core/RadioGroup"
+import CustomRadio from "./../../components/Radio/Radio"
+import Tooltip from "@material-ui/core/Tooltip"
+import ContactSupportIcon from "@material-ui/icons/ContactSupport"
 
 import { useDispatch } from "react-redux"
 
@@ -95,6 +99,7 @@ export default function Invest (props) {
   const [perFullShare, setPerFullShare] = useState(BigNumber.from(1))
 
   const [allowMaxLoss, setAllowMaxLoss] = useState("0.3")
+  const [slipper, setSlipper] = useState("0.3")
   const [shouldExchange, setShouldExchange] = useState(true)
   const [estimateWithdrawArray, setEstimateWithdrawArray] = useState([])
   const [isEstimate, setIsEstimate] = useState(false)
@@ -210,6 +215,13 @@ export default function Invest (props) {
     return true
   }
 
+  const isValidSlipper = () => {
+    if (slipper === "") return
+    if (isNaN(slipper)) return false
+    if (slipper < 0 || slipper > 45) return false
+    return true
+  }
+
   const diposit = async () => {
     // 如果输入的数字不合法，弹出提示框
     if (!isValidFromValue()) {
@@ -286,7 +298,7 @@ export default function Invest (props) {
       )
     }
 
-    if (shouldExchange && !isValidAllowLoss()) {
+    if (!isValidAllowLoss()) {
       return dispatch(
         warmDialog({
           open: true,
@@ -295,6 +307,17 @@ export default function Invest (props) {
         }),
       )
     }
+
+    if (shouldExchange && !isValidSlipper()) {
+      return dispatch(
+        warmDialog({
+          open: true,
+          type: "warning",
+          message: "请输入正确的Slipper数值",
+        }),
+      )
+    }
+
     const allowMaxLossValue = parseInt(100 * parseFloat(allowMaxLoss))
     const signer = userProvider.getSigner()
     const nextValue = BigNumber.from(
@@ -344,7 +367,7 @@ export default function Invest (props) {
                   address: USDT_ADDRESS,
                 },
                 amounts[index].toString(),
-                allowMaxLossValue,
+                parseInt(100 * parseFloat(slipper)),
                 exchangePlatformAdapters,
                 EXCHANGE_EXTRA_PARAMS,
               )
@@ -410,6 +433,7 @@ export default function Invest (props) {
         } else if (
           error.data.message.endsWith("'loss much'") ||
           error.data.message.endsWith("'Return amount is not enough'") ||
+          error.data.message.endsWith("'1inch V4 swap failed: Error(Min return not reached)'") ||
           error.data.message.endsWith("'Received amount of tokens are less then expected'")
         ) {
           dispatch(
@@ -628,6 +652,7 @@ export default function Invest (props) {
   const isValidToValueFlag = isValidToValue()
   const isValidFromValueFlag = isValidFromValue()
   const isValidAllowLossFlag = isValidAllowLoss()
+  const isValidSlipperFlag = isValidSlipper()
   let pricePerFullShare = BigNumber.from(10).pow(usdtDecimals)
   if (!totalSupply.eq(BigNumber.from(0))) {
     pricePerFullShare = totalAssets.mul(BigNumber.from(10).pow(usdtDecimals)).div(totalSupply)
@@ -810,8 +835,11 @@ export default function Invest (props) {
                               style={{ padding: "32px 0px 32px 0px" }}
                               label={<Muted>{shouldExchange ? "开启兑换" : "关闭兑换"}</Muted>}
                             />
+                            <Tooltip placement='top-end' title='开启兑换时，请预先设置可接受的兑换损失'>
+                              <ContactSupportIcon style={{ color: "#fff", verticalAlign: "middle" }} />
+                            </Tooltip>
                           </GridItem>
-                          <GridItem xs={4} sm={4} md={4} lg={4} style={shouldExchange ? {} : { visibility: "hidden" }}>
+                          <GridItem xs={4} sm={4} md={4} lg={4}>
                             <CustomInput
                               labelText='Max Loss'
                               inputProps={{
@@ -839,6 +867,65 @@ export default function Invest (props) {
                           </GridItem>
                         </GridContainer>
                       </GridItem>
+                      {shouldExchange && (
+                        <GridItem xs={12} sm={12} md={12} lg={12}>
+                          <GridContainer>
+                            <GridItem xs={6} sm={6} md={6} lg={6}>
+                              <RadioGroup
+                                row
+                                value={slipper}
+                                style={{ padding: "28px 0" }}
+                                onChange={event => setSlipper(event.target.value)}
+                              >
+                                <FormControlLabel
+                                  value='0.3'
+                                  style={{ color: "#fff" }}
+                                  control={<CustomRadio />}
+                                  label='0.3%'
+                                />
+                                <FormControlLabel
+                                  value='0.5'
+                                  style={{ color: "#fff" }}
+                                  control={<CustomRadio />}
+                                  label='0.5%'
+                                />
+                                <FormControlLabel
+                                  value='1'
+                                  style={{ color: "#fff" }}
+                                  control={<CustomRadio />}
+                                  label='1%'
+                                />
+                              </RadioGroup>
+                            </GridItem>
+                            <GridItem xs={6} sm={6} md={6} lg={6}>
+                              <CustomInput
+                                labelText='Slipper'
+                                inputProps={{
+                                  placeholder: "Allow loss percent",
+                                  value: slipper,
+                                  endAdornment: (
+                                    <span style={{ color: "#69c0ff" }}>
+                                      %&nbsp;&nbsp;&nbsp;
+                                      <span style={{ cursor: "pointer" }} onClick={() => setSlipper("45")}>
+                                        Max
+                                      </span>
+                                    </span>
+                                  ),
+                                  onChange: event => {
+                                    const value = event.target.value
+                                    setSlipper(value)
+                                  },
+                                }}
+                                error={!isUndefined(isValidSlipperFlag) && !isValidSlipperFlag}
+                                success={!isUndefined(isValidSlipperFlag) && isValidSlipperFlag}
+                                formControlProps={{
+                                  fullWidth: true,
+                                }}
+                              />
+                            </GridItem>
+                          </GridContainer>
+                        </GridItem>
+                      )}
                       {renderEstimate()}
                     </GridContainer>
                   ) : (
