@@ -30,7 +30,8 @@ export const VAULT_ADDRESS = config.vault_address;
 export const EXCHANGE_EXTRA_PARAMS = config.exchange_extra_params;
 export const USDT_ADDRESS = config.underlying_address;
 export const CHAIN_BROWSER_URL = config.chain_browser_url;
-export const TELEGRAM_URL = config.telegram_url
+export const TELEGRAM_URL = config.telegram_url;
+export const SUB_GRAPH_URL = config.sub_graph_url;
 
 export const COMMUNITY_URL = config.community_url;
 export const ABOUTUS_URL = config.aboutus_url;

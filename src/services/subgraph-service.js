@@ -95,6 +95,7 @@ query($beginDayTimestamp: BigInt) {
     }
 `;
 export const getETHLast30DaysVaultData = async () => {
+    if(isEmpty(ethClient)) return []
     return await ethClient
         .query({
             query: gql(VAULT_DAILY_QUERY),

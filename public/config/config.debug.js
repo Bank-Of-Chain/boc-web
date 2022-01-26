@@ -12,7 +12,12 @@ const configBase = {
   blog_url: 'https://piggyfinance.github.io/docs/zh/blog/',
   licenses_url: 'https://piggyfinance.github.io/docs/zh/licenses/',
   document_url: "https://piggyfinance.github.io/docs/zh/docs/",
-  boc_server: 'http://localhost:8080'
+  boc_server: 'http://localhost:8080',
+  sub_graph_url: {
+    '1': 'https://api.thegraph.com/subgraphs/name/bankofchain/boc-subgraph-eth',
+    '56': 'https://api.thegraph.com/subgraphs/name/bankofchain/boc-subgraph-bsc',
+    '137': 'https://api.thegraph.com/subgraphs/name/bankofchain/boc-subgraph-matic'
+  }
 }
 
 const config137 = {
@@ -68,7 +73,7 @@ const config1 = {
   abi_version: 'v4.5',
   vault_address: "",
   underlying_address: "0xdAC17F958D2ee523a2206206994597C13D831ec7",
-  chain_browser_url:'https://etherscan.io',
+  chain_browser_url: 'https://etherscan.io',
   exchange_extra_params: {
     oneInch: {
       useHttp: true,

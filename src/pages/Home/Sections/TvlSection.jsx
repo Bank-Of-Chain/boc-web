@@ -12,6 +12,7 @@ import GridItem from "../../../components/Grid/GridItem"
 // === Utils === //
 import sumBy from "lodash/sumBy"
 import map from "lodash/map"
+import compact from 'lodash/compact'
 
 import styles from "./tvlStyle"
 
@@ -26,6 +27,7 @@ export default function TvlSection () {
   })
   useEffect(() => {
     Promise.all([getETHVaultData(), getBSCVaultData(), getMaticVaultData()])
+      .then(compact)
       .then(array => {
         const nextTotalTvl = sumBy(array, i => parseFloat(toFixed(i.tvl, 10 ** i.decimals, 2)))
         const nextEarn = sumBy(array, i => {

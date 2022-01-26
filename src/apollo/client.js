@@ -1,19 +1,27 @@
 import {
-  ApolloClient,
-  InMemoryCache
+    ApolloClient,
+    InMemoryCache
 } from '@apollo/client';
+import {
+    SUB_GRAPH_URL
+} from './../constants';
+import {
+    ETH,
+    BSC,
+    MATIC
+} from './../constants/chains';
 
 export const ethClient = new ApolloClient({
-    uri: 'https://api.thegraph.com/subgraphs/name/naruduo/my-subgraph-eth',
+    uri: SUB_GRAPH_URL[ETH.id],
     cache: new InMemoryCache(),
 });
-  
+
 export const bscClient = new ApolloClient({
-    uri: 'https://api.thegraph.com/subgraphs/name/naruduo/my-subgraph-bsc',
+    uri: SUB_GRAPH_URL[BSC.id],
     cache: new InMemoryCache(),
 });
-  
+
 export const maticClient = new ApolloClient({
-    uri: 'https://api.thegraph.com/subgraphs/name/naruduo/my-subgraph',
+    uri: SUB_GRAPH_URL[MATIC.id],
     cache: new InMemoryCache(),
 });
