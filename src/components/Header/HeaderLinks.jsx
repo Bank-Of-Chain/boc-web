@@ -44,7 +44,7 @@ export default function HeaderLinks (props) {
           <InsertChartIcon className={classes.icons}></InsertChartIcon> Dashboard
         </Button>
       </ListItem>
-      <ListItem className={classes.listItem}>
+      {/* <ListItem className={classes.listItem}>
         <Button color='transparent' target='_blank' href={DOCUMENT_URL} className={classes.navLink}>
           <LibraryBooksIcon className={classes.icons}></LibraryBooksIcon> Document
         </Button>
@@ -53,7 +53,7 @@ export default function HeaderLinks (props) {
         <Button color='transparent' target='_blank' href={COMMUNITY_URL} className={classes.navLink}>
           <ChatIcon className={classes.icons}></ChatIcon> DAO
         </Button>
-      </ListItem>
+      </ListItem> */}
       {/* <ListItem className={classes.listItem}>
         <Button color='transparent' target='_blank' href={BLOG_URL} className={classes.navLink}>
           <BookIcon className={classes.icons}></BookIcon> Blog
