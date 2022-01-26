@@ -45,13 +45,21 @@ const getVaultData = async (client) => {
             yesterdayTimestamp: getDaysAgoTimestamp(1)
         },
     });
+    const firstItem = get(data, 'vaults.[0]', {})
+    const {
+        id,
+        tvl,
+        holderCount,
+        totalProfit,
+        decimals
+    } = firstItem
     return {
-        address: data.vaults[0].id,
-        tvl: data.vaults[0].tvl,
-        holderCount: data.vaults[0].holderCount,
-        totalProfit: data.vaults[0].totalProfit,
-        decimals: data.vaults[0].decimals,
-        yesterdayProfit: data.vaultDailyData.totalProfit
+        address: id,
+        tvl: tvl,
+        holderCount: holderCount,
+        totalProfit: totalProfit,
+        decimals: decimals,
+        yesterdayProfit: get(data, 'vaultDailyData.totalProfit', '0')
     };
 };
 

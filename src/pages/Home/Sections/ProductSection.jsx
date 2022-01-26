@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React, { useState, useEffect } from "react"
 import { makeStyles } from "@material-ui/core/styles"
 import classNames from "classnames"
 
@@ -18,7 +18,6 @@ const useStyles = makeStyles(styles)
 const data = [
   {
     title: "Funds Allocation",
-    subTitle: "Fund allocation title",
     descriptions: [
       "The investment for a single agreement shall not exceed 30% of the total.",
       "The investment for a single capital pool shall not exceed 20% of the total.",
@@ -28,7 +27,6 @@ const data = [
   },
   {
     title: "Easy to Use",
-    subTitle: "Easy to use title",
     descriptions: [
       "There are only two operations to be made, deposit and withdraw, and there is no need to perform and pay for complex operations such as harvest, exchange, and reallocation.",
       "The income is automatically reinvested, and the funds can be deposited and withdrawn at any time.",
@@ -38,7 +36,6 @@ const data = [
   },
   {
     title: "Safe",
-    subTitle: "Security title",
     descriptions: [
       "A third party audit.",
       "The scale of issued eligible stable-coins/USDT? exceeds 1 billion US dollars, and the quotation is based on Chain Link.",
@@ -49,7 +46,6 @@ const data = [
   },
   {
     title: "Risk control",
-    subTitle: "Protect title",
     descriptions: [
       "Stable-coin de-anchoring risk: not using algorithmic stable-coins, partially mortgaged stable-coins, and stable-coins generated from long-tail asset mortgages.",
       "Risk of unpaid loss: market-making is limited to stable-coin asset trading pairs.",
@@ -61,7 +57,6 @@ const data = [
   },
   {
     title: "Smart",
-    subTitle: "Intelligence title",
     descriptions: [
       "Regularly evaluate the changes of income in each capital pool, and weigh the cost and income of reallocation.",
       "Search for the best path for exchange through aggregators.",
@@ -75,11 +70,21 @@ const data = [
 export default function ProductSection () {
   const classes = useStyles()
   const [hoverItem, setHoverItem] = useState(0)
+
+  useEffect(() => {
+    const roll = () => {
+      setHoverItem((hoverItem + 1) % 5)
+    }
+
+    const timer = setInterval(roll, 3000)
+    return () => clearInterval(timer)
+  }, [hoverItem])
+
   return (
     <div className={classes.section} onMouseLeave={() => setHoverItem(0)}>
       <GridContainer style={{ margin: "0 auto" }}>
         {map(data, (item, i) => {
-          const { title, subTitle, descriptions = [], imagePath } = item
+          const { title, descriptions = [], imagePath } = item
           const isChecked = hoverItem === i
           return (
             <GridItem
@@ -99,7 +104,7 @@ export default function ProductSection () {
                           {index + 1}. {d}
                         </span>
                       ))
-                    : [<span key={`sub-title`}>{subTitle}</span>]
+                    : []
                 }
                 icon={<img src={imagePath} alt='' />}
                 vertical
