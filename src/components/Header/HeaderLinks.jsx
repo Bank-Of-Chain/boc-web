@@ -14,6 +14,7 @@ import BookIcon from "@material-ui/icons/Book"
 import ChatIcon from "@material-ui/icons/Chat"
 import Transform from "@material-ui/icons/Transform"
 import LibraryBooksIcon from "@material-ui/icons/LibraryBooks"
+import InsertChartIcon from '@material-ui/icons/InsertChart';
 
 // core components
 import { Link } from "react-router-dom"
@@ -38,6 +39,11 @@ export default function HeaderLinks (props) {
   const classes = useStyles()
   return (
     <List className={classes.list}>
+      <ListItem className={classes.listItem}>
+        <Button color='transparent' target='_blank' href={'/dashboard'} className={classes.navLink}>
+          <InsertChartIcon className={classes.icons}></InsertChartIcon> Dashboard
+        </Button>
+      </ListItem>
       <ListItem className={classes.listItem}>
         <Button color='transparent' target='_blank' href={DOCUMENT_URL} className={classes.navLink}>
           <LibraryBooksIcon className={classes.icons}></LibraryBooksIcon> Document

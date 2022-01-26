@@ -22,7 +22,7 @@ import {
  * Yesterday Profit
  */
 const VAULT_DATA_QUERY = `
-query($yesterdayTimestamp: BigInt) {
+query($last2WeeksTimestamp: BigInt) {
     vaults(first: 1) {
         id
         tvl
@@ -30,7 +30,9 @@ query($yesterdayTimestamp: BigInt) {
         decimals
         holderCount
     }
-    vaultDailyData(id: $yesterdayTimestamp) {
+    vaultDailyDatas(where: {
+        id_gt: $last2WeeksTimestamp
+    }) {
         totalProfit
     }
 }
@@ -42,7 +44,7 @@ const getVaultData = async (client) => {
     } = await client.query({
         query: gql(VAULT_DATA_QUERY),
         variables: {
-            yesterdayTimestamp: getDaysAgoTimestamp(1)
+            last2WeeksTimestamp: getDaysAgoTimestamp(14)
         },
     });
     const firstItem = get(data, 'vaults.[0]', {})
@@ -59,7 +61,8 @@ const getVaultData = async (client) => {
         holderCount: holderCount,
         totalProfit: totalProfit,
         decimals: decimals,
-        yesterdayProfit: get(data, 'vaultDailyData.totalProfit', '0')
+        weeksData: get(data, 'vaultDailyDatas', [])
+        // yesterdayProfit: get(data, 'vaultDailyData.totalProfit', '0')
     };
 };
 

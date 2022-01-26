@@ -11,6 +11,7 @@ import GridItem from "../../../components/Grid/GridItem"
 
 // === Utils === //
 import sumBy from "lodash/sumBy"
+import map from "lodash/map"
 
 import styles from "./tvlStyle"
 
@@ -27,13 +28,19 @@ export default function TvlSection () {
     Promise.all([getETHVaultData(), getBSCVaultData(), getMaticVaultData()])
       .then(array => {
         const nextTotalTvl = sumBy(array, i => parseFloat(toFixed(i.tvl, 10 ** i.decimals, 2)))
-        const nextEarn = sumBy(array, i => parseFloat(toFixed(i.yesterdayProfit, 10 ** i.decimals, 2)))
+        const nextEarn = sumBy(array, i => {
+          const total = sumBy(map(i.weeksData, o => parseFloat(toFixed(o.totalProfit, 10 ** i.decimals, 2))))
+          return total
+        })
         const nextTotalEarn = sumBy(array, i => parseFloat(toFixed(i.totalProfit, 10 ** i.decimals, 2)))
         const nextHoldCount = sumBy(array, i => parseFloat(i.holderCount))
 
         return { totalTvl: nextTotalTvl, earn: nextEarn, totalEarn: nextTotalEarn, holders: nextHoldCount }
       })
       .then(setObj)
+      .catch(error => {
+        console.log("error", error)
+      })
   }, [])
 
   const { totalTvl, earn, totalEarn, holders } = obj
@@ -59,7 +66,7 @@ export default function TvlSection () {
             </GridItem>
             <GridItem xs={6} sm={6} md={6}>
               <p className={classes.title}>$ {earn}</p>
-              <p className={classes.subTitle}>EARNINGS LAST DAY</p>
+              <p className={classes.subTitle}>EARNINGS(2 WEEKS)</p>
             </GridItem>
           </GridContainer>
         </GridItem>
