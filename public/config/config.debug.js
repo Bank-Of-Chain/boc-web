@@ -97,5 +97,7 @@ window.config = {
   // bsc
   56: config56,
   // eth
-  1: config1
+  1: config1,
+  // 无链信息时的加载
+  [undefined]: configBase
 };

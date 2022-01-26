@@ -9,7 +9,7 @@ export const MULTIPLE_OF_GAS = 2;
 
 // EXTERNAL CONTRACTS
 export const ENV_NETWORK_TYPE = process.env.REACT_APP_NETWORK_TYPE || localStorage.REACT_APP_NETWORK_TYPE
-const config = window.config[ENV_NETWORK_TYPE] || {}
+const config = window.config[ENV_NETWORK_TYPE] || window.config[undefined]
 console.log('env config=', ENV_NETWORK_TYPE, config);
 
 if (!config) {
