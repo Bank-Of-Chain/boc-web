@@ -1,13 +1,14 @@
 .App {
   height: 100%;
   margin: 0 auto;
+  width: 100%;
 }
 
 html,
 body,
 #root {
-  height: 100%;
-  background-color: rgb(19, 24, 35);
+  background: url(/bg.png);
+  background-color: #150752;
   font-family: "Roboto", "Helvetica", "Arial", sans-serif;
 }
 

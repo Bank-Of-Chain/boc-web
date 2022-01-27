@@ -9,7 +9,7 @@ import { List, ListItem } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 
 // === Constants === //
-import { COMMUNITY_URL, ABOUTUS_URL, BLOG_URL, LICENSES_URL } from "./../../constants";
+import { COMMUNITY_URL, TELEGRAM_URL } from "./../../constants";
 
 import styles from "./footerStyle.js";
 
@@ -47,6 +47,15 @@ export default function Footer(props) {
               <a
                 className={classes.block}
                 target="_blank"
+                href={TELEGRAM_URL}
+              >
+                TELEGRAM
+              </a>
+            </ListItem>
+            {/* <ListItem className={classes.inlineBlock}>
+              <a
+                className={classes.block}
+                target="_blank"
                 href={ABOUTUS_URL}
               >
                 About us
@@ -69,7 +78,7 @@ export default function Footer(props) {
               >
                 Licenses
               </a>
-            </ListItem>
+            </ListItem> */}
             <ListItem className={classes.inlineBlock}>
               <a
                 className={classes.block}

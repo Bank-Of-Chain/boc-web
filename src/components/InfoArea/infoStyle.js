@@ -14,6 +14,7 @@ const infoStyle = {
     maxWidth: "360px",
     margin: "0 auto",
     padding: "0px",
+    textAlign: 'left'
   },
   iconWrapper: {
     float: "left",
@@ -49,7 +50,11 @@ const infoStyle = {
     color: grayColor,
     overflow: "hidden",
   },
-  title,
+  title: {
+    ...title,
+    color: '#fff',
+    fontSize: '1.5rem',
+  },
   description: {
     color: '#fff',
     overflow: "hidden",

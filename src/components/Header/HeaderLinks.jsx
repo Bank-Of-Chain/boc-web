@@ -1,127 +1,116 @@
 /*eslint-disable*/
-import React from "react";
+import React from "react"
 
 // @material-ui/core components
-import { makeStyles } from "@material-ui/core/styles";
-import List from "@material-ui/core/List";
-import ListItem from "@material-ui/core/ListItem";
+import { makeStyles } from "@material-ui/core/styles"
+import List from "@material-ui/core/List"
+import ListItem from "@material-ui/core/ListItem"
 
 // @material-ui/icons
-import AccountBalanceWallet from "@material-ui/icons/AccountBalanceWallet";
-import AccountBalanceWalletOutlined from "@material-ui/icons/AccountBalanceWalletOutlined";
-import Apps from "@material-ui/icons/Apps";
-import BookIcon from '@material-ui/icons/Book';
-import ChatIcon from '@material-ui/icons/Chat';
-import Transform from '@material-ui/icons/Transform';
-import LibraryBooksIcon from "@material-ui/icons/LibraryBooks";
+import AccountBalanceWallet from "@material-ui/icons/AccountBalanceWallet"
+import AccountBalanceWalletOutlined from "@material-ui/icons/AccountBalanceWalletOutlined"
+import Apps from "@material-ui/icons/Apps"
+import BookIcon from "@material-ui/icons/Book"
+import ChatIcon from "@material-ui/icons/Chat"
+import Transform from "@material-ui/icons/Transform"
+import LibraryBooksIcon from "@material-ui/icons/LibraryBooks"
+import InsertChartIcon from '@material-ui/icons/InsertChart';
 
 // core components
-import { Link } from "react-router-dom";
-import Button from "../CustomButtons/Button";
-import styles from "./headerLinksStyle";
-import Address from "../Address/Address";
-import CustomDropdown from "../CustomDropdown/CustomDropdown";
+import { Link } from "react-router-dom"
+import Button from "../CustomButtons/Button"
+import styles from "./headerLinksStyle"
+import Address from "../Address/Address"
+import CustomDropdown from "../CustomDropdown/CustomDropdown"
 
 // === Utils === //
-import isEmpty from "lodash/isEmpty";
-import map from "lodash/map";
-import get from "lodash/get";
-import find from "lodash/find";
+import isEmpty from "lodash/isEmpty"
+import map from "lodash/map"
+import get from "lodash/get"
+import find from "lodash/find"
 
 // === Constants === //
-import { COMMUNITY_URL, BLOG_URL, DOCUMENT_URL, NET_WORKS } from "./../../constants";
+import { COMMUNITY_URL, BLOG_URL, DOCUMENT_URL, NET_WORKS } from "./../../constants"
 
-const useStyles = makeStyles(styles);
+const useStyles = makeStyles(styles)
 
-export default function HeaderLinks(props) {
-  const { address, userProvider, loadWeb3Modal, logoutOfWeb3Modal } = props;
-  const classes = useStyles();
+export default function HeaderLinks (props) {
+  const { address, userProvider, loadWeb3Modal, logoutOfWeb3Modal } = props
+  const classes = useStyles()
   return (
     <List className={classes.list}>
       <ListItem className={classes.listItem}>
-        <Button
-          color="transparent"
-          target="_blank"
-          href={DOCUMENT_URL}
-          className={classes.navLink}
-        >
-          <LibraryBooksIcon className={classes.icons} ></LibraryBooksIcon> Document
+        <Button color='transparent' target='_blank' href={'/dashboard'} className={classes.navLink}>
+          <InsertChartIcon className={classes.icons}></InsertChartIcon> Dashboard
+        </Button>
+      </ListItem>
+      {/* <ListItem className={classes.listItem}>
+        <Button color='transparent' target='_blank' href={DOCUMENT_URL} className={classes.navLink}>
+          <LibraryBooksIcon className={classes.icons}></LibraryBooksIcon> Document
         </Button>
       </ListItem>
       <ListItem className={classes.listItem}>
-        <Button
-          color="transparent"
-          target="_blank"
-          href={COMMUNITY_URL}
-        >
-          <ChatIcon className={classes.icons} ></ChatIcon> DAO
+        <Button color='transparent' target='_blank' href={COMMUNITY_URL} className={classes.navLink}>
+          <ChatIcon className={classes.icons}></ChatIcon> DAO
         </Button>
-      </ListItem>
-      <ListItem className={classes.listItem}>
-        <Button
-          color="transparent"
-          target="_blank"
-          href={BLOG_URL}
-        >
-          <BookIcon className={classes.icons} ></BookIcon> Blog
+      </ListItem> */}
+      {/* <ListItem className={classes.listItem}>
+        <Button color='transparent' target='_blank' href={BLOG_URL} className={classes.navLink}>
+          <BookIcon className={classes.icons}></BookIcon> Blog
         </Button>
-      </ListItem>
+      </ListItem> */}
       <ListItem className={classes.listItem}>
         <CustomDropdown
           noLiPadding
-          buttonText="Bridge"
+          buttonText='Bridge'
           buttonProps={{
             className: classes.navLink,
             color: "transparent",
           }}
           buttonIcon={Transform}
           dropdownList={[
-            <a target="_blank" href="https://wallet.polygon.technology/bridge" className={classes.dropdownLink}>
+            <a target='_blank' href='https://wallet.polygon.technology/bridge' className={classes.dropdownLink}>
               Polygon Bridge
             </a>,
-            <a target="_blank" href="https://www.binance.org/en/bridge" className={classes.dropdownLink}>
+            <a target='_blank' href='https://www.binance.org/en/bridge' className={classes.dropdownLink}>
               Binance Bridge
-            </a>
+            </a>,
           ]}
         />
       </ListItem>
       <ListItem className={classes.listItem}>
         <CustomDropdown
           noLiPadding
-          buttonText={get(find(NET_WORKS, { chainId: props.localChainId }), 'name', 'Networks')}
+          buttonText={get(find(NET_WORKS, { chainId: props.localChainId }), "name", "Networks")}
           buttonProps={{
             className: classes.navLink,
             color: "transparent",
           }}
           buttonIcon={Apps}
           dropdownList={map(NET_WORKS, i => (
-            <p onClick={() => props.changeNetwork(i)} className={classes.dropdownLink}>
+            <a onClick={() => props.changeNetwork(i)} className={classes.dropdownLink}>
               {i.name}
-            </p>
+            </a>
           ))}
         />
       </ListItem>
       <ListItem className={classes.listItem}>
-        {
-          isEmpty(userProvider)
-            ? <Button
-              color="colorfull"
-              target="_blank"
-              className={classes.navLink}
-              onClick={loadWeb3Modal}
-            >
-              <AccountBalanceWallet className={classes.icons} ></AccountBalanceWallet> Launch App
-            </Button>
-            : <Button
-              color="transparent"
-              target="_blank"
-              className={classes.navLink}
-              onClick={logoutOfWeb3Modal}
-            >
-              <AccountBalanceWalletOutlined className={classes.icons} /> <Address size="short" address={address} />
-            </Button>
-        }
+        {isEmpty(userProvider) ? (
+          <Button
+            color='colorfull'
+            target='_blank'
+            style={{ width: 168, height: 64 }}
+            className={classes.navLink}
+            onClick={loadWeb3Modal}
+          >
+            <AccountBalanceWallet className={classes.icons}></AccountBalanceWallet> Launch App
+          </Button>
+        ) : (
+          <Button color='transparent' target='_blank' className={classes.navLink} onClick={logoutOfWeb3Modal}>
+            <AccountBalanceWalletOutlined className={classes.icons} /> <Address size='short' address={address} />
+          </Button>
+        )}
       </ListItem>
     </List>
-  );
+  )
 }

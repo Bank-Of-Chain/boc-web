@@ -2,12 +2,6 @@ import React from "react"
 // @material-ui/core components
 import { makeStyles } from "@material-ui/core/styles"
 
-// @material-ui/icons
-
-// core components
-import GridContainer from "../../../components/Grid/GridContainer"
-import GridItem from "../../../components/Grid/GridItem"
-
 import styles from "./auditedStyle"
 
 const useStyles = makeStyles(styles)
@@ -17,12 +11,10 @@ export default function TeamSection () {
   return (
     <div className={classes.section}>
       <h2 className={classes.title}>Audited And Verified</h2>
-      <div>
-        <GridContainer>
-          <GridItem xs={12} sm={12} md={12}>
-            <h2 className={classes.text}>Coming soon</h2>
-          </GridItem>
-        </GridContainer>
+      <div className={classes.container}>
+        <h2 className={classes.text}>
+          <img className={classes.img} src={require("./../images/un-audit.png")} alt=''></img>Audit coming soon...
+        </h2>
       </div>
     </div>
   )

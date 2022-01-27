@@ -9,7 +9,7 @@ export const MULTIPLE_OF_GAS = 2;
 
 // EXTERNAL CONTRACTS
 export const ENV_NETWORK_TYPE = process.env.REACT_APP_NETWORK_TYPE || localStorage.REACT_APP_NETWORK_TYPE
-const config = window.config[ENV_NETWORK_TYPE] || {}
+const config = window.config[ENV_NETWORK_TYPE] || window.config[undefined]
 console.log('env config=', ENV_NETWORK_TYPE, config);
 
 if (!config) {
@@ -29,8 +29,9 @@ export const APY_SERVER = config.apy_server;
 export const VAULT_ADDRESS = config.vault_address;
 export const EXCHANGE_EXTRA_PARAMS = config.exchange_extra_params;
 export const USDT_ADDRESS = config.underlying_address;
-export const RPC_URL = config.rpcUrl;
 export const CHAIN_BROWSER_URL = config.chain_browser_url;
+export const TELEGRAM_URL = config.telegram_url;
+export const SUB_GRAPH_URL = config.sub_graph_url;
 
 export const COMMUNITY_URL = config.community_url;
 export const ABOUTUS_URL = config.aboutus_url;
@@ -38,6 +39,7 @@ export const BLOG_URL = config.blog_url;
 export const LICENSES_URL = config.licenses_url;
 export const DOCUMENT_URL = config.document_url;
 export const MAX_GAS_LIMIT = config.max_gas_limit;
+export const BOC_SERVER = config.boc_server;
 
 // === abi === //
 export const VAULT_ABI = vaultAbi;

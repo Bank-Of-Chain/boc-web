@@ -6,23 +6,31 @@ const configBase = {
   underlying_address: "",
   chain_browser_url: '',
   abi_version: 'v4.3',
-  community_url: 'https://discord.gg/GjT2crrv',
+  community_url: 'https://discord.com/channels/910840145039749141',
+  telegram_url: 'https://t.me/joinchat/mSxXlD_it0QyNzll',
   aboutus_url: 'https://piggyfinance.github.io/docs/zh/aboutus/',
   blog_url: 'https://piggyfinance.github.io/docs/zh/blog/',
   licenses_url: 'https://piggyfinance.github.io/docs/zh/licenses/',
-  document_url: "https://piggyfinance.github.io/docs/zh/docs/"
+  document_url: "https://piggyfinance.github.io/docs/zh/docs/",
+  boc_server: 'http://192.168.60.12/server',
+  sub_graph_url: {
+    '1': 'https://api.thegraph.com/subgraphs/name/bankofchain/boc-subgraph-eth',
+    '56': 'https://api.thegraph.com/subgraphs/name/bankofchain/boc-subgraph-bsc',
+    '137': 'https://api.thegraph.com/subgraphs/name/bankofchain/boc-subgraph-matic'
+  }
 }
-
-const rpcUrl = 'http://192.168.60.12:8545'
 
 const config137 = {
   ...configBase,
   apy_server: 'http://192.168.60.12/api/137',
-  rpcUrl,
   vault_address: "0x2C328D592819524F741A88A18572372CCE196782",
   underlying_address: "0xc2132D05D31c914a87C6611C10748AEb04B58e8F",
   exchange_extra_params: {
     oneInch: {
+      network: 137,
+      excludeProtocols: ['POLYGON_ONE_INCH_LIMIT_ORDER', 'POLYGON_ONE_INCH_LIMIT_ORDER_V2']
+    },
+    oneInchV4: {
       network: 137,
       excludeProtocols: ['POLYGON_ONE_INCH_LIMIT_ORDER', 'POLYGON_ONE_INCH_LIMIT_ORDER_V2']
     },
@@ -38,12 +46,15 @@ const config137 = {
 const config56 = {
   ...configBase,
   apy_server: 'http://192.168.60.12/api/56',
-  rpcUrl,
   abi_version: 'v4.4',
   vault_address: "0x2C328D592819524F741A88A18572372CCE196782",
   underlying_address: "0x55d398326f99059fF775485246999027B3197955",
   exchange_extra_params: {
     oneInch: {
+      network: 56,
+      excludeProtocols: ['BSC_ONE_INCH_LIMIT_ORDER', 'BSC_ONE_INCH_LIMIT_ORDER_V2']
+    },
+    oneInchV4: {
       network: 56,
       excludeProtocols: ['BSC_ONE_INCH_LIMIT_ORDER', 'BSC_ONE_INCH_LIMIT_ORDER_V2']
     },
@@ -59,13 +70,17 @@ const config56 = {
 const config1 = {
   ...configBase,
   apy_server: 'http://192.168.60.12/api/1',
-  rpcUrl,
-  abi_version: 'v4.4',
+  abi_version: 'v4.5',
   vault_address: "",
   underlying_address: "0xdAC17F958D2ee523a2206206994597C13D831ec7",
-  chain_browser_url:'https://etherscan.io',
+  chain_browser_url: 'https://etherscan.io',
   exchange_extra_params: {
     oneInch: {
+      useHttp: true,
+      network: 1,
+      protocols: ['CURVE', 'CURVE_V2', 'SUSHI', 'UNISWAP_V2', 'UNISWAP_V3', 'DODO_V2', 'COMPOUND', 'AAVE', 'BALANCER', 'BANCOR', 'MSTABLE', 'AAVE_V2', 'BALANCER_V2']
+    },
+    oneInchV4: {
       useHttp: true,
       network: 1,
       protocols: ['CURVE', 'CURVE_V2', 'SUSHI', 'UNISWAP_V2', 'UNISWAP_V3', 'DODO_V2', 'COMPOUND', 'AAVE', 'BALANCER', 'BANCOR', 'MSTABLE', 'AAVE_V2', 'BALANCER_V2']
@@ -88,5 +103,7 @@ window.config = {
   // bsc
   56: config56,
   // eth
-  1: config1
+  1: config1,
+  // 无链信息时的加载
+  [undefined]: configBase
 };

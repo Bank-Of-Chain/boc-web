@@ -1,153 +1,53 @@
-import React from "react";
-// nodejs library that concatenates classes
-import classNames from "classnames";
-// @material-ui/core components
-import { makeStyles } from "@material-ui/core/styles";
-
-// @material-ui/icons
-
-// core components
-import Header from "../../components/Header/Header";
-import Footer from "../../components/Footer/Footer";
-import GridContainer from "../../components/Grid/GridContainer";
-import GridItem from "../../components/Grid/GridItem";
-import Button from "../../components/CustomButtons/Button";
-import Parallax from "../../components/Parallax/Parallax";
-import HeaderLinksIndex from "../../components/Header/HeaderLinksIndex";
-import Chains from "../../components/Chains/Chains";
-
-import styles from "./landingPage";
+import React from "react"
+import { makeStyles } from "@material-ui/core/styles"
 
 // === Constants === //
-import { NET_WORKS } from './../../constants';
+import { NET_WORKS } from "./../../constants"
 
-// Sections for this page
-import ProductSection from "./Sections/ProductSection";
-import AuditedSection from "./Sections/AuditedSection";
+// === Components === //
+import ProductSection from "./Sections/ProductSection"
+import AuditedSection from "./Sections/AuditedSection"
+import AmmSection from "./Sections/AmmSection"
+import TvlSection from "./Sections/TvlSection"
+import LendingSection from "./Sections/LendingSection"
+import GridContainer from "../../components/Grid/GridContainer"
+import GridItem from "../../components/Grid/GridItem"
+import Button from "../../components/CustomButtons/Button"
+import Chains from "../../components/Chains/Chains"
 
-const dashboardRoutes = [];
+// === Styles === //
+import styles from "./landingPage"
 
-const useStyles = makeStyles(styles);
+const useStyles = makeStyles(styles)
 
-export default function Home(props) {
+export default function Home (props) {
   const { changeNetwork } = props
-  const classes = useStyles();
+  const classes = useStyles()
 
   return (
-    <div>
-      <Header
-        color="transparent"
-        routes={dashboardRoutes}
-        brand="Bank Of Chain"
-        rightLinks={<HeaderLinksIndex  {...props} />}
-        fixed
-        changeColorOnScroll={{
-          height: 200,
-          color: "white",
-        }}
-      />
-      <Parallax filter>
-        <div className={classes.container}>
-          <GridContainer>
-            <GridItem xs={12} sm={12} md={12} style={{ textAlign: 'center' }}>
-              <h1 className={classes.title}>The Multichain Yield Optimizer</h1>
-              <h4 className={classes.text}>
-              </h4>
-              <br />
-              <Button
-                color="colorfull"
-                size="lg"
-                href="/#/invest"
-              >
-                Launch App
-              </Button>
-              <h4 className={classes.text}>
-              </h4>
-              <br />
-              <Chains array={NET_WORKS} handleClick={changeNetwork} />
-              {/* <Tooltip
-                title="ARBITRUM"
-                placement={window.innerWidth > 959 ? "top" : "left"}
-                classes={{ tooltip: classes.tooltip }}
-              >
-                <a href="/#/">
-                  <img className={classes.img} src={require('./images/ARBITRUM.svg')} alt="" />
-                </a>
-              </Tooltip>
-              <Tooltip
-                title="AVALANCHE"
-                placement={window.innerWidth > 959 ? "top" : "left"}
-                classes={{ tooltip: classes.tooltip }}
-              >
-                <a href="/#/">
-                  <img className={classes.img} src={require('./images/AVALANCHE.svg')} alt="" />
-                </a>
-              </Tooltip>
-              <Tooltip
-                title="BSC"
-                placement={window.innerWidth > 959 ? "top" : "left"}
-                classes={{ tooltip: classes.tooltip }}
-              >
-                <a href="/#/">
-                  <img className={classes.img} src={require('./images/BSC.svg')} alt="" />
-                </a>
-              </Tooltip>
-              <Tooltip
-                title="CELO"
-                placement={window.innerWidth > 959 ? "top" : "left"}
-                classes={{ tooltip: classes.tooltip }}
-              >
-                <a href="/#/">
-                  <img className={classes.img} src={require('./images/CELO.svg')} alt="" />
-                </a>
-              </Tooltip>
-              <Tooltip
-                title="FANTOM"
-                placement={window.innerWidth > 959 ? "top" : "left"}
-                classes={{ tooltip: classes.tooltip }}
-              >
-                <a href="/#/">
-                  <img className={classes.img} src={require('./images/FANTOM.svg')} alt="" />
-                </a>
-              </Tooltip>
-              <Tooltip
-                title="HARMONY"
-                placement={window.innerWidth > 959 ? "top" : "left"}
-                classes={{ tooltip: classes.tooltip }}
-              >
-                <a href="/#/">
-                  <img className={classes.img} src={require('./images/HARMONY.svg')} alt="" />
-                </a>
-              </Tooltip>
-              <Tooltip
-                title="HECO"
-                placement={window.innerWidth > 959 ? "top" : "left"}
-                classes={{ tooltip: classes.tooltip }}
-              >
-                <a href="/#/">
-                  <img className={classes.img} src={require('./images/HECO.svg')} alt="" />
-                </a>
-              </Tooltip>
-              <Tooltip
-                title="MOONRIVER"
-                placement={window.innerWidth > 959 ? "top" : "left"}
-                classes={{ tooltip: classes.tooltip }}
-              >
-                <a href="/#/">
-                  <img className={classes.img} src={require('./images/MOONRIVER.svg')} alt="" />
-                </a>
-              </Tooltip> */}
-            </GridItem>
-          </GridContainer>
-        </div>
-      </Parallax>
-      <div className={classNames(classes.main, classes.mainRaised)}>
-        <div className={classes.container}>
-          <ProductSection />
-          <AuditedSection />
-        </div>
-      </div>
-      <Footer whiteFont />
+    <div className={classes.container}>
+      <GridContainer>
+        <GridItem xs={12} sm={12} md={12} style={{ textAlign: "left" }}>
+          <h1 className={classes.title}>The Multichain Yield Optimizer</h1>
+          <h4 className={classes.text}>BOC is a Defi protocol that provides the best long-term ‘risk-free’ return in USD (compared to other protocols).</h4>
+          <div className={classes.earth}>
+            <Button className={classes.inverst} color='colorfull' size='lg' href='/#/invest'>
+              inverst
+            </Button>
+            <Chains
+              maskStyle={{ display: "inline-block", paddingLeft: 10 }}
+              array={NET_WORKS}
+              handleClick={changeNetwork}
+            />
+            <p>You may need to manually switch network via your wallet.</p>
+            <TvlSection />
+          </div>
+        </GridItem>
+      </GridContainer>
+      <ProductSection />
+      <AmmSection />
+      <LendingSection />
+      <AuditedSection />
     </div>
-  );
+  )
 }

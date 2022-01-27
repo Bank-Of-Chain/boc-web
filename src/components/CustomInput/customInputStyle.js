@@ -43,12 +43,11 @@ const customInputStyle = {
     color: "#fff !important",
     fontWeight: "400",
     fontSize: "18px",
-    lineHeight: "2.42857",
     top: "10px",
     whiteSpace: "nowrap",
     letterSpacing: '0.01071em', 
     "& + $underline": {
-      marginTop: "0px",
+      // marginTop: "0px",
     },
   },
   labelRootError: {
@@ -72,7 +71,6 @@ const customInputStyle = {
       fontSize: "16px",
       fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',
       fontWeight: "400",
-      lineHeight: "2.42857",
       opacity: "1",
     },
     "&::placeholder": {
