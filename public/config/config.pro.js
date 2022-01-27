@@ -77,10 +77,10 @@ const config1 = {
   underlying_address: "0xdAC17F958D2ee523a2206206994597C13D831ec7",
   chain_browser_url:'https://etherscan.io',
   exchange_extra_params: {
-    oneInch: {
-      network: 1,
-      excludeProtocols: ['ONE_INCH_LIMIT_ORDER', 'ONE_INCH_LIMIT_ORDER_V2']
-    },
+    // oneInch: {
+    //   network: 1,
+    //   excludeProtocols: ['ONE_INCH_LIMIT_ORDER', 'ONE_INCH_LIMIT_ORDER_V2']
+    // },
     oneInchV4: {
       network: 1,
       excludeProtocols: ['ONE_INCH_LIMIT_ORDER', 'ONE_INCH_LIMIT_ORDER_V2']
