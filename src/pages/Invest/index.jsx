@@ -442,6 +442,7 @@ export default function Invest (props) {
           error.data.message.endsWith("'Return amount is not enough'") ||
           error.data.message.endsWith("'callBytes failed: Error(Uniswap: INSUFFICIENT_OUTPUT_AMOUNT)'") ||
           error.data.message.endsWith("'1inch V4 swap failed: Error(Min return not reached)'") ||
+          error.data.message.endsWith("'callBytes failed: Error(Received amount of tokens are less then expected)'") ||
           error.data.message.endsWith("'1inch V4 swap failed: Error(Return amount is not enough)'") ||
           error.data.message.endsWith("'Received amount of tokens are less then expected'")
         ) {

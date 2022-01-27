@@ -12,7 +12,7 @@ const configBase = {
   blog_url: 'https://piggyfinance.github.io/docs/zh/blog/',
   licenses_url: 'https://piggyfinance.github.io/docs/zh/licenses/',
   document_url: "https://piggyfinance.github.io/docs/zh/docs/",
-  boc_server: 'http://192.168.60.12:8080',
+  boc_server: 'http://192.168.60.12/server',
   sub_graph_url: {
     '1': 'https://api.thegraph.com/subgraphs/name/bankofchain/boc-subgraph-eth',
     '56': 'https://api.thegraph.com/subgraphs/name/bankofchain/boc-subgraph-bsc',
