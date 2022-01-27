@@ -34,7 +34,20 @@ export default function LendingSection () {
           percent: (100 * calVaultAPY(a)).toFixed(2),
         }
       }),
-      getDefiRate(),
+      getDefiRate().catch(() =>
+        Promise.resolve({
+          data: {
+            BlockFi: "0",
+            Nexo: "0",
+            Celsius: "0",
+          },
+          svg: {
+            BlockFi: "https://defirate.com/wp-content/uploads/defi/blockfi.svg",
+            Nexo: "https://defirate.com/wp-content/uploads/defi/nexo.svg",
+            Celsius: "https://defirate.com/wp-content/uploads/defi/celsius.svg",
+          },
+        }),
+      ),
     ])
       .then(([obj, resp]) => {
         const { data, svg } = resp
