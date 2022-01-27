@@ -29,14 +29,13 @@ export default function TvlSection () {
     Promise.all([getETHVaultData(), getBSCVaultData(), getMaticVaultData()])
       .then(compact)
       .then(array => {
-        const nextTotalTvl = sumBy(array, i => parseFloat(toFixed(i.tvl, 10 ** i.decimals, 2)))
+        const nextTotalTvl = sumBy(array, i => parseFloat(toFixed(i.tvl, 10 ** i.decimals, 2))).toFixed(2)
         const nextEarn = sumBy(array, i => {
           const total = sumBy(map(i.weeksData, o => parseFloat(toFixed(o.totalProfit, 10 ** i.decimals, 2))))
           return total
-        })
-        const nextTotalEarn = sumBy(array, i => parseFloat(toFixed(i.totalProfit, 10 ** i.decimals, 2)))
-        const nextHoldCount = sumBy(array, i => parseFloat(i.holderCount))
-
+        }).toFixed(2)
+        const nextTotalEarn = sumBy(array, i => parseFloat(toFixed(i.totalProfit, 10 ** i.decimals, 2))).toFixed(2)
+        const nextHoldCount = sumBy(array, i => parseInt(i.holderCount))
         return { totalTvl: nextTotalTvl, earn: nextEarn, totalEarn: nextTotalEarn, holders: nextHoldCount }
       })
       .then(setObj)
