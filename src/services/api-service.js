@@ -1,4 +1,5 @@
 import axios from 'axios'
+import isEmpty from 'lodash/isEmpty'
 
 // === Constants === //
 import {
@@ -16,6 +17,8 @@ axios.interceptors.response.use(function (response) {
 })
 
 
-export const getDefiRate = () => {
-  return axios.get(`${BOC_SERVER}/v1/defi/rate`)
+export const getDefiRate = async () => {
+  const rs = await axios.get(`${BOC_SERVER}/v1/defi/rate`)
+  if(isEmpty(rs)) throw new Error("查询失败")
+  return rs
 }
