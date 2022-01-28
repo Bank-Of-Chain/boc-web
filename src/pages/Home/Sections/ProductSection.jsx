@@ -17,19 +17,19 @@ const useStyles = makeStyles(styles)
 
 const data = [
   {
-    title: "Third Party Risk Diversification",
+    title: "Third-Party Risk Diversification",
     descriptions: [
-      "Investment to a single protocol shall not exceed 30% of the total capital.",
-      "Investment to a single capital pool shall not exceed 20% of the total capital.",
-      "Investment to a single capital pool shall not exceed 50% of the existing capital in that pool.",
+      "Investment in a single protocol shall not exceed 30% of the total capital.",
+      "Investment in a single capital pool shall not exceed 20% of the total capital.",
+      "Investment in a single capital pool shall not exceed 50% of the existing capital in that pool.",
     ],
     imagePath: require("./../images/point-4.png"),
   },
   {
     title: "Easy to Use",
     descriptions: [
-      "Only deposit and withdraw, no necessary to implement and bear cost of complex operations such as harvest, exchange and reallocation.",
-      "Automatically reinvest. Flexible deposit and withdraw.",
+      "Only deposit and withdraw, no necessary to implement and bear the cost of complex operations such as harvest, exchange, and reallocation.",
+      "Automatically reinvest. Flexible deposit and withdrawal.",
       "Yield generations are visible.",
     ],
     imagePath: require("./../images/point-3.png"),
@@ -39,7 +39,7 @@ const data = [
     descriptions: [
       "Market cap of qualified Stablecoins exceeds 1 billion dollars.",
       "The TVL of qualified Blockchains exceeds 5 billion dollars.",
-      "Third party auditing.",
+      "Third-party auditing.",
       "Only official cross-chain bridge.",
       "Price Quotation relies on Oracle.",
     ],
@@ -48,10 +48,10 @@ const data = [
   {
     title: "Risk control",
     descriptions: [
-      "De-anchoring risk: no algorithmic Stablecoin, No partially collateralized Stablecoin, No stablecoin collateralized by long-tail asset.",
+      "De-anchoring risk: no algorithmic Stablecoin, No partially collateralized Stablecoin, No stablecoin collateralized by a long-tail asset.",
       "Risk of impermanent loss: market-making only for stablecoin pairs.",
       "Systemic risk: very selective wrapped tokens and yield aggregators.",
-      "Long-tail risk: no yield generated from risk taking, such as insurance underwriting, sell call options.",
+      "Long-tail risk: no yield generated from risk-taking, such as insurance underwriting, sell call options.",
       "Leverage risk: no leverage in this version.",
     ],
     imagePath: require("./../images/point-5.png"),
