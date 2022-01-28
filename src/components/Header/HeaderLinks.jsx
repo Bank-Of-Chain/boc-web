@@ -14,7 +14,7 @@ import BookIcon from "@material-ui/icons/Book"
 import ChatIcon from "@material-ui/icons/Chat"
 import Transform from "@material-ui/icons/Transform"
 import LibraryBooksIcon from "@material-ui/icons/LibraryBooks"
-import InsertChartIcon from '@material-ui/icons/InsertChart';
+import InsertChartIcon from "@material-ui/icons/InsertChart"
 
 // core components
 import { Link } from "react-router-dom"
@@ -35,12 +35,13 @@ import { COMMUNITY_URL, BLOG_URL, DOCUMENT_URL, NET_WORKS } from "./../../consta
 const useStyles = makeStyles(styles)
 
 export default function HeaderLinks (props) {
+  console.log("props=", props)
   const { address, userProvider, loadWeb3Modal, logoutOfWeb3Modal } = props
   const classes = useStyles()
   return (
     <List className={classes.list}>
       <ListItem className={classes.listItem}>
-        <Button color='transparent' target='_blank' href={'/dashboard'} className={classes.navLink}>
+        <Button color='transparent' target='_blank' href={"/dashboard"} className={classes.navLink}>
           <InsertChartIcon className={classes.icons}></InsertChartIcon> Dashboard
         </Button>
       </ListItem>
@@ -94,23 +95,31 @@ export default function HeaderLinks (props) {
           ))}
         />
       </ListItem>
-      <ListItem className={classes.listItem}>
-        {isEmpty(userProvider) ? (
-          <Button
-            color='colorfull'
-            target='_blank'
-            style={{ width: 168, height: 64 }}
-            className={classes.navLink}
-            onClick={loadWeb3Modal}
-          >
+      {location.hash === "#/" ? (
+        <ListItem className={classes.listItem}>
+          <Button style={{ width: 168, height: 64 }} color='colorfull' size='lg' href='/#/invest'>
             <AccountBalanceWallet className={classes.icons}></AccountBalanceWallet> Launch App
           </Button>
-        ) : (
-          <Button color='transparent' target='_blank' className={classes.navLink} onClick={logoutOfWeb3Modal}>
-            <AccountBalanceWalletOutlined className={classes.icons} /> <Address size='short' address={address} />
-          </Button>
-        )}
-      </ListItem>
+        </ListItem>
+      ) : (
+        <ListItem className={classes.listItem}>
+          {isEmpty(userProvider) ? (
+            <Button
+              color='colorfull'
+              target='_blank'
+              style={{ width: 168, height: 64 }}
+              className={classes.navLink}
+              onClick={loadWeb3Modal}
+            >
+              <AccountBalanceWallet className={classes.icons}></AccountBalanceWallet> Connect wallet
+            </Button>
+          ) : (
+            <Button color='transparent' target='_blank' className={classes.navLink} onClick={logoutOfWeb3Modal}>
+              <AccountBalanceWalletOutlined className={classes.icons} /> <Address size='short' address={address} />
+            </Button>
+          )}
+        </ListItem>
+      )}
     </List>
   )
 }

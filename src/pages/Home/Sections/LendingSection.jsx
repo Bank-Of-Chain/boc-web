@@ -11,7 +11,6 @@ import map from "lodash/map"
 import maxBy from "lodash/maxBy"
 import isNaN from "lodash/isNaN"
 import filter from "lodash/filter"
-import moment from "moment"
 import sortBy from "lodash/sortBy"
 import { calVaultAPY } from "./../../../helpers/apy"
 import { toFixed } from "./../../../helpers/number-format"
@@ -72,10 +71,7 @@ export default function LendingSection () {
   return (
     <div className={classes.section}>
       <h2 className={classes.title}>
-        Crypto Lending Interest Rates for <span className={classes.text}>{moment().format("MMMM YYYY")}</span>
-        <span className={classes.text} style={{ fontSize: "1.2rem" }}>
-          （30 Day AVG）
-        </span>
+        Crypto Average Lending Interest Rates for Trailing <span className={classes.text}>30-day</span>
       </h2>
       <div style={{ padding: "4.5rem 0" }}>
         <GridContainer style={{ margin: "0 auto" }} justify='center'>
