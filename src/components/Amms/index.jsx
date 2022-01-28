@@ -15,6 +15,7 @@ import AMMS from "./../../constants/amms"
 import CHAINS from "./../../constants/chains"
 
 import styles from "./styles"
+import STABLECOINS from "../../constants/stableCoins";
 
 const useStyles = makeStyles(styles)
 export default function Amms () {
@@ -51,6 +52,19 @@ export default function Amms () {
           </div>
         ))}
       </GridItem>
+
+    <GridItem xs={12} sm={12} md={12} style={{ paddingBottom: 20 }}>
+        {map(STABLECOINS, c => (
+            <div key={c.id} className={`${classes.item} ${classes.onlyImg}`}>
+                <img className={classes.img} src={`/images/stablecoins/${c.id}.png`} alt={c.symbol} />
+            </div>
+        ))}
+        <div key={'chainlink'} className={classes.item}>
+            <img className={classes.img} src={`/images/oracles/chainlink.png`} alt={'Chainlink'} />
+            <span className={classes.text}>{'Chainlink'}</span>
+        </div>
+    </GridItem>
+
       <GridItem>
         {map(amms, (colume, index) => {
           if (!showMore && index > 2) return

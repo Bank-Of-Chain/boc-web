@@ -14,7 +14,10 @@ const styles = {
     "&:hover": {
       background: 'linear-gradient(90deg, #1cd9ff, #0073ff)',
       color: '#fff'
-    }
+    },
+  },
+  onlyImg:{
+    width: 'auto',
   },
   img: {
     height: '2.4rem',

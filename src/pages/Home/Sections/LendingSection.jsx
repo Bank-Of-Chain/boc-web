@@ -71,7 +71,7 @@ export default function LendingSection () {
   return (
     <div className={classes.section}>
       <h2 className={classes.title}>
-        Crypto Average Lending Interest Rates for Trailing <span className={classes.text}>30-day</span>
+          Trailing <span className={classes.text}>30-day</span> Crypto Average Lending Interest Rates
       </h2>
       <div style={{ padding: "4.5rem 0" }}>
         <GridContainer style={{ margin: "0 auto" }} justify='center'>
