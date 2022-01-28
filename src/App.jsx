@@ -17,6 +17,7 @@ import Paper from "@material-ui/core/Paper"
 import Frame from "./components/Frame/Frame"
 import Snackbar from "@material-ui/core/Snackbar"
 import Alert from "@material-ui/lab/Alert"
+import { Button } from "@material-ui/core"
 
 // === Utils === //
 import { USDT_ADDRESS, NET_WORKS } from "./constants"
@@ -81,6 +82,8 @@ function App () {
   const [userProvider, setUserProvider] = useState()
   const [localChainId, setChainId] = useState()
   const [isLoadingChainId, setIsLoadingChainId] = useState(false)
+
+  const [runWithoutMeta, setRunWithoutMeta] = useState(false)
 
   const alertState = useSelector(state => state.metaReducer.warmMsg)
   const dispatch = useDispatch()
@@ -224,15 +227,36 @@ function App () {
     )
   }
   const renderModalValid = () => {
-    if (isEmpty(window.ethereum)) {
+    if (isEmpty(window.ethereum) && !runWithoutMeta && !localStorage.runWithoutMeta) {
       return modalJsx(
         true,
         <div style={{ textAlign: "center" }}>
           <p style={{ textAlign: "center" }}>
             Please install the plugin Metamask first!{" "}
-            <a href='https://chrome.google.com/webstore/detail/metamask/nkbihfbeogaeaoehlefnkodbefgpgknn?hl=zh-CN'>
+            <Button
+              color='secondary'
+              target={"_blank"}
+              href='https://chrome.google.com/webstore/detail/metamask/nkbihfbeogaeaoehlefnkodbefgpgknn?hl=zh-CN'
+            >
               LINK
-            </a>
+            </Button>
+          </p>
+          <p>
+            <Button size='small' variant='contained' color='primary' onClick={() => setRunWithoutMeta(true)}>
+              知道了
+            </Button>
+            <Button
+              style={{ marginLeft: 10 }}
+              size='small'
+              variant='contained'
+              color='secondary'
+              onClick={() => {
+                localStorage.runWithoutMeta = true
+                setRunWithoutMeta(true)
+              }}
+            >
+              不再提示
+            </Button>
           </p>
         </div>,
       )
