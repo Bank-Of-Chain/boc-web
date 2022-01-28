@@ -56,7 +56,7 @@ export default function Amms () {
     <GridItem xs={12} sm={12} md={12} style={{ paddingBottom: 20 }}>
         {map(STABLECOINS, c => (
             <div key={c.id} className={`${classes.item} ${classes.onlyImg}`}>
-                <img className={classes.img} src={`/images/stablecoins/${c.id}.png`} alt={c.symbol} />
+                <img className={classes.img} src={c.imagePath} alt={c.symbol} />
             </div>
         ))}
         <div key={'chainlink'} className={classes.item}>
