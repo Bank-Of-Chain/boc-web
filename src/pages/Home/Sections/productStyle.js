@@ -10,7 +10,7 @@ const productStyle = {
     margin: 0
   },
   description: {
-    fontSize: '0.875rem',
+    fontSize: '0.95rem',
     color: '#fff',
     display: 'inline-block',
     lineHeight: '2rem'

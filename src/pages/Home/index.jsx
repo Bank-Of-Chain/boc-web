@@ -26,10 +26,21 @@ export default function Home (props) {
   return (
     <div className={classes.container}>
       <GridContainer>
-        <GridItem xs={12} sm={12} md={12} style={{ textAlign: "left" }}>
+        <GridItem xs={12} sm={12} md={12} style={{ textAlign: "left", marginBottom: 0 }}>
           <h1 className={classes.title}>The Multichain Yield Optimizer</h1>
-          <h4 className={classes.text}>BOC is a Defi protocol that provides the best long-term ‘risk-free’ return in USD (compared to other protocols).</h4>
-          <div className={classes.earth} style={{textAlign:'right'}}>
+          <h4 className={classes.text}>
+            BOC is a Defi protocol that provides the best long-term ‘risk-free’ return in USD (compared to other
+            protocols).
+          </h4>
+          <h4 className={classes.text} style={{ marginBottom: 0 }}>
+            Source Of Revenue:
+          </h4>
+          <ul className={classes.ull}>
+            <li>Market-making transaction fee</li>
+            <li>Interest of over-collateralized loan</li>
+            <li>Protocol token rewards</li>
+          </ul>
+          <div className={classes.earth} style={{ textAlign: "right", display: "none" }}>
             <Button className={classes.inverst} color='colorfull' size='lg' href='/#/invest'>
               inverst
             </Button>

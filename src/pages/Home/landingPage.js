@@ -30,7 +30,13 @@ const landingPageStyle = {
     lineHeight: '1.5em',
     marginTop: '2.6rem',
     color: '#fff',
-    marginBottom: '80px'
+  },
+  ull: {
+    '&>li': {
+      fontSize: '1.4rem',
+      lineHeight: '2.5rem',
+      listStyleType:'square'
+    }
   },
   main: {
     background: "#FFFFFF",

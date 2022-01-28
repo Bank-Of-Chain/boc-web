@@ -9,7 +9,8 @@ import GridItem from "../../../components/Grid/GridItem"
 // === Utils === //
 import map from "lodash/map"
 import maxBy from "lodash/maxBy"
-import moment from "moment"
+import isNaN from "lodash/isNaN"
+import filter from "lodash/filter"
 import sortBy from "lodash/sortBy"
 import { calVaultAPY } from "./../../../helpers/apy"
 import { toFixed } from "./../../../helpers/number-format"
@@ -21,7 +22,7 @@ import styles from "./lendingStyle"
 
 const useStyles = makeStyles(styles)
 
-const array = ["BlockFi", "Nexo", "Celsius"]
+const array = ["Bitfinex", "Maker", "dYdX", "Nexo", "Celsius", "Aave", "Coinbase", "Compound", "Fulcrum", "Poloniex"]
 export default function LendingSection () {
   const classes = useStyles()
   const [data, setData] = useState([])
@@ -70,33 +71,36 @@ export default function LendingSection () {
   return (
     <div className={classes.section}>
       <h2 className={classes.title}>
-        Crypto Lending Interest Rates for <span className={classes.text}>{moment().format("MMMM YYYY")}</span>
+        Crypto Average Lending Interest Rates for Trailing <span className={classes.text}>30-day</span>
       </h2>
       <div style={{ padding: "4.5rem 0" }}>
-        <GridContainer style={{ margin: "0 auto" }}>
-          {map(sortBy(data, o => -1 * o.percent), (item, i) => {
-            const { title, imagePath, percent } = item
-            const nextPercent = percent / displayMaxValue
-            const percentText = `${toFixed(nextPercent.toString(), 1e-2, 2)}%`
-            return (
-              <GridItem className={classNames(classes.item)} key={`${i}`} xs={3} sm={3} md={3}>
-                <GridContainer className={classes.body}>
-                  <GridItem className={classes.header} style={i === 0 ? { borderLeft: 0 } : {}}>
-                    <div
-                      className={classNames(classes.bar, title === "BOC" && classes.checked)}
-                      style={{ height: percentText }}
-                    >
-                      <p>{percent}%</p>
-                    </div>
-                  </GridItem>
-                  <GridItem className={classes.footer}>
-                    <img title={title} src={imagePath} alt={title} />
-                    <p>{title}</p>
-                  </GridItem>
-                </GridContainer>
-              </GridItem>
-            )
-          })}
+        <GridContainer style={{ margin: "0 auto" }} justify='center'>
+          {map(
+            filter(sortBy(data, o => -1 * o.percent), o => !isNaN(o.percent)),
+            (item, i) => {
+              const { title, imagePath, percent } = item
+              const nextPercent = percent / displayMaxValue
+              const percentText = `${toFixed(nextPercent.toString(), 1e-2, 2)}%`
+              return (
+                <GridItem className={classNames(classes.item)} key={`${i}`} xs={3} sm={3} md={1}>
+                  <GridContainer className={classes.body}>
+                    <GridItem className={classes.header} style={i === 0 ? { borderLeft: 0 } : {}}>
+                      <div
+                        className={classNames(classes.bar, title === "BOC" && classes.checked)}
+                        style={{ height: percentText }}
+                      >
+                        <p>{percent}%</p>
+                      </div>
+                    </GridItem>
+                    <GridItem className={classes.footer}>
+                      <img title={title} src={imagePath} alt={title} />
+                      <p>{title}</p>
+                    </GridItem>
+                  </GridContainer>
+                </GridItem>
+              )
+            },
+          )}
         </GridContainer>
       </div>
     </div>
