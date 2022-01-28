@@ -22,7 +22,7 @@ import styles from "./lendingStyle"
 
 const useStyles = makeStyles(styles)
 
-const array = ["Bitfinex", "Maker", "dYdX", "Nexo", "Celsius", "Aave", "Coinbase", "Compound", "Fulcrum", "Poloniex"]
+const array = ["Compound", "Aave", "Coinbase", "BlockFi", "Nexo", "Celsius", "YearnFinance", "CryptoCom", "Bitfinex"]
 export default function LendingSection () {
   const classes = useStyles()
   const [data, setData] = useState([])
@@ -38,16 +38,8 @@ export default function LendingSection () {
       }),
       getDefiRate().catch(() =>
         Promise.resolve({
-          data: {
-            BlockFi: "0",
-            Nexo: "0",
-            Celsius: "0",
-          },
-          svg: {
-            BlockFi: "https://defirate.com/wp-content/uploads/defi/blockfi.svg",
-            Nexo: "https://defirate.com/wp-content/uploads/defi/nexo.svg",
-            Celsius: "https://defirate.com/wp-content/uploads/defi/celsius.svg",
-          },
+          data: {},
+          svg: {},
         }),
       ),
     ])
@@ -57,7 +49,7 @@ export default function LendingSection () {
           obj,
           ...map(array, i => {
             return {
-              title: i,
+              title: i === 'YearnFinance' ? 'Yearn': i,
               imagePath: svg[i],
               percent: parseFloat(data[i]),
             }
@@ -71,12 +63,15 @@ export default function LendingSection () {
   return (
     <div className={classes.section}>
       <h2 className={classes.title}>
-          Trailing <span className={classes.text}>30-day</span> Crypto Average Lending Interest Rates
+        Trailing <span className={classes.text}>30-day</span> Crypto Average Lending Interest Rates
       </h2>
       <div style={{ padding: "4.5rem 0" }}>
         <GridContainer style={{ margin: "0 auto" }} justify='center'>
           {map(
-            filter(sortBy(data, o => -1 * o.percent), o => !isNaN(o.percent)),
+            filter(
+              sortBy(data, o => -1 * o.percent),
+              o => !isNaN(o.percent),
+            ),
             (item, i) => {
               const { title, imagePath, percent } = item
               const nextPercent = percent / displayMaxValue
