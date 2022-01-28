@@ -34,7 +34,7 @@ import "./App.css"
 try {
   lendSwap.setUnderlying(USDT_ADDRESS)
 } catch (error) {
-  console.error(error)
+  console.warn(`*** ${error.message} ***`)
 }
 Date.prototype.format = function (fmt) {
   var o = {
