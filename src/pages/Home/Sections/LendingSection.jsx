@@ -10,6 +10,7 @@ import GridItem from "../../../components/Grid/GridItem"
 import map from "lodash/map"
 import maxBy from "lodash/maxBy"
 import moment from "moment"
+import sortBy from "lodash/sortBy"
 import { calVaultAPY } from "./../../../helpers/apy"
 import { toFixed } from "./../../../helpers/number-format"
 import { getDefiRate } from "./../../../services/api-service"
@@ -66,7 +67,6 @@ export default function LendingSection () {
   }, [])
   const maxPercentItem = maxBy(data, "percent")
   const displayMaxValue = 10 * Math.ceil(maxPercentItem?.percent / 10)
-
   return (
     <div className={classes.section}>
       <h2 className={classes.title}>
@@ -74,7 +74,7 @@ export default function LendingSection () {
       </h2>
       <div style={{ padding: "4.5rem 0" }}>
         <GridContainer style={{ margin: "0 auto" }}>
-          {map(data, (item, i) => {
+          {map(sortBy(data, o => -1 * o.percent), (item, i) => {
             const { title, imagePath, percent } = item
             const nextPercent = percent / displayMaxValue
             const percentText = `${toFixed(nextPercent.toString(), 1e-2, 2)}%`
@@ -82,7 +82,10 @@ export default function LendingSection () {
               <GridItem className={classNames(classes.item)} key={`${i}`} xs={3} sm={3} md={3}>
                 <GridContainer className={classes.body}>
                   <GridItem className={classes.header} style={i === 0 ? { borderLeft: 0 } : {}}>
-                    <div className={classes.bar} style={{ height: percentText }}>
+                    <div
+                      className={classNames(classes.bar, title === "BOC" && classes.checked)}
+                      style={{ height: percentText }}
+                    >
                       <p>{percent}%</p>
                     </div>
                   </GridItem>

@@ -85,10 +85,10 @@ const landingPageStyle = {
     fontWeight: 'bold'
   },
   earth: {
-    backgroundImage: 'url(./images/earth.png)',
-    backgroundSize: '80%',
-    backgroundRepeat: 'no-repeat',
-    backgroundPosition: '210px'
+    // backgroundImage: 'url(./images/earth.png)',
+    // backgroundSize: '80%',
+    // backgroundRepeat: 'no-repeat',
+    // backgroundPosition: '210px'
   }
 };
 

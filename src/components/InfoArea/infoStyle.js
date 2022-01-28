@@ -13,8 +13,11 @@ const infoStyle = {
   infoArea: {
     maxWidth: "360px",
     margin: "0 auto",
-    padding: "0px",
-    textAlign: 'left'
+    padding: "0px 20px",
+    textAlign: 'left',
+    backgroundColor: '#271f72',
+    height: '100%',
+    display: 'inline-block'
   },
   iconWrapper: {
     float: "left",

@@ -7,7 +7,6 @@
 html,
 body,
 #root {
-  background: url(/bg.png);
   background-color: #150752;
   font-family: "Roboto", "Helvetica", "Arial", sans-serif;
 }
