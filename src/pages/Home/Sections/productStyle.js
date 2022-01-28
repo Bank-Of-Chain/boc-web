@@ -2,6 +2,7 @@ const productStyle = {
   section: {
     textAlign: "center",
     backgroundColor: 'rgba(12, 7, 53, .8)',
+    marginTop: '3.5rem'
   },
   title: {
     fontSize: '1.5rem',
@@ -9,21 +10,16 @@ const productStyle = {
     margin: 0
   },
   description: {
-    fontSize: '0.875rem',
+    fontSize: '0.95rem',
     color: '#fff',
     display: 'inline-block',
     lineHeight: '2rem'
   },
   item: {
     cursor: 'pointer',
-    padding: '2.5rem',
-    borderLeft: '1px solid rgba(255, 255, 255, .1)',
-    '&:first-child': {
-      borderLeft: 0
-    }
+    padding: '0 0 10px 10px'
   },
   checked: {
-    backgroundColor: '#271f72',
     color: '#fff'
   }
 };
