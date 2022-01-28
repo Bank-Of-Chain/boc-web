@@ -35,7 +35,6 @@ import { COMMUNITY_URL, BLOG_URL, DOCUMENT_URL, NET_WORKS } from "./../../consta
 const useStyles = makeStyles(styles)
 
 export default function HeaderLinks (props) {
-  console.log("props=", props)
   const { address, userProvider, loadWeb3Modal, logoutOfWeb3Modal } = props
   const classes = useStyles()
   return (
