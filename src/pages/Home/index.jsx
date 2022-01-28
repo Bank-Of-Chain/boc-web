@@ -8,7 +8,6 @@ import { NET_WORKS } from "./../../constants"
 import ProductSection from "./Sections/ProductSection"
 import AuditedSection from "./Sections/AuditedSection"
 import AmmSection from "./Sections/AmmSection"
-import TvlSection from "./Sections/TvlSection"
 import LendingSection from "./Sections/LendingSection"
 import GridContainer from "../../components/Grid/GridContainer"
 import GridItem from "../../components/Grid/GridItem"
@@ -30,7 +29,7 @@ export default function Home (props) {
         <GridItem xs={12} sm={12} md={12} style={{ textAlign: "left" }}>
           <h1 className={classes.title}>The Multichain Yield Optimizer</h1>
           <h4 className={classes.text}>BOC is a Defi protocol that provides the best long-term ‘risk-free’ return in USD (compared to other protocols).</h4>
-          <div className={classes.earth}>
+          <div className={classes.earth} style={{textAlign:'right'}}>
             <Button className={classes.inverst} color='colorfull' size='lg' href='/#/invest'>
               inverst
             </Button>
@@ -40,13 +39,12 @@ export default function Home (props) {
               handleClick={changeNetwork}
             />
             <p>You may need to manually switch network via your wallet.</p>
-            <TvlSection />
           </div>
         </GridItem>
       </GridContainer>
+      <LendingSection />
       <ProductSection />
       <AmmSection />
-      <LendingSection />
       <AuditedSection />
     </div>
   )

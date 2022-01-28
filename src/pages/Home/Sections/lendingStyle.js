@@ -35,6 +35,9 @@ const lendingSectionStyle = {
       top: '-3rem'
     }
   },
+  checked: {
+    background: 'linear-gradient(180deg,#1cd9ff,#0073ff)',
+  },
   footer: {
     '&>img': {
       width: '3rem',

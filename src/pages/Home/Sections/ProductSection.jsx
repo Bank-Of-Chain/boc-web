@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react"
+import React from "react"
 import { makeStyles } from "@material-ui/core/styles"
 import classNames from "classnames"
 
@@ -69,43 +69,29 @@ const data = [
 
 export default function ProductSection () {
   const classes = useStyles()
-  const [hoverItem, setHoverItem] = useState(0)
-
-  useEffect(() => {
-    const roll = () => {
-      setHoverItem((hoverItem + 1) % 5)
-    }
-
-    const timer = setInterval(roll, 3000)
-    return () => clearInterval(timer)
-  }, [hoverItem])
-
   return (
-    <div className={classes.section} onMouseLeave={() => setHoverItem(0)}>
-      <GridContainer style={{ margin: "0 auto" }}>
+    <div className={classes.section}>
+      <GridContainer style={{ margin: "0 auto" }} justify='center'>
         {map(data, (item, i) => {
           const { title, descriptions = [], imagePath } = item
-          const isChecked = hoverItem === i
           return (
             <GridItem
-              className={classNames(classes.item, isChecked && classes.checked)}
+              className={classNames(classes.item, classes.checked)}
               key={`${i}`}
               xs={12}
               sm={12}
-              md={isChecked ? 4 : 2}
-              onMouseEnter={() => setHoverItem(i)}
+              md={4}
+              style={{
+                paddingLeft: i % 3 === 0 ? 0 : 10,
+              }}
             >
               <InfoArea
                 title={title}
-                description={
-                  isChecked
-                    ? map(descriptions, (d, index) => (
-                        <span key={`item-${index}`} className={classes.description}>
-                          {index + 1}. {d}
-                        </span>
-                      ))
-                    : []
-                }
+                description={map(descriptions, (d, index) => (
+                  <span key={`item-${index}`} className={classes.description}>
+                    {index + 1}. {d}
+                  </span>
+                ))}
                 icon={<img src={imagePath} alt='' />}
                 vertical
               />
