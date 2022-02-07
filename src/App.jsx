@@ -243,7 +243,7 @@ function App () {
           </p>
           <p>
             <Button size='small' variant='contained' color='primary' onClick={() => setRunWithoutMeta(true)}>
-              知道了
+              Hidden
             </Button>
             <Button
               style={{ marginLeft: 10 }}
@@ -255,7 +255,7 @@ function App () {
                 setRunWithoutMeta(true)
               }}
             >
-              不再提示
+              No Prompt
             </Button>
           </p>
         </div>,
