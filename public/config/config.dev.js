@@ -17,7 +17,8 @@ const configBase = {
     '1': 'https://api.thegraph.com/subgraphs/name/bankofchain/boc-subgraph-eth',
     '56': 'https://api.thegraph.com/subgraphs/name/bankofchain/boc-subgraph-bsc',
     '137': 'https://api.thegraph.com/subgraphs/name/bankofchain/boc-subgraph-matic'
-  }
+  },
+  multiple_of_gas: 2
 }
 
 const config137 = {
@@ -71,7 +72,7 @@ const config1 = {
   ...configBase,
   apy_server: 'http://localhost:5000',
   abi_version: 'v4.5',
-  vault_address: "0x6F6f570F45833E249e27022648a26F4076F48f78",
+  vault_address: "0x008586B7f6768EDc269D9e5cd276316d33CECE6d",
   underlying_address: "0xdAC17F958D2ee523a2206206994597C13D831ec7",
   exchange_extra_params: {
     oneInch: {
