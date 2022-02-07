@@ -28,7 +28,9 @@ const componentsStyle = {
     backgroundColor: 'transparent'
   },
   mainRaised: {
-    margin: "250px 30px 30px 30px",
+    margin: "0 auto",
+    marginTop: 250,
+    marginBottom: 100,
     borderRadius: "6px",
   },
   link: {
@@ -98,12 +100,26 @@ const componentsStyle = {
     fontSize: '12px',
     letterSpacing: '0.01071em'
   },
-  switchBase:{
+  switchBase: {
     color: '#ddd'
   },
-  switchChecked:{
+  switchChecked: {
     color: '#40a9ff'
-  }
+  },
+  modal: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  modalBody: {
+    textAlign: "center"
+  },
+  stepContainer: {
+    padding: 20
+  },
+  stepItem: {
+    color: '#fff'
+  },
 };
 
 export default componentsStyle;
