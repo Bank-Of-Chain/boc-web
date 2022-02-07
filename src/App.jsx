@@ -243,7 +243,7 @@ function App () {
           </p>
           <p>
             <Button size='small' variant='contained' color='primary' onClick={() => setRunWithoutMeta(true)}>
-              Hidden
+              OK
             </Button>
             <Button
               style={{ marginLeft: 10 }}
@@ -255,7 +255,7 @@ function App () {
                 setRunWithoutMeta(true)
               }}
             >
-              No Prompt
+              IGNORE
             </Button>
           </p>
         </div>,
