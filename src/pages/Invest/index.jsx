@@ -32,7 +32,14 @@ import CardHeader from "@material-ui/core/CardHeader"
 import RadioGroup from "@material-ui/core/RadioGroup"
 import CustomRadio from "./../../components/Radio/Radio"
 import Tooltip from "@material-ui/core/Tooltip"
-import InfoIcon from '@material-ui/icons/Info';
+import InfoIcon from "@material-ui/icons/Info"
+import Modal from "@material-ui/core/Modal"
+import Step from "@material-ui/core/Step"
+import BocStepper from "../../components/Stepper/Stepper"
+import BocStepLabel from "../../components/Stepper/StepLabel"
+import BocStepIcon from "../../components/Stepper/StepIcon"
+import BocStepConnector from "../../components/Stepper/StepConnector"
+import WarningIcon from "@material-ui/icons/Warning"
 
 import { useDispatch } from "react-redux"
 
@@ -72,6 +79,14 @@ import BN from "bignumber.js"
 // === Styles === //
 import styles from "./style"
 
+const steps = [
+  { title: "shares validation" },
+  { title: "amount of currency" },
+  { title: "exchange path query" },
+  { title: "extract gas estimates" },
+  { title: "withdraw..." },
+]
+
 const useStyles = makeStyles(styles)
 const { BigNumber } = ethers
 
@@ -110,6 +125,10 @@ export default function Invest (props) {
   const [isFromValueMax, setIsFromValueMax] = useState(false)
   const [isToValueMax, setIsToValueMax] = useState(false)
 
+  const [isLoading, setIsLoading] = useState(false)
+  const [isWithdrawLoading, setIsWithdrawLoading] = useState(false)
+  const [currentStep, setCurrentStep] = useState(0)
+  const [withdrawError, setWithdrawError] = useState({})
   // 载入账户数据
   const loadBanlance = () => {
     if (isEmpty(address)) return loadBanlance
@@ -234,6 +253,7 @@ export default function Invest (props) {
         }),
       )
     }
+    setIsLoading(true)
     // 获取usdc的合约
     const usdtContract = new ethers.Contract(USDT_ADDRESS, IERC20_ABI, userProvider)
     const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider)
@@ -286,39 +306,34 @@ export default function Invest (props) {
         }
       }
     }
+    setTimeout(() => {
+      setIsLoading(false)
+    }, 1000)
   }
 
   const withdraw = async () => {
+    setIsWithdrawLoading(true)
     if (!isValidToValue()) {
-      return dispatch(
-        warmDialog({
-          open: true,
-          type: "warning",
-          message: "Please enter the correct value.",
-        }),
-      )
+      return setWithdrawError({
+        type: "warning",
+        message: "Please enter the correct value.",
+      })
     }
 
     if (!isValidAllowLoss()) {
-      return dispatch(
-        warmDialog({
-          open: true,
-          type: "warning",
-          message: "Enter the correct Max Loss value.",
-        }),
-      )
+      return setWithdrawError({
+        type: "warning",
+        message: "Enter the correct Max Loss value.",
+      })
     }
 
     if (shouldExchange && !isValidSlipper()) {
-      return dispatch(
-        warmDialog({
-          open: true,
-          type: "warning",
-          message: "Please enter the correct Slipper value.",
-        }),
-      )
+      return setWithdrawError({
+        type: "warning",
+        message: "Please enter the correct Slipper value.",
+      })
     }
-
+    setCurrentStep(1)
     const allowMaxLossValue = parseInt(100 * parseFloat(allowMaxLoss))
     const signer = userProvider.getSigner()
     const nextValue = BigNumber.from(
@@ -343,6 +358,7 @@ export default function Invest (props) {
           [],
         )
         console.log("tokens, amounts=", tokens, amounts)
+        setCurrentStep(2)
         const exchangeManager = await vaultContract.exchangeManager()
         const exchangeManagerContract = new ethers.Contract(exchangeManager, EXCHANGE_AGGREGATOR_ABI, userProvider)
         const exchangePlatformAdapters = await getExchangePlatformAdapters(exchangeManagerContract)
@@ -389,21 +405,19 @@ export default function Invest (props) {
       }
       console.log("exchangeArray=", exchangeArray)
       if (some(exchangeArray, isUndefined)) {
-        dispatch(
-          warmDialog({
-            open: true,
-            type: "error",
-            message: "Failed to fetch the exchange path. Please cancel the exchange or try again later.",
-          }),
-        )
-        return
+        return setWithdrawError({
+          type: "error",
+          message: "Failed to fetch the exchange path. Please cancel the exchange or try again later.",
+        })
       }
+      setCurrentStep(3)
       const nextArray = filter(exchangeArray, i => !isEmpty(i))
       console.log("nextArray=", nextArray)
-      let tx;
+      let tx
       // gasLimit如果需要配置倍数的话，则需要estimateGas一下
-      if(isNumber(MULTIPLE_OF_GAS) && MULTIPLE_OF_GAS !== 1){
+      if (isNumber(MULTIPLE_OF_GAS) && MULTIPLE_OF_GAS !== 1) {
         const gas = await vaultContractWithSigner.estimateGas.withdraw(nextValue, allowMaxLossValue, true, nextArray)
+        setCurrentStep(4)
         const gasLimit = Math.ceil(gas * MULTIPLE_OF_GAS)
         // 乘以倍数后，如果大于3千万gas，则按3千万执行
         const maxGasLimit = gasLimit < MAX_GAS_LIMIT ? gasLimit : MAX_GAS_LIMIT
@@ -418,6 +432,7 @@ export default function Invest (props) {
       }
 
       await tx.wait()
+      setCurrentStep(5)
       setToValue("")
       dispatch(
         warmDialog({
@@ -430,21 +445,15 @@ export default function Invest (props) {
       console.error(error)
       if (error && error.data && error.data.message) {
         if (error.data.message && error.data.message.endsWith("'ES or AD'")) {
-          dispatch(
-            warmDialog({
-              open: true,
-              type: "error",
-              message: "Vault has been shut down, please try again later!",
-            }),
-          )
-        } else if(error.data.message.endsWith("'loss much'")){
-          dispatch(
-            warmDialog({
-              open: true,
-              type: "error",
-              message: "Failed to withdraw, please increase the Max Loss!",
-            }),
-          )
+          setWithdrawError({
+            type: "error",
+            message: "Vault has been shut down, please try again later!",
+          })
+        } else if (error.data.message.endsWith("'loss much'")) {
+          setWithdrawError({
+            type: "error",
+            message: "Failed to withdraw, please increase the Max Loss!",
+          })
         } else if (
           error.data.message.endsWith("'Return amount is not enough'") ||
           error.data.message.endsWith("'callBytes failed: Error(Uniswap: INSUFFICIENT_OUTPUT_AMOUNT)'") ||
@@ -453,16 +462,18 @@ export default function Invest (props) {
           error.data.message.endsWith("'1inch V4 swap failed: Error(Return amount is not enough)'") ||
           error.data.message.endsWith("'Received amount of tokens are less then expected'")
         ) {
-          dispatch(
-            warmDialog({
-              open: true,
-              type: "error",
-              message: "Failed to exchange, please increase the exchange slipper or close exchange!",
-            }),
-          )
+          setWithdrawError({
+            type: "error",
+            message: "Failed to exchange, please increase the exchange slipper or close exchange!",
+          })
         }
       }
     }
+    setTimeout(() => {
+      setIsWithdrawLoading(false)
+      setWithdrawError({})
+      setCurrentStep(0)
+    }, 1000)
   }
   const loadTotalAssets = () => {
     const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider)
@@ -630,7 +641,7 @@ export default function Invest (props) {
     if (isUndefined(estimateWithdrawArray)) {
       return (
         <GridItem xs={12} sm={12} md={12} lg={12}>
-          <div style={{ textAlign: "center", minHeight: "100px", color: "#fff", padding: '70px 0 50px' }}>
+          <div style={{ textAlign: "center", minHeight: "100px", color: "#fff", padding: "70px 0 50px" }}>
             <ErrorOutlineIcon fontSize='large' />
             <p>Amount estimate failed, please try again!</p>
           </div>
@@ -640,7 +651,7 @@ export default function Invest (props) {
     if (isEmpty(estimateWithdrawArray) || isEmpty(toValue)) {
       return (
         <GridItem xs={12} sm={12} md={12} lg={12}>
-          <div style={{ textAlign: "center", minHeight: "100px", color: "#fff", padding: '70px 0 50px' }}>
+          <div style={{ textAlign: "center", minHeight: "100px", color: "#fff", padding: "70px 0 50px" }}>
             <AndroidIcon fontSize='large' />
             <p style={{ marginTop: 0, letterSpacing: "0.01071em" }}>No estimated value available</p>
           </div>
@@ -747,7 +758,7 @@ export default function Invest (props) {
                       </Muted>
                     </GridItem>
                     <GridItem xs={4} sm={4} md={3} lg={3}>
-                      <Button color='colorfull' onClick={diposit} style={{ width: 122, margin: '6px 0' }}>
+                      <Button color='colorfull' onClick={diposit} style={{ width: 122, margin: "6px 0" }}>
                         Deposit
                       </Button>
                     </GridItem>
@@ -837,7 +848,7 @@ export default function Invest (props) {
                                 color: "#fff",
                                 fontSize: 16,
                                 letterSpacing: "0.01071em",
-                                lineHeight: 1.5
+                                lineHeight: 1.5,
                               }}
                             >
                               Withdrawal tokens and estimated amount
@@ -848,7 +859,7 @@ export default function Invest (props) {
                               labelPlacement='start'
                               control={
                                 <Switch
-                                  color="default"
+                                  color='default'
                                   checked={shouldExchange}
                                   onChange={event => setShouldExchange(event.target.checked)}
                                   classes={{
@@ -863,7 +874,10 @@ export default function Invest (props) {
                               label={
                                 <Muted>
                                   Exchanged:
-                                  <Tooltip placement='top' title='Please pre-set the acceptable exchange loss when the exchange is enabled'>
+                                  <Tooltip
+                                    placement='top'
+                                    title='Please pre-set the acceptable exchange loss when the exchange is enabled'
+                                  >
                                     <InfoIcon style={{ color: "#fff", verticalAlign: "middle", fontSize: 16 }} />
                                   </Tooltip>
                                 </Muted>
@@ -1049,6 +1063,85 @@ export default function Invest (props) {
           </Table>
         </TableContainer>
       </div>
+      {/* deposit时的loading窗 */}
+      <Modal
+        className={classes.modal}
+        open={isLoading}
+        aria-labelledby='simple-modal-title'
+        aria-describedby='simple-modal-description'
+      >
+        <Paper
+          elevation={3}
+          style={{
+            padding: 20,
+            minWidth: 430,
+            color: "rgba(255,255,255, 0.87)",
+            border: "1px solid",
+            background: "#150752",
+          }}
+        >
+          <div className={classes.modalBody}>
+            <CircularProgress color='inherit' />
+            <p>On Deposit...</p>
+          </div>
+        </Paper>
+      </Modal>
+      {/* withdraw时的loading窗 */}
+      <Modal
+        className={classes.modal}
+        open={isWithdrawLoading}
+        aria-labelledby='simple-modal-title'
+        aria-describedby='simple-modal-description'
+      >
+        <Paper
+          elevation={3}
+          style={{
+            padding: 20,
+            minWidth: 650,
+            color: "rgba(255,255,255, 0.87)",
+            border: "1px solid",
+            background: "#150752",
+          }}
+        >
+          <div className={classes.modalBody}>
+            {isEmpty(withdrawError) && <CircularProgress color='inherit' />}
+            {isEmpty(withdrawError) ? <p>In Withdrawing...</p> : <p>Withdraw Error !</p>}
+            <BocStepper
+              classes={{
+                root: classes.root,
+              }}
+              alternativeLabel
+              activeStep={currentStep}
+              connector={<BocStepConnector />}
+            >
+              {map(steps, (i, index) => {
+                return (
+                  <Step key={index}>
+                    <BocStepLabel StepIconComponent={BocStepIcon}>{i.title}</BocStepLabel>
+                  </Step>
+                )
+              })}
+            </BocStepper>
+            {!isEmpty(withdrawError) && (
+              <p style={{ color: withdrawError.type === "error" ? "red" : "yellow" }}>
+                <WarningIcon style={{ verticalAlign: "bottom" }}></WarningIcon>&nbsp;&nbsp;&nbsp;{withdrawError.message}
+              </p>
+            )}
+            <p>
+              <Button
+                color='danger'
+                onClick={() => {
+                  setIsWithdrawLoading(false)
+                  setWithdrawError({})
+                  setCurrentStep(0)
+                }}
+              >
+                Cancel
+              </Button>
+            </p>
+          </div>
+        </Paper>
+      </Modal>
     </div>
   )
 }
