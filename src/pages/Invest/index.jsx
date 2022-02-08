@@ -288,6 +288,7 @@ export default function Invest (props) {
   }
 
   const withdraw = async () => {
+    console.log("----------start withdraw----------")
     if (!isValidToValue()) {
       return dispatch(
         warmDialog({
@@ -335,12 +336,15 @@ export default function Invest (props) {
       let exchangeArray = []
       // 如果不需要兑换则按照多币返回
       if (shouldExchange) {
+        console.log("----------start callStatic withdraw----------", nextValue, allowMaxLossValue)
+
         const [tokens, amounts] = await vaultContractWithSigner.callStatic.withdraw(
           nextValue,
           allowMaxLossValue,
           false,
           [],
         )
+
         console.log("tokens, amounts=", tokens, amounts)
         const exchangeManager = await vaultContract.exchangeManager()
         const exchangeManagerContract = new ethers.Contract(exchangeManager, EXCHANGE_AGGREGATOR_ABI, userProvider)
@@ -400,12 +404,10 @@ export default function Invest (props) {
       const nextArray = filter(exchangeArray, i => !isEmpty(i))
       console.log("nextArray=", nextArray)
       const gas = await vaultContractWithSigner.estimateGas.withdraw(nextValue, allowMaxLossValue, true, nextArray)
-      const gasLimit = gas * MULTIPLE_OF_GAS
+      console.log("----------start actual withdraw----------")
+      const gasLimit = Math.ceil(gas * MULTIPLE_OF_GAS)
       // 乘以倍数后，如果大于3千万gas，则按3千万执行
       const maxGasLimit = gasLimit < MAX_GAS_LIMIT ? gasLimit : MAX_GAS_LIMIT
-      await vaultContractWithSigner.callStatic.withdraw(nextValue, allowMaxLossValue, true, nextArray, {
-        gasLimit: maxGasLimit,
-      })
       const tx = await vaultContractWithSigner.withdraw(nextValue, allowMaxLossValue, true, nextArray, {
         gasLimit: maxGasLimit,
       })
@@ -420,40 +422,56 @@ export default function Invest (props) {
         }),
       )
     } catch (error) {
-      console.error(error)
-      if (error && error.data && error.data.message) {
-        if (error.data.message && error.data.message.endsWith("'ES or AD'")) {
-          dispatch(
-            warmDialog({
-              open: true,
-              type: "error",
-              message: "Vault has been shut down, please try again later!",
-            }),
-          )
-        } else if(error.data.message.endsWith("'loss much'")){
-          dispatch(
-            warmDialog({
-              open: true,
-              type: "error",
-              message: "Failed to withdraw, please increase the Max Loss!",
-            }),
-          )
-        } else if (
-          error.data.message.endsWith("'Return amount is not enough'") ||
-          error.data.message.endsWith("'callBytes failed: Error(Uniswap: INSUFFICIENT_OUTPUT_AMOUNT)'") ||
-          error.data.message.endsWith("'1inch V4 swap failed: Error(Min return not reached)'") ||
-          error.data.message.endsWith("'callBytes failed: Error(Received amount of tokens are less then expected)'") ||
-          error.data.message.endsWith("'1inch V4 swap failed: Error(Return amount is not enough)'") ||
-          error.data.message.endsWith("'Received amount of tokens are less then expected'")
-        ) {
-          dispatch(
-            warmDialog({
-              open: true,
-              type: "error",
-              message: "Failed to exchange, please increase the exchange slipper or close exchange!",
-            }),
-          )
-        }
+      console.log("withdraw original error :", error)
+      let errorMsg = error.toString()
+      if (error?.message) {
+        errorMsg = error.message
+      }
+      if (error?.data?.message) {
+        errorMsg = error.data.message
+      }
+      if (error?.error?.data?.originalError?.message) {
+        errorMsg = error.error.data.originalError.message
+      }
+      if (errorMsg.endsWith("'ES or AD'")) {
+        dispatch(
+          warmDialog({
+            open: true,
+            type: "error",
+            message: "Vault has been shut down, please try again later!",
+          }),
+        )
+      } else if (errorMsg.endsWith("'loss much'") || errorMsg.indexOf("loss much") !== -1) {
+        dispatch(
+          warmDialog({
+            open: true,
+            type: "error",
+            message: "Failed to withdraw, please increase the Max Loss!",
+          }),
+        )
+      } else if (
+        errorMsg.endsWith("'Return amount is not enough'") ||
+        errorMsg.endsWith("'callBytes failed: Error(Uniswap: INSUFFICIENT_OUTPUT_AMOUNT)'") ||
+        errorMsg.endsWith("'1inch V4 swap failed: Error(Min return not reached)'") ||
+        errorMsg.endsWith("'callBytes failed: Error(Received amount of tokens are less then expected)'") ||
+        errorMsg.endsWith("'1inch V4 swap failed: Error(Return amount is not enough)'") ||
+        errorMsg.endsWith("'Received amount of tokens are less then expected'")
+      ) {
+        dispatch(
+          warmDialog({
+            open: true,
+            type: "error",
+            message: "Failed to exchange, please increase the exchange slipper or close exchange!",
+          }),
+        )
+      } else {
+        dispatch(
+          warmDialog({
+            open: true,
+            type: "error",
+            message: errorMsg,
+          }),
+        )
       }
     }
   }
@@ -528,55 +546,163 @@ export default function Invest (props) {
       const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider)
       const signer = userProvider.getSigner()
       const vaultContractWithSigner = vaultContract.connect(signer)
-      vaultContractWithSigner.callStatic
-        .withdraw(nextValue, allowMaxLossValue, shouldExchange, [])
-        .then(async ([tokens, amounts]) => {
-          let nextEstimateWithdrawArray = compact(
-            await Promise.all(
-              map(tokens, async (token, index) => {
-                const tokenContract = new ethers.Contract(token, IERC20_ABI, userProvider)
-                const amount = get(amounts, index, BigNumber.from(0))
-                if (amount.gt(0)) {
-                  return {
-                    tokenAddress: token,
-                    decimals: await tokenContract.decimals(),
-                    amounts: amount,
-                  }
+
+      try {
+        console.log("estimate shouldExchange:", shouldExchange)
+        let [tokens, amounts] = await vaultContractWithSigner.callStatic.withdraw(
+          nextValue,
+          allowMaxLossValue,
+          false,
+          [],
+        )
+        if (shouldExchange) {
+          const exchangeManager = await vaultContract.exchangeManager()
+          const exchangeManagerContract = new ethers.Contract(exchangeManager, EXCHANGE_AGGREGATOR_ABI, userProvider)
+          const exchangePlatformAdapters = await getExchangePlatformAdapters(exchangeManagerContract)
+          console.log("estimate get exchange path:", tokens, amounts)
+          // 查询兑换路径
+          let exchangeArray = await Promise.all(
+            map(tokens, async (tokenItem, index) => {
+              const exchangeAmounts = amounts[index].toString()
+              if (tokenItem === USDT_ADDRESS || exchangeAmounts === "0") {
+                return {}
+              }
+              const fromConstrat = new ethers.Contract(tokenItem, IERC20_ABI, userProvider)
+              const fromToken = {
+                decimals: parseInt((await fromConstrat.decimals()).toString()),
+                symbol: await fromConstrat.symbol(),
+                address: tokenItem,
+              }
+              try {
+                const bestSwapInfo = await getBestSwapInfo(
+                  fromToken,
+                  {
+                    decimals: usdtDecimals,
+                    symbol: "USDT",
+                    address: USDT_ADDRESS,
+                  },
+                  amounts[index].toString(),
+                  parseInt(100 * parseFloat(slipper)),
+                  exchangePlatformAdapters,
+                  EXCHANGE_EXTRA_PARAMS,
+                )
+                if (isEmpty(bestSwapInfo)) {
+                  throw new Error("兑换路径获取失败")
                 }
-              }),
-            ),
+                return {
+                  fromToken: tokenItem,
+                  toToken: USDT_ADDRESS,
+                  fromAmount: exchangeAmounts,
+                  exchangeParam: bestSwapInfo,
+                }
+              } catch (error) {
+                return
+              }
+            }),
           )
-          if (shouldExchange) {
-            const toValueString = BN(toValue)
-              .multipliedBy(
-                BigNumber.from(10)
-                  .pow(usdtDecimals)
-                  .toString(),
-              )
-              .toFixed()
-            const target = BigNumber.from(10).pow(usdtDecimals)
-            nextEstimateWithdrawArray = [
-              {
-                tokenAddress: USDT_ADDRESS,
-                decimals: usdtDecimals,
-                amounts: perFullShare.mul(BigNumber.from(toValueString)).div(target),
-              },
-            ]
+
+          if (some(exchangeArray, isUndefined)) {
+            dispatch(
+              warmDialog({
+                open: true,
+                type: "error",
+                message: "Failed to fetch the exchange path. Please cancel the exchange or try again later.",
+              }),
+            )
+            return
           }
-          setEstimateWithdrawArray(nextEstimateWithdrawArray)
-        })
-        .catch(() => {
-          setEstimateWithdrawArray(undefined)
-        })
-        .finally(() => {
-          setTimeout(() => {
-            setIsEstimate(false)
-          }, 1000)
-        })
+          console.log("exchangeArray=", exchangeArray)
+          const nextArray = filter(exchangeArray, i => !isEmpty(i))
+          ;[tokens, amounts] = await vaultContractWithSigner.callStatic.withdraw(
+            nextValue,
+            allowMaxLossValue,
+            true,
+            nextArray,
+          )
+          console.log("estimate withdraw result:", tokens, amounts)
+        } else {
+          console.log("estimate directly return:", tokens, amounts)
+        }
+        let nextEstimateWithdrawArray = compact(
+          await Promise.all(
+            map(tokens, async (token, index) => {
+              const tokenContract = new ethers.Contract(token, IERC20_ABI, userProvider)
+              const amount = get(amounts, index, BigNumber.from(0))
+              if (amount.gt(0)) {
+                return {
+                  tokenAddress: token,
+                  decimals: await tokenContract.decimals(),
+                  amounts: amount,
+                }
+              }
+            }),
+          ),
+        )
+
+        setEstimateWithdrawArray(nextEstimateWithdrawArray)
+      } catch (error) {
+        console.log("estimate withdraw error", error)
+        console.log("withdraw original error :", error)
+        let errorMsg = error.toString()
+        if (error?.message) {
+          errorMsg = error.message
+        }
+        if (error?.data?.message) {
+          errorMsg = error.data.message
+        }
+        if (error?.error?.data?.originalError?.message) {
+          errorMsg = error.error.data.originalError.message
+        }
+        if (errorMsg.endsWith("'ES or AD'")) {
+          dispatch(
+            warmDialog({
+              open: true,
+              type: "error",
+              message: "Vault has been shut down, please try again later!",
+            }),
+          )
+        } else if (errorMsg.endsWith("'loss much'") || errorMsg.indexOf("loss much") !== -1) {
+          dispatch(
+            warmDialog({
+              open: true,
+              type: "error",
+              message: "Failed to withdraw, please increase the Max Loss!",
+            }),
+          )
+        } else if (
+          errorMsg.endsWith("'Return amount is not enough'") ||
+          errorMsg.endsWith("'callBytes failed: Error(Uniswap: INSUFFICIENT_OUTPUT_AMOUNT)'") ||
+          errorMsg.endsWith("'1inch V4 swap failed: Error(Min return not reached)'") ||
+          errorMsg.endsWith("'callBytes failed: Error(Received amount of tokens are less then expected)'") ||
+          errorMsg.endsWith("'1inch V4 swap failed: Error(Return amount is not enough)'") ||
+          errorMsg.endsWith("'Received amount of tokens are less then expected'")
+        ) {
+          dispatch(
+            warmDialog({
+              open: true,
+              type: "error",
+              message: "Failed to exchange, please increase the exchange slipper or close exchange!",
+            }),
+          )
+        } else {
+          dispatch(
+            warmDialog({
+              open: true,
+              type: "error",
+              message: errorMsg,
+            }),
+          )
+        }
+        setEstimateWithdrawArray(undefined)
+      } finally {
+        setTimeout(() => {
+          setIsEstimate(false)
+        }, 1000)
+      }
     }, 100)
     estimateWithdraw()
     // eslint-disable-next-line
-  }, [toValue, allowMaxLoss, shouldExchange, isOpenEstimate])
+  }, [toValue, allowMaxLoss, slipper, shouldExchange, isOpenEstimate])
 
   // 展示vault.totalAssets
   // const fn = value => <span>{toFixed(value, 10 ** 6, 6)} USDT</span>
