@@ -65,6 +65,7 @@ import last from "lodash/last"
 import filter from "lodash/filter"
 import isUndefined from "lodash/isUndefined"
 import noop from "lodash/noop"
+import isNumber from "lodash/isNumber"
 import * as ethers from "ethers"
 import BN from "bignumber.js"
 
@@ -403,14 +404,22 @@ export default function Invest (props) {
       }
       const nextArray = filter(exchangeArray, i => !isEmpty(i))
       console.log("nextArray=", nextArray)
-      const gas = await vaultContractWithSigner.estimateGas.withdraw(nextValue, allowMaxLossValue, true, nextArray)
-      console.log("----------start actual withdraw----------")
-      const gasLimit = Math.ceil(gas * MULTIPLE_OF_GAS)
-      // 乘以倍数后，如果大于3千万gas，则按3千万执行
-      const maxGasLimit = gasLimit < MAX_GAS_LIMIT ? gasLimit : MAX_GAS_LIMIT
-      const tx = await vaultContractWithSigner.withdraw(nextValue, allowMaxLossValue, true, nextArray, {
-        gasLimit: maxGasLimit,
-      })
+      let tx;
+      // gasLimit如果需要配置倍数的话，则需要estimateGas一下
+      if(isNumber(MULTIPLE_OF_GAS) && MULTIPLE_OF_GAS !== 1){
+        const gas = await vaultContractWithSigner.estimateGas.withdraw(nextValue, allowMaxLossValue, true, nextArray)
+        const gasLimit = Math.ceil(gas * MULTIPLE_OF_GAS)
+        // 乘以倍数后，如果大于3千万gas，则按3千万执行
+        const maxGasLimit = gasLimit < MAX_GAS_LIMIT ? gasLimit : MAX_GAS_LIMIT
+        await vaultContractWithSigner.callStatic.withdraw(nextValue, allowMaxLossValue, true, nextArray, {
+          gasLimit: maxGasLimit,
+        })
+        tx = await vaultContractWithSigner.withdraw(nextValue, allowMaxLossValue, true, nextArray, {
+          gasLimit: maxGasLimit,
+        })
+      } else {
+        tx = await vaultContractWithSigner.withdraw(nextValue, allowMaxLossValue, true, nextArray)
+      }
 
       await tx.wait()
       setToValue("")
