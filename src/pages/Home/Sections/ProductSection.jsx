@@ -17,13 +17,14 @@ const useStyles = makeStyles(styles)
 
 const data = [
   {
-    title: "Third-Party Risk Diversification",
+    title: "Smart",
     descriptions: [
-      "Investment in a single protocol shall not exceed 30% of the total capital.",
-      "Investment in a single capital pool shall not exceed 20% of the total capital.",
-      "Investment in a single capital pool shall not exceed 50% of the existing capital in that pool.",
+      "Regularly calibrate the yield, and weigh the cost and reward of reallocation.",
+      "Search for the best rate through exchange aggregators.",
+      "Complex FX interest swap. Adjusting FX synthesis based on exchange rate and yield.",
+      "Automatically set parameters for market-making and lending strategy.",
     ],
-    imagePath: require("./../images/point-4.png"),
+    imagePath: require("./../images/point-6.png"),
   },
   {
     title: "Easy to Use",
@@ -57,14 +58,13 @@ const data = [
     imagePath: require("./../images/point-5.png"),
   },
   {
-    title: "Smart",
+    title: "Third-Party Risk Diversification",
     descriptions: [
-      "Regularly calibrate the yield, and weigh the cost and reward of reallocation.",
-      "Search for the best rate through exchange aggregators.",
-      "Complex FX interest swap. Adjusting FX synthesis based on exchange rate and yield.",
-      "Automatically set parameters for market-making and lending strategy.",
+      "Investment in a single protocol shall not exceed 30% of the total capital.",
+      "Investment in a single capital pool shall not exceed 20% of the total capital.",
+      "Investment in a single capital pool shall not exceed 50% of the existing capital in that pool.",
     ],
-    imagePath: require("./../images/point-6.png"),
+    imagePath: require("./../images/point-4.png"),
   },
 ]
 
