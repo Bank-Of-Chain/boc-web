@@ -30,17 +30,16 @@ import get from "lodash/get"
 import find from "lodash/find"
 
 // === Constants === //
-import { COMMUNITY_URL, BLOG_URL, DOCUMENT_URL, NET_WORKS } from "./../../constants"
+import { NET_WORKS, DASHBOARD_URL } from "./../../constants"
 
 const useStyles = makeStyles(styles)
-
 export default function HeaderLinks (props) {
   const { address, userProvider, loadWeb3Modal, logoutOfWeb3Modal } = props
   const classes = useStyles()
   return (
     <List className={classes.list}>
       <ListItem className={classes.listItem}>
-        <Button color='transparent' target='_blank' href={"/dashboard"} className={classes.navLink}>
+        <Button color='transparent' target='_blank' href={DASHBOARD_URL} className={classes.navLink}>
           <InsertChartIcon className={classes.icons}></InsertChartIcon> Dashboard
         </Button>
       </ListItem>
