@@ -312,6 +312,13 @@ export default function Invest (props) {
   }
 
   const withdraw = async () => {
+    let withdrawTimeStart = Date.now(),
+      withdrawValidFinish = 0,
+      preWithdrawGetCoins = 0,
+      getSwapInfoFinish = 0,
+      estimateGasFinish = 0,
+      withdrawFinish = 0,
+      withdrawTransationFinish = 0
     setIsWithdrawLoading(true)
     console.log("----------start withdraw----------")
     if (!isValidToValue()) {
@@ -334,6 +341,7 @@ export default function Invest (props) {
         message: "Please enter the correct Slipper value.",
       })
     }
+    withdrawValidFinish = Date.now()
     setCurrentStep(1)
     const allowMaxLossValue = parseInt(100 * parseFloat(allowMaxLoss))
     const signer = userProvider.getSigner()
@@ -362,6 +370,7 @@ export default function Invest (props) {
         )
 
         console.log("tokens, amounts=", tokens, amounts)
+        preWithdrawGetCoins = Date.now()
         setCurrentStep(2)
         const exchangeManager = await vaultContract.exchangeManager()
         const exchangeManagerContract = new ethers.Contract(exchangeManager, EXCHANGE_AGGREGATOR_ABI, userProvider)
@@ -414,6 +423,7 @@ export default function Invest (props) {
           message: "Failed to fetch the exchange path. Please cancel the exchange or try again later.",
         })
       }
+      getSwapInfoFinish = Date.now()
       setCurrentStep(3)
       const nextArray = filter(exchangeArray, i => !isEmpty(i))
       console.log("nextArray=", nextArray)
@@ -422,20 +432,21 @@ export default function Invest (props) {
       if (isNumber(MULTIPLE_OF_GAS) && MULTIPLE_OF_GAS !== 1) {
         const gas = await vaultContractWithSigner.estimateGas.withdraw(nextValue, allowMaxLossValue, true, nextArray)
         setCurrentStep(4)
+        estimateGasFinish = Date.now()
         const gasLimit = Math.ceil(gas * MULTIPLE_OF_GAS)
         // 乘以倍数后，如果大于3千万gas，则按3千万执行
         const maxGasLimit = gasLimit < MAX_GAS_LIMIT ? gasLimit : MAX_GAS_LIMIT
-        await vaultContractWithSigner.callStatic.withdraw(nextValue, allowMaxLossValue, true, nextArray, {
-          gasLimit: maxGasLimit,
-        })
         tx = await vaultContractWithSigner.withdraw(nextValue, allowMaxLossValue, true, nextArray, {
           gasLimit: maxGasLimit,
         })
       } else {
         tx = await vaultContractWithSigner.withdraw(nextValue, allowMaxLossValue, true, nextArray)
       }
+      withdrawFinish = Date.now()
 
       await tx.wait()
+
+      withdrawTransationFinish = Date.now()
       setCurrentStep(5)
       setToValue("")
       dispatch(
@@ -503,6 +514,29 @@ export default function Invest (props) {
       setWithdrawError({})
       setCurrentStep(0)
     }, 2000)
+    // 最后输出一下withdraw总耗时
+    const totalTime = withdrawTransationFinish - withdrawTimeStart
+    const szjy = withdrawValidFinish - withdrawTimeStart
+    const szjyPercents = ((100 * szjy) / totalTime).toFixed(2)
+    const ytq = preWithdrawGetCoins === 0 ? 0 : preWithdrawGetCoins - withdrawValidFinish
+    const ytqPercents = ((100 * ytq) / totalTime).toFixed(2)
+    const hqdhlj =
+      preWithdrawGetCoins === 0 ? getSwapInfoFinish - withdrawValidFinish : getSwapInfoFinish - preWithdrawGetCoins
+    const hqdhljPercents = ((100 * hqdhlj) / totalTime).toFixed(2)
+    const eg = estimateGasFinish === 0 ? 0 : estimateGasFinish - getSwapInfoFinish
+    const egPercents = ((100 * eg) / totalTime).toFixed(2)
+    const qk = estimateGasFinish === 0 ? withdrawFinish - getSwapInfoFinish : withdrawFinish - estimateGasFinish
+    const qkPercents = ((100 * qk) / totalTime).toFixed(2)
+    const swc = withdrawTransationFinish - withdrawFinish
+    const swcPercents = ((100 * swc) / totalTime).toFixed(2)
+    console.table({
+      数值校验: `${szjy}(${szjyPercents}%)`,
+      预提取获取币种及数量: `${ytq}(${ytqPercents}%)`,
+      查询兑换路径: `${hqdhlj}(${hqdhljPercents}%)`,
+      estimateGas: `${eg}(${egPercents}%)`,
+      取款: `${qk}(${qkPercents}%)`,
+      事务确认: `${swc}(${swcPercents}%)`,
+    })
   }
   const loadTotalAssets = () => {
     const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider)
