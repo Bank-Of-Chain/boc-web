@@ -31,7 +31,7 @@ const STABLECOINS = [{
     {
         id: 'lusd',
         symbol: 'LUSD',
-        imagePath: '/images/0x5f98805a4e8be255a32880fdec7f6728c6568ba0.webp'
+        imagePath: '/images/0x5f98805A4E8be255a32880FDeC7F6728C6568bA0.webp'
     }
 ]
 export default STABLECOINS
