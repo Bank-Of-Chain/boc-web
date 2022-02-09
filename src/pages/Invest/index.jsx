@@ -765,6 +765,12 @@ export default function Invest (props) {
     }
   }
 
+  function imgError (e) {
+    const evn = e
+    const img = evn.srcElement ? evn.srcElement : evn.target
+    img.src = "/default.webp"
+  }
+
   const renderEstimate = () => {
     if (isEstimate) {
       return (
@@ -806,7 +812,7 @@ export default function Invest (props) {
             onClick={() => addToken(item.tokenAddress)}
           >
             <AddIcon fontSize='small' style={{ position: "absolute", top: 25, left: 45 }} />
-            <img className={classes.img} alt='' src={`./images/${item.tokenAddress}.webp`} />
+            <img className={classes.img} alt='' src={`./images/${item.tokenAddress}.webp`} onError={imgError} />
             &nbsp;&nbsp;~&nbsp;{toFixed(item.amounts, BigNumber.from(10).pow(item.decimals), 6)}
           </Button>
         </GridItem>
