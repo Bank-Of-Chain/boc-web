@@ -38,6 +38,7 @@ export const DOCUMENT_URL = config.document_url;
 export const MAX_GAS_LIMIT = config.max_gas_limit;
 export const BOC_SERVER = config.boc_server;
 export const MULTIPLE_OF_GAS = config.multiple_of_gas;
+export const DASHBOARD_URL = config.dashboard_url;
 
 // === abi === //
 export const VAULT_ABI = vaultAbi;
