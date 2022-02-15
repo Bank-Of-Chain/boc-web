@@ -80,11 +80,11 @@ import BN from "bignumber.js"
 import styles from "./style"
 
 const steps = [
-  { title: "shares validation" },
-  { title: "amount of currency" },
-  { title: "exchange path query" },
-  { title: "extract gas estimates" },
-  { title: "withdraw..." },
+  { title: "Shares Validation" },
+  { title: "Pre Withdraw" },
+  { title: "Exchange Path Query" },
+  { title: "Gas Estimates" },
+  { title: "Withdraw" },
 ]
 
 const useStyles = makeStyles(styles)
@@ -343,7 +343,7 @@ export default function Invest (props) {
     }
     withdrawValidFinish = Date.now()
     setCurrentStep(1)
-    const allowMaxLossValue = parseInt(100 * parseFloat(allowMaxLoss))
+    const allowMaxLossValue = parseInt(100 * parseFloat(allowMaxLoss)) || 0
     const signer = userProvider.getSigner()
     const nextValue = BigNumber.from(
       BN(toValue)
@@ -397,7 +397,7 @@ export default function Invest (props) {
                   address: USDT_ADDRESS,
                 },
                 amounts[index].toString(),
-                parseInt(100 * parseFloat(slipper)),
+                parseInt(100 * parseFloat(slipper)) || 0,
                 exchangePlatformAdapters,
                 EXCHANGE_EXTRA_PARAMS,
               )
@@ -605,7 +605,7 @@ export default function Invest (props) {
           )
           .toFixed(),
       )
-      const allowMaxLossValue = parseInt(100 * parseFloat(allowMaxLoss))
+      const allowMaxLossValue = parseInt(100 * parseFloat(allowMaxLoss)) || 0
       const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider)
       const signer = userProvider.getSigner()
       const vaultContractWithSigner = vaultContract.connect(signer)
@@ -645,7 +645,7 @@ export default function Invest (props) {
                     address: USDT_ADDRESS,
                   },
                   amounts[index].toString(),
-                  parseInt(100 * parseFloat(slipper)),
+                  parseInt(100 * parseFloat(slipper)) || 0,
                   exchangePlatformAdapters,
                   EXCHANGE_EXTRA_PARAMS,
                 )
