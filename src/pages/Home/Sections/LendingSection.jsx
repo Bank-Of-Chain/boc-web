@@ -22,6 +22,8 @@ import styles from "./lendingStyle"
 
 const useStyles = makeStyles(styles)
 
+const bocTitle = "BOC"
+
 const array = ["Compound", "Aave", "Coinbase", "BlockFi", "Nexo", "Celsius", "YearnFinance", "CryptoCom", "Bitfinex"]
 export default function LendingSection () {
   const classes = useStyles()
@@ -31,7 +33,7 @@ export default function LendingSection () {
     Promise.all([
       getETHLast30DaysVaultData().then(a => {
         return {
-          title: "BOC",
+          title: bocTitle,
           imagePath: "/logo.png",
           percent: (100 * calVaultAPY(a)).toFixed(2),
         }
@@ -49,7 +51,7 @@ export default function LendingSection () {
           obj,
           ...map(array, i => {
             return {
-              title: i === 'YearnFinance' ? 'Yearn': i,
+              title: i === "YearnFinance" ? "Yearn" : i,
               imagePath: svg[i],
               percent: parseFloat(data[i]),
             }
@@ -69,7 +71,12 @@ export default function LendingSection () {
         <GridContainer style={{ margin: "0 auto" }} justify='center'>
           {map(
             filter(
-              sortBy(data, o => -1 * o.percent),
+              sortBy(data, o => {
+                if (o.title === bocTitle) {
+                  return -10000
+                }
+                return -1 * o.percent
+              }),
               o => !isNaN(o.percent),
             ),
             (item, i) => {
@@ -81,10 +88,16 @@ export default function LendingSection () {
                   <GridContainer className={classes.body}>
                     <GridItem className={classes.header} style={i === 0 ? { borderLeft: 0 } : {}}>
                       <div
-                        className={classNames(classes.bar, title === "BOC" && classes.checked)}
+                        className={classNames(classes.bar, title === bocTitle && classes.checked)}
                         style={{ height: percentText }}
                       >
-                        <p>{percent}%</p>
+                        <p
+                          style={
+                            title === bocTitle ? { width: "98px", left: "-50px", textAlign: "right", top: "-65px" } : {}
+                          }
+                        >
+                          {percent}% {title === bocTitle && <span>(From Feb. 8)</span>}
+                        </p>
                       </div>
                     </GridItem>
                     <GridItem className={classes.footer}>
