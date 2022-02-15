@@ -94,13 +94,21 @@ query($beginDayTimestamp: BigInt) {
      }
     }
 `;
+// 2月8日 0点时间戳
+const timeStart = 1644278400;
 export const getETHLast30DaysVaultData = async () => {
     if(isEmpty(ethClient)) return []
+
+    let nextStartTimestamp = getDaysAgoTimestamp(30)
+    // eth链 不统计2月7日前的数据
+    if(nextStartTimestamp < timeStart){
+        nextStartTimestamp = timeStart
+    }
     return await ethClient
         .query({
             query: gql(VAULT_DAILY_QUERY),
             variables: {
-                beginDayTimestamp: getDaysAgoTimestamp(30),
+                beginDayTimestamp: nextStartTimestamp,
             },
         })
         .then((resp) => get(resp, 'data.vaultDailyDatas')).then(a => arrayAppendOfDay(a, 30));
