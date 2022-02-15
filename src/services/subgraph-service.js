@@ -95,7 +95,7 @@ query($beginDayTimestamp: BigInt) {
     }
 `;
 // 2月8日 0点时间戳
-const timeStart = 1644278400;
+const timeStart = 1644249600;
 export const getETHLast30DaysVaultData = async () => {
     if(isEmpty(ethClient)) return []
 
