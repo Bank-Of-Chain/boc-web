@@ -56,7 +56,7 @@ import {
   EXCHANGE_EXTRA_PARAMS,
   MULTIPLE_OF_GAS,
   CHAIN_BROWSER_URL,
-  MAX_GAS_LIMIT,
+  MAX_GAS_LIMIT, ORACLE_ADDITIONAL_SLIPPAGE,
 } from "../../constants"
 
 // === Utils === //
@@ -398,6 +398,7 @@ export default function Invest (props) {
                 },
                 amounts[index].toString(),
                 parseInt(100 * parseFloat(slipper)) || 0,
+                ORACLE_ADDITIONAL_SLIPPAGE,
                 exchangePlatformAdapters,
                 EXCHANGE_EXTRA_PARAMS,
               )
@@ -646,6 +647,7 @@ export default function Invest (props) {
                   },
                   amounts[index].toString(),
                   parseInt(100 * parseFloat(slipper)) || 0,
+                  ORACLE_ADDITIONAL_SLIPPAGE,
                   exchangePlatformAdapters,
                   EXCHANGE_EXTRA_PARAMS,
                 )

@@ -19,7 +19,8 @@ const configBase = {
     '137': 'https://api.thegraph.com/subgraphs/name/bankofchain/boc-subgraph-matic'
   },
   multiple_of_gas: 2,
-  dashboard_url: 'http://192.168.60.12/dashboard'
+  dashboard_url: 'http://192.168.60.12/dashboard',
+  oracle_additional_slippage: 20
 }
 
 const config137 = {
