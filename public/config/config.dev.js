@@ -18,7 +18,8 @@ const configBase = {
     '56': 'https://api.thegraph.com/subgraphs/name/bankofchain/boc-subgraph-bsc',
     '137': 'https://api.thegraph.com/subgraphs/name/bankofchain/boc-subgraph-matic'
   },
-  multiple_of_gas: 2
+  multiple_of_gas: 2,
+  dashboard_url: '/'
 }
 
 const config137 = {

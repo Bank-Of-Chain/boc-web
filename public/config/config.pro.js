@@ -11,13 +11,14 @@
   blog_url: 'https://piggyfinance.github.io/docs/zh/blog/',
   licenses_url: 'https://piggyfinance.github.io/docs/zh/licenses/',
   document_url: "https://piggyfinance.github.io/docs/zh/docs/",
-  boc_server: 'https://bankofchain.io/server',
+  boc_server: 'https://service.bankofchain.io',
   sub_graph_url: {
     '1': 'https://api.thegraph.com/subgraphs/name/bankofchain/boc-subgraph-eth',
     '56': 'https://api.thegraph.com/subgraphs/name/bankofchain/boc-subgraph-bsc',
     '137': 'https://api.thegraph.com/subgraphs/name/bankofchain/boc-subgraph-matic'
   },
-  multiple_of_gas: 1
+  multiple_of_gas: 1,
+  dashboard_url: 'https://dashboard.bankofchain.io'
 }
 
 const config137 = {
