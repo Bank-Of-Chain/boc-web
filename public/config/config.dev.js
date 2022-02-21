@@ -73,15 +73,10 @@ const config56 = {
 const config1 = {
   ...configBase,
   apy_server: 'http://localhost:5000',
-  abi_version: 'v4.5',
-  vault_address: "0x008586B7f6768EDc269D9e5cd276316d33CECE6d",
+  abi_version: 'v4.6',
+  vault_address: "0x5302E909d1e93e30F05B5D6Eea766363D14F9892",
   underlying_address: "0xdAC17F958D2ee523a2206206994597C13D831ec7",
   exchange_extra_params: {
-    oneInch: {
-      useHttp: true,
-      network: 1,
-      protocols: ['CURVE', 'CURVE_V2', 'SUSHI', 'UNISWAP_V2', 'UNISWAP_V3', 'DODO_V2', 'COMPOUND', 'AAVE', 'BALANCER', 'BANCOR', 'MSTABLE', 'AAVE_V2', 'BALANCER_V2']
-    },
     oneInchV4: {
       useHttp: true,
       network: 1,
