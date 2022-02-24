@@ -75,7 +75,7 @@ const config56 = {
 const config1 = {
   ...configBase,
   apy_server: 'https://bankofchain.io/api/1',
-  abi_version: 'v4.5',
+  abi_version: 'v4.6',
   vault_address: "0x008586B7f6768EDc269D9e5cd276316d33CECE6d",
   underlying_address: "0xdAC17F958D2ee523a2206206994597C13D831ec7",
   chain_browser_url:'https://etherscan.io',
