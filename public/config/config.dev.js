@@ -19,7 +19,8 @@ const configBase = {
     '137': 'https://api.thegraph.com/subgraphs/name/bankofchain/boc-subgraph-matic'
   },
   multiple_of_gas: 2,
-  dashboard_url: '/'
+  dashboard_url: '/',
+  oracle_additional_slippage: 20
 }
 
 const config137 = {
@@ -29,10 +30,12 @@ const config137 = {
   underlying_address: "0xc2132D05D31c914a87C6611C10748AEb04B58e8F",
   exchange_extra_params: {
     oneInch: {
+      useHttp: true,
       network: 137,
       excludeProtocols: ['POLYGON_ONE_INCH_LIMIT_ORDER', 'POLYGON_ONE_INCH_LIMIT_ORDER_V2']
     },
     oneInchV4: {
+      useHttp: true,
       network: 137,
       excludeProtocols: ['POLYGON_ONE_INCH_LIMIT_ORDER', 'POLYGON_ONE_INCH_LIMIT_ORDER_V2']
     },
@@ -53,10 +56,12 @@ const config56 = {
   underlying_address: "0x55d398326f99059fF775485246999027B3197955",
   exchange_extra_params: {
     oneInch: {
+      useHttp: true,
       network: 56,
       excludeProtocols: ['BSC_ONE_INCH_LIMIT_ORDER', 'BSC_ONE_INCH_LIMIT_ORDER_V2']
     },
     oneInchV4: {
+      useHttp: true,
       network: 56,
       excludeProtocols: ['BSC_ONE_INCH_LIMIT_ORDER', 'BSC_ONE_INCH_LIMIT_ORDER_V2']
     },
@@ -72,15 +77,10 @@ const config56 = {
 const config1 = {
   ...configBase,
   apy_server: 'http://localhost:5000',
-  abi_version: 'v4.5',
-  vault_address: "0x008586B7f6768EDc269D9e5cd276316d33CECE6d",
+  abi_version: 'v4.6',
+  vault_address: "0x5302E909d1e93e30F05B5D6Eea766363D14F9892",
   underlying_address: "0xdAC17F958D2ee523a2206206994597C13D831ec7",
   exchange_extra_params: {
-    oneInch: {
-      useHttp: true,
-      network: 1,
-      protocols: ['CURVE', 'CURVE_V2', 'SUSHI', 'UNISWAP_V2', 'UNISWAP_V3', 'DODO_V2', 'COMPOUND', 'AAVE', 'BALANCER', 'BANCOR', 'MSTABLE', 'AAVE_V2', 'BALANCER_V2']
-    },
     oneInchV4: {
       useHttp: true,
       network: 1,

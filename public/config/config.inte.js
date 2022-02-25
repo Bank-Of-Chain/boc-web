@@ -12,19 +12,20 @@
   blog_url: 'https://piggyfinance.github.io/docs/zh/blog/',
   licenses_url: 'https://piggyfinance.github.io/docs/zh/licenses/',
   document_url: "https://piggyfinance.github.io/docs/zh/docs/",
-  boc_server: 'http://192.168.60.12/server',
+  boc_server: 'http://192.168.60.40/server',
   sub_graph_url: {
     '1': 'https://api.thegraph.com/subgraphs/name/bankofchain/boc-subgraph-eth',
     '56': 'https://api.thegraph.com/subgraphs/name/bankofchain/boc-subgraph-bsc',
     '137': 'https://api.thegraph.com/subgraphs/name/bankofchain/boc-subgraph-matic'
   },
   multiple_of_gas: 2,
-  dashboard_url: 'http://192.168.60.12/dashboard'
+  dashboard_url: 'http://192.168.60.40/dashboard',
+  oracle_additional_slippage: 20
 }
 
 const config137 = {
   ...configBase,
-  apy_server: 'http://192.168.60.12/api/137',
+  apy_server: 'http://192.168.60.40/api/137',
   vault_address: "0x2C328D592819524F741A88A18572372CCE196782",
   underlying_address: "0xc2132D05D31c914a87C6611C10748AEb04B58e8F",
   exchange_extra_params: {
@@ -47,7 +48,7 @@ const config137 = {
 
 const config56 = {
   ...configBase,
-  apy_server: 'http://192.168.60.12/api/56',
+  apy_server: 'http://192.168.60.40/api/56',
   abi_version: 'v4.4',
   vault_address: "0x2C328D592819524F741A88A18572372CCE196782",
   underlying_address: "0x55d398326f99059fF775485246999027B3197955",
@@ -71,7 +72,7 @@ const config56 = {
 
 const config1 = {
   ...configBase,
-  apy_server: 'http://192.168.60.12/api/1',
+  apy_server: 'http://192.168.60.40/api/1',
   abi_version: 'v4.4',
   vault_address: "",
   underlying_address: "",

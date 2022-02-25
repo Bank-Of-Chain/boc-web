@@ -13,7 +13,7 @@ if (!config) {
   throw new Error('配置未正确加载');
 }
 
-const abiPrefix = config.abi_version || 'v4.3'
+export const abiPrefix = config.abi_version || 'v4.3'
 
 const vaultAbi = require(`./abis/${abiPrefix}/vault-abi.json`);
 const strategyAbi = require(`./abis/${abiPrefix}/strategy-abi.json`);
@@ -39,6 +39,7 @@ export const MAX_GAS_LIMIT = config.max_gas_limit;
 export const BOC_SERVER = config.boc_server;
 export const MULTIPLE_OF_GAS = config.multiple_of_gas;
 export const DASHBOARD_URL = config.dashboard_url;
+export const ORACLE_ADDITIONAL_SLIPPAGE = config.oracle_additional_slippage
 
 // === abi === //
 export const VAULT_ABI = vaultAbi;
