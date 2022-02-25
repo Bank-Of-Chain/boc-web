@@ -501,7 +501,8 @@ export default function Invest (props) {
         errorMsg.endsWith("'1inch V4 swap failed: Error(Min return not reached)'") ||
         errorMsg.endsWith("'callBytes failed: Error(Received amount of tokens are less then expected)'") ||
         errorMsg.endsWith("'1inch V4 swap failed: Error(Return amount is not enough)'") ||
-        errorMsg.endsWith("'Received amount of tokens are less then expected'")
+        errorMsg.endsWith("'Received amount of tokens are less then expected'") ||
+        errorMsg.endsWith("Error: VM Exception while processing transaction: reverted with reason string 'OL'")
       ) {
         dispatch(
           warmDialog({
@@ -755,7 +756,8 @@ export default function Invest (props) {
         errorMsg.endsWith("'1inch V4 swap failed: Error(Min return not reached)'") ||
         errorMsg.endsWith("'callBytes failed: Error(Received amount of tokens are less then expected)'") ||
         errorMsg.endsWith("'1inch V4 swap failed: Error(Return amount is not enough)'") ||
-        errorMsg.endsWith("'Received amount of tokens are less then expected'")
+        errorMsg.endsWith("'Received amount of tokens are less then expected'") ||
+        errorMsg.endsWith("Error: VM Exception while processing transaction: reverted with reason string 'OL'")
       ) {
         dispatch(
           warmDialog({
