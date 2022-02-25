@@ -4,7 +4,7 @@
  const configBase = {
   vault_address: '',
   underlying_address: '',
-  abi_version: 'v4.3',
+  abi_version: 'v4.6',
   community_url: 'https://discord.com/channels/910840145039749141',
   telegram_url: 'https://t.me/joinchat/mSxXlD_it0QyNzll',
   aboutus_url: 'https://piggyfinance.github.io/docs/zh/aboutus/',
@@ -50,7 +50,6 @@ const config56 = {
   ...configBase,
   apy_server: 'https://bankofchain.io/api/56',
   vault_address: "0x699F86dd50224544E6c23670Af44682CAe9db3c5",
-  abi_version: 'v4.4',
   underlying_address: "0x55d398326f99059fF775485246999027B3197955",
   chain_browser_url:'https://bscscan.com',
   exchange_extra_params: {
@@ -75,15 +74,10 @@ const config56 = {
 const config1 = {
   ...configBase,
   apy_server: 'https://bankofchain.io/api/1',
-  abi_version: 'v4.5',
   vault_address: "0x008586B7f6768EDc269D9e5cd276316d33CECE6d",
   underlying_address: "0xdAC17F958D2ee523a2206206994597C13D831ec7",
   chain_browser_url:'https://etherscan.io',
   exchange_extra_params: {
-    // oneInch: {
-    //   network: 1,
-    //   excludeProtocols: ['ONE_INCH_LIMIT_ORDER', 'ONE_INCH_LIMIT_ORDER_V2']
-    // },
     oneInchV4: {
       network: 1,
       excludeProtocols: ['ONE_INCH_LIMIT_ORDER', 'ONE_INCH_LIMIT_ORDER_V2']
