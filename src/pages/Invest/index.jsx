@@ -48,6 +48,7 @@ import { warmDialog } from "./../../reducers/meta-reducer"
 
 // === constants === //
 import {
+  abiPrefix,
   VAULT_ADDRESS,
   VAULT_ABI,
   IERC20_ABI,
@@ -73,6 +74,7 @@ import filter from "lodash/filter"
 import isUndefined from "lodash/isUndefined"
 import noop from "lodash/noop"
 import isNumber from "lodash/isNumber"
+import pick from "lodash/pick"
 import * as ethers from "ethers"
 import BN from "bignumber.js"
 
@@ -426,7 +428,15 @@ export default function Invest (props) {
       }
       getSwapInfoFinish = Date.now()
       setCurrentStep(3)
-      const nextArray = filter(exchangeArray, i => !isEmpty(i))
+      let nextArray = filter(exchangeArray, i => !isEmpty(i))
+      if (abiPrefix === 'v4.4' || abiPrefix === 'v4.3') {
+        nextArray = map(nextArray, i => {
+          return {
+            ...i,
+            exchangeParam: pick(i.exchangeParam, ['encodeExchangeArgs', 'method', 'platform'])
+          }
+        })
+      }
       console.log("nextArray=", nextArray)
       let tx
       // gasLimit如果需要配置倍数的话，则需要estimateGas一下
@@ -491,7 +501,8 @@ export default function Invest (props) {
         errorMsg.endsWith("'1inch V4 swap failed: Error(Min return not reached)'") ||
         errorMsg.endsWith("'callBytes failed: Error(Received amount of tokens are less then expected)'") ||
         errorMsg.endsWith("'1inch V4 swap failed: Error(Return amount is not enough)'") ||
-        errorMsg.endsWith("'Received amount of tokens are less then expected'")
+        errorMsg.endsWith("'Received amount of tokens are less then expected'") ||
+        errorMsg.endsWith("Error: VM Exception while processing transaction: reverted with reason string 'OL'")
       ) {
         dispatch(
           warmDialog({
@@ -674,7 +685,15 @@ export default function Invest (props) {
           return
         }
         console.log("exchangeArray=", exchangeArray)
-        const nextArray = filter(exchangeArray, i => !isEmpty(i))
+        let nextArray = filter(exchangeArray, i => !isEmpty(i))
+        if (abiPrefix === 'v4.4' || abiPrefix === 'v4.3') {
+          nextArray = map(nextArray, i => {
+            return {
+              ...i,
+              exchangeParam: pick(i.exchangeParam, ['encodeExchangeArgs', 'method', 'platform'])
+            }
+          })
+        }
         ;[tokens, amounts] = await vaultContractWithSigner.callStatic.withdraw(
           nextValue,
           allowMaxLossValue,
@@ -737,7 +756,8 @@ export default function Invest (props) {
         errorMsg.endsWith("'1inch V4 swap failed: Error(Min return not reached)'") ||
         errorMsg.endsWith("'callBytes failed: Error(Received amount of tokens are less then expected)'") ||
         errorMsg.endsWith("'1inch V4 swap failed: Error(Return amount is not enough)'") ||
-        errorMsg.endsWith("'Received amount of tokens are less then expected'")
+        errorMsg.endsWith("'Received amount of tokens are less then expected'") ||
+        errorMsg.endsWith("Error: VM Exception while processing transaction: reverted with reason string 'OL'")
       ) {
         dispatch(
           warmDialog({
