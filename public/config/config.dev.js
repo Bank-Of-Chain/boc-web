@@ -5,7 +5,7 @@ const configBase = {
   vault_address: '',
   underlying_address: '',
   chain_browser_url: '',
-  abi_version: 'v4.3',
+  abi_version: 'v4.6',
   community_url: 'https://discord.com/channels/910840145039749141',
   telegram_url: 'https://t.me/joinchat/mSxXlD_it0QyNzll',
   aboutus_url: 'https://piggyfinance.github.io/docs/zh/aboutus/',
@@ -51,7 +51,6 @@ const config137 = {
 const config56 = {
   ...configBase,
   apy_server: 'http://localhost:4000',
-  abi_version: 'v4.4',
   vault_address: "0xf2Bf7C00B4696726B3c1f6E7b87d1a4acB050a8F",
   underlying_address: "0x55d398326f99059fF775485246999027B3197955",
   exchange_extra_params: {
@@ -77,7 +76,6 @@ const config56 = {
 const config1 = {
   ...configBase,
   apy_server: 'http://localhost:5000',
-  abi_version: 'v4.6',
   vault_address: "0x5302E909d1e93e30F05B5D6Eea766363D14F9892",
   underlying_address: "0xdAC17F958D2ee523a2206206994597C13D831ec7",
   exchange_extra_params: {
