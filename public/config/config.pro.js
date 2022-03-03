@@ -29,10 +29,6 @@ const config137 = {
   underlying_address: "0xc2132D05D31c914a87C6611C10748AEb04B58e8F",
   chain_browser_url:'https://polygonscan.com',
   exchange_extra_params: {
-    oneInch: {
-      network: 137,
-      excludeProtocols: ['POLYGON_ONE_INCH_LIMIT_ORDER', 'POLYGON_ONE_INCH_LIMIT_ORDER_V2']
-    },
     oneInchV4: {
       network: 137,
       excludeProtocols: ['POLYGON_ONE_INCH_LIMIT_ORDER', 'POLYGON_ONE_INCH_LIMIT_ORDER_V2']
@@ -53,10 +49,6 @@ const config56 = {
   underlying_address: "0x55d398326f99059fF775485246999027B3197955",
   chain_browser_url:'https://bscscan.com',
   exchange_extra_params: {
-    oneInch: {
-      network: 56,
-      excludeProtocols: ['BSC_ONE_INCH_LIMIT_ORDER', 'BSC_ONE_INCH_LIMIT_ORDER_V2']
-    },
     oneInchV4: {
       network: 56,
       excludeProtocols: ['BSC_ONE_INCH_LIMIT_ORDER', 'BSC_ONE_INCH_LIMIT_ORDER_V2']

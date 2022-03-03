@@ -29,11 +29,6 @@ const config137 = {
   vault_address: "0x2C328D592819524F741A88A18572372CCE196782",
   underlying_address: "0xc2132D05D31c914a87C6611C10748AEb04B58e8F",
   exchange_extra_params: {
-    oneInch: {
-      useHttp: true,
-      network: 137,
-      excludeProtocols: ['POLYGON_ONE_INCH_LIMIT_ORDER', 'POLYGON_ONE_INCH_LIMIT_ORDER_V2']
-    },
     oneInchV4: {
       useHttp: true,
       network: 137,
@@ -54,11 +49,6 @@ const config56 = {
   vault_address: "0x2C328D592819524F741A88A18572372CCE196782",
   underlying_address: "0x55d398326f99059fF775485246999027B3197955",
   exchange_extra_params: {
-    oneInch: {
-      useHttp: true,
-      network: 56,
-      excludeProtocols: ['BSC_ONE_INCH_LIMIT_ORDER', 'BSC_ONE_INCH_LIMIT_ORDER_V2']
-    },
     oneInchV4: {
       useHttp: true,
       network: 56,
@@ -80,11 +70,6 @@ const config1 = {
   underlying_address: "0xdAC17F958D2ee523a2206206994597C13D831ec7",
   chain_browser_url: 'https://etherscan.io',
   exchange_extra_params: {
-    oneInch: {
-      useHttp: true,
-      network: 1,
-      protocols: ['CURVE', 'CURVE_V2', 'SUSHI', 'UNISWAP_V2', 'UNISWAP_V3', 'DODO_V2', 'COMPOUND', 'AAVE', 'BALANCER', 'BANCOR', 'MSTABLE', 'AAVE_V2', 'BALANCER_V2']
-    },
     oneInchV4: {
       useHttp: true,
       network: 1,
