@@ -6,6 +6,7 @@ import { makeStyles } from "@material-ui/core/styles"
 import GridContainer from "../../../components/Grid/GridContainer"
 import GridItem from "../../../components/Grid/GridItem"
 import CircularProgress from "@material-ui/core/CircularProgress"
+import useMediaQuery from '@material-ui/core/useMediaQuery'
 
 // === Utils === //
 import map from "lodash/map"
@@ -19,15 +20,18 @@ import { getDefiRate } from "./../../../services/api-service"
 import { getETHLast30DaysVaultData } from "./../../../services/subgraph-service"
 
 // === Styles === //
-import styles from "./lendingStyle"
+import styles, { smStyle } from "./lendingStyle"
 
 const useStyles = makeStyles(styles)
+const useSmStyles = makeStyles(smStyle)
 
 const bocTitle = "BOC"
 
 const array = ["Compound", "Aave", "Coinbase", "BlockFi", "Nexo", "Celsius", "YearnFinance", "CryptoCom", "Bitfinex"]
 export default function LendingSection () {
-  const classes = useStyles()
+  const isLayoutSm = useMediaQuery('(max-width: 960px)')
+  const smClasses = useSmStyles()
+  const classes = useStyles({ classes: isLayoutSm ? smClasses : {} })
   const [loading, setLoading] = useState(false)
   const [data, setData] = useState([])
 
@@ -97,20 +101,14 @@ export default function LendingSection () {
                 const nextPercent = percent / displayMaxValue
                 const percentText = `${toFixed(nextPercent.toString(), 1e-2, 2)}%`
                 return (
-                  <GridItem className={classNames(classes.item)} key={`${i}`} xs={3} sm={3} md={1}>
+                  <GridItem className={classNames(classes.item)} key={`${i}`} xs={1} sm={1} md={1}>
                     <GridContainer className={classes.body}>
                       <GridItem className={classes.header} style={i === 0 ? { borderLeft: 0 } : {}}>
                         <div
                           className={classNames(classes.bar, title === bocTitle && classes.checked)}
                           style={{ height: percentText }}
                         >
-                          <p
-                            style={
-                              title === bocTitle
-                                ? { width: "98px", left: "-50px", textAlign: "right", top: "-65px" }
-                                : {}
-                            }
-                          >
+                          <p>
                             {percent}% {title === bocTitle && <span>(From Feb. 8)</span>}
                           </p>
                         </div>
