@@ -74,7 +74,7 @@ const lendingSectionStyle = {
 
 export const smStyle = {
   section: {
-    padding: '3.5rem 0'
+    padding: '3.5rem 0.5rem'
   },
   item: {
     '&:first-child $bar >p': {
@@ -84,7 +84,7 @@ export const smStyle = {
   bar: {
     width: '1.8rem',
     '&>p': {
-      fontSize: '0.875rem'
+      fontSize: '0.8125rem'
     }
   },
   footer: {
@@ -96,7 +96,7 @@ export const smStyle = {
     '&>p': {
       transform: 'rotateZ(45deg)',
       fontSize: '0.875rem',
-      paddingBottom: '1.875rem',
+      paddingBottom: '0.6rem',
       paddingLeft: '0.6rem',
       textAlign: 'left'
     }
