@@ -80,7 +80,6 @@ const useStyles = makeStyles(theme => ({
 function App () {
   const classes = useStyles()
   const [userProvider, setUserProvider] = useState()
-  const [localChainId, setChainId] = useState()
   const [isLoadingChainId, setIsLoadingChainId] = useState(false)
 
   const [runWithoutMeta, setRunWithoutMeta] = useState(false)
@@ -95,7 +94,6 @@ function App () {
       setUserProvider(p)
       p._networkPromise.then(v => {
         setTimeout(() => {
-          setChainId(v.chainId)
           setIsLoadingChainId(false)
         }, 200)
       })
@@ -137,11 +135,12 @@ function App () {
   const selectedChainId = userProvider && userProvider._network && userProvider._network.chainId
 
   useEffect(() => {
-    if (isEmpty(localStorage.REACT_APP_NETWORK_TYPE) && selectedChainId > 0) {
+    if (isUndefined(selectedChainId)) return
+    if ((isEmpty(localStorage.REACT_APP_NETWORK_TYPE) && selectedChainId > 0) || `${selectedChainId}` !== localStorage.REACT_APP_NETWORK_TYPE) {
       localStorage.REACT_APP_NETWORK_TYPE = selectedChainId
       setTimeout(() => {
         window.location.reload()
-      }, 1)
+      }, 100)
     }
   }, [selectedChainId])
   const changeNetwork = async targetNetwork => {
@@ -270,8 +269,8 @@ function App () {
         <Chains key='2' maskStyle={{ textAlign: "center" }} array={NET_WORKS} handleClick={changeNetwork} />,
       ])
     }
-    if (!isUndefined(localChainId) && !map(NET_WORKS, "chainId").includes(localChainId)) {
-      if (localChainId === 31337) return
+    if (!isUndefined(selectedChainId) && !map(NET_WORKS, "chainId").includes(selectedChainId)) {
+      if (selectedChainId === 31337) return
       return modalJsx(true, [
         <p key='1' style={{ textAlign: "center" }}>
           You may need to manually switch network via your wallet.
