@@ -29,11 +29,6 @@ const config137 = {
   vault_address: "0xA343B1FC2897b8C49A72A9A0B2675cB9c7664e8c",
   underlying_address: "0xc2132D05D31c914a87C6611C10748AEb04B58e8F",
   exchange_extra_params: {
-    oneInch: {
-      useHttp: true,
-      network: 137,
-      excludeProtocols: ['POLYGON_ONE_INCH_LIMIT_ORDER', 'POLYGON_ONE_INCH_LIMIT_ORDER_V2']
-    },
     oneInchV4: {
       useHttp: true,
       network: 137,
@@ -54,11 +49,6 @@ const config56 = {
   vault_address: "0xf2Bf7C00B4696726B3c1f6E7b87d1a4acB050a8F",
   underlying_address: "0x55d398326f99059fF775485246999027B3197955",
   exchange_extra_params: {
-    oneInch: {
-      useHttp: true,
-      network: 56,
-      excludeProtocols: ['BSC_ONE_INCH_LIMIT_ORDER', 'BSC_ONE_INCH_LIMIT_ORDER_V2']
-    },
     oneInchV4: {
       useHttp: true,
       network: 56,
