@@ -7,8 +7,10 @@ import GridContainer from "../../../components/Grid/GridContainer"
 import GridItem from "../../../components/Grid/GridItem"
 import CircularProgress from "@material-ui/core/CircularProgress"
 import useMediaQuery from '@material-ui/core/useMediaQuery'
+import Tooltip from "@material-ui/core/Tooltip"
 
 // === Utils === //
+import get from "lodash/get"
 import map from "lodash/map"
 import maxBy from "lodash/maxBy"
 import isNaN from "lodash/isNaN"
@@ -27,7 +29,19 @@ const useSmStyles = makeStyles(smStyle)
 
 const bocTitle = "BOC"
 
-const array = ["Compound", "Aave", "Coinbase", "BlockFi", "Nexo", "Celsius", "YearnFinance", "CryptoCom", "Bitfinex"]
+const array = ["Compound", "Aave", "Coinbase", "BlockFi", "Nexo", "Celsius", "YearnFinance", "Gemini", "Bitfinex"]
+const apyType = {
+  BlockFi: "Fixed Rate",
+  Celsius: "Fixed Rate",
+  Nexo: "Fixed Rate",
+  Gemini: "Fixed Rate",
+  Coinbase: "Fixed Rate",
+  YearnFinance: "Current Rate",
+  Compound: "Current Rate",
+  Aave: "Current Rate",
+  BOC: "Current Rate",
+  Bitfinex: "Fixed Rate",
+}
 export default function LendingSection () {
   const isLayoutSm = useMediaQuery('(max-width: 960px)')
   const smClasses = useSmStyles()
@@ -43,6 +57,7 @@ export default function LendingSection () {
           title: bocTitle,
           imagePath: "/logo.png",
           percent: (100 * calVaultAPY(a)).toFixed(2),
+          text: get(apyType, bocTitle, ""),
         }
       }),
       getDefiRate().catch(() =>
@@ -61,6 +76,7 @@ export default function LendingSection () {
               title: i === "YearnFinance" ? "Yearn" : i,
               imagePath: svg[i],
               percent: parseFloat(data[i]),
+              text: get(apyType, i, ""),
             }
           }),
         ]
@@ -76,9 +92,7 @@ export default function LendingSection () {
   const displayMaxValue = 10 * Math.ceil(maxPercentItem?.percent / 10)
   return (
     <div className={classes.section}>
-      <h2 className={classes.title}>
-        Trailing <span className={classes.text}>30-day</span> Crypto Average Lending Interest Rates
-      </h2>
+      <h2 className={classes.title}>Trailing Crypto Average Lending Interest Rates</h2>
       <div style={{ padding: "4.5rem 0" }}>
         {loading ? (
           <GridContainer style={{ margin: "0 auto" }} justify='center'>
@@ -97,21 +111,23 @@ export default function LendingSection () {
                 o => !isNaN(o.percent),
               ),
               (item, i) => {
-                const { title, imagePath, percent } = item
+                const { title, imagePath, percent, text = "" } = item
                 const nextPercent = percent / displayMaxValue
                 const percentText = `${toFixed(nextPercent.toString(), 1e-2, 2)}%`
                 return (
                   <GridItem className={classNames(classes.item)} key={`${i}`} xs={1} sm={1} md={1}>
                     <GridContainer className={classes.body}>
                       <GridItem className={classes.header} style={i === 0 ? { borderLeft: 0 } : {}}>
-                        <div
-                          className={classNames(classes.bar, title === bocTitle && classes.checked)}
-                          style={{ height: percentText }}
-                        >
-                          <p>
-                            {percent}% {title === bocTitle && <span>(From Feb. 8)</span>}
-                          </p>
-                        </div>
+                        <Tooltip title={text}>
+                          <div
+                            className={classNames(classes.bar, title === bocTitle && classes.checked)}
+                            style={{ height: percentText }}
+                          >
+                            <p>
+                              {percent}% {title === bocTitle && <span>(From Feb. 8)</span>}
+                            </p>
+                          </div>
+                        </Tooltip>
                       </GridItem>
                       <GridItem className={classes.footer}>
                         <img title={title} src={imagePath} alt={title} />
