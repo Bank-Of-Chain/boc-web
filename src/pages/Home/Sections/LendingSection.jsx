@@ -27,12 +27,12 @@ const useStyles = makeStyles(styles)
 
 const bocTitle = "BOC"
 
-const array = ["Compound", "Aave", "Coinbase", "BlockFi", "Nexo", "Celsius", "YearnFinance", "CryptoCom", "Bitfinex"]
+const array = ["Compound", "Aave", "Coinbase", "BlockFi", "Nexo", "Celsius", "YearnFinance", "Gemini", "Bitfinex"]
 const apyType = {
   BlockFi: "Fixed Rate",
   Celsius: "Fixed Rate",
   Nexo: "Fixed Rate",
-  CryptoCom: "Fixed Rate",
+  Gemini: "Fixed Rate",
   Coinbase: "Fixed Rate",
   YearnFinance: "Current Rate",
   Compound: "Current Rate",
