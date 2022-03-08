@@ -23,11 +23,12 @@ const STABLECOINS = [{
         id: 'tusd',
         symbol: 'TUSD',
         imagePath: '/images/0x0000000000085d4780B73119b644AE5ecd22b376.webp'
-    }, {
-        id: 'mim',
-        symbol: 'MIM',
-        imagePath: '/images/0x99D8a9C45b2ecA8864373A26D1459e3Dff1e17F3.webp'
     },
+    // {
+    //     id: 'mim',
+    //     symbol: 'MIM',
+    //     imagePath: '/images/0x99D8a9C45b2ecA8864373A26D1459e3Dff1e17F3.webp'
+    // },
     {
         id: 'lusd',
         symbol: 'LUSD',
