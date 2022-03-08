@@ -62,6 +62,9 @@ const lendingSectionStyle = {
   },
   checked: {
     background: 'linear-gradient(180deg,#1cd9ff,#0073ff)',
+    '&:hover': {
+      background: 'linear-gradient(180deg,#1cd9ff,#0073ff)',
+    },
   },
   footer: {
     paddingLeft: 0,
