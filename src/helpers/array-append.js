@@ -13,7 +13,7 @@ export const arrayAppendOfDay = (array = [], size, key = 'id', valueKey = 'value
     const firstSecond = firstSecondToday - i * offset;
     const firstSecondNextDay = firstSecondToday - (i - 1) * offset;
     const todayItem = find(array, (item) => {
-      return firstSecond < 1 * item[key] && 1 * item[key] < firstSecondNextDay;
+      return firstSecond <= 1 * item[key] && 1 * item[key] < firstSecondNextDay;
     });
 
     if (isEmpty(todayItem)) {
