@@ -89,7 +89,7 @@ export default function LendingSection () {
       })
   }, [])
   const maxPercentItem = maxBy(data, "percent")
-  const displayMaxValue = 10 * Math.ceil(maxPercentItem?.percent / 10)
+  const displayMaxValue = 5 * Math.ceil(maxPercentItem?.percent / 5)
   return (
     <div className={classes.section}>
       <h2 className={classes.title}>Crypto Lending Interest Rates</h2>
@@ -120,7 +120,7 @@ export default function LendingSection () {
                       <GridItem className={classes.header} style={i === 0 ? { borderLeft: 0 } : {}}>
                         <Tooltip title={text}>
                           <div
-                            className={classNames(classes.bar, title === bocTitle && classes.checked)}
+                            className={classNames(classes.bar, text === 'Current Rate' && classes.fixed, title === bocTitle && classes.checked)}
                             style={{ height: percentText }}
                           >
                             <p>

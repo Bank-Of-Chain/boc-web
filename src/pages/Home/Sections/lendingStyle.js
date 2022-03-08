@@ -54,8 +54,17 @@ const lendingSectionStyle = {
       fontSize: '1rem'
     }
   },
+  fixed: {
+    background: 'linear-gradient(180deg,#da6603,#6b520b)',
+    '&:hover': {
+      background: 'linear-gradient(180deg,#da9803,#6b680b)',
+    },
+  },
   checked: {
     background: 'linear-gradient(180deg,#1cd9ff,#0073ff)',
+    '&:hover': {
+      background: 'linear-gradient(180deg,#1cd9ff,#0073ff)',
+    },
   },
   footer: {
     paddingLeft: 0,
