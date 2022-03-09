@@ -43,7 +43,7 @@ const lendingSectionStyle = {
     bottom: 0,
     right: 0,
     '&:hover': {
-      background: 'linear-gradient(180deg,#1cd9ff,#0073ff)',
+      background: 'linear-gradient(180deg,#0348da,#0b216b)',
     },
     '&>p': {
       position: 'absolute',
@@ -55,9 +55,9 @@ const lendingSectionStyle = {
     }
   },
   fixed: {
-    background: 'linear-gradient(180deg,#da6603,#6b520b)',
+    background: 'linear-gradient(180deg,#1cd9ff,#3b5998)',
     '&:hover': {
-      background: 'linear-gradient(180deg,#da9803,#6b680b)',
+      background: 'linear-gradient(180deg,#1cd9ff,#3b5998)',
     },
   },
   checked: {
