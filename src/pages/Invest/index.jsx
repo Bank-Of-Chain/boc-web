@@ -866,11 +866,6 @@ export default function Invest (props) {
   const isValidFromValueFlag = isValidFromValue()
   const isValidAllowLossFlag = isValidAllowLoss()
   const isValidSlipperFlag = isValidSlipper()
-  let pricePerFullShare = BigNumber.from(10).pow(usdtDecimals)
-  if (!totalSupply.eq(BigNumber.from(0))) {
-    pricePerFullShare = totalAssets.mul(BigNumber.from(10).pow(usdtDecimals)).div(totalSupply)
-  }
-
   return (
     <div className={classNames(classes.main, classes.mainRaised)}>
       <div className={classes.container}>
