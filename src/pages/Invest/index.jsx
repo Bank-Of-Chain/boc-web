@@ -929,14 +929,10 @@ export default function Invest (props) {
                           {isValidFromValueFlag &&
                             toFixed(
                               BN(fromValue)
-                                .multipliedBy(
-                                  BigNumber.from(10)
-                                    .pow(usdtDecimals + usdtDecimals)
-                                    .toString(),
-                                )
-                                .div(pricePerFullShare.toString())
+                                .multipliedBy(totalSupply.toString())
+                                .div(totalAssets.toString())
                                 .toFixed(),
-                              BigNumber.from(10).pow(usdtDecimals),
+                              1,
                               usdtDecimals,
                             )}
                         </p>
