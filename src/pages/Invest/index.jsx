@@ -926,9 +926,10 @@ export default function Invest (props) {
                           Estimated Shares：
                           {isValidFromValueFlag &&
                             toFixed(
-                              BN(fromValue)
+                              totalAssets.gt(0) ? BN(fromValue)
                                 .multipliedBy(totalSupply.toString())
-                                .div(totalAssets.toString())
+                                .div(totalAssets.toString()).toFixed() 
+                                : BN(fromValue)
                                 .toFixed(),
                               1,
                               usdtDecimals,
