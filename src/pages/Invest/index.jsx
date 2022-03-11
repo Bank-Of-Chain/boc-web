@@ -338,7 +338,7 @@ export default function Invest (props) {
     if (shouldExchange && !isValidSlipper()) {
       return setWithdrawError({
         type: "warning",
-        message: "Please enter the correct Slipper value.",
+        message: "Please enter the correct slippage value.",
       })
     }
     withdrawValidFinish = Date.now()
@@ -498,7 +498,7 @@ export default function Invest (props) {
           warmDialog({
             open: true,
             type: "error",
-            message: "Failed to exchange, please increase the exchange slipper or close exchange!",
+            message: "Failed to exchange, please increase the exchange slippage or close exchange!",
           }),
         )
       } else {
@@ -748,7 +748,7 @@ export default function Invest (props) {
           warmDialog({
             open: true,
             type: "error",
-            message: "Failed to exchange, please increase the exchange slipper or close exchange!",
+            message: "Failed to exchange, please increase the exchange slippage or close exchange!",
           }),
         )
       } else {
@@ -1125,7 +1125,7 @@ export default function Invest (props) {
                             </GridItem>
                             <GridItem xs={4} sm={4} md={6} lg={6}>
                               <CustomInput
-                                labelText='Slipper'
+                                labelText='Slippage'
                                 inputProps={{
                                   placeholder: "Allow loss percent",
                                   value: slipper,
