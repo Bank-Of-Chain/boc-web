@@ -933,6 +933,7 @@ export default function Invest (props) {
                                 .toFixed(),
                               1,
                               usdtDecimals,
+                              1
                             )}
                         </p>
                       </Muted>
@@ -949,12 +950,13 @@ export default function Invest (props) {
                     labelText={
                       <CountTo
                         from={Number(beforePerFullShare.toBigInt())}
-                        to={totalSupply.gt(0) ? Number(BN(totalAssets.toString()).div(totalSupply.toString()).multipliedBy(10 ** 18).toString()) : 0 }
+                        to={Number(perFullShare.toBigInt())}
                         speed={3500}
                       >
-                        {v => `Shares: ${toFixed(toBalance, BigNumber.from(10).pow(usdtDecimals), 6)}${` (~${toFixed(
+                        {v =>
+                          `Shares: ${toFixed(toBalance, BigNumber.from(10).pow(usdtDecimals), 6)}${` (~${toFixed(
                             toBalance.mul(v),
-                            BigNumber.from(10).pow(18 + usdtDecimals),
+                            BigNumber.from(10).pow(usdtDecimals + usdtDecimals),
                             6,
                           )} USDT)`}`
                         }
