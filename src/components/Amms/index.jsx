@@ -79,7 +79,7 @@ export default function Amms () {
             </div>
           )
         })}
-        {!showMore && (
+        {!showMore && amms.length > 3 && (
           <p className={classes.more} onClick={() => setShowMore(true)}>
             ...and more
           </p>

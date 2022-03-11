@@ -542,13 +542,13 @@ export default function Invest (props) {
   }
   const loadTotalAssets = () => {
     const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider)
-    return Promise.all([vaultContract.totalAssets(), vaultContract.pricePerShare()])
+    return Promise.all([vaultContract.totalAssets(), vaultContract.pricePerShare(), vaultContract.totalSupply()])
   }
   useEffect(() => {
     if (isEmpty(VAULT_ADDRESS)) return
     const loadTotalAssetsFn = () =>
       loadTotalAssets()
-        .then(([afterTotalAssets, afterPerFullShare]) => {
+        .then(([afterTotalAssets, afterPerFullShare, afterTotalSupply]) => {
           if (!afterTotalAssets.eq(beforeTotalAssets)) {
             setBeforeTotalAssets(totalAssets)
             setTotalAssets(afterTotalAssets)
@@ -556,6 +556,9 @@ export default function Invest (props) {
           if (!afterPerFullShare.eq(beforePerFullShare)) {
             setBeforePerFullShare(perFullShare)
             setPerFullShare(afterPerFullShare)
+          }
+          if (!afterTotalSupply.eq(totalSupply)) {
+            setTotalSupply(afterTotalSupply)
           }
         })
         .catch(noop)
@@ -866,11 +869,6 @@ export default function Invest (props) {
   const isValidFromValueFlag = isValidFromValue()
   const isValidAllowLossFlag = isValidAllowLoss()
   const isValidSlipperFlag = isValidSlipper()
-  let pricePerFullShare = BigNumber.from(10).pow(usdtDecimals)
-  if (!totalSupply.eq(BigNumber.from(0))) {
-    pricePerFullShare = totalAssets.mul(BigNumber.from(10).pow(usdtDecimals)).div(totalSupply)
-  }
-
   return (
     <div className={classNames(classes.main, classes.mainRaised)}>
       <div className={classes.container}>
@@ -928,16 +926,14 @@ export default function Invest (props) {
                           Estimated Shares：
                           {isValidFromValueFlag &&
                             toFixed(
-                              BN(fromValue)
-                                .multipliedBy(
-                                  BigNumber.from(10)
-                                    .pow(usdtDecimals + usdtDecimals)
-                                    .toString(),
-                                )
-                                .div(pricePerFullShare.toString())
+                              totalAssets.gt(0) ? BN(fromValue)
+                                .multipliedBy(totalSupply.toString())
+                                .div(totalAssets.toString()).toFixed() 
+                                : BN(fromValue)
                                 .toFixed(),
-                              BigNumber.from(10).pow(usdtDecimals),
+                              1,
                               usdtDecimals,
+                              1
                             )}
                         </p>
                       </Muted>
