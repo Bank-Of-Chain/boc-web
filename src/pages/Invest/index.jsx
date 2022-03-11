@@ -542,13 +542,13 @@ export default function Invest (props) {
   }
   const loadTotalAssets = () => {
     const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider)
-    return Promise.all([vaultContract.totalAssets(), vaultContract.pricePerShare()])
+    return Promise.all([vaultContract.totalAssets(), vaultContract.pricePerShare(), vaultContract.totalSupply()])
   }
   useEffect(() => {
     if (isEmpty(VAULT_ADDRESS)) return
     const loadTotalAssetsFn = () =>
       loadTotalAssets()
-        .then(([afterTotalAssets, afterPerFullShare]) => {
+        .then(([afterTotalAssets, afterPerFullShare, afterTotalSupply]) => {
           if (!afterTotalAssets.eq(beforeTotalAssets)) {
             setBeforeTotalAssets(totalAssets)
             setTotalAssets(afterTotalAssets)
@@ -556,6 +556,9 @@ export default function Invest (props) {
           if (!afterPerFullShare.eq(beforePerFullShare)) {
             setBeforePerFullShare(perFullShare)
             setPerFullShare(afterPerFullShare)
+          }
+          if (!afterTotalSupply.eq(totalSupply)) {
+            setTotalSupply(afterTotalSupply)
           }
         })
         .catch(noop)
@@ -945,13 +948,12 @@ export default function Invest (props) {
                     labelText={
                       <CountTo
                         from={Number(beforePerFullShare.toBigInt())}
-                        to={Number(perFullShare.toBigInt())}
+                        to={totalSupply.gt(0) ? Number(BN(totalAssets.toString()).div(totalSupply.toString()).multipliedBy(10 ** 18).toString()) : 0 }
                         speed={3500}
                       >
-                        {v =>
-                          `Shares: ${toFixed(toBalance, BigNumber.from(10).pow(usdtDecimals), 6)}${` (~${toFixed(
+                        {v => `Shares: ${toFixed(toBalance, BigNumber.from(10).pow(usdtDecimals), 6)}${` (~${toFixed(
                             toBalance.mul(v),
-                            BigNumber.from(10).pow(usdtDecimals + usdtDecimals),
+                            BigNumber.from(10).pow(18 + usdtDecimals),
                             6,
                           )} USDT)`}`
                         }
