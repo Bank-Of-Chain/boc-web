@@ -5,7 +5,9 @@ const ammSectionStyle = {
   },
   title: {
     fontSize: '2rem',
-    marginTop: 0
+    marginTop: 0,
+    width: '70%',
+    paddingLeft: '15%'
   },
 };
 
