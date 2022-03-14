@@ -38,7 +38,7 @@ const data = [
   {
     title: "Safe",
     descriptions: [
-      "Market cap of qualified Stablecoins exceeds 1 billion dollars.",
+      "Market cap of qualified stablecoins exceeds 1 billion dollars.",
       "The TVL of qualified Blockchains exceeds 5 billion dollars.",
       "Third-party auditing.",
       "Only official cross-chain bridge.",
@@ -49,7 +49,7 @@ const data = [
   {
     title: "Risk control",
     descriptions: [
-      "De-anchoring risk: no algorithmic Stablecoin, No partially collateralized Stablecoin, No stablecoin collateralized by a long-tail asset.",
+      "De-anchoring risk: no algorithmic stablecoin, No partially collateralized stablecoin, No stablecoin collateralized by a long-tail asset.",
       "Risk of impermanent loss: market-making only for stablecoin pairs.",
       "Systemic risk: very selective wrapped tokens and yield aggregators.",
       "Long-tail risk: no yield generated from risk-taking, such as insurance underwriting, sell call options.",

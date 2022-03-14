@@ -1,14 +1,14 @@
 const ETH = {
   id: '1',
-  name: 'ETH',
+  name: 'Ethereum',
 }
 const BSC = {
   id: '56',
-  name: 'BSC',
+  name: 'BNB Chain',
 }
 const MATIC = {
   id: '137',
-  name: 'MATIC',
+  name: 'Polygon',
 }
 const CHAINS = [ETH, BSC, MATIC]
 

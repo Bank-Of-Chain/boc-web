@@ -13,7 +13,7 @@ export default function AmmSection () {
   const classes = useStyles()
   return (
     <div className={classes.section}>
-      <h2 className={classes.title}>Integrated with the major chains, Stablecoins, and AMMs </h2>
+      <h2 className={classes.title}>Integrated with the major chains, stablecoins, and AMMs </h2>
       <Amms />
     </div>
   )
