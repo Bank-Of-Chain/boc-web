@@ -54,7 +54,7 @@ export const TREASURE_ABI = treasureAbi;
 
 export const NET_WORKS = [
   {
-    name: "ETH Mainnet",
+    name: "Ethereum",
     color: "#e0d068",
     chainId: 1,
     rpcUrl: `https://cloudflare-eth.com`,
@@ -62,7 +62,7 @@ export const NET_WORKS = [
     blockExplorer: "https://etherscan.io/",
   },
   {
-    name: "BSC Mainnet",
+    name: "BNB Chain",
     color: "#e0d068",
     chainId: 56,
     rpcUrl: `https://bsc-dataseed.binance.org/`,
@@ -70,7 +70,7 @@ export const NET_WORKS = [
     blockExplorer: "https://bscscan.com/",
   },
   {
-    name: "Matic Mainnet",
+    name: "Polygon",
     color: "#2bbdf7",
     chainId: 137,
     price: 1,
