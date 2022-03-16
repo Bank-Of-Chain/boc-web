@@ -26,7 +26,7 @@ export default function Amms () {
   function imgError (e) {
     const evn = e
     const img = evn.srcElement ? evn.srcElement : evn.target
-    img.src = "/default.webp"
+    img.src = "/default.png"
   }
   // 需要将一维数组转化成二维数组进行展示，每个数组4或5个平台
   const amms = values(
