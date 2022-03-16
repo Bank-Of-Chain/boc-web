@@ -17,11 +17,32 @@ import CHAINS from "./../../constants/chains"
 import styles from "./styles"
 import STABLECOINS from "../../constants/stableCoins";
 
+import useContainerMediaQuery from "../../hooks/ContainerMediaQuery"
+
 const useStyles = makeStyles(styles)
 export default function Amms () {
   const classes = useStyles()
+  const { mediaLabel } = useContainerMediaQuery()
 
   const [showMore, setShowMore] = useState(false)
+
+  const ammsConfig = {
+    xl: {
+      groupFn: item => `${Math.floor(item.index / 9)}-${item.index % 9 >= 4}`
+    },
+    lg: {
+      groupFn: item => `${Math.floor(item.index / 7)}-${item.index % 7 >= 3}`
+    },
+    md: {
+      groupFn: item => `${Math.floor(item.index / 5)}-${item.index % 5 >= 2}`
+    },
+    sm: {
+      groupFn: item => Math.floor(item.index / 2)
+    },
+    xs: {
+      groupFn: item => Math.floor(item.index / 2)
+    }
+  }[mediaLabel]
 
   function imgError (e) {
     const evn = e
@@ -37,9 +58,7 @@ export default function Amms () {
           index: i,
         }
       }),
-      item => {
-        return `${Math.floor(item.index / 9)}-${item.index % 9 >= 4}`
-      },
+      ammsConfig.groupFn
     ),
   )
   return (

@@ -64,6 +64,13 @@ const headerLinksStyle = (theme) => ({
       },
     },
   },
+  colorfulLink: {
+    width: "168px",
+    height: "64px",
+    [theme.breakpoints.down("sm")]: {
+      width: "calc(100% - 30px)",
+    }
+  },
   notificationNavLink: {
     color: "inherit",
     padding: "0.9375rem",

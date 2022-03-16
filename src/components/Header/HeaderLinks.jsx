@@ -95,7 +95,7 @@ export default function HeaderLinks (props) {
       </ListItem>
       {location.hash === "#/" ? (
         <ListItem className={classes.listItem}>
-          <Button style={{ width: 168, height: 64 }} color='colorfull' size='lg' href='/#/invest'>
+          <Button className={`${classes.navLink} ${classes.colorfulLink}`} color='colorfull' size='lg' href='/#/invest'>
             <AccountBalanceWallet className={classes.icons}></AccountBalanceWallet> Launch App
           </Button>
         </ListItem>
@@ -105,8 +105,7 @@ export default function HeaderLinks (props) {
             <Button
               color='colorfull'
               target='_blank'
-              style={{ width: 168, height: 64 }}
-              className={classes.navLink}
+              className={`${classes.navLink} ${classes.colorfulLink}`}
               onClick={loadWeb3Modal}
             >
               <AccountBalanceWallet className={classes.icons}></AccountBalanceWallet> Connect wallet
