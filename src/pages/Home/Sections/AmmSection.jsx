@@ -13,7 +13,7 @@ export default function AmmSection () {
   const classes = useStyles()
   return (
     <div className={classes.section}>
-      <h2 className={classes.title}>Integrated with the major chains, stablecoins, and AMMs </h2>
+      <h2 className={classes.title}>Integrated with the 3 major chains, 7 Stablecoins, and optimized among 58 AMM and lending pools</h2>
       <Amms />
     </div>
   )

@@ -813,7 +813,7 @@ export default function Invest (props) {
   function imgError (e) {
     const evn = e
     const img = evn.srcElement ? evn.srcElement : evn.target
-    img.src = "/default.webp"
+    img.src = "/default.png"
   }
 
   const renderEstimate = () => {
@@ -857,7 +857,7 @@ export default function Invest (props) {
             onClick={() => addToken(item.tokenAddress)}
           >
             <AddIcon fontSize='small' style={{ position: "absolute", top: 25, left: 45 }} />
-            <img className={classes.img} alt='' src={`./images/${item.tokenAddress}.webp`} onError={imgError} />
+            <img className={classes.img} alt='' src={`./images/${item.tokenAddress}.png`} onError={imgError} />
             &nbsp;&nbsp;~&nbsp;{toFixed(item.amounts, BigNumber.from(10).pow(item.decimals), 6)}
           </Button>
         </GridItem>
@@ -877,7 +877,7 @@ export default function Invest (props) {
             <Card style={{ border: "1px solid #fff", padding: 20, backgroundColor: "transparent" }}>
               <CardHeader
                 style={{ color: "#fff" }}
-                avatar={<img style={{ width: 35 }} alt='' src={`./images/${USDT_ADDRESS}.webp`} />}
+                avatar={<img style={{ width: 35 }} alt='' src={`./images/${USDT_ADDRESS}.png`} />}
                 title={<span style={{ fontWeight: 700, fontSize: "16px", lineHeight: "20px" }}>USDT VAULT</span>}
               />
               <GridContainer style={{ padding: "0 20px" }}>
