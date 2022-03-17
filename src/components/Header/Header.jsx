@@ -53,7 +53,7 @@ export default function Header (props) {
   })
   const brandComponent = (
     <Button className={classes.title} href='/#/'>
-      <img src="/logo.png" />&nbsp;&nbsp;{brand}
+      <img alt="" src="/logo.png" />&nbsp;&nbsp;{brand}
     </Button>
   )
 
