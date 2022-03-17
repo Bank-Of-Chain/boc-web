@@ -54,7 +54,7 @@ export default function Header (props) {
   })
   const brandComponent = (
     <Button className={classes.title} href='/#/'>
-      <AccountBalanceIcon className={classes.icons}></AccountBalanceIcon>&nbsp;&nbsp;{brand}
+      <img src="/logo.png" />&nbsp;&nbsp;{brand}
     </Button>
   )
 
