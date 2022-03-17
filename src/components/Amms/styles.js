@@ -5,7 +5,7 @@ const styles = {
     height: '3rem',
     lineHeight: '3rem',
     borderRadius: '1.5rem',
-    width: '12.5rem',
+    width: '10rem',
     marginLeft: '1rem',
     marginBottom: '1.5rem',
     color: '#b2add1',

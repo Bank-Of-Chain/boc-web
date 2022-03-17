@@ -10,14 +10,10 @@ import ListItem from "@material-ui/core/ListItem"
 import AccountBalanceWallet from "@material-ui/icons/AccountBalanceWallet"
 import AccountBalanceWalletOutlined from "@material-ui/icons/AccountBalanceWalletOutlined"
 import Apps from "@material-ui/icons/Apps"
-import BookIcon from "@material-ui/icons/Book"
-import ChatIcon from "@material-ui/icons/Chat"
 import Transform from "@material-ui/icons/Transform"
-import LibraryBooksIcon from "@material-ui/icons/LibraryBooks"
 import InsertChartIcon from "@material-ui/icons/InsertChart"
 
 // core components
-import { Link } from "react-router-dom"
 import Button from "../CustomButtons/Button"
 import styles from "./headerLinksStyle"
 import Address from "../Address/Address"
@@ -28,6 +24,7 @@ import isEmpty from "lodash/isEmpty"
 import map from "lodash/map"
 import get from "lodash/get"
 import find from "lodash/find"
+import { hasWalletInstalled } from "./../../helpers/plugin-util"
 
 // === Constants === //
 import { NET_WORKS, DASHBOARD_URL } from "./../../constants"
@@ -43,21 +40,6 @@ export default function HeaderLinks (props) {
           <InsertChartIcon className={classes.icons}></InsertChartIcon> Dashboard
         </Button>
       </ListItem>
-      {/* <ListItem className={classes.listItem}>
-        <Button color='transparent' target='_blank' href={DOCUMENT_URL} className={classes.navLink}>
-          <LibraryBooksIcon className={classes.icons}></LibraryBooksIcon> Document
-        </Button>
-      </ListItem>
-      <ListItem className={classes.listItem}>
-        <Button color='transparent' target='_blank' href={COMMUNITY_URL} className={classes.navLink}>
-          <ChatIcon className={classes.icons}></ChatIcon> DAO
-        </Button>
-      </ListItem> */}
-      {/* <ListItem className={classes.listItem}>
-        <Button color='transparent' target='_blank' href={BLOG_URL} className={classes.navLink}>
-          <BookIcon className={classes.icons}></BookIcon> Blog
-        </Button>
-      </ListItem> */}
       <ListItem className={classes.listItem}>
         <CustomDropdown
           noLiPadding
@@ -95,18 +77,18 @@ export default function HeaderLinks (props) {
       </ListItem>
       {location.hash === "#/" ? (
         <ListItem className={classes.listItem}>
-          <Button style={{ width: 168, height: 64 }} color='colorfull' size='lg' href='/#/invest'>
+          <Button className={`${classes.navLink} ${classes.colorfulLink}`} color='colorfull' size='lg' href='/#/invest'>
             <AccountBalanceWallet className={classes.icons}></AccountBalanceWallet> Launch App
           </Button>
         </ListItem>
       ) : (
         <ListItem className={classes.listItem}>
           {isEmpty(userProvider) ? (
+            hasWalletInstalled() &&
             <Button
               color='colorfull'
               target='_blank'
-              style={{ width: 168, height: 64 }}
-              className={classes.navLink}
+              className={`${classes.navLink} ${classes.colorfulLink}`}
               onClick={loadWeb3Modal}
             >
               <AccountBalanceWallet className={classes.icons}></AccountBalanceWallet> Connect wallet
