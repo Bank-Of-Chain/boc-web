@@ -7,11 +7,12 @@ import GridItem from "../Grid/GridItem"
 
 // === Utils === //
 import map from "lodash/map"
+import isEmpty from "lodash/isEmpty"
 import groupBy from "lodash/groupBy"
 import values from "lodash/values"
 
 // === Constants === //
-import AMMS from "./../../constants/amms"
+import AMMS, { PLATFORM_HOME_URL } from "./../../constants/amms"
 import CHAINS from "./../../constants/chains"
 
 import styles from "./styles"
@@ -56,6 +57,7 @@ export default function Amms () {
         return {
           name: item,
           index: i,
+          url: PLATFORM_HOME_URL[item]
         }
       }),
       ammsConfig.groupFn
@@ -74,8 +76,8 @@ export default function Amms () {
 
     <GridItem xs={12} sm={12} md={12} style={{ paddingBottom: 20 }}>
         {map(STABLECOINS, c => (
-            <div key={c.id} className={`${classes.item} ${classes.onlyImg}`}>
-                <img className={classes.img} src={c.imagePath} alt={c.symbol} />
+            <div key={c.id} className={`${classes.item} ${classes.onlyImg}`} onClick={() => window.open(`https://etherscan.io/address/${c.address}`)}>
+                <img className={classes.img} src={`/images/${c.address}.png`} alt={c.symbol} />
             </div>
         ))}
         <div key={'chainlink'} className={classes.item}>
@@ -90,7 +92,7 @@ export default function Amms () {
           return (
             <div key={index}>
               {map(colume, a => (
-                <div key={a.name} className={classes.item}>
+                <div key={a.name} className={classes.item} onClick={() => !isEmpty(a.url) && window.open(a.url)}>
                   <img className={classes.img} src={`/images/amms/${a.name}.png`} alt={a.name} onError={imgError} />
                   <span className={classes.text}>{a.name}</span>
                 </div>
