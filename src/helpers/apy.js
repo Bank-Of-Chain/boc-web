@@ -3,7 +3,7 @@ export const calVaultAPY = (vaultDailyData) => {
   let beginTime = 0;
   for (let i = 0; i < vaultDailyData.length; i++) {
     if (vaultDailyData[i].totalShares) {
-      beginPricePerShare = Number(vaultDailyData[i].tvl / vaultDailyData[i].totalShares);
+      beginPricePerShare = Number(vaultDailyData[i].unlockedPricePerShare);
       beginTime = Number(vaultDailyData[i].id);
       break;
     }
@@ -11,8 +11,8 @@ export const calVaultAPY = (vaultDailyData) => {
   let endPricePerShare = 1;
   let endTime = 0;
   for (let i = vaultDailyData.length - 1; i > 0; i--) {
-    if (vaultDailyData[i].pricePerShare) {
-      endPricePerShare = Number(vaultDailyData[i].tvl / vaultDailyData[i].totalShares);
+    if (vaultDailyData[i].unlockedPricePerShare) {
+      endPricePerShare = Number(vaultDailyData[i].unlockedPricePerShare);
       endTime = Number(vaultDailyData[i].id);
       break;
     }
