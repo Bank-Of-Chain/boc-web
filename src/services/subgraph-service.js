@@ -13,7 +13,7 @@ import {
 
 // === Services === //
 import {
-    arrayAppendOfDay
+    arrayAppendOfDay, usedPreValue
 } from './../helpers/array-append'
 
 /**
@@ -90,7 +90,9 @@ query($beginDayTimestamp: BigInt) {
       tvl
       totalShares
       usdtPrice,
-      pricePerShare
+      totalShares,
+      pricePerShare,
+      unlockedPricePerShare
      }
     }
 `;
@@ -99,7 +101,7 @@ const timeStart = 1644249600;
 export const getETHLast30DaysVaultData = async () => {
     if(isEmpty(ethClient)) return []
 
-    let nextStartTimestamp = getDaysAgoTimestamp(30)
+    let nextStartTimestamp = getDaysAgoTimestamp(60)
     // eth链 不统计2月7日前的数据
     if(nextStartTimestamp < timeStart){
         nextStartTimestamp = timeStart
@@ -111,7 +113,11 @@ export const getETHLast30DaysVaultData = async () => {
                 beginDayTimestamp: nextStartTimestamp,
             },
         })
-        .then((resp) => get(resp, 'data.vaultDailyDatas')).then(a => arrayAppendOfDay(a, 30));
+        .then((resp) => get(resp, 'data.vaultDailyDatas'))
+        .then(a => arrayAppendOfDay(a, 60))
+        .then((array) => usedPreValue(array, 'totalShares', undefined))
+        .then((array) => usedPreValue(array, 'unlockedPricePerShare', undefined))
+        .then((array) => array.slice(-30));
 }
 
 function getDaysAgoTimestamp(daysAgo) {
