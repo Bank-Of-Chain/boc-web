@@ -67,7 +67,7 @@ export default function Amms () {
     <GridContainer>
       <GridItem xs={12} sm={12} md={12} style={{ paddingBottom: 20 }}>
         {map(CHAINS, c => (
-          <div key={c.id} className={classes.item}>
+          <div key={c.id} className={classes.item} onClick={() => window.open(c.url)}>
             <img className={classes.img} src={`/images/chains/${c.id}.png`} alt={c.name} />
             <span className={classes.text}>{c.name}</span>
           </div>
@@ -80,7 +80,7 @@ export default function Amms () {
                 <img className={classes.img} src={`/images/${c.address}.png`} alt={c.symbol} />
             </div>
         ))}
-        <div key={'chainlink'} className={classes.item}>
+        <div key={'chainlink'} className={classes.item} onClick={() => window.open('https://chain.link')}>
             <img className={classes.img} src={`/images/oracles/chainlink.png`} alt={'Chainlink'} />
             <span className={classes.text}>{'Chainlink'}</span>
         </div>

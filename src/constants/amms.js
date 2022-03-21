@@ -28,18 +28,18 @@
  ]
 
  export const PLATFORM_HOME_URL = {
-   'Balancer': 'https://app.balancer.fi',
-   'Dodo': 'https://dodoex.io',
-   'Sushi_Kashi': 'https://app.sushi.com/lend',
+   'Balancer': 'https://balancer.fi/',
+   'Dodo': 'https://dodoex.io/',
+   'Sushi_Kashi': 'https://www.sushi.com/',
    'Convex': 'https://www.convexfinance.com/',
    'Pancake': 'https://pancakeswap.finance/',
-   'Alpaca': 'https://app.alpacafinance.org',
-   'Venus': 'https://app.venus.io/',
+   'Alpaca': 'https://www.alpacafinance.org/',
+   'Venus': 'https://venus.io/',
    'Belt': 'https://belt.fi/',
    'Curve': 'https://curve.fi/',
    'Aave': 'https://aave.com/',
    'Quickswap': 'https://quickswap.exchange/',
-   'Sushi': 'https://app.sushi.com',
+   'Sushi': 'https://www.sushi.com/',
    'Synapse': 'https://synapseprotocol.com'
  }
 
