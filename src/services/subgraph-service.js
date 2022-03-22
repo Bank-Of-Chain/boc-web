@@ -116,8 +116,7 @@ export const getETHLast30DaysVaultData = async () => {
         .then((resp) => get(resp, 'data.vaultDailyDatas'))
         .then(a => arrayAppendOfDay(a, 60))
         .then((array) => usedPreValue(array, 'totalShares', undefined))
-        .then((array) => usedPreValue(array, 'unlockedPricePerShare', undefined))
-        .then((array) => array.slice(-30));
+        .then((array) => usedPreValue(array, 'unlockedPricePerShare', undefined));
 }
 
 function getDaysAgoTimestamp(daysAgo) {
