@@ -56,7 +56,7 @@ export default function LendingSection () {
         return {
           title: bocTitle,
           imagePath: "/logo.png",
-          percent: (100 * calVaultAPY(a,30)).toFixed(2),
+          percent: (100 * calVaultAPY(a)).toFixed(2),
           text: get(apyType, bocTitle, ""),
         }
       }),

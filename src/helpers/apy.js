@@ -1,21 +1,19 @@
-export const calVaultAPY = (vaultDailyData,days) => {
+export const calVaultAPY = (vaultDailyData) => {
+  let beginPricePerShare = 1;
+  let beginTime = 0;
+  for (let i = 0; i < vaultDailyData.length; i++) {
+    if (vaultDailyData[i].totalShares) {
+      beginPricePerShare = Number(vaultDailyData[i].unlockedPricePerShare);
+      beginTime = Number(vaultDailyData[i].id);
+      break;
+    }
+  }
   let endPricePerShare = 1;
   let endTime = 0;
   for (let i = vaultDailyData.length - 1; i > 0; i--) {
     if (vaultDailyData[i].unlockedPricePerShare) {
       endPricePerShare = Number(vaultDailyData[i].unlockedPricePerShare);
       endTime = Number(vaultDailyData[i].id);
-      break;
-    }
-  }
-  let minBeginTime = endTime - 24 * 3600 * days;
-
-  let beginPricePerShare = 1;
-  let beginTime = 0;
-  for (let i = 0; i < vaultDailyData.length; i++) {
-    if (vaultDailyData[i].totalShares && vaultDailyData[i].id >= minBeginTime) {
-      beginPricePerShare = Number(vaultDailyData[i].unlockedPricePerShare);
-      beginTime = Number(vaultDailyData[i].id);
       break;
     }
   }
