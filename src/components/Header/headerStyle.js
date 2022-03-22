@@ -48,6 +48,11 @@ const headerStyle = {
     display: "flex",
     flexWrap: "nowrap",
   },
+  '@media (max-width: 991px) and (min-width: 960px)': {
+    toolbar: {
+      maxWidth: "820px"
+    },
+  },
   flex: {
     flex: 1,
   },

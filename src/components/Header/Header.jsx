@@ -11,7 +11,6 @@ import IconButton from "@material-ui/core/IconButton"
 import Button from "@material-ui/core/Button"
 import Hidden from "@material-ui/core/Hidden"
 import Drawer from "@material-ui/core/Drawer"
-import AccountBalanceIcon from "@material-ui/icons/AccountBalance"
 // @material-ui/icons
 import Menu from "@material-ui/icons/Menu"
 // core components
@@ -54,13 +53,13 @@ export default function Header (props) {
   })
   const brandComponent = (
     <Button className={classes.title} href='/#/'>
-      <AccountBalanceIcon className={classes.icons}></AccountBalanceIcon>&nbsp;&nbsp;{brand}
+      <img alt="" src="/logo.png" />&nbsp;&nbsp;{brand}
     </Button>
   )
 
   return (
     <AppBar className={appBarClasses} style={{ flexDirection: "column", height: 110 }}>
-      <Toolbar className={classes.container} style={{ paddingTop: 20 }}>
+      <Toolbar className={`${classes.container} ${classes.toolbar}`} style={{ paddingTop: 20 }}>
         {leftLinks !== undefined ? brandComponent : null}
         <div className={classes.flex}>
           {leftLinks !== undefined ? (
