@@ -44,15 +44,10 @@ export default function CustomInput(props) {
     [classes.input]: true,
     [classes.whiteInput]: white,
   });
-  var formControlClasses;
-  if (formControlProps !== undefined) {
-    formControlClasses = classNames(
-      formControlProps.className,
-      classes.formControl
-    );
-  } else {
-    formControlClasses = classes.formControl;
-  }
+  const formControlClasses = classNames(classes.formControl, {
+    [formControlProps?.className]: formControlProps !== undefined,
+    [classes.labelTextEmpty]: labelText === undefined
+  });
   return (
     <FormControl {...formControlProps} className={formControlClasses}>
       {labelText !== undefined ? (

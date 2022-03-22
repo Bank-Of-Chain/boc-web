@@ -56,6 +56,7 @@ Date.prototype.format = function (fmt) {
 
 const Home = lazy(() => import("./pages/Home/index"))
 const Invest = lazy(() => import("./pages/Invest/index"))
+const InvestNew = lazy(() => import("./pages/InvestNew/index"))
 const Index = lazy(() => import("./pages/Index/index"))
 
 const web3Modal = new SafeAppWeb3Modal({
@@ -323,7 +324,8 @@ function App () {
               }
             >
               <Frame {...nextProps}>
-                <Invest {...nextProps} />
+                {/* <Invest {...nextProps} /> */}
+                <InvestNew {...nextProps} />
               </Frame>
             </Suspense>
           </Route>

@@ -64,6 +64,10 @@ const customInputStyle = {
       color: "#495057",
     },
   },
+  labelTextEmpty: {
+    paddingTop: 0,
+    margin: 0
+  },
   input: {
     color: "#fff",
     height: "unset",

@@ -1,4 +1,6 @@
 import React from "react";
+// nodejs library that concatenates classes
+import classNames from "classnames";
 // nodejs library to set properties for components
 import PropTypes from "prop-types";
 // @material-ui/core components
@@ -10,9 +12,9 @@ const useStyles = makeStyles(styles);
 
 export default function Muted(props) {
   const classes = useStyles();
-  const { children } = props;
+  const { children, className } = props;
   return (
-    <div className={classes.defaultFontStyle + " " + classes.mutedText}>
+    <div className={classNames(classes.defaultFontStyle, classes.mutedText, className)}>
       {children}
     </div>
   );
