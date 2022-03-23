@@ -55,7 +55,7 @@ Date.prototype.format = function (fmt) {
 }
 
 const Home = lazy(() => import("./pages/Home/index"))
-const Invest = lazy(() => import("./pages/Invest/index"))
+// const Invest = lazy(() => import("./pages/Invest/index"))
 const InvestNew = lazy(() => import("./pages/InvestNew/index"))
 const Index = lazy(() => import("./pages/Index/index"))
 
