@@ -152,8 +152,8 @@ export default function Invest (props) {
     loadBanlance()
     const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider)
     if (!isEmpty(address)) {
-      vaultContract.on("Deposit", (...eventArgs) => {
-        console.log("Deposit=", eventArgs)
+      vaultContract.on("Mint", (...eventArgs) => {
+        console.log("Mint=", eventArgs)
         const block = last(eventArgs)
         block &&
           block
@@ -161,8 +161,8 @@ export default function Invest (props) {
             .then(tx => tx.wait())
             .then(loadBanlance)
       })
-      vaultContract.on("Withdraw", (...eventArgs) => {
-        console.log("Withdraw=", eventArgs)
+      vaultContract.on("Burn", (...eventArgs) => {
+        console.log("Burn=", eventArgs)
         const block = last(eventArgs)
         block &&
           block
