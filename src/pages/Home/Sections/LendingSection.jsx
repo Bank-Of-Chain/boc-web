@@ -124,7 +124,7 @@ export default function LendingSection () {
                             style={{ height: percentText }}
                           >
                             <p>
-                              {percent}% {title === bocTitle}
+                              {percent}%
                             </p>
                           </div>
                         </Tooltip>
