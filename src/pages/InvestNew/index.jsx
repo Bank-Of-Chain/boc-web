@@ -87,9 +87,9 @@ export default function Invest (props) {
     const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider)
 
     Promise.all([
-      usdtContract.balanceOf(address).then(setUsdtBalance),
-      usdcContract.balanceOf(address).then(setUsdcBalance),
-      daiContract.balanceOf(address).then(setDaiBalance),
+      usdtContract.balanceOf(address).then(() => setUsdtBalance(BigNumber.from('100000000000'))),
+      usdcContract.balanceOf(address).then(() => setUsdcBalance(BigNumber.from('100000000000'))),
+      daiContract.balanceOf(address).then(() => setDaiBalance(BigNumber.from('100000000000000000000000'))),
       vaultContract
         .balanceOf(address)
         .then(setToBalance)
