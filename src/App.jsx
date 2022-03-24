@@ -324,6 +324,7 @@ function App () {
               }
             >
               <Frame {...nextProps}>
+                {/* beta-v1.5 使用的是多币，所以需要采用新的存储界面 */}
                 { abiPrefix === 'beta-v1.5' ? <InvestNew {...nextProps} /> : <Invest {...nextProps} /> }
               </Frame>
             </Suspense>
