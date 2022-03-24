@@ -5,7 +5,6 @@ import classNames from 'classnames'
 import { useDispatch } from "react-redux"
 import CountTo from "react-count-to"
 import { makeStyles } from "@material-ui/core/styles"
-import TextField from '@material-ui/core/TextField'
 import CircularProgress from "@material-ui/core/CircularProgress"
 import Modal from "@material-ui/core/Modal"
 import Paper from "@material-ui/core/Paper"
@@ -23,6 +22,7 @@ import Switch from "@material-ui/core/Switch"
 import FormControlLabel from "@material-ui/core/FormControlLabel"
 
 import SimpleSelect from "../../../components/SimpleSelect"
+import CustomTextField from "../../../components/CustomTextField"
 import BocStepper from "../../../components/Stepper/Stepper"
 import BocStepLabel from "../../../components/Stepper/StepLabel"
 import BocStepIcon from "../../../components/Stepper/StepIcon"
@@ -615,6 +615,14 @@ export default function Withdraw({
     // eslint-disable-next-line
   }, [toValue, allowMaxLoss, slipper, shouldExchange, isOpenEstimate])
 
+  const handleAmountChange = (event) => {
+    try {
+      setToValue(event.target.value)
+    } catch (error) {
+      setToValue("")
+    }
+  }
+
   const renderEstimate = () => {
     if (isEstimate) {
       return (
@@ -665,7 +673,20 @@ export default function Withdraw({
   }
 
   const SettingIcon = isOpenEstimate ? CropIcon : CropFreeIcon
-
+  const selectOptions = [{
+    label: TOKEN.USDT,
+    value: TOKEN.USDT,
+    img: `./images/${USDT_ADDRESS}.png`
+  }, {
+    label: TOKEN.USDC,
+    value: TOKEN.USDC,
+    img: `./images/${USDC_ADDRESS}.png`
+  }, 
+  {
+    label: TOKEN.DAI,
+    value: TOKEN.DAI,
+    img: `./images/${DAI_ADDRESS}.png`
+  }]
 
   const isValidToValueFlag = isValidToValue()
   const isValidAllowLossFlag = isValidAllowLoss()
@@ -679,20 +700,7 @@ export default function Withdraw({
             <SimpleSelect
               value={token}
               onChange={handleTokenChange}
-              options={[{
-                label: TOKEN.USDT,
-                value: TOKEN.USDT,
-                img: `./images/${USDT_ADDRESS}.png`
-              }, {
-                label: TOKEN.USDC,
-                value: TOKEN.USDC,
-                img: `./images/${USDC_ADDRESS}.png`
-              }, 
-              {
-                label: TOKEN.DAI,
-                value: TOKEN.DAI,
-                img: `./images/${DAI_ADDRESS}.png`
-              }]}
+              options={selectOptions}
             />
             <Muted>
               <CountTo
@@ -712,20 +720,10 @@ export default function Withdraw({
           </div>
         </GridItem>
         <GridItem xs={12} sm={12} md={12} lg={12}>
-          <TextField
-            classes={{
-              root: classes.textField
-            }}
-            placeholder="withdraw amount"
+          <CustomTextField
             value={toValue}
-            variant="outlined"
-            onChange={event => {
-              try {
-                setToValue(event.target.value)
-              } catch (error) {
-                setToValue("")
-              }
-            }}
+            placeholder="withdraw amount"
+            onChange={handleAmountChange}
             error={!isUndefined(isValidToValueFlag) && !isValidToValueFlag && (toValue !== '0')}
           />
           <div className={classes.selectorWrapper}>
@@ -755,14 +753,7 @@ export default function Withdraw({
               <GridItem xs={12} sm={12} md={12} lg={12} style={{ padding: "24px 0px 16px 15px" }}>
                 <span
                   title='Withdrawal tokens and estimated amount'
-                  style={{
-                    color: "#fff",
-                    fontSize: 16,
-                    letterSpacing: "0.01071em",
-                    lineHeight: 1.5,
-                    textAlign: 'center',
-                    width: '100%',
-                  }}
+                  className={classes.settingTitle}
                 >
                   Withdrawal tokens and estimated amount
                 </span>
@@ -800,7 +791,7 @@ export default function Withdraw({
                   }
                   style={{ marginLeft: 0 }}
                   label={
-                    <div className={classes.settingLabel}>
+                    <div className={classes.settingItemLabel}>
                       <Muted>Max Loss:</Muted>
                     </div>
                   }
@@ -824,7 +815,7 @@ export default function Withdraw({
                   }
                   style={{ marginLeft: 0 }}
                   label={
-                    <div className={classes.settingLabel}>
+                    <div className={classes.settingItemLabel}>
                       <Muted className={classes.exchanged}>
                         <Tooltip
                           classes={{
@@ -851,29 +842,19 @@ export default function Withdraw({
                         value={slipper}
                         onChange={event => setSlipper(event.target.value)}
                       >
-                        <FormControlLabel
-                          value='0.3'
-                          style={{ color: "#fff" }}
-                          control={<CustomRadio size="small" style={{ padding: 6 }} />}
-                          label='0.3%'
-                        />
-                        <FormControlLabel
-                          value='0.5'
-                          style={{ color: "#fff" }}
-                          control={<CustomRadio size="small" style={{ padding: 6 }} />}
-                          label='0.5%'
-                        />
-                        <FormControlLabel
-                          value='1'
-                          style={{ color: "#fff" }}
-                          control={<CustomRadio size="small" style={{ padding: 6 }} />}
-                          label='1%'
-                        />
+                        {map(["0.3", "0.5", "1"], (value) => (
+                          <FormControlLabel
+                            value={value}
+                            style={{ color: "#fff" }}
+                            control={<CustomRadio size="small" style={{ padding: 6 }} />}
+                            label={`${value}%`}
+                          />
+                        ))}
                       </RadioGroup>
                     }
                     style={{ marginLeft: 0 }}
                     label={
-                      <div className={classes.settingLabel}>
+                      <div className={classes.settingItemLabel}>
                         <Muted>Slippage:</Muted>
                       </div>
                     }
@@ -919,13 +900,7 @@ export default function Withdraw({
       >
         <Paper
           elevation={3}
-          style={{
-            padding: 20,
-            minWidth: 650,
-            color: "rgba(255,255,255, 0.87)",
-            border: "1px solid",
-            background: "#150752",
-          }}
+          className={classes.widthdrawLoadingPaper}
         >
           <div className={classes.modalBody}>
             {isEmpty(withdrawError) && <CircularProgress color='inherit' />}

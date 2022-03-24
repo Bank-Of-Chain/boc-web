@@ -1,6 +1,5 @@
 import {
   container,
-  dangerColor,
 } from "../../../assets/jss/material-kit-react.js";
 
 const componentsStyle = (theme) => ({
@@ -27,7 +26,6 @@ const componentsStyle = (theme) => ({
   },
   withdrawContainer: {
     padding: "36px 20px 0",
-
   },
   inputLabelWrapper: {
     display: "flex",
@@ -38,33 +36,6 @@ const componentsStyle = (theme) => ({
     display: 'flex',
     justifyContent: 'space-between',
     marginTop: 24
-  },
-  textField: {
-    width: '100%',
-    margin: "12px 0 8px",
-    '& .MuiInputBase-root': {
-      color: '#fff',
-      borderRadius: '6px',
-    },
-    '& .MuiOutlinedInput-input': {
-      padding: '16px 14px',
-    },
-    '& .MuiOutlinedInput-notchedOutline': {
-      borderWidth: '1px',
-      borderColor: '#fff'
-    },
-    '& .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline': {
-      borderWidth: '1px',
-      borderColor: '#fff'
-    },
-    '& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline': {
-      borderWidth: '1px',
-      borderColor: '#fff'
-    },
-    '& .MuiOutlinedInput-root.Mui-error .MuiOutlinedInput-notchedOutline': {
-      borderWidth: '1px',
-      borderColor: dangerColor
-    },
   },
   selectorWrapper: {
     padding: '0 4px',
@@ -77,6 +48,14 @@ const componentsStyle = (theme) => ({
     padding: "10px 0",
     marginRight: '16px'
   },
+  settingTitle: {
+    color: "#fff",
+    fontSize: 16,
+    letterSpacing: "0.01071em",
+    lineHeight: 1.5,
+    textAlign: 'center',
+    width: '100%',
+  },
   settingItem: {
     height: 38,
     lineHeight: '38px',
@@ -85,7 +64,7 @@ const componentsStyle = (theme) => ({
       marginTop: 24
     }
   },
-  settingLabel: {
+  settingItemLabel: {
     position: 'relative',
     minWidth: 100,
     marginRight: 16,
@@ -116,6 +95,13 @@ const componentsStyle = (theme) => ({
   slippageInput: {
     width: 96,
     marginLeft: 16
+  },
+  widthdrawLoadingPaper: {
+    padding: 20,
+    minWidth: 650,
+    color: "rgba(255,255,255, 0.87)",
+    border: "1px solid",
+    background: "#150752",
   }
 });
 

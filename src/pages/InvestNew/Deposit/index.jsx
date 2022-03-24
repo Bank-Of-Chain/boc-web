@@ -1,5 +1,4 @@
 import React, { useState } from "react"
-import classNames from 'classnames'
 import * as ethers from "ethers"
 import BN from "bignumber.js"
 import { useDispatch } from "react-redux"
@@ -8,13 +7,13 @@ import map from "lodash/map"
 import some from "lodash/some"
 import every from "lodash/every"
 import { makeStyles } from "@material-ui/core/styles"
-import TextField from '@material-ui/core/TextField'
 import CircularProgress from "@material-ui/core/CircularProgress"
 import Modal from "@material-ui/core/Modal"
 import Paper from "@material-ui/core/Paper"
 
 import GridContainer from "../../../components/Grid/GridContainer"
 import GridItem from "../../../components/Grid/GridItem"
+import CustomTextField from "../../../components/CustomTextField"
 import Muted from "../../../components/Typography/Muted"
 import Button from "../../../components/CustomButtons/Button"
 import { warmDialog } from "./../../../reducers/meta-reducer"
@@ -319,26 +318,13 @@ export default function Deposit({
                 </div>
               </GridItem>
               <GridItem xs={12} sm={12} md={12} lg={12}>
-                <TextField
-                  classes={{
-                    root: classes.textField
-                  }}
-                  InputProps={{
-                    endAdornment: (
-                      <span
-                        className={classNames(classes.endAdornment, {
-                          [classes.endAdornmentActive]: item.isValueMax
-                        })}
-                        onClick={() => handleMaxClick(item)}
-                      >
-                        Max
-                      </span>
-                    )
-                  }}
-                  placeholder="deposit amount"
-                  variant="outlined"
+                <CustomTextField
                   value={item.value}
                   onChange={(event) => handleInputChange(event, item)}
+                  placeholder="deposit amount"
+                  maxEndAdornment
+                  isMax={item.isValueMax}
+                  onMaxClick={() => handleMaxClick(item)}
                   error={!isUndefined(item.isValid) && !item.isValid}
                 />
               </GridItem>
