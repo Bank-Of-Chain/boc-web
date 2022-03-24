@@ -17,18 +17,17 @@ const style = {
     position: "absolute",
     left: 0,
     top: "100%",
+    minWidth: "120px",
     marginTop: "6px",
     padding: "8px 0",
-    opacity: 0,
     zIndex: 100,
     background: "#fff",
     borderRadius: "4px",
     boxShadow: "0px 5px 5px -3px rgba(0,0,0,0.2),0px 8px 10px 1px rgba(0,0,0,0.14),0px 3px 14px 2px rgba(0,0,0,0.12)",
-    transition: "opacity 0.4s"
+    transformOrigin: "top",
   },
   selectPopVisible: {
     display: "block",
-    opacity: 1,
   },
   selectItem: {
     display: "flex",
