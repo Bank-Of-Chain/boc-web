@@ -20,7 +20,7 @@ import Alert from "@material-ui/lab/Alert"
 import { Button } from "@material-ui/core"
 
 // === Utils === //
-import { USDT_ADDRESS, NET_WORKS } from "./constants"
+import { USDT_ADDRESS, NET_WORKS, abiPrefix } from "./constants"
 import { makeStyles } from "@material-ui/core/styles"
 import { SafeAppWeb3Modal } from "@gnosis.pm/safe-apps-web3modal"
 import { lendSwap } from "piggy-finance-utils"
@@ -55,7 +55,7 @@ Date.prototype.format = function (fmt) {
 }
 
 const Home = lazy(() => import("./pages/Home/index"))
-// const Invest = lazy(() => import("./pages/Invest/index"))
+const Invest = lazy(() => import("./pages/Invest/index"))
 const InvestNew = lazy(() => import("./pages/InvestNew/index"))
 const Index = lazy(() => import("./pages/Index/index"))
 
@@ -324,8 +324,7 @@ function App () {
               }
             >
               <Frame {...nextProps}>
-                {/* <Invest {...nextProps} /> */}
-                <InvestNew {...nextProps} />
+                { abiPrefix === 'beta-v1.5' ? <InvestNew {...nextProps} /> : <Invest {...nextProps} /> }
               </Frame>
             </Suspense>
           </Route>
