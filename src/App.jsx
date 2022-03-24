@@ -287,6 +287,7 @@ function App () {
     logoutOfWeb3Modal,
     userProvider,
     changeNetwork,
+    selectedChainId
   }
 
   return (

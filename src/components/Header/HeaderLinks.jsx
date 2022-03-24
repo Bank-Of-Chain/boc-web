@@ -62,7 +62,7 @@ export default function HeaderLinks (props) {
       <ListItem className={classes.listItem}>
         <CustomDropdown
           noLiPadding
-          buttonText={get(find(NET_WORKS, { chainId: props.localChainId }), "name", "Networks")}
+          buttonText={get(find(NET_WORKS, { chainId: props.selectedChainId }), "name", "Networks")}
           buttonProps={{
             className: classes.navLink,
             color: "transparent",
