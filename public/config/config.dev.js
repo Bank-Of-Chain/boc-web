@@ -71,6 +71,7 @@ const config56 = {
 
 const config1 = {
   ...configBase,
+  abi_version: 'beta-v1.5',
   apy_server: 'http://localhost:5000',
   vault_address: "0x5302E909d1e93e30F05B5D6Eea766363D14F9892",
   usdt_address: "0xdAC17F958D2ee523a2206206994597C13D831ec7",
