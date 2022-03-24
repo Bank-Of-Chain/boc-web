@@ -52,9 +52,9 @@ export default function Deposit({
 }) {
   const classes = useStyles()
   const dispatch = useDispatch()
-  const [usdtValue, setUsdtValue] = useState("")
-  const [usdcValue, setUsdcValue] = useState("")
-  const [daiValue, setDaiValue] = useState("")
+  const [usdtValue, setUsdtValue] = useState("10000")
+  const [usdcValue, setUsdcValue] = useState("10000")
+  const [daiValue, setDaiValue] = useState("10000")
   const [isUsdtValueMax, setIsUstdValueMax] = useState(false)
   const [isUsdcValueMax, setIsUstcValueMax] = useState(false)
   const [isDaiValueMax, setIsDaiValueMax] = useState(false)
@@ -151,8 +151,79 @@ export default function Deposit({
 
   // TODO 支持多币存
   const diposit = async () => {
-    // 如果输入的数字不合法，弹出提示框
-    if (!isValidValue(TOKEN.USDT)) {
+    // 旧的逻辑，需要重新实现
+    // // 如果输入的数字不合法，弹出提示框
+    // if (!isValidValue(TOKEN.USDT)) {
+    //   return dispatch(
+    //     warmDialog({
+    //       open: true,
+    //       type: "warning",
+    //       message: "Please enter the correct value",
+    //     }),
+    //   )
+    // }
+    // setIsLoading(true)
+    // // 获取usdc的合约
+    // const usdtContract = new ethers.Contract(USDT_ADDRESS, IERC20_ABI, userProvider)
+    // const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider)
+    // const signer = userProvider.getSigner()
+    // const usdtContractWithUser = usdtContract.connect(signer)
+    // const nVaultWithUser = vaultContract.connect(signer)
+    // let nextValue = BigNumber.from(
+    //   BN(usdtValue)
+    //     .multipliedBy(
+    //       BigNumber.from(10)
+    //         .pow(usdtDecimals)
+    //         .toString(),
+    //     )
+    //     .toFixed(),
+    // )
+    // try {
+    //   // 获取当前允许的额度
+    //   const allowanceAmount = await usdtContractWithUser.allowance(address, VAULT_ADDRESS)
+    //   // 如果充值金额大于允许的额度，则需要重新设置额度
+    //   if (nextValue.gt(allowanceAmount)) {
+    //     // 如果允许的额度为0，则直接设置新的额度。否则，则设置为0后，再设置新的额度。
+    //     if (allowanceAmount.gt(0)) {
+    //       const firstApproveTx = await usdtContractWithUser.approve(VAULT_ADDRESS, 0)
+    //       await firstApproveTx.wait()
+    //     }
+    //     console.log("当前授权：", allowanceAmount.toString(), "准备授权：", nextValue.toString())
+    //     const secondApproveTx = await usdtContractWithUser.approve(VAULT_ADDRESS, nextValue)
+    //     await secondApproveTx.wait()
+    //   }
+    //   const depositTx = await nVaultWithUser.deposit(nextValue)
+    //   await depositTx.wait()
+    //   setUsdtValue("")
+    //   dispatch(
+    //     warmDialog({
+    //       open: true,
+    //       type: "success",
+    //       message: "Success!",
+    //     }),
+    //   )
+    // } catch (error) {
+    //   if (error && error.data) {
+    //     if (error.data.message && error.data.message.endsWith("'ES or AD'")) {
+    //       dispatch(
+    //         warmDialog({
+    //           open: true,
+    //           type: "error",
+    //           message: "Vault has been shut down, please try again later!",
+    //         }),
+    //       )
+    //     }
+    //   }
+    // }
+    // setTimeout(() => {
+    //   setIsLoading(false)
+    // }, 2000)
+
+    // step1: 校验三个币，起码一个有值
+    const isValidUsdtValue = isValidValue(TOKEN.USDT)
+    const isValidUsdcValue = isValidValue(TOKEN.USDC)
+    const isValidDaiValue = isValidValue(TOKEN.DAI)
+    if (!isValidUsdtValue && !isValidUsdcValue && !isValidDaiValue) {
       return dispatch(
         warmDialog({
           open: true,
@@ -161,59 +232,72 @@ export default function Deposit({
         }),
       )
     }
+    // step2：折算精度，授权三个币及数值
     setIsLoading(true)
-    // 获取usdc的合约
-    const usdtContract = new ethers.Contract(USDT_ADDRESS, IERC20_ABI, userProvider)
-    const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider)
+    const nextTokens = []
+    const nextAmounts = []
+    if (isValidUsdtValue) {
+      const nextUsdtValue = BigNumber.from(
+        BN(usdtValue)
+          .multipliedBy(
+            BigNumber.from(10)
+              .pow(usdtDecimals)
+              .toString(),
+          )
+          .toFixed(),
+      )
+      nextTokens.push(nextUsdtValue)
+      nextAmounts.push(USDT_ADDRESS)
+    }
+    if (isValidUsdcValue) {
+      const nextUsdtValue = BigNumber.from(
+        BN(usdcValue)
+          .multipliedBy(
+            BigNumber.from(10)
+              .pow(usdcDecimals)
+              .toString(),
+          )
+          .toFixed(),
+      )
+      nextTokens.push(nextUsdtValue)
+      nextAmounts.push(USDC_ADDRESS)
+    }
+    if (isValidDaiValue) {
+      const nextUsdtValue = BigNumber.from(
+        BN(daiValue)
+          .multipliedBy(
+            BigNumber.from(10)
+              .pow(daiDecimals)
+              .toString(),
+          )
+          .toFixed(),
+      )
+      nextTokens.push(nextUsdtValue)
+      nextAmounts.push(DAI_ADDRESS)
+    }
+    console.log('nextTokens=', nextTokens, nextAmounts)
     const signer = userProvider.getSigner()
-    const usdtContractWithUser = usdtContract.connect(signer)
-    const nVaultWithUser = vaultContract.connect(signer)
-    let nextValue = BigNumber.from(
-      BN(usdtValue)
-        .multipliedBy(
-          BigNumber.from(10)
-            .pow(usdtDecimals)
-            .toString(),
-        )
-        .toFixed(),
-    )
-    try {
-      // 获取当前允许的额度
-      const allowanceAmount = await usdtContractWithUser.allowance(address, VAULT_ADDRESS)
+    for (const key in nextTokens) {
+      const contract = new ethers.Contract(nextTokens[key], IERC20_ABI, userProvider)
+      const contractWithUser = contract.connect(signer)
+        // 获取当前允许的额度
+      const allowanceAmount = await contractWithUser.allowance(nextTokens[key], VAULT_ADDRESS)
       // 如果充值金额大于允许的额度，则需要重新设置额度
-      if (nextValue.gt(allowanceAmount)) {
+      if (nextAmounts[key].gt(allowanceAmount)) {
         // 如果允许的额度为0，则直接设置新的额度。否则，则设置为0后，再设置新的额度。
         if (allowanceAmount.gt(0)) {
-          const firstApproveTx = await usdtContractWithUser.approve(VAULT_ADDRESS, 0)
+          const firstApproveTx = await contractWithUser.approve(VAULT_ADDRESS, 0)
           await firstApproveTx.wait()
         }
-        console.log("当前授权：", allowanceAmount.toString(), "准备授权：", nextValue.toString())
-        const secondApproveTx = await usdtContractWithUser.approve(VAULT_ADDRESS, nextValue)
+        console.log("当前授权：", allowanceAmount.toString(), "准备授权：", nextAmounts[key].toString())
+        const secondApproveTx = await contractWithUser.approve(VAULT_ADDRESS, nextAmounts[key])
         await secondApproveTx.wait()
       }
-      const depositTx = await nVaultWithUser.deposit(nextValue)
-      await depositTx.wait()
-      setUsdtValue("")
-      dispatch(
-        warmDialog({
-          open: true,
-          type: "success",
-          message: "Success!",
-        }),
-      )
-    } catch (error) {
-      if (error && error.data) {
-        if (error.data.message && error.data.message.endsWith("'ES or AD'")) {
-          dispatch(
-            warmDialog({
-              open: true,
-              type: "error",
-              message: "Vault has been shut down, please try again later!",
-            }),
-          )
-        }
-      }
     }
+    // step3: 存钱
+    const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider)
+    const nVaultWithUser = vaultContract.connect(signer)
+    await nVaultWithUser.mint(nextTokens, nextAmounts).then(tx => tx.wait())
     setTimeout(() => {
       setIsLoading(false)
     }, 2000)
