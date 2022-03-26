@@ -2,7 +2,7 @@
    'Balancer',
    //  'UniswapV2',
    'Dodo',
-   'Sushi_Kashi',
+  //  'Sushi_Kashi',
    //  'Sushi_Swap',
    'Convex',
    //  'Rari',
