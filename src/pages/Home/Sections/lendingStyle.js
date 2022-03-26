@@ -71,6 +71,25 @@ const lendingSectionStyle = {
     '&>p': {
       fontSize: '1rem'
     }
+  },
+  label: {
+    float: 'right',
+    textAlign: 'left',
+    width: '6rem'
+  },
+  box: {
+    height: '1rem',
+    width: '1rem',
+    marginRight: '0.25rem',
+    display: 'inline-block',
+    background: 'linear-gradient(180deg,#1cd9ff,#3b5998)',
+  },
+  box1: {
+    height: '1rem',
+    width: '1rem',
+    marginRight: '0.25rem',
+    display: 'inline-block',
+    background: 'linear-gradient(180deg,#0348da,#0b216b)',
   }
 };
 
