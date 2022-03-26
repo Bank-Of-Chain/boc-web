@@ -13,13 +13,6 @@ const lendingSectionStyle = {
   item: {
     paddingLeft: 0,
     paddingRight: 0,
-    '&:first-child $bar > p': {
-      width: "6.123rem",
-      left: "-3.125rem",
-      textAlign: "right",
-      top: "-4.0625rem",
-      transform: 'none'
-    }
   },
   body: {
     height: '20rem',
@@ -84,11 +77,6 @@ const lendingSectionStyle = {
 export const smStyle = {
   section: {
     padding: '3.5rem 0.5rem'
-  },
-  item: {
-    '&:first-child $bar >p': {
-      left: "-4.125rem"
-    }
   },
   bar: {
     width: '1.8rem',
