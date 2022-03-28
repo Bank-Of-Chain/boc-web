@@ -6,6 +6,7 @@ import isUndefined from "lodash/isUndefined"
 import map from "lodash/map"
 import some from "lodash/some"
 import every from "lodash/every"
+import sumBy from "lodash/sumBy"
 import { makeStyles } from "@material-ui/core/styles"
 import CircularProgress from "@material-ui/core/CircularProgress"
 import Modal from "@material-ui/core/Modal"
@@ -302,6 +303,12 @@ export default function Deposit({
     }, 2000)
   }
 
+  const getEstimateValue = () => {
+    return sumBy(formConfig, (config) => {
+      return config.isValid ? parseInt(config.value) : 0
+    })
+  }
+
   return (
     <>
       <GridContainer classes={{ root: classes.depositContainer }}>
@@ -335,18 +342,9 @@ export default function Deposit({
           <div className={classes.depositComfirmArea}>
             <Muted>
               <p style={{ fontSize: 16, wordBreak: "break-all", letterSpacing: "0.01071em" }}>
-                Estimated Shares：
-                {isValidValue(TOKEN.USDT) &&
-                  toFixed(
-                    totalAssets.gt(0) ? BN(usdtValue)
-                      .multipliedBy(totalSupply.toString())
-                      .div(totalAssets.toString()).toFixed() 
-                      : BN(usdtValue)
-                      .toFixed(),
-                    1,
-                    usdtDecimals,
-                    1
-                  )}
+                Estimated:
+                &nbsp;{getEstimateValue()}
+                &nbsp;USDi
               </p>
             </Muted>
             <Button
