@@ -17,7 +17,6 @@ export const calVaultAPY = (vaultDailyData) => {
       break;
     }
   }
-
   return calAPY(beginPricePerShare, endPricePerShare, endTime - beginTime);
 }
 
@@ -34,6 +33,7 @@ export const calVaultDailyAPY = (vaultDailyData) => {
       const currentPricePerShare = Number(vaultDailyData[i].tvl / vaultDailyData[i].totalShares);
       const currentBeginTime = Number(vaultDailyData[i].id);
       if (lastPricePerShare) {
+
         vaultDailyData[i].apy = calAPY(lastPricePerShare, currentPricePerShare, currentBeginTime - lastTime);
       }
       if(vaultDailyData[i].apy > 10){
