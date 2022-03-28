@@ -245,8 +245,8 @@ export default function Deposit({
           )
           .toFixed(),
       )
-      nextTokens.push(nextUsdtValue)
-      nextAmounts.push(USDT_ADDRESS)
+      nextAmounts.push(nextUsdtValue)
+      nextTokens.push(USDT_ADDRESS)
     }
     if (isValidUsdcValue) {
       const nextUsdtValue = BigNumber.from(
@@ -258,8 +258,8 @@ export default function Deposit({
           )
           .toFixed(),
       )
-      nextTokens.push(nextUsdtValue)
-      nextAmounts.push(USDC_ADDRESS)
+      nextAmounts.push(nextUsdtValue)
+      nextTokens.push(USDC_ADDRESS)
     }
     if (isValidDaiValue) {
       const nextUsdtValue = BigNumber.from(
@@ -271,8 +271,8 @@ export default function Deposit({
           )
           .toFixed(),
       )
-      nextTokens.push(nextUsdtValue)
-      nextAmounts.push(DAI_ADDRESS)
+      nextAmounts.push(nextUsdtValue)
+      nextTokens.push(DAI_ADDRESS)
     }
     console.log('nextTokens=', nextTokens, nextAmounts)
     const signer = userProvider.getSigner()
