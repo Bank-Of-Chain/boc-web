@@ -13,13 +13,6 @@ const lendingSectionStyle = {
   item: {
     paddingLeft: 0,
     paddingRight: 0,
-    '&:first-child $bar > p': {
-      width: "6.123rem",
-      left: "-3.125rem",
-      textAlign: "right",
-      top: "-4.0625rem",
-      transform: 'none'
-    }
   },
   body: {
     height: '20rem',
@@ -78,17 +71,31 @@ const lendingSectionStyle = {
     '&>p': {
       fontSize: '1rem'
     }
+  },
+  label: {
+    float: 'right',
+    textAlign: 'left',
+    width: '6rem'
+  },
+  box: {
+    height: '1rem',
+    width: '1rem',
+    marginRight: '0.25rem',
+    display: 'inline-block',
+    background: 'linear-gradient(180deg,#1cd9ff,#3b5998)',
+  },
+  box1: {
+    height: '1rem',
+    width: '1rem',
+    marginRight: '0.25rem',
+    display: 'inline-block',
+    background: 'linear-gradient(180deg,#0348da,#0b216b)',
   }
 };
 
 export const smStyle = {
   section: {
     padding: '3.5rem 0.5rem'
-  },
-  item: {
-    '&:first-child $bar >p': {
-      left: "-4.125rem"
-    }
   },
   bar: {
     width: '1.8rem',
