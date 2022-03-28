@@ -52,8 +52,8 @@ export default function Deposit({
   const classes = useStyles()
   const dispatch = useDispatch()
   const [usdtValue, setUsdtValue] = useState("10000")
-  const [usdcValue, setUsdcValue] = useState("10000")
-  const [daiValue, setDaiValue] = useState("10000")
+  const [usdcValue, setUsdcValue] = useState("20000")
+  const [daiValue, setDaiValue] = useState("30000")
   const [isUsdtValueMax, setIsUstdValueMax] = useState(false)
   const [isUsdcValueMax, setIsUstcValueMax] = useState(false)
   const [isDaiValueMax, setIsDaiValueMax] = useState(false)
@@ -296,7 +296,7 @@ export default function Deposit({
     // step3: 存钱
     const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider)
     const nVaultWithUser = vaultContract.connect(signer)
-    await nVaultWithUser.mint(nextTokens, nextAmounts).then(tx => tx.wait())
+    await nVaultWithUser.mint(nextTokens, nextAmounts, 0).then(tx => tx.wait())
     setTimeout(() => {
       setIsLoading(false)
     }, 2000)

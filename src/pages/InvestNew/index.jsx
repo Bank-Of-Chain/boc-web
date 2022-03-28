@@ -38,6 +38,8 @@ import {
   USDC_ADDRESS,
   DAI_ADDRESS,
   CHAIN_BROWSER_URL,
+  USDI_ABI,
+  USDI_ADDRESS
 } from "../../constants"
 
 // === Utils === //
@@ -85,15 +87,12 @@ export default function Invest (props) {
     const usdcContract = new ethers.Contract(USDC_ADDRESS, IERC20_ABI, userProvider)
     const daiContract = new ethers.Contract(DAI_ADDRESS, IERC20_ABI, userProvider)
     const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider)
-
+    const usdiContract = new ethers.Contract(USDI_ADDRESS, USDI_ABI, userProvider)
     Promise.all([
-      usdtContract.balanceOf(address).then(() => setUsdtBalance(BigNumber.from('100000000000'))),
-      usdcContract.balanceOf(address).then(() => setUsdcBalance(BigNumber.from('100000000000'))),
-      daiContract.balanceOf(address).then(() => setDaiBalance(BigNumber.from('100000000000000000000000'))),
-      vaultContract
-        .balanceOf(address)
-        .then(setToBalance)
-        .catch(noop),
+      usdtContract.balanceOf(address).then(setUsdtBalance),
+      usdcContract.balanceOf(address).then(setUsdcBalance),
+      daiContract.balanceOf(address).then(setDaiBalance),
+      usdiContract.balanceOf(address).then(setToBalance).catch(noop),
       loadTotalAssets()
         .then(([afterTotalAssets, afterPerFullShare]) => {
           setTotalAssets(afterTotalAssets)
@@ -105,7 +104,7 @@ export default function Invest (props) {
       usdtContract.decimals().then(setUsdtDecimals),
       usdcContract.decimals().then(setUsdcDecimals),
       daiContract.decimals().then(setDaiDecimals),
-      vaultContract.totalSupply().then(setTotalSupply),
+      usdiContract.totalSupply().then(setTotalSupply),
       // vaultContract.token().then(setToken),
       // vaultContract.getTrackedAssets().then(setTrackedAssets)
     ]).catch(() => {
@@ -120,8 +119,10 @@ export default function Invest (props) {
   }
 
   const loadTotalAssets = () => {
-    const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider)
-    return Promise.all([vaultContract.totalAssets(), vaultContract.pricePerShare(), vaultContract.totalSupply()])
+    //TODO:
+    return Promise.resolve([BigNumber.from(1e6), BigNumber.from(1e6), BigNumber.from(1e6)])
+    // const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider)
+    // return Promise.all([vaultContract.totalAssets(), vaultContract.pricePerShare(), vaultContract.totalSupply()])
   }
 
   useEffect(() => {
