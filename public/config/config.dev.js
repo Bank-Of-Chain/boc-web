@@ -74,7 +74,7 @@ const config56 = {
 const config1 = {
   ...configBase,
   apy_server: 'http://localhost:5000',
-  vault_address: "0x5302E909d1e93e30F05B5D6Eea766363D14F9892",
+  vault_address: "0x66F625B8c4c635af8b74ECe2d7eD0D58b4af3C3d",
   usdt_address: "0xdAC17F958D2ee523a2206206994597C13D831ec7",
   usdc_address: "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
   dai_address: "0x6B175474E89094C44Da98b954EedeAC495271d0F",
@@ -96,7 +96,7 @@ const config1 = {
 
 window.config = {
   // 本地链
-  31337: config137,
+  31337: config1,
   // polygon
   137: config137,
   // bsc

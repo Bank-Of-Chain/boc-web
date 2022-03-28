@@ -20,7 +20,12 @@ const strategyAbi = require(`./abis/${abiPrefix}/strategy-abi.json`);
 const ierc20Abi = require(`./abis/${abiPrefix}/ierc20-abi.json`);
 const treasureAbi = require(`./abis/${abiPrefix}/treasure-abi.json`);
 const exchangeAggreatorAbi = require(`./abis/${abiPrefix}/exchange-aggregator-abi.json`);
-const usdiAbi = require(`./abis/${abiPrefix}/usdi.json`);
+let usdiAbi;
+try {
+  usdiAbi = require(`./abis/${abiPrefix}/usdi.json`);
+} catch (error) {
+  usdiAbi = []
+}
 
 // === configs === //
 export const APY_SERVER = config.apy_server;
