@@ -93,6 +93,18 @@ export default function LendingSection () {
   return (
     <div className={classes.section}>
       <h2 className={classes.title}>Crypto Lending Interest Rates</h2>
+      <div className={classNames(classes.label)}>
+        <GridContainer>
+          <GridItem>
+            <div className={classNames(classes.box)}></div>
+            <span style={{ verticalAlign: 'top', fontSize:'0.75rem' }}>Current Rate</span>
+          </GridItem>
+          <GridItem>
+            <div className={classNames(classes.box1)}></div>
+            <span style={{ verticalAlign: 'top', fontSize:'0.75rem' }}>Fixed  Rate</span>
+          </GridItem>
+        </GridContainer>
+      </div>
       <div style={{ padding: "4.5rem 0" }}>
         {loading ? (
           <GridContainer style={{ margin: "0 auto" }} justify='center'>
