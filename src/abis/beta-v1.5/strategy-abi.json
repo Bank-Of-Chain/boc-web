@@ -4,107 +4,99 @@
     "inputs": [
       {
         "indexed": false,
+        "internalType": "address[]",
+        "name": "_assets",
+        "type": "address[]"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256[]",
+        "name": "_amounts",
+        "type": "uint256[]"
+      }
+    ],
+    "name": "Borrow",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "_oldVault",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "_newVault",
+        "type": "address"
+      }
+    ],
+    "name": "MigarteToNewVault",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
         "internalType": "uint256",
-        "name": "assetsBefore",
+        "name": "_withdrawShares",
         "type": "uint256"
       },
       {
         "indexed": false,
-        "internalType": "int256",
-        "name": "assetsDelta",
-        "type": "int256"
+        "internalType": "uint256",
+        "name": "_totalShares",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "address[]",
+        "name": "_assets",
+        "type": "address[]"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256[]",
+        "name": "_amounts",
+        "type": "uint256[]"
+      }
+    ],
+    "name": "Repay",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "_beforeAssets",
+        "type": "uint256"
       },
       {
         "indexed": false,
         "internalType": "uint256",
-        "name": "timeDelta",
+        "name": "_afterAssets",
         "type": "uint256"
-      }
-    ],
-    "name": "CalAPY",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "components": [
-          {
-            "internalType": "address",
-            "name": "token",
-            "type": "address"
-          },
-          {
-            "internalType": "uint256",
-            "name": "amount",
-            "type": "uint256"
-          }
-        ],
-        "indexed": false,
-        "internalType": "struct TokenDetail[]",
-        "name": "depositDetails",
-        "type": "tuple[]"
       },
       {
         "indexed": false,
-        "internalType": "uint256",
-        "name": "afterTotalAsset",
-        "type": "uint256"
-      }
-    ],
-    "name": "DoHardWork",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
+        "internalType": "address[]",
+        "name": "_rewardTokens",
+        "type": "address[]"
+      },
       {
         "indexed": false,
-        "internalType": "uint256",
-        "name": "totalAssets",
-        "type": "uint256"
+        "internalType": "uint256[]",
+        "name": "_claimAmounts",
+        "type": "uint256[]"
       }
     ],
-    "name": "Harvested",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "delay",
-        "type": "uint256"
-      }
-    ],
-    "name": "UpdatedMaxReportDelay",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "delay",
-        "type": "uint256"
-      }
-    ],
-    "name": "UpdatedMinReportDelay",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "profitFactor",
-        "type": "uint256"
-      }
-    ],
-    "name": "UpdatedProfitFactor",
+    "name": "Report",
     "type": "event"
   },
   {
@@ -115,19 +107,6 @@
         "internalType": "contract IAccessControlProxy",
         "name": "",
         "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "balanceOfLpTokens",
-    "outputs": [
-      {
-        "internalType": "uint256[]",
-        "name": "",
-        "type": "uint256[]"
       }
     ],
     "stateMutability": "view",
@@ -155,39 +134,19 @@
   {
     "inputs": [
       {
-        "components": [
-          {
-            "internalType": "address",
-            "name": "token",
-            "type": "address"
-          },
-          {
-            "internalType": "uint256",
-            "name": "amount",
-            "type": "uint256"
-          }
-        ],
-        "internalType": "struct TokenDetail[]",
-        "name": "depositDetails",
-        "type": "tuple[]"
+        "internalType": "address[]",
+        "name": "_assets",
+        "type": "address[]"
+      },
+      {
+        "internalType": "uint256[]",
+        "name": "_amounts",
+        "type": "uint256[]"
       }
     ],
-    "name": "doHardWork",
+    "name": "borrow",
     "outputs": [],
     "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "estimatedDepositedAssets",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
     "type": "function"
   },
   {
@@ -205,7 +164,7 @@
   },
   {
     "inputs": [],
-    "name": "getInvestTargetAssets",
+    "name": "get3rdPoolAssets",
     "outputs": [
       {
         "internalType": "uint256",
@@ -218,15 +177,61 @@
   },
   {
     "inputs": [],
-    "name": "getLpTokens",
+    "name": "getPendingRewards",
     "outputs": [
       {
         "internalType": "address[]",
-        "name": "",
+        "name": "_rewardsTokens",
         "type": "address[]"
+      },
+      {
+        "internalType": "uint256[]",
+        "name": "_pendingAmounts",
+        "type": "uint256[]"
       }
     ],
     "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getPositionDetail",
+    "outputs": [
+      {
+        "internalType": "address[]",
+        "name": "_tokens",
+        "type": "address[]"
+      },
+      {
+        "internalType": "uint256[]",
+        "name": "_amounts",
+        "type": "uint256[]"
+      },
+      {
+        "internalType": "bool",
+        "name": "isUsd",
+        "type": "bool"
+      },
+      {
+        "internalType": "uint256",
+        "name": "usdValue",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getVersion",
+    "outputs": [
+      {
+        "internalType": "string",
+        "name": "",
+        "type": "string"
+      }
+    ],
+    "stateMutability": "pure",
     "type": "function"
   },
   {
@@ -244,65 +249,32 @@
   },
   {
     "inputs": [],
+    "name": "getWantsInfo",
+    "outputs": [
+      {
+        "internalType": "address[]",
+        "name": "_assets",
+        "type": "address[]"
+      },
+      {
+        "internalType": "uint256[]",
+        "name": "_ratios",
+        "type": "uint256[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
     "name": "harvest",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   },
   {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "callCost",
-        "type": "uint256"
-      }
-    ],
-    "name": "harvestTrigger",
-    "outputs": [
-      {
-        "internalType": "bool",
-        "name": "",
-        "type": "bool"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
     "inputs": [],
-    "name": "lastApyCalTime",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "lastTotalAsset",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "name": "lpTokens",
+    "name": "harvester",
     "outputs": [
       {
         "internalType": "address",
@@ -315,20 +287,7 @@
   },
   {
     "inputs": [],
-    "name": "maxReportDelay",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "minReportDelay",
+    "name": "lastTotalAsset",
     "outputs": [
       {
         "internalType": "uint256",
@@ -367,19 +326,6 @@
   },
   {
     "inputs": [],
-    "name": "profitFactor",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
     "name": "protocol",
     "outputs": [
       {
@@ -392,102 +338,31 @@
     "type": "function"
   },
   {
-    "inputs": [],
-    "name": "queryTokenAspect",
-    "outputs": [
-      {
-        "components": [
-          {
-            "internalType": "address",
-            "name": "token",
-            "type": "address"
-          },
-          {
-            "internalType": "uint256",
-            "name": "aspect",
-            "type": "uint256"
-          }
-        ],
-        "internalType": "struct TokenAspect[]",
-        "name": "",
-        "type": "tuple[]"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "_amount",
+        "name": "_repayShares",
         "type": "uint256"
       },
       {
         "internalType": "uint256",
-        "name": "_totalAmount",
+        "name": "_totalShares",
         "type": "uint256"
       }
     ],
-    "name": "redeem",
+    "name": "repay",
     "outputs": [
       {
-        "components": [
-          {
-            "internalType": "address",
-            "name": "token",
-            "type": "address"
-          },
-          {
-            "internalType": "uint256",
-            "name": "amount",
-            "type": "uint256"
-          }
-        ],
-        "internalType": "struct TokenDetail[]",
-        "name": "results",
-        "type": "tuple[]"
-      }
-    ],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
+        "internalType": "address[]",
+        "name": "_assets",
+        "type": "address[]"
+      },
       {
-        "internalType": "uint256",
-        "name": "_delay",
-        "type": "uint256"
+        "internalType": "uint256[]",
+        "name": "_amounts",
+        "type": "uint256[]"
       }
     ],
-    "name": "setMaxReportDelay",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "_delay",
-        "type": "uint256"
-      }
-    ],
-    "name": "setMinReportDelay",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "_profitFactor",
-        "type": "uint256"
-      }
-    ],
-    "name": "setProfitFactor",
-    "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   },
@@ -506,10 +381,23 @@
   },
   {
     "inputs": [],
+    "name": "valueInterpreter",
+    "outputs": [
+      {
+        "internalType": "contract IValueInterpreter",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
     "name": "vault",
     "outputs": [
       {
-        "internalType": "contract VaultAPI",
+        "internalType": "contract IVault",
         "name": "",
         "type": "address"
       }
@@ -531,55 +419,6 @@
         "internalType": "address",
         "name": "",
         "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "_amount",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "_totalAmount",
-        "type": "uint256"
-      }
-    ],
-    "name": "withdraw",
-    "outputs": [
-      {
-        "components": [
-          {
-            "internalType": "address",
-            "name": "token",
-            "type": "address"
-          },
-          {
-            "internalType": "uint256",
-            "name": "amount",
-            "type": "uint256"
-          }
-        ],
-        "internalType": "struct TokenDetail[]",
-        "name": "results",
-        "type": "tuple[]"
-      }
-    ],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "withdrawBeforeHarvest",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
       }
     ],
     "stateMutability": "view",
