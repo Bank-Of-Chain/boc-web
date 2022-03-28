@@ -83,22 +83,17 @@ const getExchangePlatformAdapters = async exchangeAggregator => {
   return exchangePlatformAdapters
 }
 
-const TOKEN = {
-  USDT: 'USDT',
-  USDC: 'USDC',
-  DAI: 'DAI',
-}
-
 export default function Withdraw({
   beforePerFullShare,
   perFullShare,
   toBalance,
   usdtDecimals,
+  usdiDecimals,
   userProvider
 }) {
   const classes = useStyles()
   const dispatch = useDispatch()
-  const [token, setToken] = useState(TOKEN.USDT)
+  const [token, setToken] = useState(USDT_ADDRESS)
   const [toValue, setToValue] = useState("")
   const [allowMaxLoss, setAllowMaxLoss] = useState("0.3")
   const [slipper, setSlipper] = useState("0.3")
@@ -116,12 +111,12 @@ export default function Withdraw({
       BN(toValue)
         .multipliedBy(
           BigNumber.from(10)
-            .pow(usdtDecimals)
+            .pow(usdiDecimals)
             .toString(),
         )
         .toFixed(),
     )
-    const allowMaxLossValue = parseInt(100 * parseFloat(allowMaxLoss)) || 0
+    const allowMaxLossValue = BigNumber.from(10000 - parseInt(100 * parseFloat(allowMaxLoss))).mul(nextValue).div(BigNumber.from(1e5))
     const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider)
     const signer = userProvider.getSigner()
     const vaultContractWithSigner = vaultContract.connect(signer)
@@ -316,17 +311,17 @@ export default function Withdraw({
     }
     withdrawValidFinish = Date.now()
     setCurrentStep(1)
-    const allowMaxLossValue = parseInt(100 * parseFloat(allowMaxLoss)) || 0
     const signer = userProvider.getSigner()
     const nextValue = BigNumber.from(
       BN(toValue)
         .multipliedBy(
           BigNumber.from(10)
-            .pow(usdtDecimals)
+            .pow(usdiDecimals)
             .toString(),
         )
         .toFixed(),
     )
+    const allowMaxLossValue = BigNumber.from(10000 - parseInt(100 * parseFloat(allowMaxLoss))).mul(nextValue).div(BigNumber.from(1e5))
     try {
       const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider)
       const vaultContractWithSigner = vaultContract.connect(signer)
@@ -552,7 +547,7 @@ export default function Withdraw({
   }
 
   const getValuePercent = (balance, percent) => {
-    return Math.floor(parseFloat(toFixed(balance, BigNumber.from(10).pow(usdtDecimals))) * percent * 1000000) / 1000000
+    return Math.floor(parseFloat(toFixed(balance, BigNumber.from(10).pow(usdiDecimals))) * percent * 1000000) / 1000000
   }
 
   const handleWithdrawQuickInput = (ratio) => {
@@ -677,17 +672,17 @@ export default function Withdraw({
 
   const SettingIcon = isOpenEstimate ? CropIcon : CropFreeIcon
   const selectOptions = [{
-    label: TOKEN.USDT,
-    value: TOKEN.USDT,
+    label: 'USDT',
+    value: USDT_ADDRESS,
     img: `./images/${USDT_ADDRESS}.png`
   }, {
-    label: TOKEN.USDC,
-    value: TOKEN.USDC,
+    label: 'USDC',
+    value: USDC_ADDRESS,
     img: `./images/${USDC_ADDRESS}.png`
   }, 
   {
-    label: TOKEN.DAI,
-    value: TOKEN.DAI,
+    label: 'DAI',
+    value: DAI_ADDRESS,
     img: `./images/${DAI_ADDRESS}.png`
   }]
 
@@ -712,7 +707,7 @@ export default function Withdraw({
                 speed={3500}
               >
                 {v =>
-                  `Shares: ${toFixed(toBalance, BigNumber.from(10).pow(usdtDecimals), 6)}${` (~${toFixed(
+                  `Shares: ${toFixed(toBalance, BigNumber.from(10).pow(usdiDecimals), 6)}${` (~${toFixed(
                     toBalance.mul(v),
                     BigNumber.from(10).pow(usdtDecimals + usdtDecimals),
                     6,

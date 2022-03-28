@@ -70,6 +70,7 @@ export default function Invest (props) {
   const [usdcDecimals, setUsdcDecimals] = useState(0)
   const [daiBalance, setDaiBalance] = useState(BigNumber.from(0))
   const [daiDecimals, setDaiDecimals] = useState(0)
+  const [usdiDecimals, setUsdiDecimals] = useState(0)
 
   const [toBalance, setToBalance] = useState(BigNumber.from(0))
   const [totalSupply, setTotalSupply] = useState(BigNumber.from(0))
@@ -86,7 +87,6 @@ export default function Invest (props) {
     const usdtContract = new ethers.Contract(USDT_ADDRESS, IERC20_ABI, userProvider)
     const usdcContract = new ethers.Contract(USDC_ADDRESS, IERC20_ABI, userProvider)
     const daiContract = new ethers.Contract(DAI_ADDRESS, IERC20_ABI, userProvider)
-    const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider)
     const usdiContract = new ethers.Contract(USDI_ADDRESS, USDI_ABI, userProvider)
     Promise.all([
       usdtContract.balanceOf(address).then(setUsdtBalance),
@@ -104,6 +104,7 @@ export default function Invest (props) {
       usdtContract.decimals().then(setUsdtDecimals),
       usdcContract.decimals().then(setUsdcDecimals),
       daiContract.decimals().then(setDaiDecimals),
+      usdiContract.decimals().then(setUsdiDecimals),
       usdiContract.totalSupply().then(setTotalSupply),
       // vaultContract.token().then(setToken),
       // vaultContract.getTrackedAssets().then(setTrackedAssets)
@@ -226,6 +227,7 @@ export default function Invest (props) {
                   perFullShare={perFullShare}
                   toBalance={toBalance}
                   usdtDecimals={usdtDecimals}
+                  usdiDecimals={usdiDecimals}
                   userProvider={userProvider}
                 />
               </TabPanel>
