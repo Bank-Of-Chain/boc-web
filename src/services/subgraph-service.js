@@ -101,7 +101,7 @@ const timeStart = 1644249600;
 export const getETHLast30DaysVaultData = async () => {
     if(isEmpty(ethClient)) return []
 
-    let nextStartTimestamp = getDaysAgoTimestamp(60)
+    let nextStartTimestamp = getDaysAgoUtcTimestamp(60)
     // eth链 不统计2月7日前的数据
     if(nextStartTimestamp < timeStart){
         nextStartTimestamp = timeStart
@@ -117,11 +117,16 @@ export const getETHLast30DaysVaultData = async () => {
         .then(a => arrayAppendOfDay(a, 60))
         .then((array) => usedPreValue(array, 'totalShares', undefined))
         .then((array) => usedPreValue(array, 'unlockedPricePerShare', undefined))
-        .then((array) => array.slice(-30));
+        .then((array) => array.slice(-31));
 }
 
 function getDaysAgoTimestamp(daysAgo) {
     const currentTimestamp = Math.floor(Date.now() / 1000);
     const daysAgoTimestamp = currentTimestamp - daysAgo * 86400;
     return daysAgoTimestamp - (daysAgoTimestamp % 86400);
+}
+
+export function getDaysAgoUtcTimestamp(daysAgo) {
+    const daysAgoTimestamp = getDaysAgoTimestamp(daysAgo)
+    return daysAgoTimestamp + new Date().getTimezoneOffset() * 60 ;
 }
