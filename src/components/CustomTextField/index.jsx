@@ -16,7 +16,6 @@ function CustomTextField ({
 }) {
   const styleClasses = useStyles()
   const { root: rootClass, ...restClass } = classes
-  console.log(isMax)
 
   return (
     <TextField

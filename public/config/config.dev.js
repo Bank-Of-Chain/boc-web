@@ -27,11 +27,13 @@ const configBase = {
 
 const config137 = {
   ...configBase,
+  abi_version: 'beta-v1.5',
   apy_server: 'http://localhost:3000',
-  vault_address: "0xA343B1FC2897b8C49A72A9A0B2675cB9c7664e8c",
+  vault_address: "0x6c86D03392528DFebd8Cd83E0F567e6B0429e175",
   usdt_address: "0xc2132D05D31c914a87C6611C10748AEb04B58e8F",
   usdc_address: "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174",
   dai_address: "0x8f3Cf7ad23Cd3CaDbD9735AFf958023239c6A063",
+  usdi_address: "0x38a264A473A182d988b0Ebe351Ef431cA5CCD3A7",
   exchange_extra_params: {
     oneInchV4: {
       useHttp: true,
@@ -71,7 +73,6 @@ const config56 = {
 
 const config1 = {
   ...configBase,
-  abi_version: 'beta-v1.5',
   apy_server: 'http://localhost:5000',
   vault_address: "0x5302E909d1e93e30F05B5D6Eea766363D14F9892",
   usdt_address: "0xdAC17F958D2ee523a2206206994597C13D831ec7",
@@ -95,7 +96,7 @@ const config1 = {
 
 window.config = {
   // 本地链
-  31337: config1,
+  31337: config137,
   // polygon
   137: config137,
   // bsc
