@@ -662,7 +662,7 @@ export default function Withdraw({
             onClick={() => addToken(item.tokenAddress)}
           >
             <AddIcon fontSize='small' style={{ position: "absolute", top: 25, left: 45 }} />
-            <img className={classes.img} alt='' src={`./images/${item.tokenAddress}.png`} onError={imgError} />
+            <img className={classes.img} style={{ borderRadius: '50%' }} alt='' src={`./images/${item.tokenAddress}.png`} onError={imgError} />
             &nbsp;&nbsp;~&nbsp;{toFixed(item.amounts, BigNumber.from(10).pow(item.decimals), 6)}
           </Button>
         </GridItem>
@@ -707,11 +707,7 @@ export default function Withdraw({
                 speed={3500}
               >
                 {v =>
-                  `Shares: ${toFixed(toBalance, BigNumber.from(10).pow(usdiDecimals), 6)}${` (~${toFixed(
-                    toBalance.mul(v),
-                    BigNumber.from(10).pow(usdtDecimals + usdtDecimals),
-                    6,
-                  )} USDT)`}`
+                  `Shares: ${toFixed(toBalance, BigNumber.from(10).pow(usdiDecimals), 6)}`
                 }
               </CountTo>
             </Muted>
@@ -842,6 +838,7 @@ export default function Withdraw({
                       >
                         {map(["0.3", "0.5", "1"], (value) => (
                           <FormControlLabel
+                            key={value}
                             value={value}
                             style={{ color: "#fff" }}
                             control={<CustomRadio size="small" style={{ padding: 6 }} />}
