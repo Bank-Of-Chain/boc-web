@@ -52,9 +52,9 @@ export default function Deposit({
 }) {
   const classes = useStyles()
   const dispatch = useDispatch()
-  const [usdtValue, setUsdtValue] = useState("10000")
-  const [usdcValue, setUsdcValue] = useState("20000")
-  const [daiValue, setDaiValue] = useState("30000")
+  const [usdtValue, setUsdtValue] = useState("")
+  const [usdcValue, setUsdcValue] = useState("")
+  const [daiValue, setDaiValue] = useState("")
   const [isUsdtValueMax, setIsUstdValueMax] = useState(false)
   const [isUsdcValueMax, setIsUstcValueMax] = useState(false)
   const [isDaiValueMax, setIsDaiValueMax] = useState(false)
