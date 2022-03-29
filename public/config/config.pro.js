@@ -26,11 +26,13 @@
 
 const config137 = {
   ...configBase,
+  abi_version: 'beta-v1.5',
   apy_server: 'https://bankofchain.io/api/137',
   vault_address: "0xFB7f340A7DEfD3bB0072844db6D5EbdFAD765dea",
   usdt_address: "0xc2132D05D31c914a87C6611C10748AEb04B58e8F",
   usdc_address: "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174",
   dai_address: "0x8f3Cf7ad23Cd3CaDbD9735AFf958023239c6A063",
+  usdi_address: "",
   chain_browser_url:'https://polygonscan.com',
   exchange_extra_params: {
     oneInchV4: {
