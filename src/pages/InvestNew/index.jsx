@@ -73,11 +73,8 @@ export default function Invest (props) {
   const [usdiDecimals, setUsdiDecimals] = useState(0)
 
   const [toBalance, setToBalance] = useState(BigNumber.from(0))
-  const [totalSupply, setTotalSupply] = useState(BigNumber.from(0))
   const [beforeTotalAssets, setBeforeTotalAssets] = useState(BigNumber.from(0))
   const [totalAssets, setTotalAssets] = useState(BigNumber.from(0))
-  const [beforePerFullShare, setBeforePerFullShare] = useState(BigNumber.from(1))
-  const [perFullShare, setPerFullShare] = useState(BigNumber.from(1))
 
   const [tab, setTab] = useState(TABS.DEPOSIT)
 
@@ -94,9 +91,8 @@ export default function Invest (props) {
       daiContract.balanceOf(address).then(setDaiBalance),
       usdiContract.balanceOf(address).then(setToBalance).catch(noop),
       loadTotalAssets()
-        .then(([afterTotalAssets, afterPerFullShare]) => {
+        .then((afterTotalAssets) => {
           setTotalAssets(afterTotalAssets)
-          setPerFullShare(afterPerFullShare)
         })
         .catch(noop),
       // TODO:此处的usdtDecimals较特别为10的幂的数值，主要是因为lend方法里的usdtDecimals取幂操作
@@ -105,7 +101,6 @@ export default function Invest (props) {
       usdcContract.decimals().then(setUsdcDecimals),
       daiContract.decimals().then(setDaiDecimals),
       usdiContract.decimals().then(setUsdiDecimals),
-      usdiContract.totalSupply().then(setTotalSupply),
       // vaultContract.token().then(setToken),
       // vaultContract.getTrackedAssets().then(setTrackedAssets)
     ]).catch(() => {
@@ -120,34 +115,25 @@ export default function Invest (props) {
   }
 
   const loadTotalAssets = () => {
-    //TODO:
-    return Promise.resolve([BigNumber.from(1e6), BigNumber.from(1e6), BigNumber.from(1e6)])
-    // const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider)
-    // return Promise.all([vaultContract.totalAssets(), vaultContract.pricePerShare(), vaultContract.totalSupply()])
+    const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider)
+    return vaultContract.totalAssets()
   }
 
   useEffect(() => {
     if (isEmpty(VAULT_ADDRESS)) return
     const loadTotalAssetsFn = () =>
       loadTotalAssets()
-        .then(([afterTotalAssets, afterPerFullShare, afterTotalSupply]) => {
+        .then((afterTotalAssets) => {
           if (!afterTotalAssets.eq(beforeTotalAssets)) {
             setBeforeTotalAssets(totalAssets)
             setTotalAssets(afterTotalAssets)
-          }
-          if (!afterPerFullShare.eq(beforePerFullShare)) {
-            setBeforePerFullShare(perFullShare)
-            setPerFullShare(afterPerFullShare)
-          }
-          if (!afterTotalSupply.eq(totalSupply)) {
-            setTotalSupply(afterTotalSupply)
           }
         })
         .catch(noop)
     const timer = setInterval(loadTotalAssetsFn, 3000)
     return () => clearInterval(timer)
     // eslint-disable-next-line
-  }, [totalAssets.toString(), perFullShare.toString()])
+  }, [totalAssets.toString()])
 
   useEffect(() => {
     if (isEmpty(VAULT_ADDRESS)) return
@@ -215,19 +201,13 @@ export default function Invest (props) {
                   usdcDecimals={usdcDecimals}
                   daiBalance={daiBalance}
                   daiDecimals={daiDecimals}
-                  totalAssets={totalAssets}
-                  totalSupply={totalSupply}
-                  address={address}
                   userProvider={userProvider}
                   onConnect={loadWeb3Modal}
                 />
               </TabPanel>
               <TabPanel value={tab} index={TABS.WITHDRAW}>
                 <Withdraw
-                  beforePerFullShare={beforePerFullShare}
-                  perFullShare={perFullShare}
                   toBalance={toBalance}
-                  usdtDecimals={usdtDecimals}
                   usdiDecimals={usdiDecimals}
                   userProvider={userProvider}
                   onConnect={loadWeb3Modal}
@@ -246,7 +226,6 @@ export default function Invest (props) {
                 <TableRow>
                   <TableCell className={classNames(classes.tableCell)}>Vault Symbol</TableCell>
                   <TableCell className={classNames(classes.tableCell)}>Vault Address</TableCell>
-                  <TableCell className={classNames(classes.tableCell)}>PricePerShare</TableCell>
                   {/* <TableCell className={classNames(classes.tableCell)}>质押通证符号</TableCell>
                   <TableCell className={classNames(classes.tableCell)}>质押合约地址</TableCell> */}
                   <TableCell className={classNames(classes.tableCell)}>TVL</TableCell>
@@ -267,15 +246,6 @@ export default function Invest (props) {
                       {VAULT_ADDRESS}
                     </a>
                   </TableCell>
-                  <TableCell className={classNames(classes.tableCell)} component='th' scope='row'>
-                    <CountTo
-                      from={Number(beforePerFullShare.toBigInt())}
-                      to={Number(perFullShare.toBigInt())}
-                      speed={3500}
-                    >
-                      {v => toFixed(v, BigNumber.from(10).pow(usdtDecimals), 6)}
-                    </CountTo>
-                  </TableCell>
                   {/* <TableCell className={classNames(classes.tableCell)}>USDT</TableCell>
                   <TableCell className={classNames(classes.tableCell)}>
                     <a
@@ -290,7 +260,7 @@ export default function Invest (props) {
                   <TableCell className={classNames(classes.tableCell)}>
                     <CountTo from={Number(beforeTotalAssets.toBigInt())} to={Number(totalAssets.toBigInt())} speed={3500}>
                       {v => {
-                        return `${toFixed(v, BigNumber.from(10).pow(usdtDecimals), 6)} USDT`
+                        return `${toFixed(v, BigNumber.from(10).pow(usdiDecimals), 6)} USD`
                       }}
                     </CountTo>
                   </TableCell>

@@ -46,9 +46,6 @@ export default function Deposit({
   usdcDecimals,
   daiBalance,
   daiDecimals,
-  totalAssets,
-  totalSupply,
-  address,
   userProvider,
   onConnect
 }) {
@@ -305,6 +302,7 @@ export default function Deposit({
     }, 2000)
   }
 
+  // TODO 接valut方法
   const getEstimateValue = () => {
     return sumBy(formConfig, (config) => {
       return config.isValid ? parseInt(config.value) : 0
@@ -345,11 +343,11 @@ export default function Deposit({
         <GridItem xs={12} sm={12} md={12} lg={12}>
           <div className={classes.depositComfirmArea}>
             <Muted>
-              <p style={{ fontSize: 16, wordBreak: "break-all", letterSpacing: "0.01071em" }}>
+              {/* <p style={{ fontSize: 16, wordBreak: "break-all", letterSpacing: "0.01071em" }}>
                 Estimated:
                 &nbsp;{getEstimateValue()}
                 &nbsp;USDi
-              </p>
+              </p> */}
             </Muted>
             <Button
               disabled={isLogin && (

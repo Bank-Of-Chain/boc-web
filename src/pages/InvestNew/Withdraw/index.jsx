@@ -84,10 +84,7 @@ const getExchangePlatformAdapters = async exchangeAggregator => {
 }
 
 export default function Withdraw({
-  beforePerFullShare,
-  perFullShare,
   toBalance,
-  usdtDecimals,
   usdiDecimals,
   userProvider,
   onConnect
@@ -566,7 +563,7 @@ export default function Withdraw({
     const nextValue = BN(toValue)
     const nextToValue = nextValue.multipliedBy(
       BigNumber.from(10)
-        .pow(usdtDecimals)
+        .pow(usdiDecimals)
         .toString(),
     )
     // 判断值为正数
@@ -704,15 +701,7 @@ export default function Withdraw({
               options={selectOptions}
             />
             <Muted>
-              <CountTo
-                from={Number(beforePerFullShare.toBigInt())}
-                to={Number(perFullShare.toBigInt())}
-                speed={3500}
-              >
-                {v =>
-                  `Shares: ${toFixed(toBalance, BigNumber.from(10).pow(usdiDecimals), 6)}`
-                }
-              </CountTo>
+              {`USDi: ${toFixed(toBalance, BigNumber.from(10).pow(usdiDecimals), 6)}`}
             </Muted>
           </div>
         </GridItem>
