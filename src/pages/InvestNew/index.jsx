@@ -63,7 +63,7 @@ const { BigNumber } = ethers
 export default function Invest (props) {
   const classes = useStyles()
   const dispatch = useDispatch()
-  const { address, userProvider } = props
+  const { address, userProvider, loadWeb3Modal } = props
   const [usdtBalance, setUsdtBalance] = useState(BigNumber.from(0))
   const [usdtDecimals, setUsdtDecimals] = useState(0)
   const [usdcBalance, setUsdcBalance] = useState(BigNumber.from(0))
@@ -219,6 +219,7 @@ export default function Invest (props) {
                   totalSupply={totalSupply}
                   address={address}
                   userProvider={userProvider}
+                  onConnect={loadWeb3Modal}
                 />
               </TabPanel>
               <TabPanel value={tab} index={TABS.WITHDRAW}>
@@ -229,70 +230,75 @@ export default function Invest (props) {
                   usdtDecimals={usdtDecimals}
                   usdiDecimals={usdiDecimals}
                   userProvider={userProvider}
+                  onConnect={loadWeb3Modal}
                 />
               </TabPanel>
             </Card>
           </GridItem>
         </GridContainer>
-        <p style={{ color: "#fff", letterSpacing: "0.01071em" }}>More Details</p>
-        <TableContainer component={Paper} style={{ borderRadius: 0 }}>
-          <Table className={classNames(classes.table)} aria-label='simple table'>
-            <TableHead>
-              <TableRow>
-                <TableCell className={classNames(classes.tableCell)}>Vault Symbol</TableCell>
-                <TableCell className={classNames(classes.tableCell)}>Vault Address</TableCell>
-                <TableCell className={classNames(classes.tableCell)}>PricePerShare</TableCell>
-                {/* <TableCell className={classNames(classes.tableCell)}>质押通证符号</TableCell>
-                <TableCell className={classNames(classes.tableCell)}>质押合约地址</TableCell> */}
-                <TableCell className={classNames(classes.tableCell)}>TVL</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              <TableRow>
-                <TableCell className={classNames(classes.tableCell)} component='th' scope='row'>
-                  BOC_Vault
-                </TableCell>
-                <TableCell className={classNames(classes.tableCell)}>
-                  <a
-                    style={{ color: "rgb(105, 192, 255)" }}
-                    href={CHAIN_BROWSER_URL && `${CHAIN_BROWSER_URL}/address/${VAULT_ADDRESS}`}
-                    target='_blank'
-                    rel='noopener noreferrer'
-                  >
-                    {VAULT_ADDRESS}
-                  </a>
-                </TableCell>
-                <TableCell className={classNames(classes.tableCell)} component='th' scope='row'>
-                  <CountTo
-                    from={Number(beforePerFullShare.toBigInt())}
-                    to={Number(perFullShare.toBigInt())}
-                    speed={3500}
-                  >
-                    {v => toFixed(v, BigNumber.from(10).pow(usdtDecimals), 6)}
-                  </CountTo>
-                </TableCell>
-                {/* <TableCell className={classNames(classes.tableCell)}>USDT</TableCell>
-                <TableCell className={classNames(classes.tableCell)}>
-                  <a
-                    style={{ color: "rgb(105, 192, 255)" }}
-                    href={CHAIN_BROWSER_URL && `${CHAIN_BROWSER_URL}/address/${USDT_ADDRESS}`}
-                    target='_blank'
-                    rel='noopener noreferrer'
-                  >
-                    {USDT_ADDRESS}
-                  </a>
-                </TableCell> */}
-                <TableCell className={classNames(classes.tableCell)}>
-                  <CountTo from={Number(beforeTotalAssets.toBigInt())} to={Number(totalAssets.toBigInt())} speed={3500}>
-                    {v => {
-                      return `${toFixed(v, BigNumber.from(10).pow(usdtDecimals), 6)} USDT`
-                    }}
-                  </CountTo>
-                </TableCell>
-              </TableRow>
-            </TableBody>
-          </Table>
-        </TableContainer>
+        <div className={classNames({
+          [classes.hidden]: isEmpty(userProvider)
+        })}>
+          <p style={{ color: "#fff", letterSpacing: "0.01071em" }}>More Details</p>
+          <TableContainer component={Paper} style={{ borderRadius: 0 }}>
+            <Table className={classNames(classes.table)} aria-label='simple table'>
+              <TableHead>
+                <TableRow>
+                  <TableCell className={classNames(classes.tableCell)}>Vault Symbol</TableCell>
+                  <TableCell className={classNames(classes.tableCell)}>Vault Address</TableCell>
+                  <TableCell className={classNames(classes.tableCell)}>PricePerShare</TableCell>
+                  {/* <TableCell className={classNames(classes.tableCell)}>质押通证符号</TableCell>
+                  <TableCell className={classNames(classes.tableCell)}>质押合约地址</TableCell> */}
+                  <TableCell className={classNames(classes.tableCell)}>TVL</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                <TableRow>
+                  <TableCell className={classNames(classes.tableCell)} component='th' scope='row'>
+                    BOC_Vault
+                  </TableCell>
+                  <TableCell className={classNames(classes.tableCell)}>
+                    <a
+                      style={{ color: "rgb(105, 192, 255)" }}
+                      href={CHAIN_BROWSER_URL && `${CHAIN_BROWSER_URL}/address/${VAULT_ADDRESS}`}
+                      target='_blank'
+                      rel='noopener noreferrer'
+                    >
+                      {VAULT_ADDRESS}
+                    </a>
+                  </TableCell>
+                  <TableCell className={classNames(classes.tableCell)} component='th' scope='row'>
+                    <CountTo
+                      from={Number(beforePerFullShare.toBigInt())}
+                      to={Number(perFullShare.toBigInt())}
+                      speed={3500}
+                    >
+                      {v => toFixed(v, BigNumber.from(10).pow(usdtDecimals), 6)}
+                    </CountTo>
+                  </TableCell>
+                  {/* <TableCell className={classNames(classes.tableCell)}>USDT</TableCell>
+                  <TableCell className={classNames(classes.tableCell)}>
+                    <a
+                      style={{ color: "rgb(105, 192, 255)" }}
+                      href={CHAIN_BROWSER_URL && `${CHAIN_BROWSER_URL}/address/${USDT_ADDRESS}`}
+                      target='_blank'
+                      rel='noopener noreferrer'
+                    >
+                      {USDT_ADDRESS}
+                    </a>
+                  </TableCell> */}
+                  <TableCell className={classNames(classes.tableCell)}>
+                    <CountTo from={Number(beforeTotalAssets.toBigInt())} to={Number(totalAssets.toBigInt())} speed={3500}>
+                      {v => {
+                        return `${toFixed(v, BigNumber.from(10).pow(usdtDecimals), 6)} USDT`
+                      }}
+                    </CountTo>
+                  </TableCell>
+                </TableRow>
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </div>
       </div>
     </div>
   )

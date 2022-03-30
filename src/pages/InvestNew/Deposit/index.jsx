@@ -7,6 +7,7 @@ import map from "lodash/map"
 import some from "lodash/some"
 import every from "lodash/every"
 import sumBy from "lodash/sumBy"
+import isEmpty from "lodash/isEmpty"
 import { makeStyles } from "@material-ui/core/styles"
 import CircularProgress from "@material-ui/core/CircularProgress"
 import Modal from "@material-ui/core/Modal"
@@ -48,7 +49,8 @@ export default function Deposit({
   totalAssets,
   totalSupply,
   address,
-  userProvider
+  userProvider,
+  onConnect
 }) {
   const classes = useStyles()
   const dispatch = useDispatch()
@@ -309,6 +311,8 @@ export default function Deposit({
     })
   }
 
+  const isLogin = !isEmpty(userProvider)
+
   return (
     <>
       <GridContainer classes={{ root: classes.depositContainer }}>
@@ -348,12 +352,14 @@ export default function Deposit({
               </p>
             </Muted>
             <Button
-              disabled={some(formConfig, item => isValidValue(item.name) === false) || every(formConfig, item => isValidValue(item.name) !== true)}
+              disabled={isLogin && (
+                some(formConfig, item => isValidValue(item.name) === false) || every(formConfig, item => isValidValue(item.name) !== true)
+              )}
               color='colorfull'
-              onClick={diposit}
-              style={{ width: 122, margin: "6px 0" }}
+              onClick={isLogin ? diposit : onConnect}
+              style={{ minWidth: 122, padding: "12px 16px", margin: "6px 0" }}
             >
-              Deposit
+              {isLogin ? "Deposit" : "Connect Wallet"}
             </Button>
           </div>
         </GridItem>

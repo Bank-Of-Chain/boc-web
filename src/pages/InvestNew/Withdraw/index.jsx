@@ -89,7 +89,8 @@ export default function Withdraw({
   toBalance,
   usdtDecimals,
   usdiDecimals,
-  userProvider
+  userProvider,
+  onConnect
 }) {
   const classes = useStyles()
   const dispatch = useDispatch()
@@ -690,6 +691,8 @@ export default function Withdraw({
   const isValidAllowLossFlag = isValidAllowLoss()
   const isValidSlipperFlag = isValidSlipper()
 
+  const isLogin = !isEmpty(userProvider)
+
   return (
     <>
       <GridContainer classes={{ root: classes.withdrawContainer }}>
@@ -736,8 +739,15 @@ export default function Withdraw({
                 Advanced Settings
               </span>
             </div>
-            <Button disabled={isUndefined(isValidToValueFlag) || !isValidToValueFlag} color='colorfull' onClick={withdraw}>
-              Withdraw
+            <Button
+              disabled={isLogin && (
+                isUndefined(isValidToValueFlag) || !isValidToValueFlag
+              )}
+              color='colorfull'
+              onClick={isLogin ? withdraw : onConnect}
+              style={{ minWidth: 122, padding: "12px 16px" }}
+            >
+              {isLogin ? "Withdraw" : "Connect Wallet"}
             </Button>
           </div>
         </GridItem>

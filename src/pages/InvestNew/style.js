@@ -14,6 +14,9 @@ const componentsStyle = (theme) => ({
   centerItem: {
     width: "630px"
   },
+  hidden: {
+    display: "none"
+  },
   brand: {
     color: "#FFFFFF",
     textAlign: "left"
