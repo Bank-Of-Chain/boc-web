@@ -3,7 +3,6 @@ import * as ethers from "ethers"
 import BN from "bignumber.js"
 import classNames from 'classnames'
 import { useDispatch } from "react-redux"
-import CountTo from "react-count-to"
 import { makeStyles } from "@material-ui/core/styles"
 import CircularProgress from "@material-ui/core/CircularProgress"
 import Modal from "@material-ui/core/Modal"
@@ -27,7 +26,6 @@ import BocStepper from "../../../components/Stepper/Stepper"
 import BocStepLabel from "../../../components/Stepper/StepLabel"
 import BocStepIcon from "../../../components/Stepper/StepIcon"
 import BocStepConnector from "../../../components/Stepper/StepConnector"
-import ButtonSelector from "../../../components/ButtonSelector"
 import CustomRadio from "./../../../components/Radio/Radio"
 import GridContainer from "../../../components/Grid/GridContainer"
 import GridItem from "../../../components/Grid/GridItem"
@@ -93,6 +91,7 @@ export default function Withdraw({
   const dispatch = useDispatch()
   const [token, setToken] = useState(USDT_ADDRESS)
   const [toValue, setToValue] = useState("")
+  const [isValueMax, setIsValueMax] = useState(false)
   const [allowMaxLoss, setAllowMaxLoss] = useState("0.3")
   const [slipper, setSlipper] = useState("0.3")
   const [shouldExchange, setShouldExchange] = useState(true)
@@ -544,14 +543,6 @@ export default function Withdraw({
     setToken(value);
   }
 
-  const getValuePercent = (balance, percent) => {
-    return Math.floor(parseFloat(toFixed(balance, BigNumber.from(10).pow(usdiDecimals))) * percent * 1000000) / 1000000
-  }
-
-  const handleWithdrawQuickInput = (ratio) => {
-    setToValue(getValuePercent(toBalance, ratio).toString())
-  }
-
   /**
    * 校验toValue是否为有效输入
    * @returns
@@ -617,6 +608,11 @@ export default function Withdraw({
     } catch (error) {
       setToValue("")
     }
+  }
+
+  const handleMaxClick = () => {
+    setToValue(toFixed(toBalance, BigNumber.from(10).pow(usdiDecimals), 6, 1))
+    setIsValueMax(true)
   }
 
   const renderEstimate = () => {
@@ -709,12 +705,12 @@ export default function Withdraw({
           <CustomTextField
             value={toValue}
             placeholder="withdraw amount"
+            maxEndAdornment
+            isMax={isValueMax}
+            onMaxClick={() => handleMaxClick()}
             onChange={handleAmountChange}
             error={!isUndefined(isValidToValueFlag) && !isValidToValueFlag && (toValue !== '0')}
           />
-          <div className={classes.selectorWrapper}>
-            <ButtonSelector onClick={handleWithdrawQuickInput} />
-          </div>
         </GridItem>
         <GridItem xs={12} sm={12} md={12} lg={12}>
           <div className={classes.withdrawComfirmArea}>

@@ -15,6 +15,10 @@ const componentsStyle = (theme) => ({
   centerItem: {
     width: "630px"
   },
+  hidden: {
+    visibility: "hidden",
+    height: "88px"
+  },
   brand: {
     color: "#FFFFFF",
     textAlign: "left"
@@ -134,12 +138,12 @@ const componentsStyle = (theme) => ({
   depositComfirmArea: {
     display: 'flex',
     justifyContent: 'space-between',
-    marginTop: 24
+    marginTop: 16
   },
   withdrawComfirmArea: {
     display: 'flex',
     justifyContent: 'space-between',
-    marginTop: 24
+    marginTop: 16
   },
   textField: {
     width: '100%',
@@ -167,10 +171,6 @@ const componentsStyle = (theme) => ({
       borderWidth: '1px',
       borderColor: dangerColor
     },
-  },
-  selectorWrapper: {
-    padding: '0 4px',
-    marginTop: '8px'
   },
   settingBtn: {
     color: "#39d0d8",

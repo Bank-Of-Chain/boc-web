@@ -35,11 +35,7 @@ const componentsStyle = (theme) => ({
   withdrawComfirmArea: {
     display: 'flex',
     justifyContent: 'space-between',
-    marginTop: 24
-  },
-  selectorWrapper: {
-    padding: '0 4px',
-    marginTop: '8px'
+    marginTop: 16
   },
   settingBtn: {
     color: "#39d0d8",

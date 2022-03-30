@@ -38,12 +38,11 @@ import Step from "@material-ui/core/Step"
 import Tabs from '@material-ui/core/Tabs'
 import Tab from '@material-ui/core/Tab'
 import TabPanel from '../../components/TabPanel'
-import TextField from '@material-ui/core/TextField'
 import BocStepper from "../../components/Stepper/Stepper"
 import BocStepLabel from "../../components/Stepper/StepLabel"
 import BocStepIcon from "../../components/Stepper/StepIcon"
 import BocStepConnector from "../../components/Stepper/StepConnector"
-import ButtonSelector from "../../components/ButtonSelector"
+import CustomTextField from "../../components/CustomTextField"
 import WarningIcon from "@material-ui/icons/Warning"
 
 import { useDispatch } from "react-redux"
@@ -112,7 +111,7 @@ const getExchangePlatformAdapters = async exchangeAggregator => {
 export default function Invest (props) {
   const classes = useStyles()
   const dispatch = useDispatch()
-  const { address, userProvider } = props
+  const { address, userProvider, loadWeb3Modal } = props
   const [usdtDecimals, setUsdtDecimals] = useState(0)
   const [beforeTotalAssets, setBeforeTotalAssets] = useState(BigNumber.from(0))
   const [totalAssets, setTotalAssets] = useState(BigNumber.from(0))
@@ -882,22 +881,15 @@ export default function Invest (props) {
   }
 
   const handleTabChange = (event, value) => setTab(value)
-  const getValuePercent = (balance, percent) => {
-    return Math.floor(parseFloat(toFixed(balance, BigNumber.from(10).pow(usdtDecimals))) * percent * 1000000) / 1000000
-  }
-
-  const handleDepositQuickInput = (ratio) => {
-    setFromValue(getValuePercent(fromBalance, ratio).toString())
-  }
-  const handleWithdrawQuickInput = (ratio) => {
-    setToValue(getValuePercent(toBalance, ratio).toString())
-  }
   const SettingIcon = isOpenEstimate ? CropIcon : CropFreeIcon
 
   const isValidToValueFlag = isValidToValue()
   const isValidFromValueFlag = isValidFromValue()
   const isValidAllowLossFlag = isValidAllowLoss()
   const isValidSlipperFlag = isValidSlipper()
+
+  const isLogin = !isEmpty(userProvider)
+
   return (
     <div className={classNames(classes.main, classes.mainRaised)}>
       <div className={classes.container}>
@@ -938,13 +930,15 @@ export default function Invest (props) {
                     </div>
                   </GridItem>
                   <GridItem xs={12} sm={12} md={12} lg={12}>
-                    <TextField
-                      classes={{
-                        root: classes.textField
-                      }}
+                    <CustomTextField
                       placeholder="deposit amount"
-                      variant="outlined"
                       value={fromValue}
+                      maxEndAdornment
+                      isMax={isFromValueMax}
+                      onMaxClick={() => {
+                        setFromValue(toFixed(fromBalance, BigNumber.from(10).pow(usdtDecimals), 6, 1))
+                        setIsFromValueMax(true)
+                      }}
                       onChange={event => {
                         try {
                           setFromValue(event.target.value)
@@ -955,9 +949,6 @@ export default function Invest (props) {
                       }}
                       error={!isUndefined(isValidFromValueFlag) && !isValidFromValueFlag && (fromValue !== '0')}
                     />
-                     <div className={classes.selectorWrapper}>
-                      <ButtonSelector onClick={handleDepositQuickInput} />
-                     </div>
                   </GridItem>
                   <GridItem xs={12} sm={12} md={12} lg={12}>
                     <div className={classes.depositComfirmArea}>
@@ -977,8 +968,13 @@ export default function Invest (props) {
                             )}
                         </p>
                       </Muted>
-                      <Button disabled={!isValidFromValueFlag || isUndefined(isValidFromValueFlag)} color='colorfull' onClick={diposit} style={{ width: 122, margin: "6px 0" }}>
-                        Deposit
+                      <Button
+                        disabled={isLogin && (!isValidFromValueFlag || isUndefined(isValidFromValueFlag))}
+                        color='colorfull'
+                        onClick={isLogin ? diposit : loadWeb3Modal}
+                        style={{ minWidth: 122, padding: "12px 16px", margin: "6px 0" }}
+                      >
+                        {isLogin ? "Deposit" : "Connect Wallet"}
                       </Button>
                     </div>
                   </GridItem>
@@ -1006,13 +1002,15 @@ export default function Invest (props) {
                     </div>
                   </GridItem>
                   <GridItem xs={12} sm={12} md={12} lg={12}>
-                    <TextField
-                      classes={{
-                        root: classes.textField
-                      }}
+                    <CustomTextField
                       placeholder="withdraw amount"
                       value={toValue}
-                      variant="outlined"
+                      maxEndAdornment
+                      isMax={isFromValueMax}
+                      onMaxClick={() => {
+                        setToValue(toFixed(toBalance, BigNumber.from(10).pow(usdtDecimals), 6, 1))
+                        setIsToValueMax(true)
+                      }}
                       onChange={event => {
                         try {
                           setToValue(event.target.value)
@@ -1023,9 +1021,6 @@ export default function Invest (props) {
                       }}
                       error={!isUndefined(isValidToValueFlag) && !isValidToValueFlag && (toValue !== '0')}
                     />
-                    <div className={classes.selectorWrapper}>
-                      <ButtonSelector onClick={handleWithdrawQuickInput} />
-                    </div>
                   </GridItem>
                   <GridItem xs={12} sm={12} md={12} lg={12}>
                     <div className={classes.withdrawComfirmArea}>
@@ -1039,8 +1034,13 @@ export default function Invest (props) {
                           Advanced Settings
                         </span>
                       </div>
-                      <Button disabled={isUndefined(isValidToValueFlag) || !isValidToValueFlag} color='colorfull' onClick={withdraw}>
-                        Withdraw
+                      <Button
+                        disabled={isLogin && (isUndefined(isValidToValueFlag) || !isValidToValueFlag)}
+                        color='colorfull'
+                        onClick={isLogin ? withdraw : loadWeb3Modal}
+                        style={{ minWidth: 122, padding: "12px 16px" }}
+                      >
+                        {isLogin ? "Withdraw" : "Connect Wallet"}
                       </Button>
                     </div>
                   </GridItem>
@@ -1210,65 +1210,69 @@ export default function Invest (props) {
             </Card>
           </GridItem>
         </GridContainer>
-        <p style={{ color: "#fff", letterSpacing: "0.01071em" }}>More Details</p>
-        <TableContainer component={Paper} style={{ borderRadius: 0 }}>
-          <Table className={classNames(classes.table)} aria-label='simple table'>
-            <TableHead>
-              <TableRow>
-                <TableCell className={classNames(classes.tableCell)}>Vault Symbol</TableCell>
-                <TableCell className={classNames(classes.tableCell)}>Vault Address</TableCell>
-                <TableCell className={classNames(classes.tableCell)}>PricePerShare</TableCell>
-                {/* <TableCell className={classNames(classes.tableCell)}>质押通证符号</TableCell>
-                <TableCell className={classNames(classes.tableCell)}>质押合约地址</TableCell> */}
-                <TableCell className={classNames(classes.tableCell)}>TVL</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              <TableRow>
-                <TableCell className={classNames(classes.tableCell)} component='th' scope='row'>
-                  BOC_Vault
-                </TableCell>
-                <TableCell className={classNames(classes.tableCell)}>
-                  <a
-                    style={{ color: "rgb(105, 192, 255)" }}
-                    href={CHAIN_BROWSER_URL && `${CHAIN_BROWSER_URL}/address/${VAULT_ADDRESS}`}
-                    target='_blank'
-                    rel='noopener noreferrer'
-                  >
-                    {VAULT_ADDRESS}
-                  </a>
-                </TableCell>
-                <TableCell className={classNames(classes.tableCell)} component='th' scope='row'>
-                  <CountTo
-                    from={Number(beforePerFullShare.toBigInt())}
-                    to={Number(perFullShare.toBigInt())}
-                    speed={3500}
-                  >
-                    {v => toFixed(v, BigNumber.from(10).pow(usdtDecimals), 6)}
-                  </CountTo>
-                </TableCell>
-                {/* <TableCell className={classNames(classes.tableCell)}>USDT</TableCell>
-                <TableCell className={classNames(classes.tableCell)}>
-                  <a
-                    style={{ color: "rgb(105, 192, 255)" }}
-                    href={CHAIN_BROWSER_URL && `${CHAIN_BROWSER_URL}/address/${USDT_ADDRESS}`}
-                    target='_blank'
-                    rel='noopener noreferrer'
-                  >
-                    {USDT_ADDRESS}
-                  </a>
-                </TableCell> */}
-                <TableCell className={classNames(classes.tableCell)}>
-                  <CountTo from={Number(beforeTotalAssets.toBigInt())} to={Number(totalAssets.toBigInt())} speed={3500}>
-                    {v => {
-                      return `${toFixed(v, BigNumber.from(10).pow(usdtDecimals), 6)} USDT`
-                    }}
-                  </CountTo>
-                </TableCell>
-              </TableRow>
-            </TableBody>
-          </Table>
-        </TableContainer>
+        <div className={classNames({
+          [classes.hidden]: isEmpty(userProvider)
+        })}>
+          <p style={{ color: "#fff", letterSpacing: "0.01071em" }}>More Details</p>
+          <TableContainer component={Paper} style={{ borderRadius: 0 }}>
+            <Table className={classNames(classes.table)} aria-label='simple table'>
+              <TableHead>
+                <TableRow>
+                  <TableCell className={classNames(classes.tableCell)}>Vault Symbol</TableCell>
+                  <TableCell className={classNames(classes.tableCell)}>Vault Address</TableCell>
+                  <TableCell className={classNames(classes.tableCell)}>PricePerShare</TableCell>
+                  {/* <TableCell className={classNames(classes.tableCell)}>质押通证符号</TableCell>
+                  <TableCell className={classNames(classes.tableCell)}>质押合约地址</TableCell> */}
+                  <TableCell className={classNames(classes.tableCell)}>TVL</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                <TableRow>
+                  <TableCell className={classNames(classes.tableCell)} component='th' scope='row'>
+                    BOC_Vault
+                  </TableCell>
+                  <TableCell className={classNames(classes.tableCell)}>
+                    <a
+                      style={{ color: "rgb(105, 192, 255)" }}
+                      href={CHAIN_BROWSER_URL && `${CHAIN_BROWSER_URL}/address/${VAULT_ADDRESS}`}
+                      target='_blank'
+                      rel='noopener noreferrer'
+                    >
+                      {VAULT_ADDRESS}
+                    </a>
+                  </TableCell>
+                  <TableCell className={classNames(classes.tableCell)} component='th' scope='row'>
+                    <CountTo
+                      from={Number(beforePerFullShare.toBigInt())}
+                      to={Number(perFullShare.toBigInt())}
+                      speed={3500}
+                    >
+                      {v => toFixed(v, BigNumber.from(10).pow(usdtDecimals), 6)}
+                    </CountTo>
+                  </TableCell>
+                  {/* <TableCell className={classNames(classes.tableCell)}>USDT</TableCell>
+                  <TableCell className={classNames(classes.tableCell)}>
+                    <a
+                      style={{ color: "rgb(105, 192, 255)" }}
+                      href={CHAIN_BROWSER_URL && `${CHAIN_BROWSER_URL}/address/${USDT_ADDRESS}`}
+                      target='_blank'
+                      rel='noopener noreferrer'
+                    >
+                      {USDT_ADDRESS}
+                    </a>
+                  </TableCell> */}
+                  <TableCell className={classNames(classes.tableCell)}>
+                    <CountTo from={Number(beforeTotalAssets.toBigInt())} to={Number(totalAssets.toBigInt())} speed={3500}>
+                      {v => {
+                        return `${toFixed(v, BigNumber.from(10).pow(usdtDecimals), 6)} USDT`
+                      }}
+                    </CountTo>
+                  </TableCell>
+                </TableRow>
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </div>
       </div>
       {/* deposit时的loading窗 */}
       <Modal

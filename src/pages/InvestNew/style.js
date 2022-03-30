@@ -82,7 +82,7 @@ const componentsStyle = (theme) => ({
   },
   tableCell: {
     color: '#fff',
-    fontSize: '14px',
+    fontSize: '12px',
     letterSpacing: '0.01071em'
   },
   switchBase: {
