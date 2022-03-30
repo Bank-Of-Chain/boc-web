@@ -334,7 +334,7 @@ export default function Deposit({
                     <img className={classes.tokenLogo} alt='' src={`./images/${item.address}.png`} />
                     <span className={classes.tokenName}>{item.name}</span>
                   </div> 
-                  <Muted>{`Balance: ${toFixed(item.balance, BigNumber.from(10).pow(item.decimals), 6)}`}</Muted>
+                  <Muted>{`Balance: ${toFixed(item.balance, BigNumber.from(10).pow(item.decimals), 6, 1)}`}</Muted>
                 </div>
               </GridItem>
               <GridItem xs={12} sm={12} md={12} lg={12}>
