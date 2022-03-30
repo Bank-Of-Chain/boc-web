@@ -55,28 +55,22 @@ export default function Deposit({
   const [usdtValue, setUsdtValue] = useState("")
   const [usdcValue, setUsdcValue] = useState("")
   const [daiValue, setDaiValue] = useState("")
-  const [isUsdtValueMax, setIsUstdValueMax] = useState(false)
-  const [isUsdcValueMax, setIsUstcValueMax] = useState(false)
-  const [isDaiValueMax, setIsDaiValueMax] = useState(false)
   const [estimateValue, setEstimateValue] = useState("")
   const [isLoading, setIsLoading] = useState(false)
 
   const tokenBasicState = {
     [TOKEN.USDT]: {
       value: usdtValue,
-      isValueMax: isUsdtValueMax,
       balance: usdtBalance,
       decimals: usdtDecimals,
     },
     [TOKEN.USDC]: {
       value: usdcValue,
-      isValueMax: isUsdcValueMax,
       balance: usdcBalance,
       decimals: usdcDecimals
     },
     [TOKEN.DAI]: {
       value: daiValue,
-      isValueMax: isDaiValueMax,
       balance: daiBalance,
       decimals: daiDecimals
     }
@@ -86,21 +80,18 @@ export default function Deposit({
     name: TOKEN.USDT,
     address: USDT_ADDRESS,
     setValue: setUsdtValue,
-    setIsValueMax: setIsUstdValueMax,
     isValid: isValidValue(TOKEN.USDT),
     ...tokenBasicState[TOKEN.USDT],
   }, {
     name: TOKEN.USDC,
     address: USDC_ADDRESS,
     setValue: setUsdcValue,
-    setIsValueMax: setIsUstcValueMax,
     isValid: isValidValue(TOKEN.USDC),
     ...tokenBasicState[TOKEN.USDC],
   }, {
     name: TOKEN.DAI,
     address: DAI_ADDRESS,
     setValue: setDaiValue,
-    setIsValueMax: setIsDaiValueMax,
     isValid: isValidValue(TOKEN.DAI),
     ...tokenBasicState[TOKEN.DAI],
   }]
@@ -110,7 +101,7 @@ export default function Deposit({
    * @returns
    */
   function isValidValue(token) {
-    const { value, isValueMax, balance, decimals } = tokenBasicState[token]
+    const { value, balance, decimals } = tokenBasicState[token]
     if (value === "" || value === "-" || value === '0') return
     // 如果不是一个数值
     if (isNaN(Number(value))) return false
@@ -122,15 +113,13 @@ export default function Deposit({
     )
     // 判断值为正数
     if (nextFromValue.lte(0)) return false
-    if (!isValueMax) {
-      // 精度处理完之后，应该为整数
-      const nextFromValueString = nextValue.multipliedBy(
-        BigNumber.from(10)
-          .pow(6)
-          .toString(),
-      )
-      if (nextFromValueString.toFixed().indexOf(".") !== -1) return false
-    }
+    // 精度处理完之后，应该为整数
+    const nextFromValueString = nextValue.multipliedBy(
+      BigNumber.from(10)
+        .pow(6)
+        .toString(),
+    )
+    if (nextFromValueString.toFixed().indexOf(".") !== -1) return false
     // 数值小于最大数量
     if (balance.lt(BigNumber.from(nextFromValue.toFixed()))) return false
     return true
@@ -142,12 +131,10 @@ export default function Deposit({
     } catch (error) {
       item.setValue("")
     }
-    item.setIsValueMax(false)
   }
 
   const handleMaxClick = (item) => {
     item.setValue(toFixed(item.balance, BigNumber.from(10).pow(item.decimals), 6, 1))
-    item.setIsValueMax(true)
   }
 
   const getTokenAndAmonut = () => {
@@ -356,7 +343,6 @@ export default function Deposit({
                   onChange={(event) => handleInputChange(event, item)}
                   placeholder="deposit amount"
                   maxEndAdornment
-                  isMax={item.isValueMax}
                   onMaxClick={() => handleMaxClick(item)}
                   error={!isUndefined(item.isValid) && !item.isValid}
                 />

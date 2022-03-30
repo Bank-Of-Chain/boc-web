@@ -934,7 +934,6 @@ export default function Invest (props) {
                       placeholder="deposit amount"
                       value={fromValue}
                       maxEndAdornment
-                      isMax={isFromValueMax}
                       onMaxClick={() => {
                         setFromValue(toFixed(fromBalance, BigNumber.from(10).pow(usdtDecimals), 6, 1))
                         setIsFromValueMax(true)
@@ -1006,7 +1005,6 @@ export default function Invest (props) {
                       placeholder="withdraw amount"
                       value={toValue}
                       maxEndAdornment
-                      isMax={isFromValueMax}
                       onMaxClick={() => {
                         setToValue(toFixed(toBalance, BigNumber.from(10).pow(usdtDecimals), 6, 1))
                         setIsToValueMax(true)

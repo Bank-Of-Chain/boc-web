@@ -91,7 +91,6 @@ export default function Withdraw({
   const dispatch = useDispatch()
   const [token, setToken] = useState(USDT_ADDRESS)
   const [toValue, setToValue] = useState("")
-  const [isValueMax, setIsValueMax] = useState(false)
   const [allowMaxLoss, setAllowMaxLoss] = useState("0.3")
   const [slipper, setSlipper] = useState("0.3")
   const [shouldExchange, setShouldExchange] = useState(true)
@@ -612,7 +611,6 @@ export default function Withdraw({
 
   const handleMaxClick = () => {
     setToValue(toFixed(toBalance, BigNumber.from(10).pow(usdiDecimals), 6, 1))
-    setIsValueMax(true)
   }
 
   const renderEstimate = () => {
@@ -706,7 +704,6 @@ export default function Withdraw({
             value={toValue}
             placeholder="withdraw amount"
             maxEndAdornment
-            isMax={isValueMax}
             onMaxClick={() => handleMaxClick()}
             onChange={handleAmountChange}
             error={!isUndefined(isValidToValueFlag) && !isValidToValueFlag && (toValue !== '0')}
