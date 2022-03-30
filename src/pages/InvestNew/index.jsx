@@ -201,6 +201,7 @@ export default function Invest (props) {
                   usdcDecimals={usdcDecimals}
                   daiBalance={daiBalance}
                   daiDecimals={daiDecimals}
+                  usdiDecimals={usdiDecimals}
                   userProvider={userProvider}
                   onConnect={loadWeb3Modal}
                 />

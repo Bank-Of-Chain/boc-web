@@ -122,6 +122,37 @@
     "anonymous": false,
     "inputs": [
       {
+        "indexed": true,
+        "internalType": "address",
+        "name": "strategy",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "address[]",
+        "name": "wants",
+        "type": "address[]"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256[]",
+        "name": "amouts",
+        "type": "uint256[]"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "lendValue",
+        "type": "uint256"
+      }
+    ],
+    "name": "LendToStrategy",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
         "indexed": false,
         "internalType": "uint256",
         "name": "maxSupplyDiff",
@@ -352,9 +383,26 @@
   {
     "inputs": [
       {
-        "internalType": "address[]",
-        "name": "_strategies",
-        "type": "address[]"
+        "components": [
+          {
+            "internalType": "address",
+            "name": "strategy",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "profitLimitRatio",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "lossLimitRatio",
+            "type": "uint256"
+          }
+        ],
+        "internalType": "struct VaultStorage.StrategyAdd[]",
+        "name": "strategyAdds",
+        "type": "tuple[]"
       }
     ],
     "name": "addStrategy",
@@ -479,6 +527,96 @@
       }
     ],
     "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address[]",
+        "name": "_assets",
+        "type": "address[]"
+      },
+      {
+        "internalType": "uint256[]",
+        "name": "_amounts",
+        "type": "uint256[]"
+      }
+    ],
+    "name": "estimateMint",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "unitAdjustedDeposit",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "priceAdjustedDeposit",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_fromToken",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "_toToken",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_amount",
+        "type": "uint256"
+      },
+      {
+        "components": [
+          {
+            "internalType": "address",
+            "name": "platform",
+            "type": "address"
+          },
+          {
+            "internalType": "uint8",
+            "name": "method",
+            "type": "uint8"
+          },
+          {
+            "internalType": "bytes",
+            "name": "encodeExchangeArgs",
+            "type": "bytes"
+          },
+          {
+            "internalType": "uint256",
+            "name": "slippage",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "oracleAdditionalSlippage",
+            "type": "uint256"
+          }
+        ],
+        "internalType": "struct IExchangeAggregator.ExchangeParam",
+        "name": "exchangeParam",
+        "type": "tuple"
+      }
+    ],
+    "name": "exchange",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "nonpayable",
     "type": "function"
   },
   {
@@ -704,7 +842,13 @@
       }
     ],
     "name": "mint",
-    "outputs": [],
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
     "stateMutability": "nonpayable",
     "type": "function"
   },
@@ -821,6 +965,19 @@
   {
     "inputs": [
       {
+        "internalType": "uint256",
+        "name": "_strategyAsset",
+        "type": "uint256"
+      }
+    ],
+    "name": "report",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
         "internalType": "bool",
         "name": "_adjustPositionPeriod",
         "type": "bool"
@@ -887,6 +1044,47 @@
     "inputs": [
       {
         "internalType": "address",
+        "name": "_strategy",
+        "type": "address"
+      },
+      {
+        "internalType": "bool",
+        "name": "_enabled",
+        "type": "bool"
+      }
+    ],
+    "name": "setStrategyEnforceChangeLimit",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_strategy",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_lossRatioLimit",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_profitLimitRatio",
+        "type": "uint256"
+      }
+    ],
+    "name": "setStrategySetLimitRatio",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
         "name": "_address",
         "type": "address"
       }
@@ -923,8 +1121,60 @@
     "type": "function"
   },
   {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "name": "strategies",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "lastReport",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "totalDebt",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "profitLimitRatio",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "lossLimitRatio",
+        "type": "uint256"
+      },
+      {
+        "internalType": "bool",
+        "name": "enforceChangeLimit",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
     "inputs": [],
     "name": "totalAssets",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "totalDebt",
     "outputs": [
       {
         "internalType": "uint256",

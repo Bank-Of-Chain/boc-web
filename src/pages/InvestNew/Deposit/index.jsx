@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React, { useState, useEffect } from "react"
 import * as ethers from "ethers"
 import BN from "bignumber.js"
 import { useDispatch } from "react-redux"
@@ -6,7 +6,7 @@ import isUndefined from "lodash/isUndefined"
 import map from "lodash/map"
 import some from "lodash/some"
 import every from "lodash/every"
-import sumBy from "lodash/sumBy"
+import debounce from "lodash/debounce"
 import isEmpty from "lodash/isEmpty"
 import { makeStyles } from "@material-ui/core/styles"
 import CircularProgress from "@material-ui/core/CircularProgress"
@@ -46,6 +46,7 @@ export default function Deposit({
   usdcDecimals,
   daiBalance,
   daiDecimals,
+  usdiDecimals,
   userProvider,
   onConnect
 }) {
@@ -57,6 +58,7 @@ export default function Deposit({
   const [isUsdtValueMax, setIsUstdValueMax] = useState(false)
   const [isUsdcValueMax, setIsUstcValueMax] = useState(false)
   const [isDaiValueMax, setIsDaiValueMax] = useState(false)
+  const [estimateValue, setEstimateValue] = useState("")
   const [isLoading, setIsLoading] = useState(false)
 
   const tokenBasicState = {
@@ -148,6 +150,54 @@ export default function Deposit({
     item.setIsValueMax(true)
   }
 
+  const getTokenAndAmonut = () => {
+    const isValidUsdtValue = isValidValue(TOKEN.USDT)
+    const isValidUsdcValue = isValidValue(TOKEN.USDC)
+    const isValidDaiValue = isValidValue(TOKEN.DAI)
+    const nextTokens = []
+    const nextAmounts = []
+    if (isValidUsdtValue) {
+      const nextUsdtValue = BigNumber.from(
+        BN(usdtValue)
+          .multipliedBy(
+            BigNumber.from(10)
+              .pow(usdtDecimals)
+              .toString(),
+          )
+          .toFixed(),
+      )
+      nextAmounts.push(nextUsdtValue)
+      nextTokens.push(USDT_ADDRESS)
+    }
+    if (isValidUsdcValue) {
+      const nextUsdtValue = BigNumber.from(
+        BN(usdcValue)
+          .multipliedBy(
+            BigNumber.from(10)
+              .pow(usdcDecimals)
+              .toString(),
+          )
+          .toFixed(),
+      )
+      nextAmounts.push(nextUsdtValue)
+      nextTokens.push(USDC_ADDRESS)
+    }
+    if (isValidDaiValue) {
+      const nextUsdtValue = BigNumber.from(
+        BN(daiValue)
+          .multipliedBy(
+            BigNumber.from(10)
+              .pow(daiDecimals)
+              .toString(),
+          )
+          .toFixed(),
+      )
+      nextAmounts.push(nextUsdtValue)
+      nextTokens.push(DAI_ADDRESS)
+    }
+    return [nextTokens, nextAmounts]
+  }
+
   // TODO 支持多币存
   const diposit = async () => {
     // 旧的逻辑，需要重新实现
@@ -233,47 +283,7 @@ export default function Deposit({
     }
     // step2：折算精度，授权三个币及数值
     setIsLoading(true)
-    const nextTokens = []
-    const nextAmounts = []
-    if (isValidUsdtValue) {
-      const nextUsdtValue = BigNumber.from(
-        BN(usdtValue)
-          .multipliedBy(
-            BigNumber.from(10)
-              .pow(usdtDecimals)
-              .toString(),
-          )
-          .toFixed(),
-      )
-      nextAmounts.push(nextUsdtValue)
-      nextTokens.push(USDT_ADDRESS)
-    }
-    if (isValidUsdcValue) {
-      const nextUsdtValue = BigNumber.from(
-        BN(usdcValue)
-          .multipliedBy(
-            BigNumber.from(10)
-              .pow(usdcDecimals)
-              .toString(),
-          )
-          .toFixed(),
-      )
-      nextAmounts.push(nextUsdtValue)
-      nextTokens.push(USDC_ADDRESS)
-    }
-    if (isValidDaiValue) {
-      const nextUsdtValue = BigNumber.from(
-        BN(daiValue)
-          .multipliedBy(
-            BigNumber.from(10)
-              .pow(daiDecimals)
-              .toString(),
-          )
-          .toFixed(),
-      )
-      nextAmounts.push(nextUsdtValue)
-      nextTokens.push(DAI_ADDRESS)
-    }
+    const [nextTokens, nextAmounts] = getTokenAndAmonut()
     console.log('nextTokens=', nextTokens, nextAmounts)
     const signer = userProvider.getSigner()
     for (const key in nextTokens) {
@@ -302,12 +312,26 @@ export default function Deposit({
     }, 2000)
   }
 
-  // TODO 接valut方法
-  const getEstimateValue = () => {
-    return sumBy(formConfig, (config) => {
-      return config.isValid ? parseInt(config.value) : 0
-    })
-  }
+  const estimateMint = debounce(async () => {
+    const isValidUsdtValue = isValidValue(TOKEN.USDT)
+    const isValidUsdcValue = isValidValue(TOKEN.USDC)
+    const isValidDaiValue = isValidValue(TOKEN.DAI)
+    const isFalse = (v) => v === false
+    const [tokens, amounts] = getTokenAndAmonut()
+    if (isFalse(isValidUsdtValue) || isFalse(isValidUsdcValue) || isFalse(isValidDaiValue) || tokens.length === 0) {
+      setEstimateValue(toFixed(0, BigNumber.from(10).pow(usdiDecimals), 6))
+      return
+    }
+    const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider)
+    const result = await vaultContract.callStatic.estimateMint(tokens, amounts)
+    setEstimateValue(toFixed(result.priceAdjustedDeposit, BigNumber.from(10).pow(usdiDecimals), 6))
+  }, 500)
+
+  useEffect(() => {
+    estimateMint()
+    return () => estimateMint.cancel()
+    // eslint-disable-next-line
+  }, [usdcValue, usdtValue, daiValue])
 
   const isLogin = !isEmpty(userProvider)
 
@@ -343,11 +367,11 @@ export default function Deposit({
         <GridItem xs={12} sm={12} md={12} lg={12}>
           <div className={classes.depositComfirmArea}>
             <Muted>
-              {/* <p style={{ fontSize: 16, wordBreak: "break-all", letterSpacing: "0.01071em" }}>
+              <p style={{ fontSize: 16, wordBreak: "break-all", letterSpacing: "0.01071em" }}>
                 Estimated:
-                &nbsp;{getEstimateValue()}
+                &nbsp;{estimateValue}
                 &nbsp;USDi
-              </p> */}
+              </p>
             </Muted>
             <Button
               disabled={isLogin && (
