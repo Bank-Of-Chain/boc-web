@@ -3,7 +3,9 @@
  */
 const configBase = {
   vault_address: '',
-  underlying_address: '',
+  usdt_address: '',
+  usdc_address: "",
+  dai_address: "",
   chain_browser_url: '',
   abi_version: 'v4.6',
   community_url: 'https://discord.com/channels/910840145039749141',
@@ -25,9 +27,13 @@ const configBase = {
 
 const config137 = {
   ...configBase,
+  abi_version: 'beta-v1.5',
   apy_server: 'http://localhost:3000',
-  vault_address: "0xA343B1FC2897b8C49A72A9A0B2675cB9c7664e8c",
-  underlying_address: "0xc2132D05D31c914a87C6611C10748AEb04B58e8F",
+  vault_address: "0xF3E7016C78eBeDa662D311b0ADe57Bd27b2022A6",
+  usdt_address: "0xc2132D05D31c914a87C6611C10748AEb04B58e8F",
+  usdc_address: "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174",
+  dai_address: "0x8f3Cf7ad23Cd3CaDbD9735AFf958023239c6A063",
+  usdi_address: "0x6c86D03392528DFebd8Cd83E0F567e6B0429e175",
   exchange_extra_params: {
     oneInchV4: {
       useHttp: true,
@@ -47,7 +53,9 @@ const config56 = {
   ...configBase,
   apy_server: 'http://localhost:4000',
   vault_address: "0xf2Bf7C00B4696726B3c1f6E7b87d1a4acB050a8F",
-  underlying_address: "0x55d398326f99059fF775485246999027B3197955",
+  usdt_address: "0x55d398326f99059fF775485246999027B3197955",
+  usdc_address: "0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d",
+  dai_address: "0x1AF3F329e8BE154074D8769D1FFa4eE058B1DBc3",
   exchange_extra_params: {
     oneInchV4: {
       useHttp: true,
@@ -66,8 +74,10 @@ const config56 = {
 const config1 = {
   ...configBase,
   apy_server: 'http://localhost:5000',
-  vault_address: "0x5302E909d1e93e30F05B5D6Eea766363D14F9892",
-  underlying_address: "0xdAC17F958D2ee523a2206206994597C13D831ec7",
+  vault_address: "0x66F625B8c4c635af8b74ECe2d7eD0D58b4af3C3d",
+  usdt_address: "0xdAC17F958D2ee523a2206206994597C13D831ec7",
+  usdc_address: "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+  dai_address: "0x6B175474E89094C44Da98b954EedeAC495271d0F",
   exchange_extra_params: {
     oneInchV4: {
       useHttp: true,
@@ -86,7 +96,7 @@ const config1 = {
 
 window.config = {
   // 本地链
-  31337: config1,
+  31337: config137,
   // polygon
   137: config137,
   // bsc

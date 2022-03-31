@@ -1,12 +1,23 @@
 import {
-  container
+  container,
+  dangerColor,
 } from "../../assets/jss/material-kit-react.js";
 
-const componentsStyle = {
+const componentsStyle = (theme) => ({
   container,
   center: {
     justifyContent: 'center',
-    padding: '50px 20px'
+    padding: '0 72px 50px',
+    [theme.breakpoints.down("md")]: {
+      padding: '0 16px 50px',
+    }
+  },
+  centerItem: {
+    width: "630px"
+  },
+  hidden: {
+    visibility: "hidden",
+    height: "88px"
   },
   brand: {
     color: "#FFFFFF",
@@ -41,30 +52,6 @@ const componentsStyle = {
   },
   switchBar: {
     backgroundColor: '#91d5ff !important'
-  },
-  tooltip: {
-    padding: "10px 15px",
-    minWidth: "130px",
-    color: "#555555",
-    lineHeight: "1.7em",
-    background: "#FFFFFF",
-    border: "none",
-    borderRadius: "3px",
-    boxShadow: "0 8px 10px 1px rgba(0, 0, 0, 0.14), 0 3px 14px 2px rgba(0, 0, 0, 0.12), 0 5px 5px -3px rgba(0, 0, 0, 0.2)",
-    maxWidth: "200px",
-    textAlign: "center",
-    fontFamily: '"Helvetica Neue",Helvetica,Arial,sans-serif',
-    fontSize: "0.875em",
-    fontStyle: "normal",
-    fontWeight: "400",
-    textShadow: "none",
-    textTransform: "none",
-    letterSpacing: "normal",
-    wordBreak: "normal",
-    wordSpacing: "normal",
-    wordWrap: "normal",
-    whiteSpace: "normal",
-    lineBreak: "auto",
   },
   img: {
     width: '25px'
@@ -120,6 +107,118 @@ const componentsStyle = {
   stepItem: {
     color: '#fff'
   },
-};
+  tabsRoot: {
+    padding: "0 20px",
+  },
+  tabsIndicator: {
+    backgroundColor: 'transparent',
+    display: 'flex',
+    justifyContent: 'center',
+    '& > span': {
+      maxWidth: 120,
+      width: '100%',
+      backgroundColor: '#fff',
+    },
+  },
+  tabTextColor: {
+    color: '#fff'
+  },
+  tabRoot: {
+    width: '50%',
+    fontSize: '16px',
+    maxWidth: 'none'
+  },
+  valutMainContainer: {
+    padding: "36px 20px 0",
+  },
+  mainInputLabelWrapper: {
+    display: 'flex',
+    justifyContent: 'space-between'
+  },
+  depositComfirmArea: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    marginTop: 16
+  },
+  withdrawComfirmArea: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    marginTop: 16
+  },
+  textField: {
+    width: '100%',
+    margin: "12px 0 8px",
+    '& .MuiInputBase-root': {
+      color: '#fff',
+      borderRadius: '6px',
+    },
+    '& ..MuiOutlinedInput-input': {
+      padding: '16px 14px',
+    },
+    '& .MuiOutlinedInput-notchedOutline': {
+      borderWidth: '1px',
+      borderColor: '#fff'
+    },
+    '& .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline': {
+      borderWidth: '1px',
+      borderColor: '#fff'
+    },
+    '& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline': {
+      borderWidth: '1px',
+      borderColor: '#fff'
+    },
+    '& .MuiOutlinedInput-root.Mui-error .MuiOutlinedInput-notchedOutline': {
+      borderWidth: '1px',
+      borderColor: dangerColor
+    },
+  },
+  settingBtn: {
+    color: "#39d0d8",
+    textAlign: "right",
+    lineHeight: "36px",
+    padding: "10px 0",
+    marginRight: '16px'
+  },
+  settingItem: {
+    height: 38,
+    lineHeight: '38px',
+    marginBottom: 16,
+    '&:first-child': {
+      marginTop: 24
+    }
+  },
+  settingLabel: {
+    position: 'relative',
+    minWidth: 100,
+    marginRight: 16,
+    textAlign: 'right'
+  },
+  maxLossFormCtrl: {
+    width: "160px"
+  },
+  exchanged: {
+    position: 'relative',
+    paddingLeft: 16,
+  },
+  tooltip: {
+    fontSize: '14px'
+  },
+  labelToolTipIcon: {
+    position: 'absolute',
+    left: 0,
+    top: '50%',
+    color: "#fff",
+    fontSize: 16,
+    transform: 'translate(0, -50%)'
+  },
+  slippageItem: {
+    display: 'flex',
+    alignItems: 'center'
+  },
+  slippageInput: {
+    width: 96,
+    marginLeft: 16
+  }
+});
 
 export default componentsStyle;

@@ -20,12 +20,21 @@ const strategyAbi = require(`./abis/${abiPrefix}/strategy-abi.json`);
 const ierc20Abi = require(`./abis/${abiPrefix}/ierc20-abi.json`);
 const treasureAbi = require(`./abis/${abiPrefix}/treasure-abi.json`);
 const exchangeAggreatorAbi = require(`./abis/${abiPrefix}/exchange-aggregator-abi.json`);
+let usdiAbi;
+try {
+  usdiAbi = require(`./abis/${abiPrefix}/usdi.json`);
+} catch (error) {
+  usdiAbi = []
+}
 
 // === configs === //
 export const APY_SERVER = config.apy_server;
 export const VAULT_ADDRESS = config.vault_address;
 export const EXCHANGE_EXTRA_PARAMS = config.exchange_extra_params;
-export const USDT_ADDRESS = config.underlying_address;
+export const USDT_ADDRESS = config.usdt_address;
+export const USDC_ADDRESS = config.usdc_address;
+export const DAI_ADDRESS = config.dai_address;
+export const USDI_ADDRESS = config.usdi_address;
 export const CHAIN_BROWSER_URL = config.chain_browser_url;
 export const TELEGRAM_URL = config.telegram_url;
 export const SUB_GRAPH_URL = config.sub_graph_url;
@@ -51,6 +60,8 @@ export const IERC20_ABI = ierc20Abi;
 export const EXCHANGE_AGGREGATOR_ABI = exchangeAggreatorAbi;
 
 export const TREASURE_ABI = treasureAbi;
+
+export const USDI_ABI = usdiAbi;
 
 export const NET_WORKS = [
   {

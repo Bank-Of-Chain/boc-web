@@ -20,7 +20,7 @@ import Alert from "@material-ui/lab/Alert"
 import { Button } from "@material-ui/core"
 
 // === Utils === //
-import { USDT_ADDRESS, NET_WORKS } from "./constants"
+import { USDT_ADDRESS, NET_WORKS, abiPrefix } from "./constants"
 import { makeStyles } from "@material-ui/core/styles"
 import { SafeAppWeb3Modal } from "@gnosis.pm/safe-apps-web3modal"
 import { lendSwap } from "piggy-finance-utils"
@@ -287,6 +287,7 @@ function App () {
     logoutOfWeb3Modal,
     userProvider,
     changeNetwork,
+    selectedChainId
   }
 
   return (
@@ -324,8 +325,8 @@ function App () {
               }
             >
               <Frame {...nextProps}>
-                {/* <Invest {...nextProps} /> */}
-                <InvestNew {...nextProps} />
+                {/* beta-v1.5 使用的是多币，所以需要采用新的存储界面 */}
+                { abiPrefix === 'beta-v1.5' ? <InvestNew {...nextProps} /> : <Invest {...nextProps} /> }
               </Frame>
             </Suspense>
           </Route>

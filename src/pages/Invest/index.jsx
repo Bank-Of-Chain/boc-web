@@ -35,10 +35,14 @@ import Tooltip from "@material-ui/core/Tooltip"
 import InfoIcon from "@material-ui/icons/Info"
 import Modal from "@material-ui/core/Modal"
 import Step from "@material-ui/core/Step"
+import Tabs from '@material-ui/core/Tabs'
+import Tab from '@material-ui/core/Tab'
+import TabPanel from '../../components/TabPanel'
 import BocStepper from "../../components/Stepper/Stepper"
 import BocStepLabel from "../../components/Stepper/StepLabel"
 import BocStepIcon from "../../components/Stepper/StepIcon"
 import BocStepConnector from "../../components/Stepper/StepConnector"
+import CustomTextField from "../../components/CustomTextField"
 import WarningIcon from "@material-ui/icons/Warning"
 
 import { useDispatch } from "react-redux"
@@ -87,6 +91,11 @@ const steps = [
   { title: "Withdraw" },
 ]
 
+const TABS = {
+  DEPOSIT: 'Deposit',
+  WITHDRAW: 'Withdraw'
+}
+
 const useStyles = makeStyles(styles)
 const { BigNumber } = ethers
 
@@ -102,7 +111,7 @@ const getExchangePlatformAdapters = async exchangeAggregator => {
 export default function Invest (props) {
   const classes = useStyles()
   const dispatch = useDispatch()
-  const { address, userProvider } = props
+  const { address, userProvider, loadWeb3Modal } = props
   const [usdtDecimals, setUsdtDecimals] = useState(0)
   const [beforeTotalAssets, setBeforeTotalAssets] = useState(BigNumber.from(0))
   const [totalAssets, setTotalAssets] = useState(BigNumber.from(0))
@@ -129,6 +138,9 @@ export default function Invest (props) {
   const [isWithdrawLoading, setIsWithdrawLoading] = useState(false)
   const [currentStep, setCurrentStep] = useState(0)
   const [withdrawError, setWithdrawError] = useState({})
+
+  const [tab, setTab] = useState(TABS.DEPOSIT)
+
   // 载入账户数据
   const loadBanlance = () => {
     if (isEmpty(address)) return loadBanlance
@@ -774,6 +786,9 @@ export default function Invest (props) {
     if (isOpenEstimate && isValidAllowLoss() && isValidSlipper() && isValidToValue()){
       estimateWithdraw()
     }
+    if (isEmpty(toValue)) {
+      setEstimateWithdrawArray([])
+    }
     return () => estimateWithdraw.cancel()
     // eslint-disable-next-line
   }, [toValue, allowMaxLoss, slipper, shouldExchange, isOpenEstimate])
@@ -820,7 +835,7 @@ export default function Invest (props) {
     if (isEstimate) {
       return (
         <GridItem xs={12} sm={12} md={12} lg={12}>
-          <div style={{ textAlign: "center", padding: "70px 0 50px" }}>
+          <div style={{ textAlign: "center", padding: "35px 0 25px" }}>
             <CircularProgress fontSize='large' color='primary' />
           </div>
         </GridItem>
@@ -829,7 +844,7 @@ export default function Invest (props) {
     if (isUndefined(estimateWithdrawArray)) {
       return (
         <GridItem xs={12} sm={12} md={12} lg={12}>
-          <div style={{ textAlign: "center", minHeight: "100px", color: "#fff", padding: "70px 0 50px" }}>
+          <div style={{ textAlign: "center", minHeight: "100px", color: "#fff", padding: "35px 0 25px" }}>
             <ErrorOutlineIcon fontSize='large' />
             <p>Amount estimate failed, please try again!</p>
           </div>
@@ -839,7 +854,7 @@ export default function Invest (props) {
     if (isEmpty(estimateWithdrawArray) || isEmpty(toValue)) {
       return (
         <GridItem xs={12} sm={12} md={12} lg={12}>
-          <div style={{ textAlign: "center", minHeight: "100px", color: "#fff", padding: "70px 0 50px" }}>
+          <div style={{ textAlign: "center", minHeight: "100px", color: "#fff", padding: "35px 0 25px" }}>
             <AndroidIcon fontSize='large' />
             <p style={{ marginTop: 0, letterSpacing: "0.01071em" }}>No estimated value available</p>
           </div>
@@ -857,7 +872,7 @@ export default function Invest (props) {
             onClick={() => addToken(item.tokenAddress)}
           >
             <AddIcon fontSize='small' style={{ position: "absolute", top: 25, left: 45 }} />
-            <img className={classes.img} alt='' style={{ borderRadius: '50%' }} src={`./images/${item.tokenAddress}.png`} onError={imgError} />
+            <img className={classes.img} alt='' src={`./images/${item.tokenAddress}.png`} onError={imgError} />
             &nbsp;&nbsp;~&nbsp;{toFixed(item.amounts, BigNumber.from(10).pow(item.decimals), 6)}
           </Button>
         </GridItem>
@@ -865,62 +880,77 @@ export default function Invest (props) {
     })
   }
 
+  const handleTabChange = (event, value) => setTab(value)
+  const SettingIcon = isOpenEstimate ? CropIcon : CropFreeIcon
+
   const isValidToValueFlag = isValidToValue()
   const isValidFromValueFlag = isValidFromValue()
   const isValidAllowLossFlag = isValidAllowLoss()
   const isValidSlipperFlag = isValidSlipper()
+
+  const isLogin = !isEmpty(userProvider)
+
   return (
     <div className={classNames(classes.main, classes.mainRaised)}>
       <div className={classes.container}>
         <GridContainer className={classNames(classes.center)}>
-          <GridItem xs={12} sm={12} md={8}>
+          <GridItem xs={12} sm={12} md={8} className={classNames(classes.centerItem)}>
+            <CardHeader
+              style={{ color: "#fff" }}
+              avatar={<img style={{ width: 35 }} alt='' src={`./images/${USDT_ADDRESS}.png`} />}
+              title={<span style={{ fontWeight: 700, fontSize: "16px", lineHeight: "20px" }}>USDT VAULT</span>}
+            />
             <Card style={{ border: "1px solid #fff", padding: 20, backgroundColor: "transparent" }}>
-              <CardHeader
-                style={{ color: "#fff" }}
-                avatar={<img style={{ width: 35, borderRadius: '50%' }} alt='' src={`./images/${USDT_ADDRESS}.png`} />}
-                title={<span style={{ fontWeight: 700, fontSize: "16px", lineHeight: "20px" }}>USDT VAULT</span>}
-              />
-              <GridContainer style={{ padding: "0 20px" }}>
-                <GridItem xs={12} sm={12} md={12} lg={12}>
-                  <CustomInput
-                    labelText={`Balance: ${toFixed(fromBalance, BigNumber.from(10).pow(usdtDecimals), 6)}`}
-                    inputProps={{
-                      placeholder: "deposit amount",
-                      value: fromValue,
-                      endAdornment: (
-                        <span
-                          style={
-                            isFromValueMax
-                              ? { color: "#da2eef", cursor: "pointer", fontWeight: "bold" }
-                              : { color: "#69c0ff", cursor: "pointer" }
-                          }
-                          onClick={() => {
-                            setFromValue(toFixed(fromBalance, BigNumber.from(10).pow(usdtDecimals), 6, 1))
-                            setIsFromValueMax(true)
-                          }}
-                        >
-                          Max
-                        </span>
-                      ),
-                      onChange: event => {
+              <Tabs
+                value={tab}
+                onChange={handleTabChange}
+                classes={{
+                  root: classes.tabsRoot,
+                  indicator: classes.tabsIndicator
+                }}
+                TabIndicatorProps={{ children: <span /> }}
+              >
+                  {map(Object.keys(TABS), (key) => (
+                    <Tab
+                      key={key}
+                      label={TABS[key]}
+                      value={TABS[key]}
+                      classes={{
+                        root: classes.tabRoot,
+                        textColorInherit: classes.tabTextColor
+                      }}
+                    />
+                  ))}
+              </Tabs>
+              <TabPanel value={tab} index={TABS.DEPOSIT}>
+                <GridContainer classes={{ root: classes.valutMainContainer }}>
+                  <GridItem xs={12} sm={12} md={12} lg={12}>
+                    <div className={classes.mainInputLabelWrapper}>
+                      <Muted>{`Balance: ${toFixed(fromBalance, BigNumber.from(10).pow(usdtDecimals), 6)}`}</Muted>
+                    </div>
+                  </GridItem>
+                  <GridItem xs={12} sm={12} md={12} lg={12}>
+                    <CustomTextField
+                      placeholder="deposit amount"
+                      value={fromValue}
+                      maxEndAdornment
+                      onMaxClick={() => {
+                        setFromValue(toFixed(fromBalance, BigNumber.from(10).pow(usdtDecimals), 6, 1))
+                        setIsFromValueMax(true)
+                      }}
+                      onChange={event => {
                         try {
                           setFromValue(event.target.value)
                         } catch (error) {
                           setFromValue("")
                         }
                         setIsFromValueMax(false)
-                      },
-                    }}
-                    error={!isUndefined(isValidFromValueFlag) && !isValidFromValueFlag}
-                    success={!isUndefined(isValidFromValueFlag) && isValidFromValueFlag}
-                    formControlProps={{
-                      fullWidth: true,
-                    }}
-                  />
-                </GridItem>
-                <GridItem xs={12} sm={12} md={12} lg={12}>
-                  <GridContainer>
-                    <GridItem xs={8} sm={8} md={9} lg={9}>
+                      }}
+                      error={!isUndefined(isValidFromValueFlag) && !isValidFromValueFlag && (fromValue !== '0')}
+                    />
+                  </GridItem>
+                  <GridItem xs={12} sm={12} md={12} lg={12}>
+                    <div className={classes.depositComfirmArea}>
                       <Muted>
                         <p style={{ fontSize: 16, wordBreak: "break-all", letterSpacing: "0.01071em" }}>
                           Estimated Shares：
@@ -937,312 +967,310 @@ export default function Invest (props) {
                             )}
                         </p>
                       </Muted>
-                    </GridItem>
-                    <GridItem xs={4} sm={4} md={3} lg={3}>
-                      <Button color='colorfull' onClick={diposit} style={{ width: 122, margin: "6px 0" }}>
-                        Deposit
-                      </Button>
-                    </GridItem>
-                  </GridContainer>
-                </GridItem>
-                <GridItem xs={12} sm={12} md={12} lg={12}>
-                  <CustomInput
-                    labelText={
-                      <CountTo
-                        from={Number(beforePerFullShare.toBigInt())}
-                        to={Number(perFullShare.toBigInt())}
-                        speed={3500}
+                      <Button
+                        disabled={isLogin && (!isValidFromValueFlag || isUndefined(isValidFromValueFlag))}
+                        color='colorfull'
+                        onClick={isLogin ? diposit : loadWeb3Modal}
+                        style={{ minWidth: 122, padding: "12px 16px", margin: "6px 0" }}
                       >
-                        {v =>
-                          `Shares: ${toFixed(toBalance, BigNumber.from(10).pow(usdtDecimals), 6)}${` (~${toFixed(
-                            toBalance.mul(v),
-                            BigNumber.from(10).pow(usdtDecimals + usdtDecimals),
-                            6,
-                          )} USDT)`}`
-                        }
-                      </CountTo>
-                    }
-                    inputProps={{
-                      placeholder: "withdraw amount",
-                      value: toValue,
-                      endAdornment: (
-                        <span
-                          style={
-                            isToValueMax
-                              ? { color: "#da2eef", cursor: "pointer", fontWeight: "bold" }
-                              : { color: "#69c0ff", cursor: "pointer" }
-                          }
-                          onClick={() => {
-                            setToValue(toFixed(toBalance, BigNumber.from(10).pow(usdtDecimals), 6, 1))
-                            setIsToValueMax(true)
-                          }}
+                        {isLogin ? "Deposit" : "Connect Wallet"}
+                      </Button>
+                    </div>
+                  </GridItem>
+                </GridContainer>
+              </TabPanel>
+              <TabPanel value={tab} index={TABS.WITHDRAW}>
+                <GridContainer classes={{ root: classes.valutMainContainer }}>
+                  <GridItem xs={12} sm={12} md={12} lg={12}>
+                    <div className={classes.mainInputLabelWrapper}>
+                      <Muted>
+                        <CountTo
+                          from={Number(beforePerFullShare.toBigInt())}
+                          to={Number(perFullShare.toBigInt())}
+                          speed={3500}
                         >
-                          Max
-                        </span>
-                      ),
-                      onChange: event => {
+                          {v =>
+                            `Shares: ${toFixed(toBalance, BigNumber.from(10).pow(usdtDecimals), 6)}${` (~${toFixed(
+                              toBalance.mul(v),
+                              BigNumber.from(10).pow(usdtDecimals + usdtDecimals),
+                              6,
+                            )} USDT)`}`
+                          }
+                        </CountTo>
+                      </Muted>
+                    </div>
+                  </GridItem>
+                  <GridItem xs={12} sm={12} md={12} lg={12}>
+                    <CustomTextField
+                      placeholder="withdraw amount"
+                      value={toValue}
+                      maxEndAdornment
+                      onMaxClick={() => {
+                        setToValue(toFixed(toBalance, BigNumber.from(10).pow(usdtDecimals), 6, 1))
+                        setIsToValueMax(true)
+                      }}
+                      onChange={event => {
                         try {
                           setToValue(event.target.value)
                         } catch (error) {
                           setToValue("")
                         }
                         setIsToValueMax(false)
-                      },
-                    }}
-                    error={!isUndefined(isValidToValueFlag) && !isValidToValueFlag}
-                    success={!isUndefined(isValidToValueFlag) && isValidToValueFlag}
-                    formControlProps={{
-                      fullWidth: true,
-                    }}
-                  />
-                </GridItem>
-                <GridItem xs={12} sm={12} md={12} lg={12}>
-                  {isOpenEstimate ? (
-                    <GridContainer>
-                      <GridItem
-                        xs={8}
-                        sm={8}
-                        md={9}
-                        lg={9}
-                        style={{ color: "#39d0d8", textAlign: "right", lineHeight: "35px", padding: "10px 0" }}
-                      >
-                        <CropIcon
+                      }}
+                      error={!isUndefined(isValidToValueFlag) && !isValidToValueFlag && (toValue !== '0')}
+                    />
+                  </GridItem>
+                  <GridItem xs={12} sm={12} md={12} lg={12}>
+                    <div className={classes.withdrawComfirmArea}>
+                      <div className={classes.settingBtn} style={{ color: isOpenEstimate ? '#39d0d8' : '#da2eef' }}>
+                        <SettingIcon
                           fontSize='large'
                           style={{ float: "right", cursor: "pointer" }}
-                          onClick={() => setIsOpenEstimate(false)}
-                        ></CropIcon>
-                        <span style={{ cursor: "pointer" }} onClick={() => setIsOpenEstimate(false)}>
+                          onClick={() => setIsOpenEstimate(!isOpenEstimate)}
+                        ></SettingIcon>
+                        <span style={{ cursor: "pointer" }} onClick={() => setIsOpenEstimate(!isOpenEstimate)}>
                           Advanced Settings
                         </span>
-                      </GridItem>
-                      <GridItem xs={4} sm={4} md={3} lg={3}>
-                        <Button color='colorfull' onClick={withdraw}>
-                          Withdraw
-                        </Button>
-                      </GridItem>
-                      <GridItem xs={12} sm={12} md={12} lg={12}>
-                        <GridContainer>
-                          <GridItem xs={12} sm={12} md={4} lg={4} style={{ padding: "34px 0px 33px 15px" }}>
-                            <span
-                              title='Withdrawal tokens and estimated amount'
-                              style={{
-                                color: "#fff",
-                                fontSize: 16,
-                                letterSpacing: "0.01071em",
-                                lineHeight: 1.5,
-                              }}
-                            >
-                              Withdrawal tokens and estimated amount
-                            </span>
-                          </GridItem>
-                          <GridItem xs={8} sm={8} md={4} lg={4}>
-                            <FormControlLabel
-                              labelPlacement='start'
-                              control={
-                                <Switch
-                                  color='default'
-                                  checked={shouldExchange}
-                                  onChange={event => setShouldExchange(event.target.checked)}
-                                  classes={{
-                                    switchBase: classes.switchBase,
-                                    checked: classes.switchChecked,
-                                    thumb: classes.switchIcon,
-                                    track: classes.switchBar,
-                                  }}
-                                />
-                              }
-                              style={{ padding: "38px 0px", marginLeft: 0 }}
-                              label={
-                                <Muted>
-                                  Exchanged:
-                                  <Tooltip
-                                    placement='top'
-                                    title='Please pre-set the acceptable exchange loss when the exchange is enabled'
-                                  >
-                                    <InfoIcon style={{ color: "#fff", verticalAlign: "middle", fontSize: 16 }} />
-                                  </Tooltip>
-                                </Muted>
-                              }
-                            />
-                          </GridItem>
-                          <GridItem xs={4} sm={4} md={4} lg={4}>
-                            <CustomInput
-                              labelText='Max Loss'
-                              inputProps={{
-                                placeholder: "Allow loss percent",
-                                value: allowMaxLoss,
-                                endAdornment: (
-                                  <span style={{ color: "#69c0ff" }}>
-                                    %&nbsp;&nbsp;&nbsp;
-                                    <span style={{ cursor: "pointer" }} onClick={() => setAllowMaxLoss(50)}>
-                                      Max
-                                    </span>
-                                  </span>
-                                ),
-                                onChange: event => {
-                                  const value = event.target.value
-                                  setAllowMaxLoss(value)
-                                },
-                              }}
-                              error={!isUndefined(isValidAllowLossFlag) && !isValidAllowLossFlag}
-                              success={!isUndefined(isValidAllowLossFlag) && isValidAllowLossFlag}
-                              formControlProps={{
-                                fullWidth: true,
-                              }}
-                            />
-                          </GridItem>
-                        </GridContainer>
-                      </GridItem>
-                      {shouldExchange && (
-                        <GridItem xs={12} sm={12} md={12} lg={12}>
-                          <GridContainer>
-                            <GridItem xs={8} sm={8} md={6} lg={6}>
-                              <RadioGroup
-                                row
-                                value={slipper}
-                                style={{ padding: "36px 0" }}
-                                onChange={event => setSlipper(event.target.value)}
-                              >
-                                <FormControlLabel
-                                  value='0.3'
-                                  style={{ color: "#fff" }}
-                                  control={<CustomRadio />}
-                                  label='0.3%'
-                                />
-                                <FormControlLabel
-                                  value='0.5'
-                                  style={{ color: "#fff" }}
-                                  control={<CustomRadio />}
-                                  label='0.5%'
-                                />
-                                <FormControlLabel
-                                  value='1'
-                                  style={{ color: "#fff" }}
-                                  control={<CustomRadio />}
-                                  label='1%'
-                                />
-                              </RadioGroup>
-                            </GridItem>
-                            <GridItem xs={4} sm={4} md={6} lg={6}>
+                      </div>
+                      <Button
+                        disabled={isLogin && (isUndefined(isValidToValueFlag) || !isValidToValueFlag)}
+                        color='colorfull'
+                        onClick={isLogin ? withdraw : loadWeb3Modal}
+                        style={{ minWidth: 122, padding: "12px 16px" }}
+                      >
+                        {isLogin ? "Withdraw" : "Connect Wallet"}
+                      </Button>
+                    </div>
+                  </GridItem>
+                  {isOpenEstimate && (
+                    <GridItem xs={12} sm={12} md={12} lg={12}>
+                      <GridContainer>
+                        <GridItem xs={12} sm={12} md={12} lg={12} style={{ padding: "24px 0px 16px 15px" }}>
+                          <span
+                            title='Withdrawal tokens and estimated amount'
+                            style={{
+                              color: "#fff",
+                              fontSize: 16,
+                              letterSpacing: "0.01071em",
+                              lineHeight: 1.5,
+                              textAlign: 'center',
+                              width: '100%',
+                            }}
+                          >
+                            Withdrawal tokens and estimated amount
+                          </span>
+                        </GridItem>
+                        <GridItem className={classes.settingItem} xs={12} sm={12} md={12} lg={12}>
+                          <FormControlLabel
+                            labelPlacement='start'
+                            control={
                               <CustomInput
-                                labelText='Slippage'
                                 inputProps={{
                                   placeholder: "Allow loss percent",
-                                  value: slipper,
+                                  value: allowMaxLoss,
                                   endAdornment: (
                                     <span style={{ color: "#69c0ff" }}>
                                       %&nbsp;&nbsp;&nbsp;
-                                      <span style={{ cursor: "pointer" }} onClick={() => setSlipper("45")}>
+                                      <span style={{ cursor: "pointer" }} onClick={() => setAllowMaxLoss(50)}>
                                         Max
                                       </span>
                                     </span>
                                   ),
                                   onChange: event => {
                                     const value = event.target.value
-                                    setSlipper(value)
+                                    setAllowMaxLoss(value)
                                   },
                                 }}
-                                error={!isUndefined(isValidSlipperFlag) && !isValidSlipperFlag}
-                                success={!isUndefined(isValidSlipperFlag) && isValidSlipperFlag}
+                                error={!isUndefined(isValidAllowLossFlag) && !isValidAllowLossFlag}
+                                success={!isUndefined(isValidAllowLossFlag) && isValidAllowLossFlag}
                                 formControlProps={{
                                   fullWidth: true,
+                                  classes: {
+                                    root: classes.maxLossFormCtrl
+                                  }
                                 }}
                               />
-                            </GridItem>
-                          </GridContainer>
+                            }
+                            style={{ marginLeft: 0 }}
+                            label={
+                              <div className={classes.settingLabel}>
+                                <Muted>Max Loss:</Muted>
+                              </div>
+                            }
+                          />
                         </GridItem>
-                      )}
-                      {renderEstimate()}
-                    </GridContainer>
-                  ) : (
-                    <GridContainer>
-                      <GridItem
-                        xs={8}
-                        sm={8}
-                        md={9}
-                        lg={9}
-                        style={{ color: "#da2eef", textAlign: "right", lineHeight: "35px", padding: "10px 0" }}
-                      >
-                        <CropFreeIcon
-                          fontSize='large'
-                          style={{ cursor: "pointer", float: "right" }}
-                          onClick={() => setIsOpenEstimate(true)}
-                        ></CropFreeIcon>
-                        <span style={{ cursor: "pointer" }} onClick={() => setIsOpenEstimate(true)}>
-                          Advanced Settings
-                        </span>
-                      </GridItem>
-                      <GridItem xs={4} sm={4} md={3} lg={3}>
-                        <Button color='colorfull' onClick={withdraw}>
-                          Withdraw
-                        </Button>
-                      </GridItem>
-                    </GridContainer>
+                        <GridItem className={classes.settingItem} xs={12} sm={12} md={12} lg={12}>
+                          <FormControlLabel
+                            labelPlacement='start'
+                            control={
+                              <Switch
+                                color='default'
+                                checked={shouldExchange}
+                                onChange={event => setShouldExchange(event.target.checked)}
+                                classes={{
+                                  switchBase: classes.switchBase,
+                                  checked: classes.switchChecked,
+                                  thumb: classes.switchIcon,
+                                  track: classes.switchBar,
+                                }}
+                              />
+                            }
+                            style={{ marginLeft: 0 }}
+                            label={
+                              <div className={classes.settingLabel}>
+                                <Muted className={classes.exchanged}>
+                                  <Tooltip
+                                    classes={{
+                                      tooltip: classes.tooltip
+                                    }}
+                                    placement='top'
+                                    title='Please pre-set the acceptable exchange loss when the exchange is enabled'
+                                  >
+                                    <InfoIcon classes={{ root: classes.labelToolTipIcon }} />
+                                  </Tooltip>
+                                  Exchanged:
+                                </Muted>
+                              </div>
+                            }
+                          />
+                        </GridItem>
+                        {shouldExchange && (
+                          <GridItem className={classNames(classes.settingItem, classes.slippageItem)} xs={12} sm={12} md={12} lg={12}>
+                            <FormControlLabel
+                              labelPlacement='start'
+                              control={
+                                <RadioGroup
+                                  row
+                                  value={slipper}
+                                  onChange={event => setSlipper(event.target.value)}
+                                >
+                                  <FormControlLabel
+                                    value='0.3'
+                                    style={{ color: "#fff" }}
+                                    control={<CustomRadio size="small" style={{ padding: 6 }} />}
+                                    label='0.3%'
+                                  />
+                                  <FormControlLabel
+                                    value='0.5'
+                                    style={{ color: "#fff" }}
+                                    control={<CustomRadio size="small" style={{ padding: 6 }} />}
+                                    label='0.5%'
+                                  />
+                                  <FormControlLabel
+                                    value='1'
+                                    style={{ color: "#fff" }}
+                                    control={<CustomRadio size="small" style={{ padding: 6 }} />}
+                                    label='1%'
+                                  />
+                                </RadioGroup>
+                              }
+                              style={{ marginLeft: 0 }}
+                              label={
+                                <div className={classes.settingLabel}>
+                                  <Muted>Slippage:</Muted>
+                                </div>
+                              }
+                            />
+                            <CustomInput
+                              inputProps={{
+                                placeholder: "Allow loss percent",
+                                value: slipper,
+                                endAdornment: (
+                                  <span style={{ color: "#69c0ff" }}>
+                                    %&nbsp;&nbsp;&nbsp;
+                                    <span style={{ cursor: "pointer" }} onClick={() => setSlipper("45")}>
+                                      Max
+                                    </span>
+                                  </span>
+                                ),
+                                onChange: event => {
+                                  const value = event.target.value
+                                  setSlipper(value)
+                                },
+                              }}
+                              error={!isUndefined(isValidSlipperFlag) && !isValidSlipperFlag}
+                              success={!isUndefined(isValidSlipperFlag) && isValidSlipperFlag}
+                              formControlProps={{
+                                fullWidth: true,
+                                classes: {
+                                  root: classes.slippageInput
+                                }
+                              }}
+                            />
+                          </GridItem>
+                        )}
+                        {renderEstimate()}
+                      </GridContainer>
+                    </GridItem>
                   )}
-                </GridItem>
-              </GridContainer>
+                </GridContainer>
+              </TabPanel>
             </Card>
           </GridItem>
         </GridContainer>
-        <p style={{ color: "#fff", letterSpacing: "0.01071em" }}>More Details</p>
-        <TableContainer component={Paper} style={{ borderRadius: 0 }}>
-          <Table className={classNames(classes.table)} aria-label='simple table'>
-            <TableHead>
-              <TableRow>
-                <TableCell className={classNames(classes.tableCell)}>Vault Symbol</TableCell>
-                <TableCell className={classNames(classes.tableCell)}>Vault Address</TableCell>
-                <TableCell className={classNames(classes.tableCell)}>PricePerShare</TableCell>
-                {/* <TableCell className={classNames(classes.tableCell)}>质押通证符号</TableCell>
-                <TableCell className={classNames(classes.tableCell)}>质押合约地址</TableCell> */}
-                <TableCell className={classNames(classes.tableCell)}>TVL</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              <TableRow>
-                <TableCell className={classNames(classes.tableCell)} component='th' scope='row'>
-                  BOC_Vault
-                </TableCell>
-                <TableCell className={classNames(classes.tableCell)}>
-                  <a
-                    style={{ color: "rgb(105, 192, 255)" }}
-                    href={CHAIN_BROWSER_URL && `${CHAIN_BROWSER_URL}/address/${VAULT_ADDRESS}`}
-                    target='_blank'
-                    rel='noopener noreferrer'
-                  >
-                    {VAULT_ADDRESS}
-                  </a>
-                </TableCell>
-                <TableCell className={classNames(classes.tableCell)} component='th' scope='row'>
-                  <CountTo
-                    from={Number(beforePerFullShare.toBigInt())}
-                    to={Number(perFullShare.toBigInt())}
-                    speed={3500}
-                  >
-                    {v => toFixed(v, BigNumber.from(10).pow(usdtDecimals), 6)}
-                  </CountTo>
-                </TableCell>
-                {/* <TableCell className={classNames(classes.tableCell)}>USDT</TableCell>
-                <TableCell className={classNames(classes.tableCell)}>
-                  <a
-                    style={{ color: "rgb(105, 192, 255)" }}
-                    href={CHAIN_BROWSER_URL && `${CHAIN_BROWSER_URL}/address/${USDT_ADDRESS}`}
-                    target='_blank'
-                    rel='noopener noreferrer'
-                  >
-                    {USDT_ADDRESS}
-                  </a>
-                </TableCell> */}
-                <TableCell className={classNames(classes.tableCell)}>
-                  <CountTo from={Number(beforeTotalAssets.toBigInt())} to={Number(totalAssets.toBigInt())} speed={3500}>
-                    {v => {
-                      return `${toFixed(v, BigNumber.from(10).pow(usdtDecimals), 6)} USDT`
-                    }}
-                  </CountTo>
-                </TableCell>
-              </TableRow>
-            </TableBody>
-          </Table>
-        </TableContainer>
+        <div className={classNames({
+          [classes.hidden]: isEmpty(userProvider)
+        })}>
+          <p style={{ color: "#fff", letterSpacing: "0.01071em" }}>More Details</p>
+          <TableContainer component={Paper} style={{ borderRadius: 0 }}>
+            <Table className={classNames(classes.table)} aria-label='simple table'>
+              <TableHead>
+                <TableRow>
+                  <TableCell className={classNames(classes.tableCell)}>Vault Symbol</TableCell>
+                  <TableCell className={classNames(classes.tableCell)}>Vault Address</TableCell>
+                  <TableCell className={classNames(classes.tableCell)}>PricePerShare</TableCell>
+                  {/* <TableCell className={classNames(classes.tableCell)}>质押通证符号</TableCell>
+                  <TableCell className={classNames(classes.tableCell)}>质押合约地址</TableCell> */}
+                  <TableCell className={classNames(classes.tableCell)}>TVL</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                <TableRow>
+                  <TableCell className={classNames(classes.tableCell)} component='th' scope='row'>
+                    BOC_Vault
+                  </TableCell>
+                  <TableCell className={classNames(classes.tableCell)}>
+                    <a
+                      style={{ color: "rgb(105, 192, 255)" }}
+                      href={CHAIN_BROWSER_URL && `${CHAIN_BROWSER_URL}/address/${VAULT_ADDRESS}`}
+                      target='_blank'
+                      rel='noopener noreferrer'
+                    >
+                      {VAULT_ADDRESS}
+                    </a>
+                  </TableCell>
+                  <TableCell className={classNames(classes.tableCell)} component='th' scope='row'>
+                    <CountTo
+                      from={Number(beforePerFullShare.toBigInt())}
+                      to={Number(perFullShare.toBigInt())}
+                      speed={3500}
+                    >
+                      {v => toFixed(v, BigNumber.from(10).pow(usdtDecimals), 6)}
+                    </CountTo>
+                  </TableCell>
+                  {/* <TableCell className={classNames(classes.tableCell)}>USDT</TableCell>
+                  <TableCell className={classNames(classes.tableCell)}>
+                    <a
+                      style={{ color: "rgb(105, 192, 255)" }}
+                      href={CHAIN_BROWSER_URL && `${CHAIN_BROWSER_URL}/address/${USDT_ADDRESS}`}
+                      target='_blank'
+                      rel='noopener noreferrer'
+                    >
+                      {USDT_ADDRESS}
+                    </a>
+                  </TableCell> */}
+                  <TableCell className={classNames(classes.tableCell)}>
+                    <CountTo from={Number(beforeTotalAssets.toBigInt())} to={Number(totalAssets.toBigInt())} speed={3500}>
+                      {v => {
+                        return `${toFixed(v, BigNumber.from(10).pow(usdtDecimals), 6)} USDT`
+                      }}
+                    </CountTo>
+                  </TableCell>
+                </TableRow>
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </div>
       </div>
       {/* deposit时的loading窗 */}
       <Modal
