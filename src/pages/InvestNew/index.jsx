@@ -195,6 +195,7 @@ export default function Invest (props) {
               </Tabs>
               <TabPanel value={tab} index={TABS.DEPOSIT}>
                 <Deposit
+                  address={address}
                   usdtBalance={usdtBalance}
                   usdtDecimals={usdtDecimals}
                   usdcBalance={usdcBalance}

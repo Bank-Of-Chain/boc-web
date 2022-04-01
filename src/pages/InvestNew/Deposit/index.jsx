@@ -40,6 +40,7 @@ const TOKEN = {
 }
 
 export default function Deposit({
+  address,
   usdtBalance,
   usdtDecimals,
   usdcBalance,
@@ -255,6 +256,7 @@ export default function Deposit({
     //   setIsLoading(false)
     // }, 2000)
 
+    // 取款逻辑参考：https://github.com/PiggyFinance/piggy-finance-web/issues/178
     // step1: 校验三个币，起码一个有值
     const isValidUsdtValue = isValidValue(TOKEN.USDT)
     const isValidUsdcValue = isValidValue(TOKEN.USDC)
@@ -277,23 +279,31 @@ export default function Deposit({
       const contract = new ethers.Contract(nextTokens[key], IERC20_ABI, userProvider)
       const contractWithUser = contract.connect(signer)
         // 获取当前允许的额度
-      const allowanceAmount = await contractWithUser.allowance(nextTokens[key], VAULT_ADDRESS)
+      const allowanceAmount = await contractWithUser.allowance(address, VAULT_ADDRESS)
       // 如果充值金额大于允许的额度，则需要重新设置额度
       if (nextAmounts[key].gt(allowanceAmount)) {
         // 如果允许的额度为0，则直接设置新的额度。否则，则设置为0后，再设置新的额度。
         if (allowanceAmount.gt(0)) {
-          const firstApproveTx = await contractWithUser.approve(VAULT_ADDRESS, 0)
-          await firstApproveTx.wait()
+          console.log('补充allowance:', nextAmounts[key].sub(allowanceAmount).toString())
+          await contractWithUser.increaseAllowance(VAULT_ADDRESS, nextAmounts[key].sub(allowanceAmount)).then(tx => tx.wait()).catch((e) => {
+            // 如果是用户自行取消的，则直接返回
+            if(e.code === 4001) return
+            // 如果补齐失败，则需要使用最糟的方式，将allowance设置为0后，再设置成新的额度。
+            return contractWithUser.approve(VAULT_ADDRESS, 0)
+              .then(tx => tx.wait())
+              .then(() => contractWithUser.approve(VAULT_ADDRESS, nextAmounts[key]).then(tx => tx.wait()))
+          })
+        } else {
+          console.log("当前授权：", allowanceAmount.toString(), "准备授权：", nextAmounts[key].toString())
+          const secondApproveTx = await contractWithUser.approve(VAULT_ADDRESS, nextAmounts[key])
+          await secondApproveTx.wait()
         }
-        console.log("当前授权：", allowanceAmount.toString(), "准备授权：", nextAmounts[key].toString())
-        const secondApproveTx = await contractWithUser.approve(VAULT_ADDRESS, nextAmounts[key])
-        await secondApproveTx.wait()
       }
     }
     // step3: 存钱
     const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider)
     const nVaultWithUser = vaultContract.connect(signer)
-    await nVaultWithUser.mint(nextTokens, nextAmounts, 0).then(tx => tx.wait())
+    await nVaultWithUser.mint(nextTokens, nextAmounts, 0).then(tx => tx.wait()).catch(() => setIsLoading(false))
     setTimeout(() => {
       setIsLoading(false)
     }, 2000)
@@ -313,6 +323,19 @@ export default function Deposit({
     const result = await vaultContract.callStatic.estimateMint(tokens, amounts)
     setEstimateValue(toFixed(result.priceAdjustedDeposit, BigNumber.from(10).pow(usdiDecimals), 6))
   }, 500)
+
+  //TODO: 方便测试，待删除
+  const printOutAllowance = async () => {
+    const [nextTokens] = getTokenAndAmonut()
+    const signer = userProvider.getSigner()
+    for (const key in nextTokens) {
+      const contract = new ethers.Contract(nextTokens[key], IERC20_ABI, userProvider)
+      const contractWithUser = contract.connect(signer)
+        // 获取当前允许的额度
+      const allowanceAmount = await contractWithUser.allowance(address, VAULT_ADDRESS)
+      console.log(nextTokens[key], 'allowanceAmount=', allowanceAmount.toString())
+    }
+  }
 
   useEffect(() => {
     estimateMint()
@@ -353,7 +376,7 @@ export default function Deposit({
         <GridItem xs={12} sm={12} md={12} lg={12}>
           <div className={classes.depositComfirmArea}>
             <Muted>
-              <p style={{ fontSize: 16, wordBreak: "break-all", letterSpacing: "0.01071em" }}>
+              <p onClick={printOutAllowance} style={{ fontSize: 16, wordBreak: "break-all", letterSpacing: "0.01071em" }}>
                 Estimated:
                 &nbsp;{estimateValue}
                 &nbsp;USDi
