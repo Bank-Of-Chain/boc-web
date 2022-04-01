@@ -282,18 +282,27 @@ export default function Invest (props) {
         .toFixed(),
     )
     try {
+      // 取款逻辑参考：https://github.com/PiggyFinance/piggy-finance-web/issues/178
       // 获取当前允许的额度
       const allowanceAmount = await usdtContractWithUser.allowance(address, VAULT_ADDRESS)
       // 如果充值金额大于允许的额度，则需要重新设置额度
       if (nextValue.gt(allowanceAmount)) {
-        // 如果允许的额度为0，则直接设置新的额度。否则，则设置为0后，再设置新的额度。
+        // 如果已经设置了，allowance Amount，则需要进行补齐allowance操作
         if (allowanceAmount.gt(0)) {
-          const firstApproveTx = await usdtContractWithUser.approve(VAULT_ADDRESS, 0)
-          await firstApproveTx.wait()
+          console.log('补充allowance:', nextValue.sub(allowanceAmount).toString())
+          await usdtContractWithUser.increaseAllowance(VAULT_ADDRESS, nextValue.sub(allowanceAmount)).then(tx => tx.wait()).catch((e) => {
+            // 如果是用户自行取消的，则直接返回
+            if(e.code === 4001) return
+            // 如果补齐失败，则需要使用最糟的方式，将allowance设置为0后，再设置成新的额度。
+            return usdtContractWithUser.approve(VAULT_ADDRESS, 0)
+              .then(tx => tx.wait())
+              .then(() => usdtContractWithUser.approve(VAULT_ADDRESS, nextValue).then(tx => tx.wait()))
+          })
+        } else {
+          console.log("当前授权：", allowanceAmount.toString(), "准备授权：", nextValue.toString())
+          const secondApproveTx = await usdtContractWithUser.approve(VAULT_ADDRESS, nextValue)
+          await secondApproveTx.wait()
         }
-        console.log("当前授权：", allowanceAmount.toString(), "准备授权：", nextValue.toString())
-        const secondApproveTx = await usdtContractWithUser.approve(VAULT_ADDRESS, nextValue)
-        await secondApproveTx.wait()
       }
       const depositTx = await nVaultWithUser.deposit(nextValue)
       await depositTx.wait()
@@ -306,6 +315,7 @@ export default function Invest (props) {
         }),
       )
     } catch (error) {
+      console.log('error=', error)
       if (error && error.data) {
         if (error.data.message && error.data.message.endsWith("'ES or AD'")) {
           dispatch(
@@ -321,6 +331,16 @@ export default function Invest (props) {
     setTimeout(() => {
       setIsLoading(false)
     }, 2000)
+  }
+
+  //TODO: 方便测试，待删除
+  const printOutAllowance = async () => {
+      const contract = new ethers.Contract(USDT_ADDRESS, IERC20_ABI, userProvider)
+      const signer = userProvider.getSigner()
+      const contractWithUser = contract.connect(signer)
+        // 获取当前允许的额度
+      const allowanceAmount = await contractWithUser.allowance(address, VAULT_ADDRESS)
+      console.log(USDT_ADDRESS, 'allowanceAmount=', allowanceAmount.toString(), address, VAULT_ADDRESS, signer)
   }
 
   const withdraw = async () => {
@@ -952,7 +972,7 @@ export default function Invest (props) {
                   <GridItem xs={12} sm={12} md={12} lg={12}>
                     <div className={classes.depositComfirmArea}>
                       <Muted>
-                        <p style={{ fontSize: 16, wordBreak: "break-all", letterSpacing: "0.01071em" }}>
+                        <p style={{ fontSize: 16, wordBreak: "break-all", letterSpacing: "0.01071em" }} onClick={printOutAllowance}>
                           Estimated Shares：
                           {isValidFromValueFlag &&
                             toFixed(
