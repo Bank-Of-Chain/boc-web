@@ -37,6 +37,29 @@
       "type": "function"
   },
   {
+    "constant": false,
+    "inputs": [
+        {
+            "name": "spender",
+            "type": "address"
+        },
+        {
+            "name": "addedValue",
+            "type": "uint256"
+        }
+    ],
+    "name": "increaseAllowance",
+    "outputs": [
+        {
+            "name": "",
+            "type": "bool"
+        }
+    ],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
       "constant": true,
       "inputs": [],
       "name": "totalSupply",
