@@ -463,17 +463,17 @@ export default function Invest (props) {
       let tx
       // gasLimit如果需要配置倍数的话，则需要estimateGas一下
       if (isNumber(MULTIPLE_OF_GAS) && MULTIPLE_OF_GAS !== 1) {
-        const gas = await vaultContractWithSigner.estimateGas.withdraw(nextValue, allowMaxLossValue, true, nextArray)
+        const gas = await vaultContractWithSigner.estimateGas.withdraw(nextValue, allowMaxLossValue, shouldExchange, nextArray)
         setCurrentStep(4)
         estimateGasFinish = Date.now()
         const gasLimit = Math.ceil(gas * MULTIPLE_OF_GAS)
         // 乘以倍数后，如果大于3千万gas，则按3千万执行
         const maxGasLimit = gasLimit < MAX_GAS_LIMIT ? gasLimit : MAX_GAS_LIMIT
-        tx = await vaultContractWithSigner.withdraw(nextValue, allowMaxLossValue, true, nextArray, {
+        tx = await vaultContractWithSigner.withdraw(nextValue, allowMaxLossValue, shouldExchange, nextArray, {
           gasLimit: maxGasLimit,
         })
       } else {
-        tx = await vaultContractWithSigner.withdraw(nextValue, allowMaxLossValue, true, nextArray)
+        tx = await vaultContractWithSigner.withdraw(nextValue, allowMaxLossValue, shouldExchange, nextArray)
       }
       withdrawFinish = Date.now()
 
