@@ -11,7 +11,7 @@
   aboutus_url: 'https://piggyfinance.github.io/docs/zh/aboutus/',
   blog_url: 'https://piggyfinance.github.io/docs/zh/blog/',
   licenses_url: 'https://piggyfinance.github.io/docs/zh/licenses/',
-  document_url: "https://piggyfinance.github.io/docs/zh/docs/",
+  document_url: "https://docs.bankofchain.io/en/",
   boc_server: 'http://192.168.60.40/server',
   sub_graph_url: {
     '1': 'https://api.thegraph.com/subgraphs/name/bankofchain/boc-subgraph-eth',
