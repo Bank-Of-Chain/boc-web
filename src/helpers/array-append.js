@@ -16,6 +16,11 @@ export const arrayAppendOfDay = (array = [], size, key = 'id', valueKey = 'value
       return firstSecond <= 1 * item[key] && 1 * item[key] < firstSecondNextDay;
     });
 
+    // 最新的一天没数据不显示
+    if (i === 0 && isEmpty(todayItem)) {
+      continue
+    }
+
     if (isEmpty(todayItem)) {
       rs.push({
         [key]: firstSecond,
