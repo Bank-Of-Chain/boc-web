@@ -7,7 +7,7 @@ import get from 'lodash/get';
 
 export const arrayAppendOfDay = (array = [], size, key = 'id', valueKey = 'value') => {
   const offset = 86400;
-  const firstSecondToday = moment().startOf('day').valueOf() / 1000;
+  const firstSecondToday = moment().utc().startOf('day').valueOf() / 1000;
   const rs = [];
   for (var i = size - 1; i >= 0; i--) {
     const firstSecond = firstSecondToday - i * offset;

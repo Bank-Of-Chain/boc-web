@@ -106,7 +106,7 @@ export const getETHLast30DaysVaultData = async () => {
     if(nextStartTimestamp < timeStart){
         nextStartTimestamp = timeStart
     }
-    return await ethClient
+    const result =  await ethClient
         .query({
             query: gql(VAULT_DAILY_QUERY),
             variables: {
@@ -118,6 +118,8 @@ export const getETHLast30DaysVaultData = async () => {
         .then((array) => usedPreValue(array, 'totalShares', undefined))
         .then((array) => usedPreValue(array, 'unlockedPricePerShare', undefined))
         .then((array) => array.slice(-31));
+    // console.log('result:',JSON.stringify(result));
+    return result;
 }
 
 function getDaysAgoTimestamp(daysAgo) {
