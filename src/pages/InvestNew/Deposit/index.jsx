@@ -39,6 +39,9 @@ const TOKEN = {
   DAI: 'DAI',
 }
 
+const DISPLAY_DECIMALS = 6
+const MATH_FLOOR_SIGN = 1
+
 export default function Deposit({
   address,
   usdtBalance,
@@ -118,7 +121,7 @@ export default function Deposit({
     // 精度处理完之后，应该为整数
     const nextFromValueString = nextValue.multipliedBy(
       BigNumber.from(10)
-        .pow(6)
+        .pow(DISPLAY_DECIMALS)
         .toString(),
     )
     if (nextFromValueString.toFixed().indexOf(".") !== -1) return false
@@ -135,8 +138,14 @@ export default function Deposit({
     }
   }
 
+  const toBalanceFixed = (balance, decimals) => {
+    // balance 小于后 6 位的值展示为 0
+    const displayBalance = decimals > 6 && balance.lt(BigNumber.from(10).pow(decimals - DISPLAY_DECIMALS + 1)) ? BigNumber.from(0) : balance
+    return toFixed(displayBalance, BigNumber.from(10).pow(decimals), DISPLAY_DECIMALS, MATH_FLOOR_SIGN)
+  }
+
   const handleMaxClick = (item) => {
-    item.setValue(toFixed(item.balance, BigNumber.from(10).pow(item.decimals), 6, 1))
+    item.setValue(toBalanceFixed(item.balance, item.decimals))
   }
 
   const getTokenAndAmonut = () => {
@@ -389,7 +398,7 @@ export default function Deposit({
                     <img className={classes.tokenLogo} alt='' src={`./images/${item.address}.png`} />
                     <span className={classes.tokenName}>{item.name}</span>
                   </div> 
-                  <Muted>{`Balance: ${toFixed(item.balance, BigNumber.from(10).pow(item.decimals), 6, 1)}`}</Muted>
+                  <Muted>{`Balance: ${toBalanceFixed(item.balance, item.decimals)}`}</Muted>
                 </div>
               </GridItem>
               <GridItem xs={12} sm={12} md={12} lg={12}>
