@@ -12,6 +12,7 @@ import AccountBalanceWalletOutlined from "@material-ui/icons/AccountBalanceWalle
 import Apps from "@material-ui/icons/Apps"
 import Transform from "@material-ui/icons/Transform"
 import InsertChartIcon from "@material-ui/icons/InsertChart"
+import LibraryBooksIcon from "@material-ui/icons/LibraryBooks"
 
 // core components
 import Button from "../CustomButtons/Button"
@@ -27,7 +28,7 @@ import find from "lodash/find"
 import { hasWalletInstalled } from "./../../helpers/plugin-util"
 
 // === Constants === //
-import { NET_WORKS, DASHBOARD_URL } from "./../../constants"
+import { NET_WORKS, DASHBOARD_URL, DOCUMENT_URL } from "./../../constants"
 
 const useStyles = makeStyles(styles)
 export default function HeaderLinks (props) {
@@ -35,6 +36,11 @@ export default function HeaderLinks (props) {
   const classes = useStyles()
   return (
     <List className={classes.list}>
+      <ListItem className={classes.listItem}>
+        <Button color='transparent' target='_blank' href={DOCUMENT_URL} className={classes.navLink}>
+          <LibraryBooksIcon className={classes.icons}></LibraryBooksIcon> Document
+        </Button>
+      </ListItem>
       <ListItem className={classes.listItem}>
         <Button color='transparent' target='_blank' href={DASHBOARD_URL} className={classes.navLink}>
           <InsertChartIcon className={classes.icons}></InsertChartIcon> Dashboard
