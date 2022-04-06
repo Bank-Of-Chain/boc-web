@@ -7,7 +7,7 @@ import get from 'lodash/get';
 
 export const arrayAppendOfDay = (array = [], size, key = 'id', valueKey = 'value') => {
   const offset = 86400;
-  const firstSecondToday = moment().startOf('day').valueOf() / 1000;
+  const firstSecondToday = moment().utc().startOf('day').valueOf() / 1000;
   const rs = [];
   for (var i = size - 1; i >= 0; i--) {
     const firstSecond = firstSecondToday - i * offset;
@@ -15,6 +15,11 @@ export const arrayAppendOfDay = (array = [], size, key = 'id', valueKey = 'value
     const todayItem = find(array, (item) => {
       return firstSecond <= 1 * item[key] && 1 * item[key] < firstSecondNextDay;
     });
+
+    // 最新的一天没数据不显示
+    if (i === 0 && isEmpty(todayItem)) {
+      continue
+    }
 
     if (isEmpty(todayItem)) {
       rs.push({
