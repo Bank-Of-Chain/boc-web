@@ -112,7 +112,7 @@ export default function Withdraw({
         )
         .toFixed(),
     )
-    const allowMaxLossValue = BigNumber.from(10000 - parseInt(100 * parseFloat(allowMaxLoss))).mul(nextValue).div(BigNumber.from(1e5))
+    const allowMaxLossValue = BigNumber.from(10000 - parseInt(100 * parseFloat(allowMaxLoss))).mul(nextValue).div(BigNumber.from(1e4))
     const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider)
     const signer = userProvider.getSigner()
     const vaultContractWithSigner = vaultContract.connect(signer)
@@ -317,7 +317,7 @@ export default function Withdraw({
         )
         .toFixed(),
     )
-    const allowMaxLossValue = BigNumber.from(10000 - parseInt(100 * parseFloat(allowMaxLoss))).mul(nextValue).div(BigNumber.from(1e5))
+    const allowMaxLossValue = BigNumber.from(10000 - parseInt(100 * parseFloat(allowMaxLoss))).mul(nextValue).div(BigNumber.from(1e4))
     try {
       const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider)
       const vaultContractWithSigner = vaultContract.connect(signer)
@@ -329,7 +329,7 @@ export default function Withdraw({
         const [tokens, amounts] = await vaultContractWithSigner.callStatic.burn(
           nextValue,
           token,
-          0,
+          allowMaxLossValue,
           false,
           [],
         )
@@ -396,17 +396,17 @@ export default function Withdraw({
       let tx
       // gasLimit如果需要配置倍数的话，则需要estimateGas一下
       if (isNumber(MULTIPLE_OF_GAS) && MULTIPLE_OF_GAS !== 1) {
-        const gas = await vaultContractWithSigner.estimateGas.burn(nextValue, token, shouldExchange ? allowMaxLossValue : 0, shouldExchange, nextArray)
+        const gas = await vaultContractWithSigner.estimateGas.burn(nextValue, token, allowMaxLossValue, shouldExchange, nextArray)
         setCurrentStep(4)
         estimateGasFinish = Date.now()
         const gasLimit = Math.ceil(gas * MULTIPLE_OF_GAS)
         // 乘以倍数后，如果大于3千万gas，则按3千万执行
         const maxGasLimit = gasLimit < MAX_GAS_LIMIT ? gasLimit : MAX_GAS_LIMIT
-        tx = await vaultContractWithSigner.burn(nextValue, token, shouldExchange ? allowMaxLossValue : 0, shouldExchange, nextArray, {
+        tx = await vaultContractWithSigner.burn(nextValue, token, allowMaxLossValue, shouldExchange, nextArray, {
           gasLimit: maxGasLimit,
         })
       } else {
-        tx = await vaultContractWithSigner.burn(nextValue, token, shouldExchange ? allowMaxLossValue : 0, shouldExchange, nextArray)
+        tx = await vaultContractWithSigner.burn(nextValue, token, allowMaxLossValue, shouldExchange, nextArray)
       }
       withdrawFinish = Date.now()
 
