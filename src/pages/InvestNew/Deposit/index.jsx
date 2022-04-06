@@ -287,7 +287,10 @@ export default function Deposit({
           console.log('补充allowance:', nextAmounts[key].sub(allowanceAmount).toString())
           await contractWithUser.increaseAllowance(VAULT_ADDRESS, nextAmounts[key].sub(allowanceAmount)).then(tx => tx.wait()).catch((e) => {
             // 如果是用户自行取消的，则直接返回
-            if(e.code === 4001) return
+            if(e.code === 4001) {
+              setIsLoading(false)
+              return Promise.reject(e)
+            }
             // 如果补齐失败，则需要使用最糟的方式，将allowance设置为0后，再设置成新的额度。
             return contractWithUser.approve(VAULT_ADDRESS, 0)
               .then(tx => tx.wait())
@@ -295,16 +298,40 @@ export default function Deposit({
           })
         } else {
           console.log("当前授权：", allowanceAmount.toString(), "准备授权：", nextAmounts[key].toString())
-          const secondApproveTx = await contractWithUser.approve(VAULT_ADDRESS, nextAmounts[key])
-          await secondApproveTx.wait()
+          await contractWithUser.approve(VAULT_ADDRESS, nextAmounts[key]).then(tx => tx.wait()).catch((e) => {
+            // 如果是用户自行取消的，则直接返回
+            if(e.code === 4001) {
+              setIsLoading(false)
+              return Promise.reject(e)
+            }
+          })
         }
       }
     }
     // step3: 存钱
     const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider)
     const nVaultWithUser = vaultContract.connect(signer)
-    await nVaultWithUser.mint(nextTokens, nextAmounts, 0).then(tx => tx.wait()).catch(() => setIsLoading(false))
+    let isSuccess = false
+    await nVaultWithUser.mint(nextTokens, nextAmounts, 0)
+      .then(tx => tx.wait())
+      .then(() => {
+        isSuccess = true
+      })
+      .catch(() => setIsLoading(false))
+
     setTimeout(() => {
+      if (isSuccess) {
+        setUsdtValue("")
+        setUsdcValue("")
+        setDaiValue("")
+        dispatch(
+          warmDialog({
+            open: true,
+            type: "success",
+            message: "Success!",
+          }),
+        )
+      }
       setIsLoading(false)
     }, 2000)
   }
