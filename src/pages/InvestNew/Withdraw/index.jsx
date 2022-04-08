@@ -234,7 +234,7 @@ export default function Withdraw({
             message: "Vault has been shut down, please try again later!",
           }),
         )
-      } else if (errorMsg.endsWith("'loss much'") || errorMsg.indexOf("loss much") !== -1) {
+      } else if (errorMsg.endsWith("'loss much'") || errorMsg.indexOf("loss much") !== -1 || errorMsg.endsWith('"amount lower than minimum"')) {
         dispatch(
           warmDialog({
             open: true,
@@ -442,7 +442,7 @@ export default function Withdraw({
             message: "Vault has been shut down, please try again later!",
           }),
         )
-      } else if (errorMsg.endsWith("'loss much'") || errorMsg.indexOf("loss much") !== -1) {
+      } else if (errorMsg.endsWith("'loss much'") || errorMsg.indexOf("loss much") !== -1 || errorMsg.endsWith('"amount lower than minimum"')) {
         dispatch(
           warmDialog({
             open: true,
