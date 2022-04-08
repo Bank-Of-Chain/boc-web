@@ -13,7 +13,7 @@ const componentsStyle = (theme) => ({
     textAlign: "center"
   },
   depositContainer: {
-    padding: "36px 20px 0",
+    padding: "36px 16px 0",
   },
   tokenInputWrapper: {
     marginBottom: "16px",
@@ -32,7 +32,7 @@ const componentsStyle = (theme) => ({
     alignItems: "center"
   },
   tokenLogo: {
-    width: 32,
+    width: 30,
     borderRadius: "50%",
     marginRight: 8
   },

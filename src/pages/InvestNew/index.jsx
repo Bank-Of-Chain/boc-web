@@ -19,6 +19,7 @@ import Paper from "@material-ui/core/Paper"
 import Card from "@material-ui/core/Card"
 import Tabs from '@material-ui/core/Tabs'
 import Tab from '@material-ui/core/Tab'
+import CircularProgress from '@material-ui/core/CircularProgress'
 import TabPanel from '../../components/TabPanel'
 
 import Deposit from './Deposit'
@@ -46,9 +47,12 @@ import {
 import { toFixed } from "../../helpers/number-format"
 import map from "lodash/map"
 import isEmpty from "lodash/isEmpty"
+import isUndefined from "lodash/isUndefined"
 import last from "lodash/last"
 import noop from "lodash/noop"
 import * as ethers from "ethers"
+import { calVaultAPY } from "../../helpers/apy"
+import { getETHLast30DaysVaultData } from "../../services/subgraph-service"
 
 // === Styles === //
 import styles from "./style"
@@ -64,6 +68,7 @@ export default function Invest (props) {
   const classes = useStyles()
   const dispatch = useDispatch()
   const { address, userProvider, loadWeb3Modal } = props
+  const [apy, setApy] = useState()
   const [usdtBalance, setUsdtBalance] = useState(BigNumber.from(0))
   const [usdtDecimals, setUsdtDecimals] = useState(0)
   const [usdcBalance, setUsdcBalance] = useState(BigNumber.from(0))
@@ -120,6 +125,12 @@ export default function Invest (props) {
   }
 
   useEffect(() => {
+    getETHLast30DaysVaultData().then(a => {
+      setApy((100 * calVaultAPY(a)).toFixed(2))
+    })
+  }, [])
+
+  useEffect(() => {
     if (isEmpty(VAULT_ADDRESS)) return
     const loadTotalAssetsFn = () =>
       loadTotalAssets()
@@ -171,7 +182,17 @@ export default function Invest (props) {
       <div className={classes.container}>
         <GridContainer className={classNames(classes.center)}>
           <GridItem xs={12} sm={12} md={8} className={classNames(classes.centerItem)}>
-            <Card style={{ border: "1px solid #fff", padding: 20, backgroundColor: "transparent" }}>
+            <Card className={classes.balanceCard}>
+              <div className={classes.balanceCardItem}>
+                <div className={classes.balanceCardValue}>{isUndefined(apy) ? <CircularProgress size={21} /> : `${apy}%`}</div>
+                <div className={classes.balanceCardLabel}>APY (last 30 days)</div>
+              </div>
+              <div className={classes.balanceCardItem}>
+                <div className={classes.balanceCardValue}>{`${toFixed(toBalance, BigNumber.from(10).pow(usdiDecimals), 6)} USDi`}</div>
+                <div className={classes.balanceCardLabel}>Balance</div>
+              </div>
+            </Card>
+            <Card className={classes.investCard}>
               <Tabs
                 value={tab}
                 onChange={handleTabChange}
@@ -218,58 +239,58 @@ export default function Invest (props) {
             </Card>
           </GridItem>
         </GridContainer>
-        <div className={classNames({
-          [classes.hidden]: isEmpty(userProvider)
-        })}>
-          <p style={{ color: "#fff", letterSpacing: "0.01071em" }}>More Details</p>
-          <TableContainer component={Paper} style={{ borderRadius: 0 }}>
-            <Table className={classNames(classes.table)} aria-label='simple table'>
-              <TableHead>
-                <TableRow>
-                  <TableCell className={classNames(classes.tableCell)}>Vault Symbol</TableCell>
-                  <TableCell className={classNames(classes.tableCell)}>Vault Address</TableCell>
-                  {/* <TableCell className={classNames(classes.tableCell)}>质押通证符号</TableCell>
-                  <TableCell className={classNames(classes.tableCell)}>质押合约地址</TableCell> */}
-                  <TableCell className={classNames(classes.tableCell)}>TVL</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                <TableRow>
-                  <TableCell className={classNames(classes.tableCell)} component='th' scope='row'>
-                    BOC_Vault
-                  </TableCell>
-                  <TableCell className={classNames(classes.tableCell)}>
-                    <a
-                      style={{ color: "rgb(105, 192, 255)" }}
-                      href={CHAIN_BROWSER_URL && `${CHAIN_BROWSER_URL}/address/${VAULT_ADDRESS}`}
-                      target='_blank'
-                      rel='noopener noreferrer'
-                    >
-                      {VAULT_ADDRESS}
-                    </a>
-                  </TableCell>
-                  {/* <TableCell className={classNames(classes.tableCell)}>USDT</TableCell>
-                  <TableCell className={classNames(classes.tableCell)}>
-                    <a
-                      style={{ color: "rgb(105, 192, 255)" }}
-                      href={CHAIN_BROWSER_URL && `${CHAIN_BROWSER_URL}/address/${USDT_ADDRESS}`}
-                      target='_blank'
-                      rel='noopener noreferrer'
-                    >
-                      {USDT_ADDRESS}
-                    </a>
-                  </TableCell> */}
-                  <TableCell className={classNames(classes.tableCell)}>
-                    <CountTo from={Number(beforeTotalAssets.toBigInt())} to={Number(totalAssets.toBigInt())} speed={3500}>
-                      {v => {
-                        return `${toFixed(v, BigNumber.from(10).pow(usdiDecimals), 6)} USD`
-                      }}
-                    </CountTo>
-                  </TableCell>
-                </TableRow>
-              </TableBody>
-            </Table>
-          </TableContainer>
+        <div className={classNames(classes.detailWrapper, {
+            [classes.hidden]: isEmpty(userProvider)
+          })}>
+            <p style={{ color: "#fff", letterSpacing: "0.01071em" }}>More Details</p>
+            <TableContainer component={Paper} style={{ borderRadius: 0 }}>
+              <Table className={classNames(classes.table)} aria-label='simple table'>
+                <TableHead>
+                  <TableRow>
+                    <TableCell className={classNames(classes.tableCell)}>Vault Symbol</TableCell>
+                    <TableCell className={classNames(classes.tableCell)}>Vault Address</TableCell>
+                    {/* <TableCell className={classNames(classes.tableCell)}>质押通证符号</TableCell>
+                    <TableCell className={classNames(classes.tableCell)}>质押合约地址</TableCell> */}
+                    <TableCell className={classNames(classes.tableCell)}>TVL</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  <TableRow>
+                    <TableCell className={classNames(classes.tableCell)} component='th' scope='row'>
+                      BOC_Vault
+                    </TableCell>
+                    <TableCell className={classNames(classes.tableCell)}>
+                      <a
+                        style={{ color: "rgb(105, 192, 255)" }}
+                        href={CHAIN_BROWSER_URL && `${CHAIN_BROWSER_URL}/address/${VAULT_ADDRESS}`}
+                        target='_blank'
+                        rel='noopener noreferrer'
+                      >
+                        {VAULT_ADDRESS}
+                      </a>
+                    </TableCell>
+                    {/* <TableCell className={classNames(classes.tableCell)}>USDT</TableCell>
+                    <TableCell className={classNames(classes.tableCell)}>
+                      <a
+                        style={{ color: "rgb(105, 192, 255)" }}
+                        href={CHAIN_BROWSER_URL && `${CHAIN_BROWSER_URL}/address/${USDT_ADDRESS}`}
+                        target='_blank'
+                        rel='noopener noreferrer'
+                      >
+                        {USDT_ADDRESS}
+                      </a>
+                    </TableCell> */}
+                    <TableCell className={classNames(classes.tableCell)}>
+                      <CountTo from={Number(beforeTotalAssets.toBigInt())} to={Number(totalAssets.toBigInt())} speed={3500}>
+                        {v => {
+                          return `${toFixed(v, BigNumber.from(10).pow(usdiDecimals), 6)} USD`
+                        }}
+                      </CountTo>
+                    </TableCell>
+                  </TableRow>
+                </TableBody>
+              </Table>
+            </TableContainer>
         </div>
       </div>
     </div>
