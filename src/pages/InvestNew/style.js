@@ -6,13 +6,43 @@ const componentsStyle = (theme) => ({
   container,
   center: {
     justifyContent: 'center',
-    padding: '0 72px 50px',
+    padding: '50px 72px 50px',
+    backgroundColor: "#0c0735cc",
     [theme.breakpoints.down("md")]: {
-      padding: '0 16px 50px',
-    }
+      padding: '50px 16px 50px',
+    },
+    margin: 0
   },
   centerItem: {
     width: "630px"
+  },
+  balanceCard: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "space-around",
+    textAlign: "center",
+    marginBottom: 24,
+    padding: "32px 16px",
+    backgroundColor: "#271f72",
+    color: "#fff",
+    borderRadius: 6,
+  },
+  balanceCardItem: {
+    marginRight: 32
+  },
+  balanceCardValue: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    height: 30,
+    lineHeight: "30px",
+    fontSize: 26,
+    color: "#fff",
+    marginBottom: 8
+  },
+  balanceCardLabel: {
+    color: "#b2add1",
+    fontSize: 14
   },
   hidden: {
     display: "none"
@@ -38,7 +68,7 @@ const componentsStyle = (theme) => ({
   },
   mainRaised: {
     margin: "0 auto",
-    marginTop: 250,
+    marginTop: 130,
     marginBottom: 100,
     borderRadius: "6px",
   },
@@ -75,6 +105,11 @@ const componentsStyle = (theme) => ({
   },
   radio: {
     color: "#fff !important",
+  },
+  investCard: {
+    padding: "20px 24px",
+    borderRadius: 6,
+    backgroundColor: "rgba(39, 31, 114, 0.8)"
   },
   table: {
     backgroundColor: '#150752',
@@ -126,6 +161,9 @@ const componentsStyle = (theme) => ({
     fontSize: '16px',
     maxWidth: 'none'
   },
+  detailWrapper: {
+    margin: "42px 0 0 0"
+  }
 });
 
 export default componentsStyle;

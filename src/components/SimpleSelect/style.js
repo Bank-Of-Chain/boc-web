@@ -1,7 +1,7 @@
 const style = {
   selectWrapper: {
     position: "relative",
-    height: "32px"
+    height: "30px"
   },
   selectTrigger: {
     display: "flex",
@@ -44,7 +44,7 @@ const style = {
   },
   optImg: {
     width: "auto",
-    height: "32px",
+    height: "30px",
     marginRight: "8px",
     borderRadius: "50%",
   },

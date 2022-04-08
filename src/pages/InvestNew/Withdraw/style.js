@@ -25,11 +25,10 @@ const componentsStyle = (theme) => ({
     textAlign: "center"
   },
   withdrawContainer: {
-    padding: "36px 20px 0",
+    padding: "36px 16px 0",
   },
   inputLabelWrapper: {
     display: "flex",
-    justifyContent: "space-between",
     alignItems: "center"
   },
   withdrawComfirmArea: {

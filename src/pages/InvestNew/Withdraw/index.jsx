@@ -694,9 +694,7 @@ export default function Withdraw({
               onChange={handleTokenChange}
               options={selectOptions}
             />
-            <Muted>
-              {`Balance: ${toFixed(toBalance, BigNumber.from(10).pow(usdiDecimals), 6)} USDi`}
-            </Muted>
+
           </div>
         </GridItem>
         <GridItem xs={12} sm={12} md={12} lg={12}>
