@@ -27,9 +27,6 @@ const componentsStyle = (theme) => ({
     color: "#fff",
     borderRadius: 6,
   },
-  balanceCardItem: {
-    marginRight: 32
-  },
   balanceCardValue: {
     display: "flex",
     alignItems: "center",
