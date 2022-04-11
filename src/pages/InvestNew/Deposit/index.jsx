@@ -328,7 +328,22 @@ export default function Deposit({
       .then(() => {
         isSuccess = true
       })
-      .catch(() => setIsLoading(false))
+      .catch((error) => {
+        if (error && error.data) {
+          if (error.data.message && 
+            (error.data.message.endsWith("'ES or AD'") || error.data.message.endsWith("'ES'"))
+          ) {
+            dispatch(
+              warmDialog({
+                open: true,
+                type: "error",
+                message: "Vault has been shut down, please try again later!",
+              }),
+            )
+          }
+        }
+        setIsLoading(false)
+      })
     
     if (isSuccess) {
       setUsdtValue("")

@@ -226,7 +226,7 @@ export default function Withdraw({
       if (error?.error?.data?.originalError?.message) {
         errorMsg = error.error.data.originalError.message
       }
-      if (errorMsg.endsWith("'ES or AD'")) {
+      if (errorMsg.endsWith("'ES or AD'") || errorMsg.endsWith("'ES'")) {
         dispatch(
           warmDialog({
             open: true,
@@ -434,7 +434,7 @@ export default function Withdraw({
       if (error?.error?.data?.originalError?.message) {
         errorMsg = error.error.data.originalError.message
       }
-      if (errorMsg.endsWith("'ES or AD'")) {
+      if (errorMsg.endsWith("'ES or AD'") || errorMsg.endsWith("'ES'")) {
         dispatch(
           warmDialog({
             open: true,
