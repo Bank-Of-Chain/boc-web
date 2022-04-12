@@ -106,7 +106,8 @@ const componentsStyle = (theme) => ({
   investCard: {
     padding: "20px 24px",
     borderRadius: 6,
-    backgroundColor: "rgba(39, 31, 114, 0.8)"
+    backgroundColor: "rgba(39, 31, 114, 0.8)",
+    overflow: "visible"
   },
   table: {
     backgroundColor: '#150752',
