@@ -25,11 +25,21 @@ const componentsStyle = (theme) => ({
     textAlign: "center"
   },
   withdrawContainer: {
-    padding: "36px 16px 0",
+    padding: "32px 16px 0",
   },
-  inputLabelWrapper: {
+  withdrawItem: {
     display: "flex",
-    alignItems: "center"
+    alignItems: "center",
+    color: "#fff",
+    marginBottom: "16px",
+  },
+  receiveTokenItem: {
+    marginBottom: 0
+  },
+  withdrawItemLabel: {
+    minWidth: 62,
+    marginRight: 12,
+    textAlign: "right"
   },
   withdrawComfirmArea: {
     display: 'flex',

@@ -687,24 +687,23 @@ export default function Withdraw({
   return (
     <>
       <GridContainer classes={{ root: classes.withdrawContainer }}>
-        <GridItem xs={12} sm={12} md={12} lg={12}>
-          <div className={classes.inputLabelWrapper}>
-            <SimpleSelect
-              value={token}
-              onChange={handleTokenChange}
-              options={selectOptions}
-            />
-
-          </div>
-        </GridItem>
-        <GridItem xs={12} sm={12} md={12} lg={12}>
+        <GridItem xs={12} sm={12} md={12} lg={12} className={classes.withdrawItem}>
+          <Muted className={classes.withdrawItemLabel}>USDi: </Muted>
           <CustomTextField
             value={toValue}
-            placeholder="withdraw amount"
+            placeholder="amount"
             maxEndAdornment
             onMaxClick={() => handleMaxClick()}
             onChange={handleAmountChange}
             error={!isUndefined(isValidToValueFlag) && !isValidToValueFlag && (toValue !== '0')}
+          />
+        </GridItem>
+        <GridItem xs={12} sm={12} md={12} lg={12} className={classNames(classes.withdrawItem, classes.receiveTokenItem)}>
+          <Muted className={classes.withdrawItemLabel}>Receive: </Muted>
+          <SimpleSelect
+            value={token}
+            onChange={handleTokenChange}
+            options={selectOptions}
           />
         </GridItem>
         <GridItem xs={12} sm={12} md={12} lg={12}>
