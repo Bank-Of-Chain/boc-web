@@ -45,6 +45,7 @@ import {
   EXCHANGE_EXTRA_PARAMS,
   MULTIPLE_OF_GAS,
   MAX_GAS_LIMIT, ORACLE_ADDITIONAL_SLIPPAGE,
+  EXCHANGE_ADAPTER_ABI
 } from "../../../constants"
 
 // === Utils === //
@@ -72,11 +73,12 @@ const steps = [
   { title: "Withdraw" },
 ]
 
-const getExchangePlatformAdapters = async exchangeAggregator => {
+const getExchangePlatformAdapters = async (exchangeAggregator, userProvider) => {
   const adapters = await exchangeAggregator.getExchangeAdapters()
   const exchangePlatformAdapters = {}
-  for (let i = 0; i < adapters.identifiers_.length; i++) {
-    exchangePlatformAdapters[adapters.identifiers_[i]] = adapters.exchangeAdapters_[i]
+  for (const address of adapters) {
+    const contract = new ethers.Contract(address, EXCHANGE_ADAPTER_ABI, userProvider)
+    exchangePlatformAdapters[await contract.identifier()] = address
   }
   return exchangePlatformAdapters
 }
@@ -129,7 +131,7 @@ export default function Withdraw({
       if (shouldExchange) {
         const exchangeManager = await vaultContract.exchangeManager()
         const exchangeManagerContract = new ethers.Contract(exchangeManager, EXCHANGE_AGGREGATOR_ABI, userProvider)
-        const exchangePlatformAdapters = await getExchangePlatformAdapters(exchangeManagerContract)
+        const exchangePlatformAdapters = await getExchangePlatformAdapters(exchangeManagerContract, userProvider)
         console.log("estimate get exchange path:", tokens, amounts)
         // 查询兑换路径
         let exchangeArray = await Promise.all(
@@ -339,7 +341,7 @@ export default function Withdraw({
         setCurrentStep(2)
         const exchangeManager = await vaultContract.exchangeManager()
         const exchangeManagerContract = new ethers.Contract(exchangeManager, EXCHANGE_AGGREGATOR_ABI, userProvider)
-        const exchangePlatformAdapters = await getExchangePlatformAdapters(exchangeManagerContract)
+        const exchangePlatformAdapters = await getExchangePlatformAdapters(exchangeManagerContract, userProvider)
         // 查询兑换路径
         exchangeArray = await Promise.all(
           map(tokens, async (tokenItem, index) => {
