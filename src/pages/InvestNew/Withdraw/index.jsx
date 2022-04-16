@@ -33,7 +33,7 @@ import Muted from "../../../components/Typography/Muted"
 import Button from "../../../components/CustomButtons/Button"
 import CustomInput from "../../../components/CustomInput/CustomInput"
 import { warmDialog } from "./../../../reducers/meta-reducer"
-import { toFixed } from "../../../helpers/number-format"
+import { toFixed, formatBalance } from "../../../helpers/number-format"
 import {
   VAULT_ADDRESS,
   VAULT_ABI,
@@ -563,7 +563,7 @@ export default function Withdraw({
       // 精度处理完之后，应该为整数
     const nextToValueString = nextValue.multipliedBy(
       BigNumber.from(10)
-        .pow(6)
+        .pow(usdiDecimals)
         .toString(),
     )
     if (nextToValueString.toFixed().indexOf(".") !== -1) return false
@@ -612,7 +612,7 @@ export default function Withdraw({
   }
 
   const handleMaxClick = () => {
-    setToValue(toFixed(toBalance, BigNumber.from(10).pow(usdiDecimals), 6, 1))
+    setToValue(formatBalance(toBalance, usdiDecimals, { showAll: true }))
   }
 
   const renderEstimate = () => {

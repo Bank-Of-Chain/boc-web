@@ -44,7 +44,7 @@ import {
 } from "../../constants"
 
 // === Utils === //
-import { toFixed } from "../../helpers/number-format"
+import { toFixed, formatBalance } from "../../helpers/number-format"
 import map from "lodash/map"
 import isEmpty from "lodash/isEmpty"
 import isUndefined from "lodash/isUndefined"
@@ -188,7 +188,9 @@ export default function Invest (props) {
                 <div className={classes.balanceCardLabel}>APY (last 30 days)</div>
               </div>
               <div className={classes.balanceCardItem}>
-                <div className={classes.balanceCardValue}>{`${toFixed(toBalance, BigNumber.from(10).pow(usdiDecimals), 6)} USDi`}</div>
+                <div className={classes.balanceCardValue} title={formatBalance(toBalance, usdiDecimals, { showAll: true })}>
+                  {`${formatBalance(toBalance, usdiDecimals)} USDi`}
+                </div>
                 <div className={classes.balanceCardLabel}>Balance</div>
               </div>
             </Card>
