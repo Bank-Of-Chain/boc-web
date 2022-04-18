@@ -322,7 +322,7 @@ export default function Deposit({
       .catch((error) => {
         if (error && error.data) {
           if (error.data.message && 
-            (error.data.message.endsWith("'ES or AD'") || error.data.message.endsWith("'ES'"))
+            (error.data.message.endsWith("'ES or AD'") || error.data.message.endsWith("'ES'") || error.data.message.endsWith("'AD'"))
           ) {
             dispatch(
               warmDialog({
