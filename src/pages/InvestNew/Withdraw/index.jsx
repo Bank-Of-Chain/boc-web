@@ -17,7 +17,6 @@ import Tooltip from "@material-ui/core/Tooltip"
 import InfoIcon from "@material-ui/icons/Info"
 import Step from "@material-ui/core/Step"
 import WarningIcon from "@material-ui/icons/Warning"
-import Switch from "@material-ui/core/Switch"
 import FormControlLabel from "@material-ui/core/FormControlLabel"
 
 import SimpleSelect from "../../../components/SimpleSelect"
@@ -83,6 +82,8 @@ const getExchangePlatformAdapters = async (exchangeAggregator, userProvider) => 
   return exchangePlatformAdapters
 }
 
+const RECEIVE_MIX_VALUE = 'Mix'
+
 export default function Withdraw({
   toBalance,
   usdiDecimals,
@@ -91,17 +92,18 @@ export default function Withdraw({
 }) {
   const classes = useStyles()
   const dispatch = useDispatch()
-  const [token, setToken] = useState(USDT_ADDRESS)
+  const [receiveToken, setReceiveToken] = useState(USDT_ADDRESS)
   const [toValue, setToValue] = useState("")
   const [allowMaxLoss, setAllowMaxLoss] = useState("0.3")
   const [slipper, setSlipper] = useState("0.3")
-  const [shouldExchange, setShouldExchange] = useState(true)
   const [estimateWithdrawArray, setEstimateWithdrawArray] = useState([])
   const [isEstimate, setIsEstimate] = useState(false)
   const [isOpenEstimate, setIsOpenEstimate] = useState(false)
   const [isWithdrawLoading, setIsWithdrawLoading] = useState(false)
   const [currentStep, setCurrentStep] = useState(0)
   const [withdrawError, setWithdrawError] = useState({})
+  const shouldExchange = receiveToken !== RECEIVE_MIX_VALUE
+  const token = shouldExchange ? receiveToken : USDT_ADDRESS
 
   const estimateWithdraw = debounce(async () => {
     setIsEstimate(true)
@@ -540,8 +542,8 @@ export default function Withdraw({
     img.src = "/default.png"
   }
 
-  const handleTokenChange = (value) => {
-    setToken(value);
+  const handleReceiveTokenChange = (value) => {
+    setReceiveToken(value);
   }
 
   /**
@@ -678,6 +680,15 @@ export default function Withdraw({
     label: 'DAI',
     value: DAI_ADDRESS,
     img: `./images/${DAI_ADDRESS}.png`
+  }, 
+  {
+    label: 'Mix',
+    value: RECEIVE_MIX_VALUE,
+    img: [
+      `./images/${USDT_ADDRESS}.png`,
+      `./images/${USDC_ADDRESS}.png`,
+      `./images/${DAI_ADDRESS}.png`,
+    ]
   }]
 
   const isValidToValueFlag = isValidToValue()
@@ -703,8 +714,8 @@ export default function Withdraw({
         <GridItem xs={12} sm={12} md={12} lg={12} className={classNames(classes.withdrawItem, classes.receiveTokenItem)}>
           <Muted className={classes.withdrawItemLabel}>Receive: </Muted>
           <SimpleSelect
-            value={token}
-            onChange={handleTokenChange}
+            value={receiveToken}
+            onChange={handleReceiveTokenChange}
             options={selectOptions}
           />
         </GridItem>
@@ -782,41 +793,6 @@ export default function Withdraw({
                   }
                 />
               </GridItem>
-              <GridItem className={classes.settingItem} xs={12} sm={12} md={12} lg={12}>
-                <FormControlLabel
-                  labelPlacement='start'
-                  control={
-                    <Switch
-                      color='default'
-                      checked={shouldExchange}
-                      onChange={event => setShouldExchange(event.target.checked)}
-                      classes={{
-                        switchBase: classes.switchBase,
-                        checked: classes.switchChecked,
-                        thumb: classes.switchIcon,
-                        track: classes.switchBar,
-                      }}
-                    />
-                  }
-                  style={{ marginLeft: 0 }}
-                  label={
-                    <div className={classes.settingItemLabel}>
-                      <Muted className={classes.exchanged}>
-                        <Tooltip
-                          classes={{
-                            tooltip: classes.tooltip
-                          }}
-                          placement='top'
-                          title='Please pre-set the acceptable exchange loss when the exchange is enabled'
-                        >
-                          <InfoIcon classes={{ root: classes.labelToolTipIcon }} />
-                        </Tooltip>
-                        Exchanged:
-                      </Muted>
-                    </div>
-                  }
-                />
-              </GridItem>
               {shouldExchange && (
                 <GridItem className={classNames(classes.settingItem, classes.slippageItem)} xs={12} sm={12} md={12} lg={12}>
                   <FormControlLabel
@@ -841,7 +817,18 @@ export default function Withdraw({
                     style={{ marginLeft: 0 }}
                     label={
                       <div className={classes.settingItemLabel}>
-                        <Muted>Slippage:</Muted>
+                        <Muted className={classes.mutedLabel}>
+                          <Tooltip
+                            classes={{
+                              tooltip: classes.tooltip
+                            }}
+                            placement='top'
+                            title='Please pre-set the acceptable exchange loss when the received token is a specified one'
+                          >
+                            <InfoIcon classes={{ root: classes.labelToolTipIcon }} />
+                          </Tooltip>
+                          Slippage:
+                        </Muted>
                       </div>
                     }
                   />
