@@ -120,8 +120,8 @@ export default function Invest (props) {
   }
 
   const loadTotalAssets = () => {
-    const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider)
-    return vaultContract.totalValue()
+    const usdiContract = new ethers.Contract(USDI_ADDRESS, USDI_ABI, userProvider)
+    return usdiContract.totalSupply()
   }
 
   useEffect(() => {
@@ -253,7 +253,7 @@ export default function Invest (props) {
                     <TableCell className={classNames(classes.tableCell)}>Vault Address</TableCell>
                     {/* <TableCell className={classNames(classes.tableCell)}>质押通证符号</TableCell>
                     <TableCell className={classNames(classes.tableCell)}>质押合约地址</TableCell> */}
-                    <TableCell className={classNames(classes.tableCell)}>TVL</TableCell>
+                    <TableCell className={classNames(classes.tableCell)}>Total Supply</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
@@ -285,7 +285,7 @@ export default function Invest (props) {
                     <TableCell className={classNames(classes.tableCell)}>
                       <CountTo from={Number(beforeTotalValue.toBigInt())} to={Number(totalValue.toBigInt())} speed={3500}>
                         {v => {
-                          return `${toFixed(v, BigNumber.from(10).pow(usdiDecimals), 6)} USD`
+                          return `${toFixed(v, BigNumber.from(10).pow(usdiDecimals), 6)} USDi`
                         }}
                       </CountTo>
                     </TableCell>
