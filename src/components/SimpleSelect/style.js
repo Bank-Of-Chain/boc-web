@@ -48,6 +48,22 @@ const style = {
     marginRight: "8px",
     borderRadius: "50%",
   },
+  optMultiImgWrapper: {
+    height: "30px",
+    whiteSpace: 'nowrap'
+  }, 
+  optMultiImg: {
+    width: "auto",
+    height: "30px",
+    borderRadius: "50%",
+    marginLeft: "-12px",
+    "&:first-child": {
+      marginLeft: 0
+    },
+    "&:last-child": {
+      marginRight: "8px"
+    }
+  },
   optLabel: {
     color: "rgba(0, 0, 0, 0.87)",
   },
