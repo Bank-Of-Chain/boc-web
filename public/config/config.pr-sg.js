@@ -13,26 +13,26 @@
   blog_url: 'https://piggyfinance.github.io/docs/zh/blog/',
   licenses_url: 'https://piggyfinance.github.io/docs/zh/licenses/',
   document_url: "https://docs.bankofchain.io",
-  boc_server: 'https://service.bankofchain.io',
+  boc_server: 'https://service-v1.bankofchain.io',
   sub_graph_url: {
     '1': 'https://api.thegraph.com/subgraphs/name/bankofchain/boc-subgraph-eth',
     '56': 'https://api.thegraph.com/subgraphs/name/bankofchain/boc-subgraph-bsc',
     '137': 'https://api.thegraph.com/subgraphs/name/bankofchain/boc-subgraph-matic'
   },
   multiple_of_gas: 1,
-  dashboard_url: 'https://dashboard.bankofchain.io',
+  dashboard_url: 'https://dashboard-v1.bankofchain.io',
   oracle_additional_slippage: 20
 }
 
 const config137 = {
   ...configBase,
   abi_version: 'beta-v1.5',
-  apy_server: 'https://bankofchain.io/api/137',
-  vault_address: "0xFB7f340A7DEfD3bB0072844db6D5EbdFAD765dea",
+  apy_server: 'https://v1-keeper-polygon.bankofchain.io',
+  vault_address: "0xd3feAe6c4fdfDE73Bd2fE99c8fE6944904DAA68A",
   usdt_address: "0xc2132D05D31c914a87C6611C10748AEb04B58e8F",
   usdc_address: "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174",
   dai_address: "0x8f3Cf7ad23Cd3CaDbD9735AFf958023239c6A063",
-  usdi_address: "",
+  usdi_address: "0x8DEb399a86f28f62f0F24daF56c4aDD8e57EEcD5",
   chain_browser_url:'https://polygonscan.com',
   exchange_extra_params: {
     oneInchV4: {
