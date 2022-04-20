@@ -16,10 +16,10 @@ import maxBy from "lodash/maxBy"
 import isNaN from "lodash/isNaN"
 import filter from "lodash/filter"
 import sortBy from "lodash/sortBy"
-import { calVaultAPY } from "./../../../helpers/apy"
+// import { calVaultAPY } from "./../../../helpers/apy"
 import { toFixed } from "./../../../helpers/number-format"
 import { getDefiRate } from "./../../../services/api-service"
-import { getETHLast30DaysVaultData } from "./../../../services/subgraph-service"
+// import { getETHLast30DaysVaultData } from "./../../../services/subgraph-service"
 
 // === Styles === //
 import styles, { smStyle } from "./lendingStyle"
