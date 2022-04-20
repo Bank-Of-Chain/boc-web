@@ -20,11 +20,17 @@ const strategyAbi = require(`./abis/${abiPrefix}/strategy-abi.json`);
 const ierc20Abi = require(`./abis/${abiPrefix}/ierc20-abi.json`);
 const treasureAbi = require(`./abis/${abiPrefix}/treasure-abi.json`);
 const exchangeAggreatorAbi = require(`./abis/${abiPrefix}/exchange-aggregator-abi.json`);
-let usdiAbi;
+let usdiAbi, exchangeAdapterAbi;
 try {
   usdiAbi = require(`./abis/${abiPrefix}/usdi.json`);
 } catch (error) {
   usdiAbi = []
+}
+
+try {
+  exchangeAdapterAbi = require(`./abis/${abiPrefix}/exchange-adapter-abi.json`);
+} catch (error) {
+  exchangeAdapterAbi = []
 }
 
 // === configs === //
@@ -62,6 +68,8 @@ export const EXCHANGE_AGGREGATOR_ABI = exchangeAggreatorAbi;
 export const TREASURE_ABI = treasureAbi;
 
 export const USDI_ABI = usdiAbi;
+
+export const EXCHANGE_ADAPTER_ABI = exchangeAdapterAbi;
 
 export const NET_WORKS = [
   {
