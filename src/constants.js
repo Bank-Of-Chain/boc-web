@@ -99,3 +99,5 @@ export const NET_WORKS = [
     blockExplorer: "https://explorer-mainnet.maticvigil.com/",
   }
 ]
+
+export const LOCAL_CHAIN_ID = 31337

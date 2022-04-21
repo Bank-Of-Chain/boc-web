@@ -51,8 +51,7 @@ import isUndefined from "lodash/isUndefined"
 import last from "lodash/last"
 import noop from "lodash/noop"
 import * as ethers from "ethers"
-import { calVaultAPY } from "../../helpers/apy"
-import { getETHLast30DaysVaultData } from "../../services/subgraph-service"
+import { getAPYByDate } from "../../services/api-service"
 
 // === Styles === //
 import styles from "./style"
@@ -125,8 +124,8 @@ export default function Invest (props) {
   }
 
   useEffect(() => {
-    getETHLast30DaysVaultData().then(a => {
-      setApy((100 * calVaultAPY(a)).toFixed(2))
+    getAPYByDate().then(data => {
+      setApy(parseFloat(data.apy).toFixed(2))
     })
   }, [])
 
@@ -183,7 +182,7 @@ export default function Invest (props) {
         <GridContainer className={classNames(classes.center)}>
           <GridItem xs={12} sm={12} md={8} className={classNames(classes.centerItem)}>
             <Card className={classes.balanceCard}>
-              <div className={classes.balanceCardItem} style={{ display: 'none' }}>
+              <div className={classes.balanceCardItem}>
                 <div className={classes.balanceCardValue}>{isUndefined(apy) ? <CircularProgress size={21} /> : `${apy}%`}</div>
                 <div className={classes.balanceCardLabel}>APY (last 30 days)</div>
               </div>
