@@ -67,7 +67,7 @@ const { BigNumber } = ethers
 export default function Invest (props) {
   const classes = useStyles()
   const dispatch = useDispatch()
-  const { address, userProvider, loadWeb3Modal } = props
+  const { address, userProvider } = props
   const [apy, setApy] = useState()
   const [usdtBalance, setUsdtBalance] = useState(BigNumber.from(0))
   const [usdtDecimals, setUsdtDecimals] = useState(0)
@@ -113,7 +113,7 @@ export default function Invest (props) {
         warmDialog({
           open: true,
           type: "warning",
-          message: "Please confirm MetaMask's network!",
+          message: "Please confirm wallet's network!",
         }),
       )
     })
@@ -147,7 +147,7 @@ export default function Invest (props) {
   }, [totalValue.toString()])
 
   useEffect(() => {
-    if (isEmpty(VAULT_ADDRESS)) return
+    if (isEmpty(VAULT_ADDRESS) || !userProvider) return
     loadBanlance()
     const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider)
     if (!isEmpty(address)) {
@@ -173,7 +173,7 @@ export default function Invest (props) {
 
     return () => vaultContract.removeAllListeners(["Deposit", "Withdraw"])
     // eslint-disable-next-line
-  }, [address])
+  }, [address, userProvider])
 
   const handleTabChange = (event, value) => setTab(value)
 
@@ -227,7 +227,6 @@ export default function Invest (props) {
                   daiDecimals={daiDecimals}
                   usdiDecimals={usdiDecimals}
                   userProvider={userProvider}
-                  onConnect={loadWeb3Modal}
                 />
               </TabPanel>
               <TabPanel value={tab} index={TABS.WITHDRAW}>
@@ -235,7 +234,6 @@ export default function Invest (props) {
                   toBalance={toBalance}
                   usdiDecimals={usdiDecimals}
                   userProvider={userProvider}
-                  onConnect={loadWeb3Modal}
                 />
               </TabPanel>
             </Card>

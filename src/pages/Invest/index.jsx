@@ -111,7 +111,7 @@ const getExchangePlatformAdapters = async exchangeAggregator => {
 export default function Invest (props) {
   const classes = useStyles()
   const dispatch = useDispatch()
-  const { address, userProvider, loadWeb3Modal } = props
+  const { address, userProvider } = props
   const [usdtDecimals, setUsdtDecimals] = useState(0)
   const [beforeTotalAssets, setBeforeTotalAssets] = useState(BigNumber.from(0))
   const [totalAssets, setTotalAssets] = useState(BigNumber.from(0))
@@ -170,7 +170,7 @@ export default function Invest (props) {
         warmDialog({
           open: true,
           type: "warning",
-          message: "Please confirm MetaMask's network!",
+          message: "Please confirm wallet's network!",
         }),
       )
     })
@@ -600,7 +600,7 @@ export default function Invest (props) {
   }, [totalAssets.toString(), perFullShare.toString()])
 
   useEffect(() => {
-    if (isEmpty(VAULT_ADDRESS)) return
+    if (isEmpty(VAULT_ADDRESS) || !userProvider) return
     loadBanlance()
     const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider)
     if (!isEmpty(address)) {
@@ -626,7 +626,7 @@ export default function Invest (props) {
 
     return () => vaultContract.removeAllListeners(["Deposit", "Withdraw"])
     // eslint-disable-next-line
-  }, [address])
+  }, [address, userProvider])
 
   const estimateWithdraw = debounce(async () => {
     setIsEstimate(true)
@@ -988,12 +988,12 @@ export default function Invest (props) {
                         </p>
                       </Muted>
                       <Button
-                        disabled={isLogin && (!isValidFromValueFlag || isUndefined(isValidFromValueFlag))}
+                        disabled={!isLogin || (isLogin && (!isValidFromValueFlag || isUndefined(isValidFromValueFlag)))}
                         color='colorfull'
-                        onClick={isLogin ? diposit : loadWeb3Modal}
+                        onClick={diposit}
                         style={{ minWidth: 122, padding: "12px 16px", margin: "6px 0" }}
                       >
-                        {isLogin ? "Deposit" : "Connect Wallet"}
+                        Deposit
                       </Button>
                     </div>
                   </GridItem>
@@ -1053,12 +1053,12 @@ export default function Invest (props) {
                         </span>
                       </div>
                       <Button
-                        disabled={isLogin && (isUndefined(isValidToValueFlag) || !isValidToValueFlag)}
+                        disabled={!isLogin || (isLogin && (isUndefined(isValidToValueFlag) || !isValidToValueFlag))}
                         color='colorfull'
-                        onClick={isLogin ? withdraw : loadWeb3Modal}
+                        onClick={withdraw}
                         style={{ minWidth: 122, padding: "12px 16px" }}
                       >
-                        {isLogin ? "Withdraw" : "Connect Wallet"}
+                        Withdraw
                       </Button>
                     </div>
                   </GridItem>
