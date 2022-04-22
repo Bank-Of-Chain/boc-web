@@ -44,7 +44,7 @@ import {
 } from "../../constants"
 
 // === Utils === //
-import { toFixed } from "../../helpers/number-format"
+import { toFixed, formatBalance } from "../../helpers/number-format"
 import map from "lodash/map"
 import isEmpty from "lodash/isEmpty"
 import isUndefined from "lodash/isUndefined"
@@ -78,8 +78,8 @@ export default function Invest (props) {
   const [usdiDecimals, setUsdiDecimals] = useState(0)
 
   const [toBalance, setToBalance] = useState(BigNumber.from(0))
-  const [beforeTotalAssets, setBeforeTotalAssets] = useState(BigNumber.from(0))
-  const [totalAssets, setTotalAssets] = useState(BigNumber.from(0))
+  const [beforeTotalValue, setBeforeTotalValue] = useState(BigNumber.from(0))
+  const [totalValue, setTotalValue] = useState(BigNumber.from(0))
 
   const [tab, setTab] = useState(TABS.DEPOSIT)
 
@@ -96,8 +96,8 @@ export default function Invest (props) {
       daiContract.balanceOf(address).then(setDaiBalance),
       usdiContract.balanceOf(address).then(setToBalance).catch(noop),
       loadTotalAssets()
-        .then((afterTotalAssets) => {
-          setTotalAssets(afterTotalAssets)
+        .then((afterTotalValue) => {
+          setTotalValue(afterTotalValue)
         })
         .catch(noop),
       // TODO:此处的usdtDecimals较特别为10的幂的数值，主要是因为lend方法里的usdtDecimals取幂操作
@@ -120,8 +120,8 @@ export default function Invest (props) {
   }
 
   const loadTotalAssets = () => {
-    const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider)
-    return vaultContract.totalAssets()
+    const usdiContract = new ethers.Contract(USDI_ADDRESS, USDI_ABI, userProvider)
+    return usdiContract.totalSupply()
   }
 
   useEffect(() => {
@@ -134,17 +134,17 @@ export default function Invest (props) {
     if (isEmpty(VAULT_ADDRESS)) return
     const loadTotalAssetsFn = () =>
       loadTotalAssets()
-        .then((afterTotalAssets) => {
-          if (!afterTotalAssets.eq(beforeTotalAssets)) {
-            setBeforeTotalAssets(totalAssets)
-            setTotalAssets(afterTotalAssets)
+        .then((afterTotalValue) => {
+          if (!afterTotalValue.eq(beforeTotalValue)) {
+            setBeforeTotalValue(totalValue)
+            setTotalValue(afterTotalValue)
           }
         })
         .catch(noop)
     const timer = setInterval(loadTotalAssetsFn, 3000)
     return () => clearInterval(timer)
     // eslint-disable-next-line
-  }, [totalAssets.toString()])
+  }, [totalValue.toString()])
 
   useEffect(() => {
     if (isEmpty(VAULT_ADDRESS)) return
@@ -183,12 +183,14 @@ export default function Invest (props) {
         <GridContainer className={classNames(classes.center)}>
           <GridItem xs={12} sm={12} md={8} className={classNames(classes.centerItem)}>
             <Card className={classes.balanceCard}>
-              <div className={classes.balanceCardItem}>
+              <div className={classes.balanceCardItem} style={{ display: 'none' }}>
                 <div className={classes.balanceCardValue}>{isUndefined(apy) ? <CircularProgress size={21} /> : `${apy}%`}</div>
                 <div className={classes.balanceCardLabel}>APY (last 30 days)</div>
               </div>
               <div className={classes.balanceCardItem}>
-                <div className={classes.balanceCardValue}>{`${toFixed(toBalance, BigNumber.from(10).pow(usdiDecimals), 6)} USDi`}</div>
+                <div className={classes.balanceCardValue} title={formatBalance(toBalance, usdiDecimals, { showAll: true })}>
+                  {`${formatBalance(toBalance, usdiDecimals)} USDi`}
+                </div>
                 <div className={classes.balanceCardLabel}>Balance</div>
               </div>
             </Card>
@@ -251,7 +253,7 @@ export default function Invest (props) {
                     <TableCell className={classNames(classes.tableCell)}>Vault Address</TableCell>
                     {/* <TableCell className={classNames(classes.tableCell)}>质押通证符号</TableCell>
                     <TableCell className={classNames(classes.tableCell)}>质押合约地址</TableCell> */}
-                    <TableCell className={classNames(classes.tableCell)}>TVL</TableCell>
+                    <TableCell className={classNames(classes.tableCell)}>Total Supply</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
@@ -281,9 +283,9 @@ export default function Invest (props) {
                       </a>
                     </TableCell> */}
                     <TableCell className={classNames(classes.tableCell)}>
-                      <CountTo from={Number(beforeTotalAssets.toBigInt())} to={Number(totalAssets.toBigInt())} speed={3500}>
+                      <CountTo from={Number(beforeTotalValue.toBigInt())} to={Number(totalValue.toBigInt())} speed={3500}>
                         {v => {
-                          return `${toFixed(v, BigNumber.from(10).pow(usdiDecimals), 6)} USD`
+                          return `${toFixed(v, BigNumber.from(10).pow(usdiDecimals), 6)} USDi`
                         }}
                       </CountTo>
                     </TableCell>

@@ -2,6 +2,7 @@ import React, { useState } from "react"
 import classNames from "classnames"
 import map from "lodash/map"
 import find from "lodash/find"
+import isArray from "lodash/isArray"
 import { makeStyles } from "@material-ui/core/styles"
 import ClickAwayListener from "@material-ui/core/ClickAwayListener"
 import ArrowDropDownIcon from "@material-ui/icons/ArrowDropDown"
@@ -35,7 +36,17 @@ function Select({
     <ClickAwayListener onClickAway={handleClickAway}>
       <div className={classes.selectWrapper}>
         <div className={classes.selectTrigger} onClick={handleTogglePop}>
-          {selectedOpt.img && <img className={classes.optImg} src={selectedOpt.img} alt="logo" />}
+          {selectedOpt.img && (
+            !isArray(selectedOpt.img)
+              ? <img className={classes.optImg} src={selectedOpt.img} alt="logo" />
+              : (
+                <div className={classes.optMultiImgWrapper}>
+                  {map(selectedOpt.img, (img) => (
+                    <img className={classes.optMultiImg} src={img} alt="logo" />
+                  ))}
+                </div>
+              )
+          )}
           <span className={classes.triggerLabel}>{selectedOpt.label}</span>
           {popVisible ? <ArrowDropUpIcon style={{ color: "#fff" }} /> : <ArrowDropDownIcon style={{ color: "#fff" }} />}
         </div>
@@ -50,7 +61,17 @@ function Select({
               })}
               onClick={() => handlePopSelect(opt.value)}
             >
-              {opt.img && <img className={classes.optImg} src={opt.img} alt="logo" />}
+              {opt.img && (
+                !isArray(opt.img)
+                  ? <img className={classes.optImg} src={opt.img} alt="logo" />
+                  : (
+                    <div className={classes.optMultiImgWrapper}>
+                      {map(opt.img, (img) => (
+                        <img key={img} className={classes.optMultiImg} src={img} alt="logo" />
+                      ))}
+                    </div>
+                  )
+              )}
               <span className={classes.optLabel}>{opt.label}</span>
             </li>
           ))}

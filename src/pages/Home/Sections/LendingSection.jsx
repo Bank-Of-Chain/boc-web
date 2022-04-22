@@ -16,10 +16,10 @@ import maxBy from "lodash/maxBy"
 import isNaN from "lodash/isNaN"
 import filter from "lodash/filter"
 import sortBy from "lodash/sortBy"
-import { calVaultAPY } from "./../../../helpers/apy"
+// import { calVaultAPY } from "./../../../helpers/apy"
 import { toFixed } from "./../../../helpers/number-format"
 import { getDefiRate } from "./../../../services/api-service"
-import { getETHLast30DaysVaultData } from "./../../../services/subgraph-service"
+// import { getETHLast30DaysVaultData } from "./../../../services/subgraph-service"
 
 // === Styles === //
 import styles, { smStyle } from "./lendingStyle"
@@ -52,14 +52,14 @@ export default function LendingSection () {
   useEffect(() => {
     setLoading(true)
     Promise.all([
-      getETHLast30DaysVaultData().then(a => {
-        return {
-          title: bocTitle,
-          imagePath: "/logo.png",
-          percent: (100 * calVaultAPY(a)).toFixed(2),
-          text: get(apyType, bocTitle, ""),
-        }
-      }),
+      // getETHLast30DaysVaultData().then(a => {
+      //   return {
+      //     title: bocTitle,
+      //     imagePath: "/logo.png",
+      //     percent: (100 * calVaultAPY(a)).toFixed(2),
+      //     text: get(apyType, bocTitle, ""),
+      //   }
+      // }),
       getDefiRate().catch(() =>
         Promise.resolve({
           data: {},
@@ -67,10 +67,11 @@ export default function LendingSection () {
         }),
       ),
     ])
-      .then(([obj, resp]) => {
+      // .then(([obj, resp]) => {
+      .then(([resp]) => {
         const { data, svg } = resp
         return [
-          obj,
+          // obj,
           ...map(array, i => {
             return {
               title: i === "YearnFinance" ? "Yearn" : i,

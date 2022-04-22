@@ -75,6 +75,10 @@ const componentsStyle = (theme) => ({
     marginRight: 16,
     textAlign: 'right'
   },
+  mutedLabel: {
+    position: "relative",
+    display: "inline-block"
+  },
   maxLossFormCtrl: {
     width: "160px"
   },
@@ -87,7 +91,7 @@ const componentsStyle = (theme) => ({
   },
   labelToolTipIcon: {
     position: 'absolute',
-    left: 0,
+    left: "-18px",
     top: '50%',
     color: "#fff",
     fontSize: 16,
