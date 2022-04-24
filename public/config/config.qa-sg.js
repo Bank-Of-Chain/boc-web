@@ -1,9 +1,9 @@
 /**
- * 集成环境配置文件
+ * 测试环境配置文件
  */
  const configBase = {
-  vault_address: '',
-  usdt_address: '',
+  vault_address: "",
+  usdt_address: "",
   usdc_address: "",
   dai_address: "",
   chain_browser_url: '',
@@ -14,28 +14,29 @@
   blog_url: 'https://piggyfinance.github.io/docs/zh/blog/',
   licenses_url: 'https://piggyfinance.github.io/docs/zh/licenses/',
   document_url: "https://docs.bankofchain.io",
-  boc_server: 'https://service-inte.bankofchain.io/server',
+  boc_server: 'http://13.215.137.222/server',
   sub_graph_url: {
     '1': 'https://api.thegraph.com/subgraphs/name/bankofchain/boc-subgraph-eth',
     '56': 'https://api.thegraph.com/subgraphs/name/bankofchain/boc-subgraph-bsc',
     '137': 'https://api.thegraph.com/subgraphs/name/bankofchain/boc-subgraph-matic'
   },
   multiple_of_gas: 2,
-  dashboard_url: 'https://dashboard-inte.bankofchain.io',
+  dashboard_url: 'http://13.215.137.222/dashboard',
   oracle_additional_slippage: 20
 }
 
 const config137 = {
   ...configBase,
   abi_version: 'beta-v1.5',
-  apy_server: 'https://service-inte.bankofchain.io/api/137',
-  vault_address: "0x2C328D592819524F741A88A18572372CCE196782",
+  apy_server: 'http://13.215.137.222/api/137',
+  vault_address: "0x204d2e5c581506e939295daf99079b590ace906e",
   usdt_address: "0xc2132D05D31c914a87C6611C10748AEb04B58e8F",
   usdc_address: "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174",
   dai_address: "0x8f3Cf7ad23Cd3CaDbD9735AFf958023239c6A063",
-  usdi_address: "",
+  usdi_address: "0x6dc1bebb8e0881aca6f082f5f53dd740c2ddf379",
   exchange_extra_params: {
     oneInchV4: {
+      useHttp: true,
       network: 137,
       excludeProtocols: ['POLYGON_ONE_INCH_LIMIT_ORDER', 'POLYGON_ONE_INCH_LIMIT_ORDER_V2']
     },
@@ -50,13 +51,14 @@ const config137 = {
 
 const config56 = {
   ...configBase,
-  apy_server: 'https://service-inte.bankofchain.io/api/56',
+  apy_server: 'http://13.215.137.222/api/56',
   vault_address: "0x2C328D592819524F741A88A18572372CCE196782",
   usdt_address: "0x55d398326f99059fF775485246999027B3197955",
   usdc_address: "0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d",
   dai_address: "0x1AF3F329e8BE154074D8769D1FFa4eE058B1DBc3",
   exchange_extra_params: {
     oneInchV4: {
+      useHttp: true,
       network: 56,
       excludeProtocols: ['BSC_ONE_INCH_LIMIT_ORDER', 'BSC_ONE_INCH_LIMIT_ORDER_V2']
     },
@@ -71,11 +73,12 @@ const config56 = {
 
 const config1 = {
   ...configBase,
-  apy_server: 'https://service-inte.bankofchain.io/api/1',
-  vault_address: "",
-  usdt_address: "",
+  apy_server: 'http://13.215.137.222/api/1',
+  vault_address: "0x5302E909d1e93e30F05B5D6Eea766363D14F9892",
+  usdt_address: "0xdAC17F958D2ee523a2206206994597C13D831ec7",
   usdc_address: "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
   dai_address: "0x6B175474E89094C44Da98b954EedeAC495271d0F",
+  chain_browser_url: 'https://etherscan.io',
   exchange_extra_params: {
     oneInchV4: {
       useHttp: true,
