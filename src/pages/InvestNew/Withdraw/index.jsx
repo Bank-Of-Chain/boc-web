@@ -230,22 +230,15 @@ export default function Withdraw({
       if (error?.error?.data?.originalError?.message) {
         errorMsg = error.error.data.originalError.message
       }
-      if (errorMsg.endsWith("'ES or AD'") || errorMsg.endsWith("'ES'") || errorMsg.endsWith("'AD'")) {
-        dispatch(
-          warmDialog({
-            open: true,
-            type: "error",
-            message: "Vault has been shut down, please try again later!",
-          }),
-        )
+      let tip = ''
+      if (errorMsg.endsWith("'ES or AD'") || errorMsg.endsWith("'ES'")) {
+        tip = 'Vault has been shut down, please try again later!'
+      } else if (errorMsg.endsWith("'AD'")) {
+        tip = 'Vault is in adjustment status, please try again later!'
+      } else if (errorMsg.endsWith("'RP'")) {
+        tip = 'Vault is in rebase status, please try again later!'
       } else if (errorMsg.endsWith("'loss much'") || errorMsg.indexOf("loss much") !== -1 || errorMsg.endsWith('"amount lower than minimum"')) {
-        dispatch(
-          warmDialog({
-            open: true,
-            type: "error",
-            message: "Failed to withdraw, please increase the Max Loss!",
-          }),
-        )
+        tip = 'Failed to withdraw, please increase the Max Loss!'
       } else if (
         errorMsg.endsWith("'Return amount is not enough'") ||
         errorMsg.endsWith("'callBytes failed: Error(Uniswap: INSUFFICIENT_OUTPUT_AMOUNT)'") ||
@@ -255,22 +248,17 @@ export default function Withdraw({
         errorMsg.endsWith("'Received amount of tokens are less then expected'") ||
         errorMsg.endsWith("Error: VM Exception while processing transaction: reverted with reason string 'OL'")
       ) {
-        dispatch(
-          warmDialog({
-            open: true,
-            type: "error",
-            message: "Failed to exchange, please increase the exchange slippage or close exchange!",
-          }),
-        )
+        tip = 'Failed to exchange, please increase the exchange slippage or close exchange!'
       } else {
-        dispatch(
-          warmDialog({
-            open: true,
-            type: "error",
-            message: errorMsg,
-          }),
-        )
+        tip = errorMsg
       }
+      dispatch(
+        warmDialog({
+          open: true,
+          type: "error",
+          message: tip,
+        }),
+      )
       setEstimateWithdrawArray(undefined)
     } finally {
       setTimeout(() => {
@@ -438,22 +426,15 @@ export default function Withdraw({
       if (error?.error?.data?.originalError?.message) {
         errorMsg = error.error.data.originalError.message
       }
-      if (errorMsg.endsWith("'ES or AD'") || errorMsg.endsWith("'ES'") || errorMsg.endsWith("'AD'")) {
-        dispatch(
-          warmDialog({
-            open: true,
-            type: "error",
-            message: "Vault has been shut down, please try again later!",
-          }),
-        )
+      let tip = ''
+      if (errorMsg.endsWith("'ES or AD'") || errorMsg.endsWith("'ES'")) {
+        tip = 'Vault has been shut down, please try again later!'
+      }  else if (errorMsg.endsWith("'AD'")) {
+        tip = 'Vault is in adjustment status, please try again later!'
+      } else if (errorMsg.endsWith("'RP'")) {
+        tip = 'Vault is in rebase status, please try again later!'
       } else if (errorMsg.endsWith("'loss much'") || errorMsg.indexOf("loss much") !== -1 || errorMsg.endsWith('"amount lower than minimum"')) {
-        dispatch(
-          warmDialog({
-            open: true,
-            type: "error",
-            message: "Failed to withdraw, please increase the Max Loss!",
-          }),
-        )
+        tip = 'Failed to withdraw, please increase the Max Loss!'
       } else if (
         errorMsg.endsWith("'Return amount is not enough'") ||
         errorMsg.endsWith("'callBytes failed: Error(Uniswap: INSUFFICIENT_OUTPUT_AMOUNT)'") ||
@@ -463,22 +444,17 @@ export default function Withdraw({
         errorMsg.endsWith("'Received amount of tokens are less then expected'") ||
         errorMsg.endsWith("Error: VM Exception while processing transaction: reverted with reason string 'OL'")
       ) {
-        dispatch(
-          warmDialog({
-            open: true,
-            type: "error",
-            message: "Failed to exchange, please increase the exchange slippage or close exchange!",
-          }),
-        )
+        tip = 'Failed to exchange, please increase the exchange slippage or close exchange!'
       } else {
-        dispatch(
-          warmDialog({
-            open: true,
-            type: "error",
-            message: errorMsg,
-          }),
-        )
+        tip = errorMsg
       }
+      dispatch(
+        warmDialog({
+          open: true,
+          type: "error",
+          message: tip,
+        }),
+      )
     }
     setTimeout(() => {
       setIsWithdrawLoading(false)
