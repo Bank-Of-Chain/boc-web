@@ -83,7 +83,7 @@ export default function HeaderLinks (props) {
       </ListItem>
       {location.hash === "#/" ? (
         <ListItem className={classes.listItem}>
-          <Button className={`${classes.navLink} ${classes.colorfulLink}`} color='colorfull' size='lg' href='/#/invest'>
+          <Button className={`${classes.navLink} ${classes.colorfulLink}`} color='colorfull' size='lg' href='/#/vaults'>
             <AccountBalanceWallet className={classes.icons}></AccountBalanceWallet> Launch App
           </Button>
         </ListItem>
