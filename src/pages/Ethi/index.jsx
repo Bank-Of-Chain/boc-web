@@ -18,13 +18,13 @@ import TableHead from "@material-ui/core/TableHead"
 import TableRow from "@material-ui/core/TableRow"
 import Paper from "@material-ui/core/Paper"
 import Card from "@material-ui/core/Card"
-import Tabs from '@material-ui/core/Tabs'
-import Tab from '@material-ui/core/Tab'
-import CircularProgress from '@material-ui/core/CircularProgress'
-import TabPanel from '../../components/TabPanel'
+import Tabs from "@material-ui/core/Tabs"
+import Tab from "@material-ui/core/Tab"
+import CircularProgress from "@material-ui/core/CircularProgress"
+import TabPanel from "../../components/TabPanel"
 
-import Deposit from './Deposit'
-import Withdraw from './Withdraw'
+import Deposit from "./Deposit"
+import Withdraw from "./Withdraw"
 
 import { useDispatch } from "react-redux"
 
@@ -51,13 +51,13 @@ import resolver from "../../services/abi-resolver"
 import styles from "./style"
 
 const TABS = {
-  DEPOSIT: 'Deposit',
-  WITHDRAW: 'Withdraw'
+  DEPOSIT: "Deposit",
+  WITHDRAW: "Withdraw",
 }
 const useStyles = makeStyles(styles)
 const { BigNumber } = ethers
 
-export default function Invest (props) {
+export default function Ethi (props) {
   const classes = useStyles()
   const dispatch = useDispatch()
   const { address, userProvider, loadWeb3Modal } = props
@@ -77,9 +77,10 @@ export default function Invest (props) {
   const [tab, setTab] = useState(TABS.DEPOSIT)
 
   const item = find(VAULTS, { path: window.location.hash })
+
   const { vault_address: VAULT_ADDRESS, usdi_address: USDI_ADDRESS, abi_version } = item || {}
+
   const { VAULT_ABI, IERC20_ABI, EXCHANGE_AGGREGATOR_ABI, USDI_ABI, EXCHANGE_ADAPTER_ABI } = resolver(abi_version)
-  
   // 载入账户数据
   const loadBanlance = () => {
     if (isEmpty(address)) return loadBanlance
@@ -91,18 +92,33 @@ export default function Invest (props) {
       usdtContract.balanceOf(address).then(setUsdtBalance),
       usdcContract.balanceOf(address).then(setUsdcBalance),
       daiContract.balanceOf(address).then(setDaiBalance),
-      usdiContract.balanceOf(address).then(setToBalance).catch(noop),
+      usdiContract
+        .balanceOf(address)
+        .then(setToBalance)
+        .catch(noop),
       loadTotalAssets()
-        .then((afterTotalValue) => {
+        .then(afterTotalValue => {
           setTotalValue(afterTotalValue)
         })
         .catch(noop),
       // TODO:此处的usdtDecimals较特别为10的幂的数值，主要是因为lend方法里的usdtDecimals取幂操作
       // 其他处的usdtDecimals都是为10**18或10**6
-      usdtContract.decimals().then(setUsdtDecimals),
-      usdcContract.decimals().then(setUsdcDecimals),
-      daiContract.decimals().then(setDaiDecimals),
-      usdiContract.decimals().then(setUsdiDecimals),
+      usdtContract
+        .decimals()
+        .then(setUsdtDecimals)
+        .catch(noop),
+      usdcContract
+        .decimals()
+        .then(setUsdcDecimals)
+        .catch(noop),
+      daiContract
+        .decimals()
+        .then(setDaiDecimals)
+        .catch(noop),
+      usdiContract
+        .decimals()
+        .then(setUsdiDecimals)
+        .catch(noop),
       // vaultContract.token().then(setToken),
       // vaultContract.getTrackedAssets().then(setTrackedAssets)
     ]).catch(() => {
@@ -126,7 +142,7 @@ export default function Invest (props) {
     if (isEmpty(VAULT_ADDRESS)) return
     const loadTotalAssetsFn = () =>
       loadTotalAssets()
-        .then((afterTotalValue) => {
+        .then(afterTotalValue => {
           if (!afterTotalValue.eq(beforeTotalValue)) {
             setBeforeTotalValue(totalValue)
             setTotalValue(afterTotalValue)
@@ -163,7 +179,7 @@ export default function Invest (props) {
               .then(loadBanlance)
         })
       }
-
+  
       return () => vaultContract.removeAllListeners(["Deposit", "Withdraw"])
     }
     return listener()
@@ -184,13 +200,18 @@ export default function Invest (props) {
         <GridContainer className={classNames(classes.center)}>
           <GridItem xs={12} sm={12} md={8} className={classNames(classes.centerItem)}>
             <Card className={classes.balanceCard}>
-              <div className={classes.balanceCardItem} style={{ display: 'none' }}>
-                <div className={classes.balanceCardValue}>{isUndefined(apy) ? <CircularProgress size={21} /> : `${apy}%`}</div>
+              <div className={classes.balanceCardItem} style={{ display: "none" }}>
+                <div className={classes.balanceCardValue}>
+                  {isUndefined(apy) ? <CircularProgress size={21} /> : `${apy}%`}
+                </div>
                 <div className={classes.balanceCardLabel}>APY (last 30 days)</div>
               </div>
               <div className={classes.balanceCardItem}>
-                <div className={classes.balanceCardValue} title={formatBalance(toBalance, usdiDecimals, { showAll: true })}>
-                  {`${formatBalance(toBalance, usdiDecimals)} USDi`}
+                <div
+                  className={classes.balanceCardValue}
+                  title={formatBalance(toBalance, usdiDecimals, { showAll: true })}
+                >
+                  {`${formatBalance(toBalance, usdiDecimals)} USDi ethi`}
                 </div>
                 <div className={classes.balanceCardLabel}>Balance</div>
               </div>
@@ -201,21 +222,21 @@ export default function Invest (props) {
                 onChange={handleTabChange}
                 classes={{
                   root: classes.tabsRoot,
-                  indicator: classes.tabsIndicator
+                  indicator: classes.tabsIndicator,
                 }}
                 TabIndicatorProps={{ children: <span /> }}
               >
-                  {map(Object.keys(TABS), (key) => (
-                    <Tab
-                      key={key}
-                      label={TABS[key]}
-                      value={TABS[key]}
-                      classes={{
-                        root: classes.tabRoot,
-                        textColorInherit: classes.tabTextColor
-                      }}
-                    />
-                  ))}
+                {map(Object.keys(TABS), key => (
+                  <Tab
+                    key={key}
+                    label={TABS[key]}
+                    value={TABS[key]}
+                    classes={{
+                      root: classes.tabRoot,
+                      textColorInherit: classes.tabTextColor,
+                    }}
+                  />
+                ))}
               </Tabs>
               <TabPanel value={tab} index={TABS.DEPOSIT}>
                 <Deposit
@@ -250,58 +271,49 @@ export default function Invest (props) {
             </Card>
           </GridItem>
         </GridContainer>
-        <div className={classNames(classes.detailWrapper, {
-            [classes.hidden]: isEmpty(userProvider)
-          })}>
-            <p style={{ color: "#fff", letterSpacing: "0.01071em" }}>More Details</p>
-            <TableContainer component={Paper} style={{ borderRadius: 0 }}>
-              <Table className={classNames(classes.table)} aria-label='simple table'>
-                <TableHead>
-                  <TableRow>
-                    <TableCell className={classNames(classes.tableCell)}>Vault Symbol</TableCell>
-                    <TableCell className={classNames(classes.tableCell)}>Vault Address</TableCell>
-                    {/* <TableCell className={classNames(classes.tableCell)}>质押通证符号</TableCell>
+        <div
+          className={classNames(classes.detailWrapper, {
+            [classes.hidden]: isEmpty(userProvider),
+          })}
+        >
+          <p style={{ color: "#fff", letterSpacing: "0.01071em" }}>More Details</p>
+          <TableContainer component={Paper} style={{ borderRadius: 0 }}>
+            <Table className={classNames(classes.table)} aria-label='simple table'>
+              <TableHead>
+                <TableRow>
+                  <TableCell className={classNames(classes.tableCell)}>Vault Symbol</TableCell>
+                  <TableCell className={classNames(classes.tableCell)}>Vault Address</TableCell>
+                  {/* <TableCell className={classNames(classes.tableCell)}>质押通证符号</TableCell>
                     <TableCell className={classNames(classes.tableCell)}>质押合约地址</TableCell> */}
-                    <TableCell className={classNames(classes.tableCell)}>Total Supply</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  <TableRow>
-                    <TableCell className={classNames(classes.tableCell)} component='th' scope='row'>
-                      BOC_Vault
-                    </TableCell>
-                    <TableCell className={classNames(classes.tableCell)}>
-                      <a
-                        style={{ color: "rgb(105, 192, 255)" }}
-                        href={CHAIN_BROWSER_URL && `${CHAIN_BROWSER_URL}/address/${VAULT_ADDRESS}`}
-                        target='_blank'
-                        rel='noopener noreferrer'
-                      >
-                        {VAULT_ADDRESS}
-                      </a>
-                    </TableCell>
-                    {/* <TableCell className={classNames(classes.tableCell)}>USDT</TableCell>
-                    <TableCell className={classNames(classes.tableCell)}>
-                      <a
-                        style={{ color: "rgb(105, 192, 255)" }}
-                        href={CHAIN_BROWSER_URL && `${CHAIN_BROWSER_URL}/address/${USDT_ADDRESS}`}
-                        target='_blank'
-                        rel='noopener noreferrer'
-                      >
-                        {USDT_ADDRESS}
-                      </a>
-                    </TableCell> */}
-                    <TableCell className={classNames(classes.tableCell)}>
-                      <CountTo from={Number(beforeTotalValue.toBigInt())} to={Number(totalValue.toBigInt())} speed={3500}>
-                        {v => {
-                          return `${toFixed(v, BigNumber.from(10).pow(usdiDecimals), 6)} USDi`
-                        }}
-                      </CountTo>
-                    </TableCell>
-                  </TableRow>
-                </TableBody>
-              </Table>
-            </TableContainer>
+                  <TableCell className={classNames(classes.tableCell)}>Total Supply</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                <TableRow>
+                  <TableCell className={classNames(classes.tableCell)} component='th' scope='row'>
+                    BOC_Vault
+                  </TableCell>
+                  <TableCell className={classNames(classes.tableCell)}>
+                    <a
+                      style={{ color: "rgb(105, 192, 255)" }}
+                      href={CHAIN_BROWSER_URL && `${CHAIN_BROWSER_URL}/address/${VAULT_ADDRESS}`}
+                      target='_blank'
+                      rel='noopener noreferrer'
+                    >
+                      {VAULT_ADDRESS}
+                    </a>
+                  </TableCell>
+                  <TableCell className={classNames(classes.tableCell)}>
+                    <CountTo from={Number(beforeTotalValue.toBigInt())} to={Number(totalValue.toBigInt())} speed={3500}>
+                      {v => {
+                        return `${toFixed(v, BigNumber.from(10).pow(usdiDecimals), 6)} USDi`
+                      }}
+                    </CountTo>
+                  </TableCell>
+                </TableRow>
+              </TableBody>
+            </Table>
+          </TableContainer>
         </div>
       </div>
     </div>

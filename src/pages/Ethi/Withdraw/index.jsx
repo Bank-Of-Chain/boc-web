@@ -68,7 +68,6 @@ const steps = [
   { title: "Withdraw" },
 ]
 
-
 const RECEIVE_MIX_VALUE = "Mix"
 
 export default function Withdraw ({
@@ -118,7 +117,9 @@ export default function Withdraw ({
         )
         .toFixed(),
     )
-    const allowMaxLossValue = BigNumber.from(10000 - parseInt(100 * parseFloat(allowMaxLoss))).mul(nextValue).div(BigNumber.from(1e4))
+    const allowMaxLossValue = BigNumber.from(10000 - parseInt(100 * parseFloat(allowMaxLoss)))
+      .mul(nextValue)
+      .div(BigNumber.from(1e4))
     const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider)
     const signer = userProvider.getSigner()
     const vaultContractWithSigner = vaultContract.connect(signer)
@@ -190,8 +191,8 @@ export default function Withdraw ({
           return
         }
         console.log("exchangeArray=", exchangeArray)
-        const nextArray = filter(exchangeArray, i => !isEmpty(i));
-        [tokens, amounts] = await vaultContractWithSigner.callStatic.burn(
+        const nextArray = filter(exchangeArray, i => !isEmpty(i))
+        ;[tokens, amounts] = await vaultContractWithSigner.callStatic.burn(
           nextValue,
           token,
           allowMaxLossValue,
@@ -232,15 +233,19 @@ export default function Withdraw ({
       if (error?.error?.data?.originalError?.message) {
         errorMsg = error.error.data.originalError.message
       }
-      let tip = ''
+      let tip = ""
       if (errorMsg.endsWith("'ES or AD'") || errorMsg.endsWith("'ES'")) {
-        tip = 'Vault has been shut down, please try again later!'
+        tip = "Vault has been shut down, please try again later!"
       } else if (errorMsg.endsWith("'AD'")) {
-        tip = 'Vault is in adjustment status, please try again later!'
+        tip = "Vault is in adjustment status, please try again later!"
       } else if (errorMsg.endsWith("'RP'")) {
-        tip = 'Vault is in rebase status, please try again later!'
-      } else if (errorMsg.endsWith("'loss much'") || errorMsg.indexOf("loss much") !== -1 || errorMsg.endsWith('"amount lower than minimum"')) {
-        tip = 'Failed to withdraw, please increase the Max Loss!'
+        tip = "Vault is in rebase status, please try again later!"
+      } else if (
+        errorMsg.endsWith("'loss much'") ||
+        errorMsg.indexOf("loss much") !== -1 ||
+        errorMsg.endsWith('"amount lower than minimum"')
+      ) {
+        tip = "Failed to withdraw, please increase the Max Loss!"
       } else if (
         errorMsg.endsWith("'Return amount is not enough'") ||
         errorMsg.endsWith("'callBytes failed: Error(Uniswap: INSUFFICIENT_OUTPUT_AMOUNT)'") ||
@@ -250,7 +255,7 @@ export default function Withdraw ({
         errorMsg.endsWith("'Received amount of tokens are less then expected'") ||
         errorMsg.endsWith("Error: VM Exception while processing transaction: reverted with reason string 'OL'")
       ) {
-        tip = 'Failed to exchange, please increase the exchange slippage or close exchange!'
+        tip = "Failed to exchange, please increase the exchange slippage or close exchange!"
       } else {
         tip = errorMsg
       }
@@ -311,7 +316,9 @@ export default function Withdraw ({
         )
         .toFixed(),
     )
-    const allowMaxLossValue = BigNumber.from(10000 - parseInt(100 * parseFloat(allowMaxLoss))).mul(nextValue).div(BigNumber.from(1e4))
+    const allowMaxLossValue = BigNumber.from(10000 - parseInt(100 * parseFloat(allowMaxLoss)))
+      .mul(nextValue)
+      .div(BigNumber.from(1e4))
     try {
       const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider)
       const vaultContractWithSigner = vaultContract.connect(signer)
@@ -390,7 +397,13 @@ export default function Withdraw ({
       let tx
       // gasLimit如果需要配置倍数的话，则需要estimateGas一下
       if (isNumber(MULTIPLE_OF_GAS) && MULTIPLE_OF_GAS !== 1) {
-        const gas = await vaultContractWithSigner.estimateGas.burn(nextValue, token, allowMaxLossValue, shouldExchange, nextArray)
+        const gas = await vaultContractWithSigner.estimateGas.burn(
+          nextValue,
+          token,
+          allowMaxLossValue,
+          shouldExchange,
+          nextArray,
+        )
         setCurrentStep(4)
         estimateGasFinish = Date.now()
         const gasLimit = Math.ceil(gas * MULTIPLE_OF_GAS)
@@ -428,15 +441,19 @@ export default function Withdraw ({
       if (error?.error?.data?.originalError?.message) {
         errorMsg = error.error.data.originalError.message
       }
-      let tip = ''
+      let tip = ""
       if (errorMsg.endsWith("'ES or AD'") || errorMsg.endsWith("'ES'")) {
-        tip = 'Vault has been shut down, please try again later!'
-      }  else if (errorMsg.endsWith("'AD'")) {
-        tip = 'Vault is in adjustment status, please try again later!'
+        tip = "Vault has been shut down, please try again later!"
+      } else if (errorMsg.endsWith("'AD'")) {
+        tip = "Vault is in adjustment status, please try again later!"
       } else if (errorMsg.endsWith("'RP'")) {
-        tip = 'Vault is in rebase status, please try again later!'
-      } else if (errorMsg.endsWith("'loss much'") || errorMsg.indexOf("loss much") !== -1 || errorMsg.endsWith('"amount lower than minimum"')) {
-        tip = 'Failed to withdraw, please increase the Max Loss!'
+        tip = "Vault is in rebase status, please try again later!"
+      } else if (
+        errorMsg.endsWith("'loss much'") ||
+        errorMsg.indexOf("loss much") !== -1 ||
+        errorMsg.endsWith('"amount lower than minimum"')
+      ) {
+        tip = "Failed to withdraw, please increase the Max Loss!"
       } else if (
         errorMsg.endsWith("'Return amount is not enough'") ||
         errorMsg.endsWith("'callBytes failed: Error(Uniswap: INSUFFICIENT_OUTPUT_AMOUNT)'") ||
@@ -446,7 +463,7 @@ export default function Withdraw ({
         errorMsg.endsWith("'Received amount of tokens are less then expected'") ||
         errorMsg.endsWith("Error: VM Exception while processing transaction: reverted with reason string 'OL'")
       ) {
-        tip = 'Failed to exchange, please increase the exchange slippage or close exchange!'
+        tip = "Failed to exchange, please increase the exchange slippage or close exchange!"
       } else {
         tip = errorMsg
       }
@@ -520,15 +537,15 @@ export default function Withdraw ({
     img.src = "/default.png"
   }
 
-  const handleReceiveTokenChange = (value) => {
-    setReceiveToken(value);
+  const handleReceiveTokenChange = value => {
+    setReceiveToken(value)
   }
 
   /**
    * 校验toValue是否为有效输入
    * @returns
    */
-   const isValidToValue = () => {
+  const isValidToValue = () => {
     if (toValue === "" || toValue === "-") return
     // 如果不是一个数值
     if (isNaN(Number(toValue))) return false
@@ -540,7 +557,7 @@ export default function Withdraw ({
     )
     // 判断值为正数
     if (nextToValue.lte(0)) return false
-      // 精度处理完之后，应该为整数
+    // 精度处理完之后，应该为整数
     const nextToValueString = nextValue.multipliedBy(
       BigNumber.from(10)
         .pow(usdiDecimals)
@@ -573,7 +590,7 @@ export default function Withdraw ({
   useEffect(() => {
     // 未打开高级选项页面，则不继续数值预估
     // 如果输入的slipper等值不正确，则不继续数值预估
-    if (isOpenEstimate && isValidAllowLoss() && isValidSlipper() && isValidToValue()){
+    if (isOpenEstimate && isValidAllowLoss() && isValidSlipper() && isValidToValue()) {
       estimateWithdraw()
     }
     if (isEmpty(toValue)) {
@@ -583,7 +600,7 @@ export default function Withdraw ({
     // eslint-disable-next-line
   }, [toValue, allowMaxLoss, slipper, shouldExchange, isOpenEstimate, token])
 
-  const handleAmountChange = (event) => {
+  const handleAmountChange = event => {
     try {
       setToValue(event.target.value)
     } catch (error) {
@@ -636,7 +653,13 @@ export default function Withdraw ({
             onClick={() => addToken(item.tokenAddress)}
           >
             <AddIcon fontSize='small' style={{ position: "absolute", top: 25, left: 45 }} />
-            <img className={classes.img} style={{ borderRadius: '50%' }} alt='' src={`./images/${item.tokenAddress}.png`} onError={imgError} />
+            <img
+              className={classes.img}
+              style={{ borderRadius: "50%" }}
+              alt=''
+              src={`./images/${item.tokenAddress}.png`}
+              onError={imgError}
+            />
             &nbsp;&nbsp;~&nbsp;{toFixed(item.amounts, BigNumber.from(10).pow(item.decimals), 6)}
           </Button>
         </GridItem>
@@ -645,29 +668,28 @@ export default function Withdraw ({
   }
 
   const SettingIcon = isOpenEstimate ? CropIcon : CropFreeIcon
-  const selectOptions = [{
-    label: 'USDT',
-    value: USDT_ADDRESS,
-    img: `./images/${USDT_ADDRESS}.png`
-  }, {
-    label: 'USDC',
-    value: USDC_ADDRESS,
-    img: `./images/${USDC_ADDRESS}.png`
-  }, 
-  {
-    label: 'DAI',
-    value: DAI_ADDRESS,
-    img: `./images/${DAI_ADDRESS}.png`
-  }, 
-  {
-    label: 'Mix',
-    value: RECEIVE_MIX_VALUE,
-    img: [
-      `./images/${USDT_ADDRESS}.png`,
-      `./images/${USDC_ADDRESS}.png`,
-      `./images/${DAI_ADDRESS}.png`,
-    ]
-  }]
+  const selectOptions = [
+    {
+      label: "USDT",
+      value: USDT_ADDRESS,
+      img: `./images/${USDT_ADDRESS}.png`,
+    },
+    {
+      label: "USDC",
+      value: USDC_ADDRESS,
+      img: `./images/${USDC_ADDRESS}.png`,
+    },
+    {
+      label: "DAI",
+      value: DAI_ADDRESS,
+      img: `./images/${DAI_ADDRESS}.png`,
+    },
+    {
+      label: "Mix",
+      value: RECEIVE_MIX_VALUE,
+      img: [`./images/${USDT_ADDRESS}.png`, `./images/${USDC_ADDRESS}.png`, `./images/${DAI_ADDRESS}.png`],
+    },
+  ]
 
   const isValidToValueFlag = isValidToValue()
   const isValidAllowLossFlag = isValidAllowLoss()
@@ -682,24 +704,26 @@ export default function Withdraw ({
           <Muted className={classes.withdrawItemLabel}>USDi: </Muted>
           <CustomTextField
             value={toValue}
-            placeholder="amount"
+            placeholder='amount'
             maxEndAdornment
             onMaxClick={() => handleMaxClick()}
             onChange={handleAmountChange}
-            error={!isUndefined(isValidToValueFlag) && !isValidToValueFlag && (toValue !== '0')}
+            error={!isUndefined(isValidToValueFlag) && !isValidToValueFlag && toValue !== "0"}
           />
         </GridItem>
-        <GridItem xs={12} sm={12} md={12} lg={12} className={classNames(classes.withdrawItem, classes.receiveTokenItem)}>
+        <GridItem
+          xs={12}
+          sm={12}
+          md={12}
+          lg={12}
+          className={classNames(classes.withdrawItem, classes.receiveTokenItem)}
+        >
           <Muted className={classes.withdrawItemLabel}>Receive: </Muted>
-          <SimpleSelect
-            value={receiveToken}
-            onChange={handleReceiveTokenChange}
-            options={selectOptions}
-          />
+          <SimpleSelect value={receiveToken} onChange={handleReceiveTokenChange} options={selectOptions} />
         </GridItem>
         <GridItem xs={12} sm={12} md={12} lg={12}>
           <div className={classes.withdrawComfirmArea}>
-            <div className={classes.settingBtn} style={{ color: isOpenEstimate ? '#39d0d8' : '#da2eef' }}>
+            <div className={classes.settingBtn} style={{ color: isOpenEstimate ? "#39d0d8" : "#da2eef" }}>
               <SettingIcon
                 fontSize='large'
                 style={{ float: "right", cursor: "pointer" }}
@@ -710,9 +734,7 @@ export default function Withdraw ({
               </span>
             </div>
             <Button
-              disabled={isLogin && (
-                isUndefined(isValidToValueFlag) || !isValidToValueFlag
-              )}
+              disabled={isLogin && (isUndefined(isValidToValueFlag) || !isValidToValueFlag)}
               color='colorfull'
               onClick={isLogin ? withdraw : onConnect}
               style={{ minWidth: 122, padding: "12px 16px" }}
@@ -725,10 +747,7 @@ export default function Withdraw ({
           <GridItem xs={12} sm={12} md={12} lg={12}>
             <GridContainer>
               <GridItem xs={12} sm={12} md={12} lg={12} style={{ padding: "24px 0px 16px 15px" }}>
-                <span
-                  title='Withdrawal tokens and estimated amount'
-                  className={classes.settingTitle}
-                >
+                <span title='Withdrawal tokens and estimated amount' className={classes.settingTitle}>
                   Withdrawal tokens and estimated amount
                 </span>
               </GridItem>
@@ -758,8 +777,8 @@ export default function Withdraw ({
                       formControlProps={{
                         fullWidth: true,
                         classes: {
-                          root: classes.maxLossFormCtrl
-                        }
+                          root: classes.maxLossFormCtrl,
+                        },
                       }}
                     />
                   }
@@ -772,21 +791,23 @@ export default function Withdraw ({
                 />
               </GridItem>
               {shouldExchange && (
-                <GridItem className={classNames(classes.settingItem, classes.slippageItem)} xs={12} sm={12} md={12} lg={12}>
+                <GridItem
+                  className={classNames(classes.settingItem, classes.slippageItem)}
+                  xs={12}
+                  sm={12}
+                  md={12}
+                  lg={12}
+                >
                   <FormControlLabel
                     labelPlacement='start'
                     control={
-                      <RadioGroup
-                        row
-                        value={slipper}
-                        onChange={event => setSlipper(event.target.value)}
-                      >
-                        {map(["0.3", "0.5", "1"], (value) => (
+                      <RadioGroup row value={slipper} onChange={event => setSlipper(event.target.value)}>
+                        {map(["0.3", "0.5", "1"], value => (
                           <FormControlLabel
                             key={value}
                             value={value}
                             style={{ color: "#fff" }}
-                            control={<CustomRadio size="small" style={{ padding: 6 }} />}
+                            control={<CustomRadio size='small' style={{ padding: 6 }} />}
                             label={`${value}%`}
                           />
                         ))}
@@ -798,7 +819,7 @@ export default function Withdraw ({
                         <Muted className={classes.mutedLabel}>
                           <Tooltip
                             classes={{
-                              tooltip: classes.tooltip
+                              tooltip: classes.tooltip,
                             }}
                             placement='top'
                             title='Please pre-set the acceptable exchange loss when the received token is a specified one'
@@ -832,8 +853,8 @@ export default function Withdraw ({
                     formControlProps={{
                       fullWidth: true,
                       classes: {
-                        root: classes.slippageInput
-                      }
+                        root: classes.slippageInput,
+                      },
                     }}
                   />
                 </GridItem>
@@ -849,10 +870,7 @@ export default function Withdraw ({
         aria-labelledby='simple-modal-title'
         aria-describedby='simple-modal-description'
       >
-        <Paper
-          elevation={3}
-          className={classes.widthdrawLoadingPaper}
-        >
+        <Paper elevation={3} className={classes.widthdrawLoadingPaper}>
           <div className={classes.modalBody}>
             {isEmpty(withdrawError) && <CircularProgress color='inherit' />}
             {isEmpty(withdrawError) ? <p>In Withdrawing...</p> : <p>Withdraw Error !</p>}
