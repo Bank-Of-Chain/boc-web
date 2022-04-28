@@ -29,11 +29,11 @@ const config137 = {
   ...configBase,
   abi_version: 'beta-v1.5',
   apy_server: 'http://localhost:3000',
-  vault_address: "0x9Fe653933300a05BF60d19901031DA8008653a6e",
+  vault_address: "0x204d2E5c581506e939295DaF99079b590ace906e",
   usdt_address: "0xc2132D05D31c914a87C6611C10748AEb04B58e8F",
   usdc_address: "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174",
   dai_address: "0x8f3Cf7ad23Cd3CaDbD9735AFf958023239c6A063",
-  usdi_address: "0x52C7a9DDC1fE319a98Bd193b758Eaa4735738dDB",
+  usdi_address: "0x6DC1bEbb8e0881aCa6F082F5F53dD740c2DDF379",
   exchange_extra_params: {
     oneInchV4: {
       useHttp: true,

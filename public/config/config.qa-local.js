@@ -29,11 +29,11 @@ const config137 = {
   ...configBase,
   abi_version: 'beta-v1.5',
   apy_server: 'http://192.168.60.12/api/137',
-  vault_address: "0x2C328D592819524F741A88A18572372CCE196782",
+  vault_address: "0x204d2E5c581506e939295DaF99079b590ace906e",
   usdt_address: "0xc2132D05D31c914a87C6611C10748AEb04B58e8F",
   usdc_address: "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174",
   dai_address: "0x8f3Cf7ad23Cd3CaDbD9735AFf958023239c6A063",
-  usdi_address: "",
+  usdi_address: "0x6DC1bEbb8e0881aCa6F082F5F53dD740c2DDF379",
   exchange_extra_params: {
     oneInchV4: {
       useHttp: true,
@@ -97,7 +97,7 @@ const config1 = {
 
 window.config = {
   // 本地链
-  31337: config1,
+  31337: config137,
   // polygon
   137: config137,
   // bsc

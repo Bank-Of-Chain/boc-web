@@ -8,6 +8,7 @@ import some from "lodash/some"
 import every from "lodash/every"
 import debounce from "lodash/debounce"
 import isEmpty from "lodash/isEmpty"
+import get from "lodash/get"
 import { makeStyles } from "@material-ui/core/styles"
 import CircularProgress from "@material-ui/core/CircularProgress"
 import Modal from "@material-ui/core/Modal"
@@ -321,14 +322,23 @@ export default function Deposit({
       })
       .catch((error) => {
         if (error && error.data) {
-          if (error.data.message && 
-            (error.data.message.endsWith("'ES or AD'") || error.data.message.endsWith("'ES'") || error.data.message.endsWith("'AD'"))
-          ) {
+          const errorMsg = get(error.data, 'message', '')
+          let tip = ''
+          if (errorMsg.endsWith("'ES or AD'") || errorMsg.endsWith("'ES'")) {
+            tip = 'Vault has been shut down, please try again later!'
+          }
+          if (errorMsg.endsWith("'AD'")) {
+            tip = 'Vault is in adjustment status, please try again later!'
+          }
+          if (errorMsg.endsWith("'RP'")) {
+            tip = 'Vault is in rebase status, please try again later!'
+          }
+          if (tip) {
             dispatch(
               warmDialog({
                 open: true,
                 type: "error",
-                message: "Vault has been shut down, please try again later!",
+                message: tip,
               }),
             )
           }

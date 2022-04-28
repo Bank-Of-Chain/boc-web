@@ -102,3 +102,5 @@ export const NET_WORKS = [
     blockExplorerIcon: "/images/chains/logo-polygoncan.png",
   }
 ]
+
+export const LOCAL_CHAIN_ID = 31337
