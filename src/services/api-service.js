@@ -30,7 +30,7 @@ export const getDefiRate = async () => {
 }
 
 export const getAPYByDate = async ({
-  date = moment().utcOffset(0).format('YYYY-MM-DD'),
+  date = moment().utcOffset(0).subtract(1, 'days').format('YYYY-MM-DD'), // 展示昨天数据
   duration = 'monthly',
   chainId = ENV_NETWORK_TYPE
 } = {}) => {
