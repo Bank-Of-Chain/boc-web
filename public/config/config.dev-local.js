@@ -23,14 +23,23 @@ const configBase = {
   dashboard_url: '/',
   oracle_additional_slippage: 20,
   vaults: [{
+    name: 'ETHI',
+    description: '这是ethi的池子',
+    img_path: "https://bankofchain.io/logo256.png",
     path: '#/ethi',
     abi_version: 'beta-v1.5',
     vault_address: '',
   }, {
+    name: 'Vault v1.1',
+    description: '这是v1.1版本的Vault池',
+    img_path: "https://bankofchain.io/logo256.png",
     path: '#/invest',
     abi_version: 'v4.6',
     vault_address: '0x204d2E5c581506e939295DaF99079b590ace906e',
   }, {
+    name: 'Vault v1.5',
+    description: '这是v1.5版本的Vault池',
+    img_path: "https://bankofchain.io/logo256.png",
     path: '#/mutils',
     abi_version: 'beta-v1.5',
     vault_address: '0x204d2E5c581506e939295DaF99079b590ace906e',
@@ -85,7 +94,7 @@ const config56 = {
 const config1 = {
   ...configBase,
   apy_server: 'http://localhost:5000',
-  vault_address: "0x66F625B8c4c635af8b74ECe2d7eD0D58b4af3C3d",
+  abi_version: 'beta-v1.5',
   usdt_address: "0xdAC17F958D2ee523a2206206994597C13D831ec7",
   usdc_address: "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
   dai_address: "0x6B175474E89094C44Da98b954EedeAC495271d0F",
@@ -107,7 +116,7 @@ const config1 = {
 
 window.config = {
   // 本地链
-  31337: config137,
+  31337: config1,
   // polygon
   137: config137,
   // bsc
