@@ -79,6 +79,7 @@ export const NET_WORKS = [
     rpcUrl: `https://cloudflare-eth.com`,
     faucet: "",
     blockExplorer: "https://etherscan.io/",
+    blockExplorerIcon: "/images/chains/logo-etherscan.png",
   },
   {
     name: "BNB Chain",
@@ -87,6 +88,7 @@ export const NET_WORKS = [
     rpcUrl: `https://bsc-dataseed.binance.org/`,
     faucet: "",
     blockExplorer: "https://bscscan.com/",
+    blockExplorerIcon: "/images/chains/logo-bscscan.png",
   },
   {
     name: "Polygon",
@@ -97,6 +99,7 @@ export const NET_WORKS = [
     rpcUrl: "https://polygon-rpc.com/",
     faucet: "https://faucet.matic.network/",
     blockExplorer: "https://explorer-mainnet.maticvigil.com/",
+    blockExplorerIcon: "/images/chains/logo-polygoncan.png",
   }
 ]
 
