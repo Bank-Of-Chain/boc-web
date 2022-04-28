@@ -17,6 +17,7 @@ const componentsStyle = (theme) => ({
     width: "630px"
   },
   balanceCard: {
+    position: "relative",
     display: "flex",
     alignItems: "center",
     justifyContent: "space-around",
@@ -40,6 +41,33 @@ const componentsStyle = (theme) => ({
   balanceCardLabel: {
     color: "#b2add1",
     fontSize: 14
+  },
+  tokenInfo: {
+    display: "flex",
+    position: "absolute",
+    right: 12,
+    top: 9
+  },
+  addTokenWrapper: {
+    position: "relative",
+    cursor: "pointer",
+    marginRight: 12
+  },
+  addToken: {
+    width: 24,
+    height: "auto"
+  },
+  addTokenIcon: {
+    position: "absolute",
+    left: 14,
+    top: 10
+  },
+  scanToken: {
+    width: 24,
+    height: "auto",
+    cursor: "pointer",
+    borderRadius: "50%",
+    backgroundColor: "#fff"
   },
   hidden: {
     display: "none"

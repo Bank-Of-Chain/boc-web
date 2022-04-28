@@ -19,7 +19,9 @@ import Paper from "@material-ui/core/Paper"
 import Card from "@material-ui/core/Card"
 import Tabs from '@material-ui/core/Tabs'
 import Tab from '@material-ui/core/Tab'
+
 import CircularProgress from '@material-ui/core/CircularProgress'
+import AddIcon from '@material-ui/icons/Add'
 import TabPanel from '../../components/TabPanel'
 
 import Deposit from './Deposit'
@@ -40,7 +42,8 @@ import {
   DAI_ADDRESS,
   CHAIN_BROWSER_URL,
   USDI_ABI,
-  USDI_ADDRESS
+  USDI_ADDRESS,
+  NET_WORKS
 } from "../../constants"
 
 // === Utils === //
@@ -50,6 +53,7 @@ import isEmpty from "lodash/isEmpty"
 import isUndefined from "lodash/isUndefined"
 import last from "lodash/last"
 import noop from "lodash/noop"
+import find from 'lodash/find'
 import * as ethers from "ethers"
 import { calVaultAPY } from "../../helpers/apy"
 import { getETHLast30DaysVaultData } from "../../services/subgraph-service"
@@ -177,6 +181,24 @@ export default function Invest (props) {
 
   const handleTabChange = (event, value) => setTab(value)
 
+  const handleAddUSDi = () =>  {
+    if (window.ethereum) {
+      window.ethereum.request({
+        method: "wallet_watchAsset",
+        params: {
+          type: "ERC20",
+          options: {
+            address: USDI_ADDRESS,
+            symbol: "USDi",
+            decimals: usdiDecimals,
+          },
+        },
+      })
+    }
+  }
+
+  const net = find(NET_WORKS, (item) => item.chainId === props.selectedChainId) || NET_WORKS[0]
+
   return (
     <div className={classNames(classes.main, classes.mainRaised)}>
       <div className={classes.container}>
@@ -192,6 +214,21 @@ export default function Invest (props) {
                   {`${formatBalance(toBalance, usdiDecimals)} USDi`}
                 </div>
                 <div className={classes.balanceCardLabel}>Balance</div>
+              </div>
+              <div className={classes.tokenInfo}>
+                {userProvider?.provider?.isMetaMask && (
+                  <div className={classes.addTokenWrapper} onClick={handleAddUSDi}>
+                    <img className={classes.addToken} src="/images/wallets/MetaMask.png" alt="wallet" />
+                    <AddIcon className={classes.addTokenIcon} fontSize='small' />
+                  </div>
+                )}
+                <a
+                  href={`${net.blockExplorer}/address/${USDI_ADDRESS}`}
+                  target='_blank'
+                  rel='noopener noreferrer'
+                >
+                  <img className={classes.scanToken} src={net.blockExplorerIcon} alt="wallet" />
+                </a>
               </div>
             </Card>
             <Card className={classes.investCard}>
