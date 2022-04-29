@@ -23,6 +23,7 @@ const configBase = {
   dashboard_url: '/',
   oracle_additional_slippage: 20,
   vaults: [{
+    id: '1',
     name: 'ETHI',
     description: '这是ethi的池子',
     img_path: "https://bankofchain.io/logo256.png",
@@ -30,6 +31,7 @@ const configBase = {
     abi_version: 'beta-v1.5',
     vault_address: '',
   }, {
+    id: '2',
     name: 'Vault v1.1',
     description: '这是v1.1版本的Vault池',
     img_path: "https://bankofchain.io/logo256.png",
@@ -37,6 +39,7 @@ const configBase = {
     abi_version: 'v4.6',
     vault_address: '0x204d2E5c581506e939295DaF99079b590ace906e',
   }, {
+    id: '3',
     name: 'Vault v1.5',
     description: '这是v1.5版本的Vault池',
     img_path: "https://bankofchain.io/logo256.png",

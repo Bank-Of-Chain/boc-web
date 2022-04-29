@@ -32,12 +32,11 @@ import { useDispatch } from "react-redux"
 import { warmDialog } from "./../../reducers/meta-reducer"
 
 // === constants === //
-import { USDT_ADDRESS, USDC_ADDRESS, DAI_ADDRESS, CHAIN_BROWSER_URL, VAULTS } from "../../constants"
+import { USDT_ADDRESS, USDC_ADDRESS, DAI_ADDRESS, CHAIN_BROWSER_URL } from "../../constants"
 
 // === Utils === //
 import { toFixed, formatBalance } from "../../helpers/number-format"
 import map from "lodash/map"
-import find from "lodash/find"
 import isEmpty from "lodash/isEmpty"
 import isUndefined from "lodash/isUndefined"
 import last from "lodash/last"
@@ -45,7 +44,7 @@ import noop from "lodash/noop"
 import * as ethers from "ethers"
 import { calVaultAPY } from "../../helpers/apy"
 import { getETHLast30DaysVaultData } from "../../services/subgraph-service"
-import resolver from "../../services/abi-resolver"
+import useVersionWapper from "../../hooks/useVersionWapper"
 
 // === Styles === //
 import styles from "./style"
@@ -57,10 +56,10 @@ const TABS = {
 const useStyles = makeStyles(styles)
 const { BigNumber } = ethers
 
-export default function Ethi (props) {
+function Ethi (props) {
   const classes = useStyles()
   const dispatch = useDispatch()
-  const { address, userProvider, loadWeb3Modal } = props
+  const { address, userProvider, loadWeb3Modal, vault_address: VAULT_ADDRESS, usdi_address: USDI_ADDRESS, VAULT_ABI, IERC20_ABI, EXCHANGE_AGGREGATOR_ABI, USDI_ABI, EXCHANGE_ADAPTER_ABI } = props
   const [apy, setApy] = useState()
   const [usdtBalance, setUsdtBalance] = useState(BigNumber.from(0))
   const [usdtDecimals, setUsdtDecimals] = useState(0)
@@ -76,11 +75,6 @@ export default function Ethi (props) {
 
   const [tab, setTab] = useState(TABS.DEPOSIT)
 
-  const item = find(VAULTS, { path: window.location.hash })
-
-  const { vault_address: VAULT_ADDRESS, usdi_address: USDI_ADDRESS, abi_version } = item || {}
-
-  const { VAULT_ABI, IERC20_ABI, EXCHANGE_AGGREGATOR_ABI, USDI_ABI, EXCHANGE_ADAPTER_ABI } = resolver(abi_version)
   // 载入账户数据
   const loadBanlance = () => {
     if (isEmpty(address)) return loadBanlance
@@ -184,8 +178,6 @@ export default function Ethi (props) {
     }
     return listener()
   }, [address, VAULT_ADDRESS, VAULT_ABI, userProvider])
-
-  if (isEmpty(item)) return
 
   const loadTotalAssets = () => {
     const usdiContract = new ethers.Contract(USDI_ADDRESS, USDI_ABI, userProvider)
@@ -319,3 +311,5 @@ export default function Ethi (props) {
     </div>
   )
 }
+
+export default useVersionWapper(Ethi, '3')

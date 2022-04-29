@@ -58,14 +58,12 @@ import {
   MULTIPLE_OF_GAS,
   CHAIN_BROWSER_URL,
   ORACLE_ADDITIONAL_SLIPPAGE,
-  VAULTS,
 } from "../../constants"
 
 // === Utils === //
 import { getBestSwapInfo } from "piggy-finance-utils"
 import { toFixed } from "../../helpers/number-format"
 import map from "lodash/map"
-import find from "lodash/find"
 import get from "lodash/get"
 import debounce from "lodash/debounce"
 import compact from "lodash/compact"
@@ -78,7 +76,7 @@ import noop from "lodash/noop"
 import isNumber from "lodash/isNumber"
 import * as ethers from "ethers"
 import BN from "bignumber.js"
-import resolver from "./../../services/abi-resolver"
+import useVersionWapper from "../../hooks/useVersionWapper"
 
 // === Styles === //
 import styles from "./style"
@@ -108,10 +106,10 @@ const getExchangePlatformAdapters = async exchangeAggregator => {
   return exchangePlatformAdapters
 }
 
-export default function Invest (props) {
+function Invest (props) {
   const classes = useStyles()
   const dispatch = useDispatch()
-  const { address, userProvider, loadWeb3Modal } = props
+  const { address, userProvider, loadWeb3Modal, vault_address: VAULT_ADDRESS, VAULT_ABI, IERC20_ABI, EXCHANGE_AGGREGATOR_ABI } = props
   const [usdtDecimals, setUsdtDecimals] = useState(0)
   const [beforeTotalAssets, setBeforeTotalAssets] = useState(BigNumber.from(0))
   const [totalAssets, setTotalAssets] = useState(BigNumber.from(0))
@@ -181,14 +179,6 @@ export default function Invest (props) {
     return () => estimateWithdraw.cancel()
     // eslint-disable-next-line
   }, [toValue, allowMaxLoss, slipper, shouldExchange, isOpenEstimate])
-
-  const item = find(VAULTS, { path: window.location.hash })
-
-  if (isEmpty(item)) return
-
-  const { vault_address: VAULT_ADDRESS, abi_version } = item
-
-  const { VAULT_ABI, IERC20_ABI, EXCHANGE_AGGREGATOR_ABI } = resolver(abi_version)
 
   const listener = () => {
     if (isEmpty(VAULT_ADDRESS) || isEmpty(VAULT_ABI)) return
@@ -1387,3 +1377,5 @@ export default function Invest (props) {
     </div>
   )
 }
+
+export default useVersionWapper(Invest, '1')

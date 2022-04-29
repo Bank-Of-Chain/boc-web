@@ -23,8 +23,6 @@ export default function Template (props) {
     name,
     description,
     path,
-    abi_version,
-    vault_address,
     img_path = "https://bankofchain.io/logo256.png",
   } = props
 

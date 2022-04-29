@@ -1,7 +1,7 @@
 /**
  * 按版本解析abijson文件
  */
-export default function resolver(abiPrefix = 'v4.6') {
+export default function resolver(abiPrefix) {
   const VAULT_ABI = require(`./../abis/${abiPrefix}/vault-abi.json`);
   const STRATEGY_ABI = require(`./../abis/${abiPrefix}/strategy-abi.json`);
   const IERC20_ABI = require(`./../abis/${abiPrefix}/ierc20-abi.json`);
