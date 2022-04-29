@@ -53,14 +53,10 @@ const componentsStyle = (theme) => ({
     cursor: "pointer",
     marginRight: 12
   },
-  addToken: {
-    width: 24,
-    height: "auto"
-  },
   addTokenIcon: {
-    position: "absolute",
-    left: 14,
-    top: 10
+    cursor: "pointer",
+    marginLeft: 4,
+    fontSize: 16
   },
   scanToken: {
     width: 24,

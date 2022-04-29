@@ -21,7 +21,7 @@ import Tabs from '@material-ui/core/Tabs'
 import Tab from '@material-ui/core/Tab'
 
 import CircularProgress from '@material-ui/core/CircularProgress'
-import AddIcon from '@material-ui/icons/Add'
+import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline'
 import TabPanel from '../../components/TabPanel'
 
 import Deposit from './Deposit'
@@ -210,18 +210,17 @@ export default function Invest (props) {
                 <div className={classes.balanceCardLabel}>APY (last 30 days)</div>
               </div>
               <div className={classes.balanceCardItem}>
-                <div className={classes.balanceCardValue} title={formatBalance(toBalance, usdiDecimals, { showAll: true })}>
-                  {`${formatBalance(toBalance, usdiDecimals)} USDi`}
+                <div className={classes.balanceCardValue}>
+                  <span title={formatBalance(toBalance, usdiDecimals, { showAll: true })}>{`${formatBalance(toBalance, usdiDecimals)} USDi`}</span>
+                  {window.ethereum && userProvider && (
+                    <span title="Add token address to wallet">
+                      <AddCircleOutlineIcon className={classes.addTokenIcon} onClick={handleAddUSDi} fontSize='small' />
+                    </span>
+                  )}
                 </div>
                 <div className={classes.balanceCardLabel}>Balance</div>
               </div>
               <div className={classes.tokenInfo}>
-                {userProvider?.provider?.isMetaMask && (
-                  <div className={classes.addTokenWrapper} onClick={handleAddUSDi} title="Add token address to wallet">
-                    <img className={classes.addToken} src="/images/wallets/MetaMask.png" alt="wallet" />
-                    <AddIcon className={classes.addTokenIcon} fontSize='small' />
-                  </div>
-                )}
                 {userProvider && (
                   <a
                     href={`${net.blockExplorer}/address/${USDI_ADDRESS}`}
