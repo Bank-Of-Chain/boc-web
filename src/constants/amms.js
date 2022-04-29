@@ -24,7 +24,8 @@
    //  'Qi',
    'Quickswap',
    'Sushi',
-   'Synapse'
+   'Synapse',
+   'Stargate'
  ]
 
  export const PLATFORM_HOME_URL = {
@@ -40,7 +41,8 @@
    'Aave': 'https://aave.com/',
    'Quickswap': 'https://quickswap.exchange/',
    'Sushi': 'https://www.sushi.com/',
-   'Synapse': 'https://synapseprotocol.com'
+   'Synapse': 'https://synapseprotocol.com',
+   'Stargate': 'https://stargate.finance/'
  }
 
  export default STRATEGIES
