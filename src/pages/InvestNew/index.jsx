@@ -217,7 +217,7 @@ export default function Invest (props) {
               </div>
               <div className={classes.tokenInfo}>
                 {userProvider?.provider?.isMetaMask && (
-                  <div className={classes.addTokenWrapper} onClick={handleAddUSDi}>
+                  <div className={classes.addTokenWrapper} onClick={handleAddUSDi} title="Add token address to wallet">
                     <img className={classes.addToken} src="/images/wallets/MetaMask.png" alt="wallet" />
                     <AddIcon className={classes.addTokenIcon} fontSize='small' />
                   </div>
