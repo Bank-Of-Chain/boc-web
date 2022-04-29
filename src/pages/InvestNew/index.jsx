@@ -222,13 +222,15 @@ export default function Invest (props) {
                     <AddIcon className={classes.addTokenIcon} fontSize='small' />
                   </div>
                 )}
-                <a
-                  href={`${net.blockExplorer}/address/${USDI_ADDRESS}`}
-                  target='_blank'
-                  rel='noopener noreferrer'
-                >
-                  <img className={classes.scanToken} src={net.blockExplorerIcon} alt="wallet" />
-                </a>
+                {userProvider && (
+                  <a
+                    href={`${net.blockExplorer}/address/${USDI_ADDRESS}`}
+                    target='_blank'
+                    rel='noopener noreferrer'
+                  >
+                    <img className={classes.scanToken} src={net.blockExplorerIcon} alt="wallet" />
+                  </a>
+                )}
               </div>
             </Card>
             <Card className={classes.investCard}>
