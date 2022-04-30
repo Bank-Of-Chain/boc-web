@@ -10,12 +10,12 @@ import GridItem from "../../components/Grid/GridItem"
 import Template from "./Template/index"
 
 // === constants === //
-import {
-  VAULTS,
-} from "../../constants"
+import { VAULTS } from "../../constants"
 
 // === Utils === //
 import map from "lodash/map"
+import get from "lodash/get"
+import noop from "lodash/noop"
 
 // === Styles === //
 import styles from "./style"
@@ -24,17 +24,18 @@ const useStyles = makeStyles(styles)
 
 // vaults 不同的版本使用不同的模板
 const TEMPLATE_MAP = {
-  "beta-v1.5": props => <Template {...props} />,
-  "v4.6": props => <Template {...props} />,
+  ethi: props => <Template {...props} />,
+  invest: props => <Template {...props} />,
+  mutilCoins: props => <Template {...props} />,
 }
 
 export default function Vaults () {
   const classes = useStyles()
   const vaults = map(VAULTS, i => {
-    const { path, abi_version } = i
+    const { path, id } = i
     return (
       <GridItem key={path} xs={6} sm={6} md={4} className={classNames(classes.centerItem)}>
-        {TEMPLATE_MAP[abi_version](i)}
+        {get(TEMPLATE_MAP, id, noop)(i)}
       </GridItem>
     )
   })
