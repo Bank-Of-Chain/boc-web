@@ -50,8 +50,10 @@ const config137 = {
 
 const config56 = {
   ...configBase,
+  abi_version: 'beta-v1.5',
   apy_server: 'https://bankofchain.io/api/56',
   vault_address: "0x699F86dd50224544E6c23670Af44682CAe9db3c5",
+  usdi_address: "",
   usdt_address: "0x55d398326f99059fF775485246999027B3197955",
   usdc_address: "0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d",
   dai_address: "0x1AF3F329e8BE154074D8769D1FFa4eE058B1DBc3",
