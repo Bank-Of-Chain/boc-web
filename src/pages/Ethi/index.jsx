@@ -20,7 +20,6 @@ import Paper from "@material-ui/core/Paper"
 import Card from "@material-ui/core/Card"
 import Tabs from "@material-ui/core/Tabs"
 import Tab from "@material-ui/core/Tab"
-import CircularProgress from "@material-ui/core/CircularProgress"
 import TabPanel from "../../components/TabPanel"
 
 import Deposit from "./Deposit"
@@ -32,18 +31,15 @@ import { useDispatch } from "react-redux"
 import { warmDialog } from "./../../reducers/meta-reducer"
 
 // === constants === //
-import { USDT_ADDRESS, USDC_ADDRESS, DAI_ADDRESS, CHAIN_BROWSER_URL } from "../../constants"
+import { CHAIN_BROWSER_URL } from "../../constants"
 
 // === Utils === //
 import { toFixed, formatBalance } from "../../helpers/number-format"
 import map from "lodash/map"
 import isEmpty from "lodash/isEmpty"
-import isUndefined from "lodash/isUndefined"
 import last from "lodash/last"
 import noop from "lodash/noop"
 import * as ethers from "ethers"
-import { calVaultAPY } from "../../helpers/apy"
-import { getETHLast30DaysVaultData } from "../../services/subgraph-service"
 import useVersionWapper from "../../hooks/useVersionWapper"
 
 // === Styles === //
@@ -59,17 +55,24 @@ const { BigNumber } = ethers
 function Ethi (props) {
   const classes = useStyles()
   const dispatch = useDispatch()
-  const { address, userProvider, loadWeb3Modal, VAULT_ADDRESS, USDI_ADDRESS, ETHI_ADDRESS, WETHI_ADDRESS, VAULT_ABI, IERC20_ABI, EXCHANGE_AGGREGATOR_ABI, USDI_ABI, EXCHANGE_ADAPTER_ABI } = props
-  const [apy, setApy] = useState()
-  const [usdtBalance, setUsdtBalance] = useState(BigNumber.from(0))
-  const [usdtDecimals, setUsdtDecimals] = useState(0)
-  const [usdcBalance, setUsdcBalance] = useState(BigNumber.from(0))
-  const [usdcDecimals, setUsdcDecimals] = useState(0)
-  const [daiBalance, setDaiBalance] = useState(BigNumber.from(0))
-  const [daiDecimals, setDaiDecimals] = useState(0)
-  const [usdiDecimals, setUsdiDecimals] = useState(0)
+  const { 
+    address,
+    userProvider,
+    loadWeb3Modal,
+    ETH_ADDRESS,
+    ETHI_ADDRESS,
+    VAULT_ADDRESS,
+    VAULT_ABI,
+    IERC20_ABI,
+    EXCHANGE_AGGREGATOR_ABI,
+    EXCHANGE_ADAPTER_ABI
+  } = props
 
-  const [toBalance, setToBalance] = useState(BigNumber.from(0))
+  const [ethBalance, setEthBalance] = useState(BigNumber.from(0))
+  const [ethDecimals, setEthDecimals] = useState(0)
+  const [ethiBalance, setEthiBalance] = useState(BigNumber.from(0))
+  const [ethiDecimals, setEthiDecimals] = useState(0)
+
   const [beforeTotalValue, setBeforeTotalValue] = useState(BigNumber.from(0))
   const [totalValue, setTotalValue] = useState(BigNumber.from(0))
 
@@ -78,44 +81,14 @@ function Ethi (props) {
   // 载入账户数据
   const loadBanlance = () => {
     if (isEmpty(address)) return loadBanlance
-    const usdtContract = new ethers.Contract(USDT_ADDRESS, IERC20_ABI, userProvider)
-    const usdcContract = new ethers.Contract(USDC_ADDRESS, IERC20_ABI, userProvider)
-    const daiContract = new ethers.Contract(DAI_ADDRESS, IERC20_ABI, userProvider)
-    const usdiContract = new ethers.Contract(USDI_ADDRESS, USDI_ABI, userProvider)
-    Promise.all([
-      usdtContract.balanceOf(address).then(setUsdtBalance),
-      usdcContract.balanceOf(address).then(setUsdcBalance),
-      daiContract.balanceOf(address).then(setDaiBalance),
-      usdiContract
-        .balanceOf(address)
-        .then(setToBalance)
-        .catch(noop),
-      loadTotalAssets()
-        .then(afterTotalValue => {
-          setTotalValue(afterTotalValue)
-        })
-        .catch(noop),
-      // TODO:此处的usdtDecimals较特别为10的幂的数值，主要是因为lend方法里的usdtDecimals取幂操作
-      // 其他处的usdtDecimals都是为10**18或10**6
-      usdtContract
-        .decimals()
-        .then(setUsdtDecimals)
-        .catch(noop),
-      usdcContract
-        .decimals()
-        .then(setUsdcDecimals)
-        .catch(noop),
-      daiContract
-        .decimals()
-        .then(setDaiDecimals)
-        .catch(noop),
-      usdiContract
-        .decimals()
-        .then(setUsdiDecimals)
-        .catch(noop),
-      // vaultContract.token().then(setToken),
-      // vaultContract.getTrackedAssets().then(setTrackedAssets)
-    ]).catch(() => {
+    const ethiContract = new ethers.Contract(ETHI_ADDRESS, IERC20_ABI, userProvider)
+    console.log(ethiContract)
+    // TODO get ETH and ETHi and WETHi data
+    Promise.all([]).catch(() => {
+      setEthBalance(BigNumber.from(10 * 10 * 18))
+      setEthDecimals(18)
+      setEthiBalance(BigNumber.from(5.5 * 10 * 18))
+      setEthiDecimals(18)
       dispatch(
         warmDialog({
           open: true,
@@ -125,12 +98,6 @@ function Ethi (props) {
       )
     })
   }
-
-  useEffect(() => {
-    getETHLast30DaysVaultData().then(a => {
-      setApy((100 * calVaultAPY(a)).toFixed(2))
-    })
-  }, [])
 
   useEffect(() => {
     if (isEmpty(VAULT_ADDRESS)) return
@@ -174,14 +141,15 @@ function Ethi (props) {
         })
       }
   
-      return () => vaultContract.removeAllListeners(["Deposit", "Withdraw"])
+      return () => vaultContract.removeAllListeners(["Mint", "Burn"])
     }
     return listener()
   }, [address, VAULT_ADDRESS, VAULT_ABI, userProvider])
 
   const loadTotalAssets = () => {
-    const usdiContract = new ethers.Contract(USDI_ADDRESS, USDI_ABI, userProvider)
-    return usdiContract.totalSupply()
+    // const ethiContract = new ethers.Contract(ETHI_ADDRESS, ETHI_ABI, userProvider)
+    // return ethiContract.totalSupply()
+    return Promise.resolve(BigNumber.from(0))
   }
 
   const handleTabChange = (event, value) => setTab(value)
@@ -192,18 +160,12 @@ function Ethi (props) {
         <GridContainer className={classNames(classes.center)}>
           <GridItem xs={12} sm={12} md={8} className={classNames(classes.centerItem)}>
             <Card className={classes.balanceCard}>
-              <div className={classes.balanceCardItem} style={{ display: "none" }}>
-                <div className={classes.balanceCardValue}>
-                  {isUndefined(apy) ? <CircularProgress size={21} /> : `${apy}%`}
-                </div>
-                <div className={classes.balanceCardLabel}>APY (last 30 days)</div>
-              </div>
               <div className={classes.balanceCardItem}>
                 <div
                   className={classes.balanceCardValue}
-                  title={formatBalance(toBalance, usdiDecimals, { showAll: true })}
+                  title={formatBalance(ethiBalance, ethiDecimals, { showAll: true })}
                 >
-                  {`${formatBalance(toBalance, usdiDecimals)} USDi ethi`}
+                  {`${formatBalance(ethiBalance, ethiDecimals)} ETHi`}
                 </div>
                 <div className={classes.balanceCardLabel}>Balance</div>
               </div>
@@ -233,24 +195,20 @@ function Ethi (props) {
               <TabPanel value={tab} index={TABS.DEPOSIT}>
                 <Deposit
                   address={address}
-                  usdtBalance={usdtBalance}
-                  usdtDecimals={usdtDecimals}
-                  usdcBalance={usdcBalance}
-                  usdcDecimals={usdcDecimals}
-                  daiBalance={daiBalance}
-                  daiDecimals={daiDecimals}
-                  usdiDecimals={usdiDecimals}
+                  ethBalance={ethBalance}
+                  ethDecimals={ethDecimals}
                   userProvider={userProvider}
                   onConnect={loadWeb3Modal}
                   VAULT_ABI={VAULT_ABI}
                   IERC20_ABI={IERC20_ABI}
                   VAULT_ADDRESS={VAULT_ADDRESS}
+                  ETH_ADDRESS={ETH_ADDRESS}
                 />
               </TabPanel>
               <TabPanel value={tab} index={TABS.WITHDRAW}>
                 <Withdraw
-                  toBalance={toBalance}
-                  usdiDecimals={usdiDecimals}
+                  ethiBalance={ethiBalance}
+                  ethiDecimals={ethiDecimals}
                   userProvider={userProvider}
                   onConnect={loadWeb3Modal}
                   VAULT_ADDRESS={VAULT_ADDRESS}
@@ -298,7 +256,7 @@ function Ethi (props) {
                   <TableCell className={classNames(classes.tableCell)}>
                     <CountTo from={Number(beforeTotalValue.toBigInt())} to={Number(totalValue.toBigInt())} speed={3500}>
                       {v => {
-                        return `${toFixed(v, BigNumber.from(10).pow(usdiDecimals), 6)} USDi`
+                        return `${toFixed(v, BigNumber.from(10).pow(ethiDecimals), 6)} USDi`
                       }}
                     </CountTo>
                   </TableCell>

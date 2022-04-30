@@ -15,9 +15,6 @@ const componentsStyle = (theme) => ({
   depositContainer: {
     padding: "36px 16px 0",
   },
-  tokenInputWrapper: {
-    marginBottom: "16px",
-  },
   inputLabelWrapper: {
     display: "flex",
     justifyContent: "space-between",
@@ -26,6 +23,7 @@ const componentsStyle = (theme) => ({
   depositComfirmArea: {
     display: "flex",
     justifyContent: "space-between",
+    marginTop: 16
   },
   tokenInfo: {
     display: "flex",
@@ -39,7 +37,7 @@ const componentsStyle = (theme) => ({
   tokenName: {
     fontSize: "16px",
     color: "#fff"
-  }
+  },
 });
 
 export default componentsStyle;

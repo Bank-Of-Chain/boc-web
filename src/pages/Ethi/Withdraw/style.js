@@ -31,7 +31,6 @@ const componentsStyle = (theme) => ({
     display: "flex",
     alignItems: "center",
     color: "#fff",
-    marginBottom: "16px",
   },
   receiveTokenItem: {
     marginBottom: 0
@@ -75,10 +74,6 @@ const componentsStyle = (theme) => ({
     marginRight: 16,
     textAlign: 'right'
   },
-  mutedLabel: {
-    position: "relative",
-    display: "inline-block"
-  },
   maxLossFormCtrl: {
     width: "160px"
   },
@@ -91,7 +86,7 @@ const componentsStyle = (theme) => ({
   },
   labelToolTipIcon: {
     position: 'absolute',
-    left: "-18px",
+    left: 0,
     top: '50%',
     color: "#fff",
     fontSize: 16,

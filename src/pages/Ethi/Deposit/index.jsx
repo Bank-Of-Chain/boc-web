@@ -3,9 +3,6 @@ import * as ethers from "ethers"
 import BN from "bignumber.js"
 import { useDispatch } from "react-redux"
 import isUndefined from "lodash/isUndefined"
-import map from "lodash/map"
-import some from "lodash/some"
-import every from "lodash/every"
 import debounce from "lodash/debounce"
 import isEmpty from "lodash/isEmpty"
 import get from "lodash/get"
@@ -20,91 +17,39 @@ import CustomTextField from "../../../components/CustomTextField"
 import Muted from "../../../components/Typography/Muted"
 import Button from "../../../components/CustomButtons/Button"
 import { warmDialog } from "./../../../reducers/meta-reducer"
-import { toFixed, formatBalance } from "../../../helpers/number-format"
-import {
-  USDT_ADDRESS,
-  USDC_ADDRESS,
-  DAI_ADDRESS,
-} from "../../../constants"
+import { formatBalance } from "../../../helpers/number-format"
 
 import styles from "./style"
 
 const { BigNumber } = ethers
 const useStyles = makeStyles(styles)
-const TOKEN = {
-  USDT: 'USDT',
-  USDC: 'USDC',
-  DAI: 'DAI',
-}
 
 export default function Deposit({
   address,
-  usdtBalance,
-  usdtDecimals,
-  usdcBalance,
-  usdcDecimals,
-  daiBalance,
-  daiDecimals,
-  usdiDecimals,
+  ethBalance,
+  ethDecimals,
   userProvider,
   onConnect,
   VAULT_ABI,
   IERC20_ABI,
-  VAULT_ADDRESS
+  VAULT_ADDRESS,
+  ETH_ADDRESS
 }) {
   const classes = useStyles()
   const dispatch = useDispatch()
-  const [usdtValue, setUsdtValue] = useState("")
-  const [usdcValue, setUsdcValue] = useState("")
-  const [daiValue, setDaiValue] = useState("")
+  const [ethValue, setEthValue] = useState("")
   const [estimateValue, setEstimateValue] = useState("")
   const [isLoading, setIsLoading] = useState(false)
   const loadingTimer = useRef()
-
-  const tokenBasicState = {
-    [TOKEN.USDT]: {
-      value: usdtValue,
-      balance: usdtBalance,
-      decimals: usdtDecimals,
-    },
-    [TOKEN.USDC]: {
-      value: usdcValue,
-      balance: usdcBalance,
-      decimals: usdcDecimals
-    },
-    [TOKEN.DAI]: {
-      value: daiValue,
-      balance: daiBalance,
-      decimals: daiDecimals
-    }
-  }
-
-  const formConfig = [{
-    name: TOKEN.USDT,
-    address: USDT_ADDRESS,
-    setValue: setUsdtValue,
-    isValid: isValidValue(TOKEN.USDT),
-    ...tokenBasicState[TOKEN.USDT],
-  }, {
-    name: TOKEN.USDC,
-    address: USDC_ADDRESS,
-    setValue: setUsdcValue,
-    isValid: isValidValue(TOKEN.USDC),
-    ...tokenBasicState[TOKEN.USDC],
-  }, {
-    name: TOKEN.DAI,
-    address: DAI_ADDRESS,
-    setValue: setDaiValue,
-    isValid: isValidValue(TOKEN.DAI),
-    ...tokenBasicState[TOKEN.DAI],
-  }]
 
   /**
    * 校验value是否为有效输入
    * @returns
    */
-  function isValidValue(token) {
-    const { value, balance, decimals } = tokenBasicState[token]
+  function isValidValue() {
+    const balance = ethBalance
+    const decimals = ethDecimals
+    const value = ethValue
     if (value === "" || value === "-" || value === '0') return
     // 如果不是一个数值
     if (isNaN(Number(value))) return false
@@ -128,75 +73,20 @@ export default function Deposit({
     return true
   }
 
-  const handleInputChange = (event, item) => {
-    try {
-      item.setValue(event.target.value)
-    } catch (error) {
-      item.setValue("")
-    }
+  const handleInputChange = (event) => {
+    setEthValue(event.target.value)
   }
 
-  const handleMaxClick = (item) => {
-    item.setValue(formatBalance(item.balance, item.decimals, { showAll: true }))
+  const handleMaxClick = () => {
+    setEthValue(formatBalance(ethBalance, ethDecimals, { showAll: true }))
   }
 
-  const getTokenAndAmonut = () => {
-    const isValidUsdtValue = isValidValue(TOKEN.USDT)
-    const isValidUsdcValue = isValidValue(TOKEN.USDC)
-    const isValidDaiValue = isValidValue(TOKEN.DAI)
-    const nextTokens = []
-    const nextAmounts = []
-    if (isValidUsdtValue) {
-      const nextUsdtValue = BigNumber.from(
-        BN(usdtValue)
-          .multipliedBy(
-            BigNumber.from(10)
-              .pow(usdtDecimals)
-              .toString(),
-          )
-          .toFixed(),
-      )
-      nextAmounts.push(nextUsdtValue)
-      nextTokens.push(USDT_ADDRESS)
-    }
-    if (isValidUsdcValue) {
-      const nextUsdtValue = BigNumber.from(
-        BN(usdcValue)
-          .multipliedBy(
-            BigNumber.from(10)
-              .pow(usdcDecimals)
-              .toString(),
-          )
-          .toFixed(),
-      )
-      nextAmounts.push(nextUsdtValue)
-      nextTokens.push(USDC_ADDRESS)
-    }
-    if (isValidDaiValue) {
-      const nextUsdtValue = BigNumber.from(
-        BN(daiValue)
-          .multipliedBy(
-            BigNumber.from(10)
-              .pow(daiDecimals)
-              .toString(),
-          )
-          .toFixed(),
-      )
-      nextAmounts.push(nextUsdtValue)
-      nextTokens.push(DAI_ADDRESS)
-    }
-    return [nextTokens, nextAmounts]
-  }
-
-  // TODO 支持多币存
   const diposit = async () => {
     // 取款逻辑参考：https://github.com/PiggyFinance/piggy-finance-web/issues/178
     clearTimeout(loadingTimer.current)
     // step1: 校验三个币，起码一个有值
-    const isValidUsdtValue = isValidValue(TOKEN.USDT)
-    const isValidUsdcValue = isValidValue(TOKEN.USDC)
-    const isValidDaiValue = isValidValue(TOKEN.DAI)
-    if (!isValidUsdtValue && !isValidUsdcValue && !isValidDaiValue) {
+    const isValid = isValidValue()
+    if (!isValid) {
       return dispatch(
         warmDialog({
           open: true,
@@ -207,7 +97,19 @@ export default function Deposit({
     }
     // step2：折算精度，授权三个币及数值
     setIsLoading(true)
-    const [nextTokens, nextAmounts] = getTokenAndAmonut()
+    const nextTokens = []
+    const nextAmounts = []
+    const nextUsdtValue = BigNumber.from(
+      BN(ethValue)
+        .multipliedBy(
+          BigNumber.from(10)
+            .pow(ethDecimals)
+            .toString(),
+        )
+        .toFixed(),
+    )
+    nextAmounts.push(nextUsdtValue)
+    nextTokens.push(ETH_ADDRESS)
     console.log('nextTokens=', nextTokens, nextAmounts)
     const signer = userProvider.getSigner()
     for (const key in nextTokens) {
@@ -279,9 +181,7 @@ export default function Deposit({
       })
     
     if (isSuccess) {
-      setUsdtValue("")
-      setUsdcValue("")
-      setDaiValue("")
+      setEthValue("")
     }
 
     loadingTimer.current = setTimeout(() => {
@@ -299,84 +199,58 @@ export default function Deposit({
   }
 
   const estimateMint = debounce(async () => {
-    const isValidUsdtValue = isValidValue(TOKEN.USDT)
-    const isValidUsdcValue = isValidValue(TOKEN.USDC)
-    const isValidDaiValue = isValidValue(TOKEN.DAI)
-    const isFalse = (v) => v === false
-    const [tokens, amounts] = getTokenAndAmonut()
-    if (isFalse(isValidUsdtValue) || isFalse(isValidUsdcValue) || isFalse(isValidDaiValue) || tokens.length === 0) {
-      setEstimateValue(toFixed(0, BigNumber.from(10).pow(usdiDecimals), 6))
-      return
-    }
-    const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider)
-    const result = await vaultContract.callStatic.estimateMint(tokens, amounts)
-    setEstimateValue(toFixed(result.priceAdjustedDeposit, BigNumber.from(10).pow(usdiDecimals), 6))
+    setEstimateValue(0)
   }, 500)
 
-  //TODO: 方便测试，待删除
-  const printOutAllowance = async () => {
-    const [nextTokens] = getTokenAndAmonut()
-    const signer = userProvider.getSigner()
-    for (const key in nextTokens) {
-      const contract = new ethers.Contract(nextTokens[key], IERC20_ABI, userProvider)
-      const contractWithUser = contract.connect(signer)
-        // 获取当前允许的额度
-      const allowanceAmount = await contractWithUser.allowance(address, VAULT_ADDRESS)
-      console.log(nextTokens[key], 'allowanceAmount=', allowanceAmount.toString())
-    }
-  }
 
   useEffect(() => {
     estimateMint()
     return () => estimateMint.cancel()
     // eslint-disable-next-line
-  }, [usdcValue, usdtValue, daiValue])
+  }, [ethValue])
 
   const isLogin = !isEmpty(userProvider)
+  const isValid = isValidValue()
 
   return (
     <>
       <GridContainer classes={{ root: classes.depositContainer }}>
-        {map(formConfig, (item) => (
-          <GridItem key={item.name} xs={12} sm={12} md={12} lg={12} className={classes.tokenInputWrapper}>
-            <GridContainer>
-              <GridItem xs={12} sm={12} md={12} lg={12}>
-                <div className={classes.inputLabelWrapper}>
-                  <div className={classes.tokenInfo}>
-                    <img className={classes.tokenLogo} alt='' src={`./images/${item.address}.png`} />
-                    <span className={classes.tokenName}>{item.name}</span>
-                  </div> 
-                  <Muted title={formatBalance(item.balance, item.decimals, { showAll: true })}>
-                    {`Balance: ${formatBalance(item.balance, item.decimals)}`}
-                  </Muted>
-                </div>
-              </GridItem>
-              <GridItem xs={12} sm={12} md={12} lg={12}>
-                <CustomTextField
-                  value={item.value}
-                  onChange={(event) => handleInputChange(event, item)}
-                  placeholder="deposit amount"
-                  maxEndAdornment
-                  onMaxClick={() => handleMaxClick(item)}
-                  error={!isUndefined(item.isValid) && !item.isValid}
-                />
-              </GridItem>
-            </GridContainer>
-          </GridItem>
-        ))}
+        <GridItem xs={12} sm={12} md={12} lg={12} className={classes.tokenInputWrapper}>
+          <GridContainer>
+            <GridItem xs={12} sm={12} md={12} lg={12}>
+              <div className={classes.inputLabelWrapper}>
+                <div className={classes.tokenInfo}>
+                  <img className={classes.tokenLogo} alt='' src={`./images/0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE.png`} />
+                  <span className={classes.tokenName}>ETH</span>
+                </div> 
+                <Muted title={formatBalance(ethBalance, ethDecimals, { showAll: true })}>
+                  {`Balance: ${formatBalance(ethBalance, ethDecimals)}`}
+                </Muted>
+              </div>
+            </GridItem>
+            <GridItem xs={12} sm={12} md={12} lg={12}>
+              <CustomTextField
+                value={ethValue}
+                onChange={handleInputChange}
+                placeholder="deposit amount"
+                maxEndAdornment
+                onMaxClick={handleMaxClick}
+                error={!isUndefined(isValid) && !isValid}
+              />
+            </GridItem>
+          </GridContainer>
+        </GridItem>
         <GridItem xs={12} sm={12} md={12} lg={12}>
           <div className={classes.depositComfirmArea}>
             <Muted>
-              <p onClick={printOutAllowance} style={{ fontSize: 16, wordBreak: "break-all", letterSpacing: "0.01071em" }}>
+              <p style={{ fontSize: 16, wordBreak: "break-all", letterSpacing: "0.01071em" }}>
                 Estimated:
                 &nbsp;{estimateValue}
-                &nbsp;USDi
+                &nbsp;ETHi
               </p>
             </Muted>
             <Button
-              disabled={isLogin && (
-                some(formConfig, item => isValidValue(item.name) === false) || every(formConfig, item => isValidValue(item.name) !== true)
-              )}
+              disabled={isLogin && (!isUndefined(isValid) && !isValid)}
               color='colorfull'
               onClick={isLogin ? diposit : onConnect}
               style={{ minWidth: 122, padding: "12px 16px", margin: "6px 0" }}
