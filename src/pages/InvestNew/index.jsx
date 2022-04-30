@@ -59,7 +59,7 @@ const { BigNumber } = ethers
 function Invest (props) {
   const classes = useStyles()
   const dispatch = useDispatch()
-  const { address, userProvider, loadWeb3Modal, vault_address: VAULT_ADDRESS, VAULT_ABI, usdi_address: USDI_ADDRESS, IERC20_ABI, EXCHANGE_AGGREGATOR_ABI, USDI_ABI, EXCHANGE_ADAPTER_ABI } = props
+  const { address, userProvider, loadWeb3Modal, VAULT_ADDRESS, VAULT_ABI, USDI_ADDRESS, IERC20_ABI, EXCHANGE_AGGREGATOR_ABI, USDI_ABI, EXCHANGE_ADAPTER_ABI } = props
   const [apy, setApy] = useState()
   const [usdtBalance, setUsdtBalance] = useState(BigNumber.from(0))
   const [usdtDecimals, setUsdtDecimals] = useState(0)

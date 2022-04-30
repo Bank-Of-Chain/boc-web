@@ -109,7 +109,7 @@ const getExchangePlatformAdapters = async exchangeAggregator => {
 function Invest (props) {
   const classes = useStyles()
   const dispatch = useDispatch()
-  const { address, userProvider, loadWeb3Modal, vault_address: VAULT_ADDRESS, VAULT_ABI, IERC20_ABI, EXCHANGE_AGGREGATOR_ABI } = props
+  const { address, userProvider, loadWeb3Modal, VAULT_ADDRESS, VAULT_ABI, IERC20_ABI, EXCHANGE_AGGREGATOR_ABI } = props
   const [usdtDecimals, setUsdtDecimals] = useState(0)
   const [beforeTotalAssets, setBeforeTotalAssets] = useState(BigNumber.from(0))
   const [totalAssets, setTotalAssets] = useState(BigNumber.from(0))

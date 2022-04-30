@@ -23,21 +23,13 @@ const configBase = {
   dashboard_url: '/',
   oracle_additional_slippage: 20,
   vaults: [{
-    id: 'ethi',
-    name: 'ETHI',
-    description: '这是ethi的池子',
-    img_path: "https://bankofchain.io/logo256.png",
-    path: '#/ethi',
-    abi_version: 'beta-v1.5',
-    vault_address: '',
-  }, {
     id: 'invest',
     name: 'Vault v1.1',
     description: '这是v1.1版本的Vault池',
     img_path: "https://bankofchain.io/logo256.png",
     path: '#/invest',
     abi_version: 'v4.6',
-    vault_address: '0x204d2E5c581506e939295DaF99079b590ace906e',
+    VAULT_ADDRESS: '0x547382C0D1b23f707918D3c83A77317B71Aa8470',
   }, {
     id: 'mutilCoins',
     name: 'Vault v1.5',
@@ -45,8 +37,18 @@ const configBase = {
     img_path: "https://bankofchain.io/logo256.png",
     path: '#/mutils',
     abi_version: 'beta-v1.5',
-    vault_address: '0x204d2E5c581506e939295DaF99079b590ace906e',
-    usdi_address: '0x6DC1bEbb8e0881aCa6F082F5F53dD740c2DDF379',
+    VAULT_ADDRESS: '0x9BcC604D4381C5b0Ad12Ff3Bf32bEdE063416BC7',
+    USDI_ADDRESS: '0xf090f16dEc8b6D24082Edd25B1C8D26f2bC86128',
+  }, {
+    id: 'ethi',
+    name: 'ETHI',
+    description: '这是ethi的池子',
+    img_path: "https://bankofchain.io/logo256.png",
+    path: '#/ethi',
+    abi_version: 'beta-v1.5',
+    VAULT_ADDRESS: '',
+    ETHI_ADDRESS: '',
+    WETHI_ADDRESS: ''
   }]
 }
 
