@@ -312,4 +312,4 @@ function Ethi (props) {
   )
 }
 
-export default useVersionWapper(Ethi, '3')
+export default useVersionWapper(Ethi, 'ethi')

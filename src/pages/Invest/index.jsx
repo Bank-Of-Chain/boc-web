@@ -1378,4 +1378,4 @@ function Invest (props) {
   )
 }
 
-export default useVersionWapper(Invest, '1')
+export default useVersionWapper(Invest, 'invest')

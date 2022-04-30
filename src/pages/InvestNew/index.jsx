@@ -302,4 +302,4 @@ function Invest (props) {
 }
 
 
-export default useVersionWapper(Invest, '2')
+export default useVersionWapper(Invest, 'mutilCoins')
