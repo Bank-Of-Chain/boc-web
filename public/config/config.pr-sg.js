@@ -88,7 +88,8 @@ const config1 = {
     },
     paraswap: {
       network: 1,
-      excludeContractMethods: ['swapOnZeroXv2', 'swapOnZeroXv4']
+      excludeContractMethods: ['swapOnZeroXv2', 'swapOnZeroXv4'],
+      excludeDEXS: ['acryptos']
     }
   },
   // ETH链一个区块3千万，使用90%的空间即可，过大会造成打块过慢
