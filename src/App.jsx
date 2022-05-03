@@ -20,7 +20,7 @@ import Alert from "@material-ui/lab/Alert"
 import { Button } from "@material-ui/core"
 
 // === Utils === //
-import { USDT_ADDRESS, NET_WORKS } from "./constants"
+import { USDT_ADDRESS, NET_WORKS, LOCAL_CHAIN_ID } from "./constants"
 import { makeStyles } from "@material-ui/core/styles"
 import { SafeAppWeb3Modal } from "@gnosis.pm/safe-apps-web3modal"
 import { lendSwap } from "piggy-finance-utils"
@@ -272,7 +272,7 @@ function App () {
       ])
     }
     if (!isUndefined(selectedChainId) && !map(NET_WORKS, "chainId").includes(selectedChainId)) {
-      if (selectedChainId === 31337) return
+      if (selectedChainId === LOCAL_CHAIN_ID) return
       return modalJsx(true, [
         <p key='1' style={{ textAlign: "center" }}>
           You may need to manually switch network via your wallet.
