@@ -230,6 +230,9 @@ export default function Withdraw({
       if (error?.error?.data?.originalError?.message) {
         errorMsg = error.error.data.originalError.message
       }
+      if (error?.error?.data?.message) {
+        errorMsg = error.error.data.message
+      }
       let tip = ''
       if (errorMsg.endsWith("'ES or AD'") || errorMsg.endsWith("'ES'")) {
         tip = 'Vault has been shut down, please try again later!'
@@ -425,6 +428,9 @@ export default function Withdraw({
       }
       if (error?.error?.data?.originalError?.message) {
         errorMsg = error.error.data.originalError.message
+      }
+      if (error?.error?.data?.message) {
+        errorMsg = error.error.data.message
       }
       let tip = ''
       if (errorMsg.endsWith("'ES or AD'") || errorMsg.endsWith("'ES'")) {

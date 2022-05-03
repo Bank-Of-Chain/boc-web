@@ -19,7 +19,8 @@ import Paper from "@material-ui/core/Paper"
 import Card from "@material-ui/core/Card"
 import Tabs from '@material-ui/core/Tabs'
 import Tab from '@material-ui/core/Tab'
-import CircularProgress from '@material-ui/core/CircularProgress'
+
+import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline'
 import TabPanel from '../../components/TabPanel'
 
 import Deposit from './Deposit'
@@ -40,19 +41,18 @@ import {
   DAI_ADDRESS,
   CHAIN_BROWSER_URL,
   USDI_ABI,
-  USDI_ADDRESS
+  USDI_ADDRESS,
+  NET_WORKS
 } from "../../constants"
 
 // === Utils === //
 import { toFixed, formatBalance } from "../../helpers/number-format"
 import map from "lodash/map"
 import isEmpty from "lodash/isEmpty"
-import isUndefined from "lodash/isUndefined"
 import last from "lodash/last"
 import noop from "lodash/noop"
+import find from 'lodash/find'
 import * as ethers from "ethers"
-import { calVaultAPY } from "../../helpers/apy"
-import { getETHLast30DaysVaultData } from "../../services/subgraph-service"
 
 // === Styles === //
 import styles from "./style"
@@ -68,7 +68,6 @@ export default function Invest (props) {
   const classes = useStyles()
   const dispatch = useDispatch()
   const { address, userProvider, loadWeb3Modal } = props
-  const [apy, setApy] = useState()
   const [usdtBalance, setUsdtBalance] = useState(BigNumber.from(0))
   const [usdtDecimals, setUsdtDecimals] = useState(0)
   const [usdcBalance, setUsdcBalance] = useState(BigNumber.from(0))
@@ -125,12 +124,6 @@ export default function Invest (props) {
   }
 
   useEffect(() => {
-    getETHLast30DaysVaultData().then(a => {
-      setApy((100 * calVaultAPY(a)).toFixed(2))
-    })
-  }, [])
-
-  useEffect(() => {
     if (isEmpty(VAULT_ADDRESS)) return
     const loadTotalAssetsFn = () =>
       loadTotalAssets()
@@ -177,21 +170,51 @@ export default function Invest (props) {
 
   const handleTabChange = (event, value) => setTab(value)
 
+  const handleAddUSDi = () =>  {
+    if (window.ethereum) {
+      window.ethereum.request({
+        method: "wallet_watchAsset",
+        params: {
+          type: "ERC20",
+          options: {
+            address: USDI_ADDRESS,
+            symbol: "USDi",
+            decimals: usdiDecimals,
+          },
+        },
+      })
+    }
+  }
+
+  const net = find(NET_WORKS, (item) => item.chainId === props.selectedChainId) || NET_WORKS[0]
+
   return (
     <div className={classNames(classes.main, classes.mainRaised)}>
       <div className={classes.container}>
         <GridContainer className={classNames(classes.center)}>
           <GridItem xs={12} sm={12} md={8} className={classNames(classes.centerItem)}>
             <Card className={classes.balanceCard}>
-              <div className={classes.balanceCardItem} style={{ display: 'none' }}>
-                <div className={classes.balanceCardValue}>{isUndefined(apy) ? <CircularProgress size={21} /> : `${apy}%`}</div>
-                <div className={classes.balanceCardLabel}>APY (last 30 days)</div>
-              </div>
               <div className={classes.balanceCardItem}>
-                <div className={classes.balanceCardValue} title={formatBalance(toBalance, usdiDecimals, { showAll: true })}>
-                  {`${formatBalance(toBalance, usdiDecimals)} USDi`}
+                <div className={classes.balanceCardValue}>
+                  <span title={formatBalance(toBalance, usdiDecimals, { showAll: true })}>{`${formatBalance(toBalance, usdiDecimals)} USDi`}</span>
+                  {window.ethereum && userProvider && (
+                    <span title="Add token address to wallet">
+                      <AddCircleOutlineIcon className={classes.addTokenIcon} onClick={handleAddUSDi} fontSize='small' />
+                    </span>
+                  )}
                 </div>
                 <div className={classes.balanceCardLabel}>Balance</div>
+              </div>
+              <div className={classes.tokenInfo}>
+                {userProvider && (
+                  <a
+                    href={`${net.blockExplorer}/address/${USDI_ADDRESS}`}
+                    target='_blank'
+                    rel='noopener noreferrer'
+                  >
+                    <img className={classes.scanToken} src={net.blockExplorerIcon} alt="wallet" />
+                  </a>
+                )}
               </div>
             </Card>
             <Card className={classes.investCard}>

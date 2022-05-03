@@ -51,8 +51,10 @@ const config137 = {
 
 const config56 = {
   ...configBase,
+  abi_version: 'beta-v1.5',
   apy_server: 'http://localhost:4000',
-  vault_address: "0xf2Bf7C00B4696726B3c1f6E7b87d1a4acB050a8F",
+  vault_address: "0xFEE2d383Ee292283eC43bdf0fa360296BE1e1149",
+  usdi_address: "0xE3e7A4B35574Ce4b9Bc661cD93e8804Da548932a",
   usdt_address: "0x55d398326f99059fF775485246999027B3197955",
   usdc_address: "0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d",
   dai_address: "0x1AF3F329e8BE154074D8769D1FFa4eE058B1DBc3",
@@ -96,7 +98,7 @@ const config1 = {
 
 window.config = {
   // 本地链
-  31337: config137,
+  31337: config56,
   // polygon
   137: config137,
   // bsc

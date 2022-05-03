@@ -78,7 +78,8 @@ export const NET_WORKS = [
     chainId: 1,
     rpcUrl: `https://cloudflare-eth.com`,
     faucet: "",
-    blockExplorer: "https://etherscan.io/",
+    blockExplorer: "https://etherscan.io",
+    blockExplorerIcon: "/images/chains/logo-etherscan.png",
   },
   {
     name: "BNB Chain",
@@ -86,7 +87,8 @@ export const NET_WORKS = [
     chainId: 56,
     rpcUrl: `https://bsc-dataseed.binance.org/`,
     faucet: "",
-    blockExplorer: "https://bscscan.com/",
+    blockExplorer: "https://bscscan.com",
+    blockExplorerIcon: "/images/chains/logo-bscscan.png",
   },
   {
     name: "Polygon",
@@ -96,6 +98,9 @@ export const NET_WORKS = [
     gasPrice: 1000000000,
     rpcUrl: "https://polygon-rpc.com/",
     faucet: "https://faucet.matic.network/",
-    blockExplorer: "https://explorer-mainnet.maticvigil.com/",
+    blockExplorer: "https://explorer-mainnet.maticvigil.com",
+    blockExplorerIcon: "/images/chains/logo-polygoncan.png",
   }
 ]
+
+export const LOCAL_CHAIN_ID = 31337
