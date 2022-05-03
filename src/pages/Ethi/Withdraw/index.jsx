@@ -13,12 +13,9 @@ import AndroidIcon from "@material-ui/icons/Android"
 import CropFreeIcon from "@material-ui/icons/CropFree"
 import CropIcon from "@material-ui/icons/Crop"
 import RadioGroup from "@material-ui/core/RadioGroup"
-import Tooltip from "@material-ui/core/Tooltip"
-import InfoIcon from "@material-ui/icons/Info"
 import Step from "@material-ui/core/Step"
 import WarningIcon from "@material-ui/icons/Warning"
 import FormControlLabel from "@material-ui/core/FormControlLabel"
-import Switch from "@material-ui/core/Switch"
 
 import CustomTextField from "../../../components/CustomTextField"
 import BocStepper from "../../../components/Stepper/Stepper"
@@ -70,7 +67,7 @@ const steps = [
 
 export default function Withdraw ({
   toBalance,
-  usdiDecimals,
+  ethDecimals,
   userProvider,
   onConnect,
   VAULT_ADDRESS,
@@ -109,7 +106,7 @@ export default function Withdraw ({
       BN(toValue)
         .multipliedBy(
           BigNumber.from(10)
-            .pow(usdiDecimals)
+            .pow(ethDecimals)
             .toString(),
         )
         .toFixed(),
@@ -308,7 +305,7 @@ export default function Withdraw ({
       BN(toValue)
         .multipliedBy(
           BigNumber.from(10)
-            .pow(usdiDecimals)
+            .pow(ethDecimals)
             .toString(),
         )
         .toFixed(),
@@ -549,7 +546,7 @@ export default function Withdraw ({
     const nextValue = BN(toValue)
     const nextToValue = nextValue.multipliedBy(
       BigNumber.from(10)
-        .pow(usdiDecimals)
+        .pow(ethDecimals)
         .toString(),
     )
     // 判断值为正数
@@ -557,7 +554,7 @@ export default function Withdraw ({
     // 精度处理完之后，应该为整数
     const nextToValueString = nextValue.multipliedBy(
       BigNumber.from(10)
-        .pow(usdiDecimals)
+        .pow(ethDecimals)
         .toString(),
     )
     if (nextToValueString.toFixed().indexOf(".") !== -1) return false
@@ -606,7 +603,7 @@ export default function Withdraw ({
   }
 
   const handleMaxClick = () => {
-    setToValue(formatBalance(toBalance, usdiDecimals, { showAll: true }))
+    setToValue(formatBalance(toBalance, ethDecimals, { showAll: true }))
   }
 
   const renderEstimate = () => {
@@ -693,7 +690,7 @@ export default function Withdraw ({
     <>
       <GridContainer classes={{ root: classes.withdrawContainer }}>
         <GridItem xs={12} sm={12} md={12} lg={12} className={classes.withdrawItem}>
-          <Muted className={classes.withdrawItemLabel}>USDi: </Muted>
+          <Muted className={classes.withdrawItemLabel}>ETHi: </Muted>
           <CustomTextField
             value={toValue}
             placeholder='amount'
@@ -772,101 +769,64 @@ export default function Withdraw ({
                   }
                 />
               </GridItem>
-              <GridItem className={classes.settingItem} xs={12} sm={12} md={12} lg={12}>
+              <GridItem
+                className={classNames(classes.settingItem, classes.slippageItem)}
+                xs={12}
+                sm={12}
+                md={12}
+                lg={12}
+              >
                 <FormControlLabel
                   labelPlacement='start'
                   control={
-                    <Switch
-                      color='default'
-                      checked={shouldExchange}
-                      onChange={event => setShouldExchange(event.target.checked)}
-                      classes={{
-                        switchBase: classes.switchBase,
-                        checked: classes.switchChecked,
-                        thumb: classes.switchIcon,
-                        track: classes.switchBar,
-                      }}
-                    />
+                    <RadioGroup row value={slipper} onChange={event => setSlipper(event.target.value)}>
+                      {map(["0.3", "0.5", "1"], value => (
+                        <FormControlLabel
+                          key={value}
+                          value={value}
+                          style={{ color: "#fff" }}
+                          control={<CustomRadio size='small' style={{ padding: 6 }} />}
+                          label={`${value}%`}
+                        />
+                      ))}
+                    </RadioGroup>
                   }
                   style={{ marginLeft: 0 }}
                   label={
                     <div className={classes.settingItemLabel}>
-                      <Muted className={classes.exchanged}>
-                        <Tooltip
-                          classes={{
-                            tooltip: classes.tooltip
-                          }}
-                          placement='top'
-                          title='Please pre-set the acceptable exchange loss when the exchange is enabled'
-                        >
-                          <InfoIcon classes={{ root: classes.labelToolTipIcon }} />
-                        </Tooltip>
-                        Exchanged:
+                      <Muted className={classes.mutedLabel}>
+                        Slippage:
                       </Muted>
                     </div>
                   }
                 />
-              </GridItem>
-              {shouldExchange && (
-                <GridItem
-                  className={classNames(classes.settingItem, classes.slippageItem)}
-                  xs={12}
-                  sm={12}
-                  md={12}
-                  lg={12}
-                >
-                  <FormControlLabel
-                    labelPlacement='start'
-                    control={
-                      <RadioGroup row value={slipper} onChange={event => setSlipper(event.target.value)}>
-                        {map(["0.3", "0.5", "1"], value => (
-                          <FormControlLabel
-                            key={value}
-                            value={value}
-                            style={{ color: "#fff" }}
-                            control={<CustomRadio size='small' style={{ padding: 6 }} />}
-                            label={`${value}%`}
-                          />
-                        ))}
-                      </RadioGroup>
-                    }
-                    style={{ marginLeft: 0 }}
-                    label={
-                      <div className={classes.settingItemLabel}>
-                        <Muted className={classes.mutedLabel}>
-                          Slippage:
-                        </Muted>
-                      </div>
-                    }
-                  />
-                  <CustomInput
-                    inputProps={{
-                      placeholder: "Allow loss percent",
-                      value: slipper,
-                      endAdornment: (
-                        <span style={{ color: "#69c0ff" }}>
-                          %&nbsp;&nbsp;&nbsp;
-                          <span style={{ cursor: "pointer" }} onClick={() => setSlipper("45")}>
-                            Max
-                          </span>
+                <CustomInput
+                  inputProps={{
+                    placeholder: "Allow loss percent",
+                    value: slipper,
+                    endAdornment: (
+                      <span style={{ color: "#69c0ff" }}>
+                        %&nbsp;&nbsp;&nbsp;
+                        <span style={{ cursor: "pointer" }} onClick={() => setSlipper("45")}>
+                          Max
                         </span>
-                      ),
-                      onChange: event => {
-                        const value = event.target.value
-                        setSlipper(value)
-                      },
-                    }}
-                    error={!isUndefined(isValidSlipperFlag) && !isValidSlipperFlag}
-                    success={!isUndefined(isValidSlipperFlag) && isValidSlipperFlag}
-                    formControlProps={{
-                      fullWidth: true,
-                      classes: {
-                        root: classes.slippageInput,
-                      },
-                    }}
-                  />
-                </GridItem>
-              )}
+                      </span>
+                    ),
+                    onChange: event => {
+                      const value = event.target.value
+                      setSlipper(value)
+                    },
+                  }}
+                  error={!isUndefined(isValidSlipperFlag) && !isValidSlipperFlag}
+                  success={!isUndefined(isValidSlipperFlag) && isValidSlipperFlag}
+                  formControlProps={{
+                    fullWidth: true,
+                    classes: {
+                      root: classes.slippageInput,
+                    },
+                  }}
+                />
+              </GridItem>
               {renderEstimate()}
             </GridContainer>
           </GridItem>

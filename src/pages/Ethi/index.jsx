@@ -20,6 +20,7 @@ import Paper from "@material-ui/core/Paper"
 import Card from "@material-ui/core/Card"
 import Tabs from "@material-ui/core/Tabs"
 import Tab from "@material-ui/core/Tab"
+import AddCircleOutlineIcon from "@material-ui/icons/AddCircleOutline"
 import TabPanel from "../../components/TabPanel"
 
 import Deposit from "./Deposit"
@@ -31,7 +32,7 @@ import { useDispatch } from "react-redux"
 import { warmDialog } from "./../../reducers/meta-reducer"
 
 // === constants === //
-import { CHAIN_BROWSER_URL } from "../../constants"
+import { CHAIN_BROWSER_URL, NET_WORKS } from "../../constants"
 
 // === Utils === //
 import { toFixed, formatBalance } from "../../helpers/number-format"
@@ -39,6 +40,7 @@ import map from "lodash/map"
 import isEmpty from "lodash/isEmpty"
 import last from "lodash/last"
 import noop from "lodash/noop"
+import find from "lodash/find"
 import * as ethers from "ethers"
 import useVersionWapper from "../../hooks/useVersionWapper"
 
@@ -154,6 +156,24 @@ function Ethi (props) {
 
   const handleTabChange = (event, value) => setTab(value)
 
+  const handleAddETHi = () =>  {
+    if (window.ethereum) {
+      window.ethereum.request({
+        method: "wallet_watchAsset",
+        params: {
+          type: "ERC20",
+          options: {
+            address: ETHI_ADDRESS,
+            symbol: "ETHi",
+            decimals: 18,
+          },
+        },
+      })
+    }
+  }
+
+  const net = find(NET_WORKS, (item) => item.chainId === props.selectedChainId) || NET_WORKS[0]
+
   return (
     <div className={classNames(classes.main, classes.mainRaised)}>
       <div className={classes.container}>
@@ -163,11 +183,28 @@ function Ethi (props) {
               <div className={classes.balanceCardItem}>
                 <div
                   className={classes.balanceCardValue}
-                  title={formatBalance(ethiBalance, ethiDecimals, { showAll: true })}
                 >
-                  {`${formatBalance(ethiBalance, ethiDecimals)} ETHi`}
+                  <span title={formatBalance(ethiBalance, ethiDecimals, { showAll: true })}>
+                    {`${formatBalance(ethiBalance, ethiDecimals)} ETHi`}
+                  </span>
+                  {window.ethereum && userProvider && (
+                    <span title="Add token address to wallet">
+                      <AddCircleOutlineIcon className={classes.addTokenIcon} onClick={handleAddETHi} fontSize='small' />
+                    </span>
+                  )}
                 </div>
                 <div className={classes.balanceCardLabel}>Balance</div>
+              </div>
+              <div className={classes.tokenInfo}>
+                {userProvider && (
+                  <a
+                    href={`${net.blockExplorer}/address/${ETHI_ADDRESS}`}
+                    target='_blank'
+                    rel='noopener noreferrer'
+                  >
+                    <img className={classes.scanToken} src={net.blockExplorerIcon} alt="wallet" />
+                  </a>
+                )}
               </div>
             </Card>
             <Card className={classes.investCard}>

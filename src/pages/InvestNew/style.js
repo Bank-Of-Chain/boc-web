@@ -48,11 +48,6 @@ const componentsStyle = (theme) => ({
     right: 12,
     top: 9
   },
-  addTokenWrapper: {
-    position: "relative",
-    cursor: "pointer",
-    marginRight: 12
-  },
   addTokenIcon: {
     cursor: "pointer",
     marginLeft: 4,

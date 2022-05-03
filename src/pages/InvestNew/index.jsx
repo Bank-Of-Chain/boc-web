@@ -33,7 +33,7 @@ import { useDispatch } from "react-redux"
 import { warmDialog } from "./../../reducers/meta-reducer"
 
 // === constants === //
-import { USDT_ADDRESS, USDC_ADDRESS, DAI_ADDRESS, CHAIN_BROWSER_URL } from "../../constants"
+import { USDT_ADDRESS, USDC_ADDRESS, DAI_ADDRESS, CHAIN_BROWSER_URL, NET_WORKS } from "../../constants"
 
 // === Utils === //
 import { toFixed, formatBalance } from "../../helpers/number-format"
