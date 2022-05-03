@@ -29,11 +29,11 @@ const config137 = {
   ...configBase,
   abi_version: 'beta-v1.5',
   apy_server: 'http://localhost:3000',
-  vault_address: "0x9Fe653933300a05BF60d19901031DA8008653a6e",
+  vault_address: "0x204d2E5c581506e939295DaF99079b590ace906e",
   usdt_address: "0xc2132D05D31c914a87C6611C10748AEb04B58e8F",
   usdc_address: "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174",
   dai_address: "0x8f3Cf7ad23Cd3CaDbD9735AFf958023239c6A063",
-  usdi_address: "0x52C7a9DDC1fE319a98Bd193b758Eaa4735738dDB",
+  usdi_address: "0x6DC1bEbb8e0881aCa6F082F5F53dD740c2DDF379",
   exchange_extra_params: {
     oneInchV4: {
       useHttp: true,
@@ -51,8 +51,10 @@ const config137 = {
 
 const config56 = {
   ...configBase,
+  abi_version: 'beta-v1.5',
   apy_server: 'http://localhost:4000',
-  vault_address: "0xf2Bf7C00B4696726B3c1f6E7b87d1a4acB050a8F",
+  vault_address: "0xFEE2d383Ee292283eC43bdf0fa360296BE1e1149",
+  usdi_address: "0xE3e7A4B35574Ce4b9Bc661cD93e8804Da548932a",
   usdt_address: "0x55d398326f99059fF775485246999027B3197955",
   usdc_address: "0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d",
   dai_address: "0x1AF3F329e8BE154074D8769D1FFa4eE058B1DBc3",
@@ -96,7 +98,7 @@ const config1 = {
 
 window.config = {
   // 本地链
-  31337: config137,
+  31337: config56,
   // polygon
   137: config137,
   // bsc
