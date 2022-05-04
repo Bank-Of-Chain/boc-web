@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react"
 import { makeStyles } from "@material-ui/core/styles"
 import { useHistory } from "react-router-dom"
-import clsx from "clsx"
+import classnames from "classnames"
 
 // === Components === //
 import Card from "@material-ui/core/Card"
@@ -12,10 +12,10 @@ import Button from "@material-ui/core/Button"
 import Typography from "@material-ui/core/Typography"
 import CardHeader from "@material-ui/core/CardHeader"
 import Avatar from "@material-ui/core/Avatar"
-import IconButton from "@material-ui/core/IconButton"
 import CardMembershipIcon from "@material-ui/icons/CardMembership"
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore"
 import Collapse from "@material-ui/core/Collapse"
+import ExpandLessIcon from "@material-ui/icons/ExpandLess"
 
 // === Utils === //
 import isEmpty from "lodash/isEmpty"
@@ -81,22 +81,33 @@ export default function Template (props) {
         </CardContent>
         <CardActions disableSpacing>
           {isAudit && (
-            <IconButton color='inherit' title='Undering Protected' className={clsx(classes.expand)}>
-              <CardMembershipIcon />
-            </IconButton>
+            <CardMembershipIcon
+              color='inherit'
+              aria-label='Undering Protected'
+              className={classnames(classes.expand)}
+            />
           )}
-          <IconButton
-            color='inherit'
-            Collapse
-            className={clsx(classes.expand, {
-              [classes.expandOpen]: expanded,
-            })}
-            onClick={handleExpandClick}
-            aria-expanded={expanded}
-            aria-label='show more'
-          >
-            <ExpandMoreIcon />
-          </IconButton>
+          {expanded ? (
+            <ExpandLessIcon
+              color='inherit'
+              className={classnames(classes.expand, {
+                [classes.expandOpen]: expanded,
+              })}
+              onClick={handleExpandClick}
+              aria-expanded={expanded}
+              aria-label='show more'
+            />
+          ) : (
+            <ExpandMoreIcon
+              color='inherit'
+              className={classnames(classes.expand, {
+                [classes.expandOpen]: expanded,
+              })}
+              onClick={handleExpandClick}
+              aria-expanded={expanded}
+              aria-label='show more'
+            />
+          )}
         </CardActions>
         <Collapse in={expanded} timeout='auto' unmountOnExit>
           <Typography variant='body2' component='p'>
@@ -108,7 +119,7 @@ export default function Template (props) {
         <Button size='small' color='inherit' onClick={() => history.push(path.slice(1))}>
           Invest
         </Button>
-        <Button size='small' color='inherit' onClick={() => history.push(dashboard_url)}>
+        <Button size='small' color='inherit' target='_blank' href={dashboard_url}>
           Dashboard
         </Button>
       </CardActions>
