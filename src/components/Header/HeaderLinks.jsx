@@ -47,6 +47,11 @@ export default function HeaderLinks (props) {
         </Button>
       </ListItem>
       <ListItem className={classes.listItem}>
+        <Button color='transparent' href={'/#/vaults'} className={classes.navLink}>
+          <InsertChartIcon className={classes.icons}></InsertChartIcon> Vaults
+        </Button>
+      </ListItem>
+      <ListItem className={classes.listItem}>
         <CustomDropdown
           noLiPadding
           buttonText='Bridge'
