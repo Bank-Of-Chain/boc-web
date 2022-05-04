@@ -76,7 +76,19 @@ export default function Template (props) {
             {description}
           </Typography>
           <Typography align='left' variant='body2' component='p'>
-            Liquidity: ${tvl} Apy: {apy}%
+            Deposited: ETH/3CRV
+          </Typography>
+          <Typography align='left' variant='body2' component='p'>
+            Liquidity: ${tvl}
+          </Typography>
+          <Typography align='left' variant='body2' component='p'>
+            Rewards(last 7 days): $123.23
+          </Typography>
+          <Typography align='left' variant='body2' component='p'>
+            APY(last 7 days): 12.3%
+          </Typography>
+          <Typography align='left' variant='body2' component='p'>
+            Apy(last 365 days): {apy}%
           </Typography>
         </CardContent>
         <CardActions disableSpacing>
