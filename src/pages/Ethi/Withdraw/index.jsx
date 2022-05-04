@@ -31,9 +31,6 @@ import CustomInput from "../../../components/CustomInput/CustomInput"
 import { warmDialog } from "./../../../reducers/meta-reducer"
 import { toFixed, formatBalance } from "../../../helpers/number-format"
 import {
-  USDT_ADDRESS,
-  USDC_ADDRESS,
-  DAI_ADDRESS,
   EXCHANGE_EXTRA_PARAMS,
   MULTIPLE_OF_GAS,
   MAX_GAS_LIMIT,
@@ -66,10 +63,11 @@ const steps = [
 ]
 
 export default function Withdraw ({
-  toBalance,
-  ethDecimals,
+  ethiBalance,
+  ethiDecimals,
   userProvider,
   onConnect,
+  ETH_ADDRESS,
   VAULT_ADDRESS,
   VAULT_ABI,
   IERC20_ABI,
@@ -78,10 +76,8 @@ export default function Withdraw ({
 }) {
   const classes = useStyles()
   const dispatch = useDispatch()
-  const [token, setToken] = useState(USDT_ADDRESS)
   const [toValue, setToValue] = useState("")
   const [allowMaxLoss, setAllowMaxLoss] = useState("0.3")
-  const [shouldExchange, setShouldExchange] = useState(true)
   const [slipper, setSlipper] = useState("0.3")
   const [estimateWithdrawArray, setEstimateWithdrawArray] = useState([])
   const [isEstimate, setIsEstimate] = useState(false)
@@ -106,7 +102,7 @@ export default function Withdraw ({
       BN(toValue)
         .multipliedBy(
           BigNumber.from(10)
-            .pow(ethDecimals)
+            .pow(ethiDecimals)
             .toString(),
         )
         .toFixed(),
@@ -119,93 +115,87 @@ export default function Withdraw ({
     const vaultContractWithSigner = vaultContract.connect(signer)
 
     try {
-      console.log("estimate shouldExchange:", shouldExchange)
       let [tokens, amounts] = await vaultContractWithSigner.callStatic.burn(
         nextValue,
-        token,
+        ETH_ADDRESS,
         allowMaxLossValue,
         false,
         [],
       )
-      if (shouldExchange) {
-        const exchangeManager = await vaultContract.exchangeManager()
-        const exchangeManagerContract = new ethers.Contract(exchangeManager, EXCHANGE_AGGREGATOR_ABI, userProvider)
-        const exchangePlatformAdapters = await getExchangePlatformAdapters(exchangeManagerContract, userProvider)
-        console.log("estimate get exchange path:", tokens, amounts)
-        // 查询兑换路径
-        let exchangeArray = await Promise.all(
-          map(tokens, async (tokenItem, index) => {
-            const exchangeAmounts = amounts[index].toString()
-            if (tokenItem === token || exchangeAmounts === "0") {
-              return {}
+      const exchangeManager = await vaultContract.exchangeManager()
+      const exchangeManagerContract = new ethers.Contract(exchangeManager, EXCHANGE_AGGREGATOR_ABI, userProvider)
+      const exchangePlatformAdapters = await getExchangePlatformAdapters(exchangeManagerContract, userProvider)
+      console.log("estimate get exchange path:", tokens, amounts)
+      // 查询兑换路径
+      let exchangeArray = await Promise.all(
+        map(tokens, async (tokenItem, index) => {
+          const exchangeAmounts = amounts[index].toString()
+          if (tokenItem === ETH_ADDRESS || exchangeAmounts === "0") {
+            return {}
+          }
+          const fromConstrat = new ethers.Contract(tokenItem, IERC20_ABI, userProvider)
+          const toTokenConstrat = new ethers.Contract(ETH_ADDRESS, IERC20_ABI, userProvider)
+          const fromToken = {
+            decimals: parseInt((await fromConstrat.decimals()).toString()),
+            symbol: await fromConstrat.symbol(),
+            address: tokenItem,
+          }
+          try {
+            const bestSwapInfo = await getBestSwapInfo(
+              fromToken,
+              {
+                decimals: parseInt((await toTokenConstrat.decimals()).toString()),
+                address: ETH_ADDRESS,
+              },
+              amounts[index].toString(),
+              parseInt(100 * parseFloat(slipper)) || 0,
+              ORACLE_ADDITIONAL_SLIPPAGE,
+              exchangePlatformAdapters,
+              EXCHANGE_EXTRA_PARAMS,
+            )
+            if (isEmpty(bestSwapInfo)) {
+              throw new Error("兑换路径获取失败")
             }
-            const fromConstrat = new ethers.Contract(tokenItem, IERC20_ABI, userProvider)
-            const toTokenConstrat = new ethers.Contract(token, IERC20_ABI, userProvider)
-            const fromToken = {
-              decimals: parseInt((await fromConstrat.decimals()).toString()),
-              symbol: await fromConstrat.symbol(),
-              address: tokenItem,
+            return {
+              fromToken: tokenItem,
+              toToken: ETH_ADDRESS,
+              fromAmount: exchangeAmounts,
+              exchangeParam: bestSwapInfo,
             }
-            try {
-              const bestSwapInfo = await getBestSwapInfo(
-                fromToken,
-                {
-                  decimals: parseInt((await toTokenConstrat.decimals()).toString()),
-                  address: token,
-                },
-                amounts[index].toString(),
-                parseInt(100 * parseFloat(slipper)) || 0,
-                ORACLE_ADDITIONAL_SLIPPAGE,
-                exchangePlatformAdapters,
-                EXCHANGE_EXTRA_PARAMS,
-              )
-              if (isEmpty(bestSwapInfo)) {
-                throw new Error("兑换路径获取失败")
-              }
-              return {
-                fromToken: tokenItem,
-                toToken: token,
-                fromAmount: exchangeAmounts,
-                exchangeParam: bestSwapInfo,
-              }
-            } catch (error) {
-              return
-            }
+          } catch (error) {
+            return
+          }
+        }),
+      )
+
+      if (some(exchangeArray, isUndefined)) {
+        dispatch(
+          warmDialog({
+            open: true,
+            type: "error",
+            message: "Failed to fetch the exchange path. Please cancel the exchange or try again later.",
           }),
         )
-
-        if (some(exchangeArray, isUndefined)) {
-          dispatch(
-            warmDialog({
-              open: true,
-              type: "error",
-              message: "Failed to fetch the exchange path. Please cancel the exchange or try again later.",
-            }),
-          )
-          return
-        }
-        console.log("exchangeArray=", exchangeArray)
-        const nextArray = filter(exchangeArray, i => !isEmpty(i))
-        ;[tokens, amounts] = await vaultContractWithSigner.callStatic.burn(
-          nextValue,
-          token,
-          allowMaxLossValue,
-          true,
-          nextArray,
-        )
-        console.log("estimate withdraw result:", tokens, amounts)
-      } else {
-        console.log("estimate directly return:", tokens, amounts)
+        return
       }
+      console.log("exchangeArray=", exchangeArray)
+      const nextArray = filter(exchangeArray, i => !isEmpty(i))
+      ;[tokens, amounts] = await vaultContractWithSigner.callStatic.burn(
+        nextValue,
+        ETH_ADDRESS,
+        allowMaxLossValue,
+        true,
+        nextArray,
+      )
+      console.log("estimate withdraw result:", tokens, amounts)
       let nextEstimateWithdrawArray = compact(
         await Promise.all(
           map(tokens, async (token, index) => {
-            const tokenContract = new ethers.Contract(token, IERC20_ABI, userProvider)
             const amount = get(amounts, index, BigNumber.from(0))
             if (amount.gt(0)) {
               return {
                 tokenAddress: token,
-                decimals: await tokenContract.decimals(),
+                decimals: ethiDecimals,
                 amounts: amount,
               }
             }
@@ -292,7 +282,7 @@ export default function Withdraw ({
       })
     }
 
-    if (shouldExchange && !isValidSlipper()) {
+    if (!isValidSlipper()) {
       return setWithdrawError({
         type: "warning",
         message: "Please enter the correct slippage value.",
@@ -305,7 +295,7 @@ export default function Withdraw ({
       BN(toValue)
         .multipliedBy(
           BigNumber.from(10)
-            .pow(ethDecimals)
+            .pow(ethiDecimals)
             .toString(),
         )
         .toFixed(),
@@ -318,65 +308,63 @@ export default function Withdraw ({
       const vaultContractWithSigner = vaultContract.connect(signer)
       let exchangeArray = []
       // 如果不需要兑换则按照多币返回
-      if (shouldExchange) {
-        console.log("----------start callStatic withdraw----------", nextValue, allowMaxLossValue)
+      console.log("----------start callStatic withdraw----------", nextValue, allowMaxLossValue)
 
-        const [tokens, amounts] = await vaultContractWithSigner.callStatic.burn(
-          nextValue,
-          token,
-          allowMaxLossValue,
-          false,
-          [],
-        )
+      const [tokens, amounts] = await vaultContractWithSigner.callStatic.burn(
+        nextValue,
+        ETH_ADDRESS,
+        allowMaxLossValue,
+        false,
+        [],
+      )
 
-        console.log("tokens, amounts=", tokens, amounts)
-        preWithdrawGetCoins = Date.now()
-        setCurrentStep(2)
-        const exchangeManager = await vaultContract.exchangeManager()
-        const exchangeManagerContract = new ethers.Contract(exchangeManager, EXCHANGE_AGGREGATOR_ABI, userProvider)
-        const exchangePlatformAdapters = await getExchangePlatformAdapters(exchangeManagerContract, userProvider)
-        // 查询兑换路径
-        exchangeArray = await Promise.all(
-          map(tokens, async (tokenItem, index) => {
-            const exchangeAmounts = amounts[index].toString()
-            if (tokenItem === token || exchangeAmounts === "0") {
-              return {}
+      console.log("tokens, amounts=", tokens, amounts)
+      preWithdrawGetCoins = Date.now()
+      setCurrentStep(2)
+      const exchangeManager = await vaultContract.exchangeManager()
+      const exchangeManagerContract = new ethers.Contract(exchangeManager, EXCHANGE_AGGREGATOR_ABI, userProvider)
+      const exchangePlatformAdapters = await getExchangePlatformAdapters(exchangeManagerContract, userProvider)
+      // 查询兑换路径
+      exchangeArray = await Promise.all(
+        map(tokens, async (tokenItem, index) => {
+          const exchangeAmounts = amounts[index].toString()
+          if (tokenItem === ETH_ADDRESS || exchangeAmounts === "0") {
+            return {}
+          }
+          const fromConstrat = new ethers.Contract(tokenItem, IERC20_ABI, userProvider)
+          const toTokenConstrat = new ethers.Contract(ETH_ADDRESS, IERC20_ABI, userProvider)
+          const fromToken = {
+            decimals: parseInt((await fromConstrat.decimals()).toString()),
+            symbol: await fromConstrat.symbol(),
+            address: tokenItem,
+          }
+          try {
+            const bestSwapInfo = await getBestSwapInfo(
+              fromToken,
+              {
+                decimals: parseInt((await toTokenConstrat.decimals()).toString()),
+                address: ETH_ADDRESS,
+              },
+              amounts[index].toString(),
+              parseInt(100 * parseFloat(slipper)) || 0,
+              ORACLE_ADDITIONAL_SLIPPAGE,
+              exchangePlatformAdapters,
+              EXCHANGE_EXTRA_PARAMS,
+            )
+            if (isEmpty(bestSwapInfo)) {
+              throw new Error("兑换路径获取失败")
             }
-            const fromConstrat = new ethers.Contract(tokenItem, IERC20_ABI, userProvider)
-            const toTokenConstrat = new ethers.Contract(token, IERC20_ABI, userProvider)
-            const fromToken = {
-              decimals: parseInt((await fromConstrat.decimals()).toString()),
-              symbol: await fromConstrat.symbol(),
-              address: tokenItem,
+            return {
+              fromToken: tokenItem,
+              toToken: ETH_ADDRESS,
+              fromAmount: exchangeAmounts,
+              exchangeParam: bestSwapInfo,
             }
-            try {
-              const bestSwapInfo = await getBestSwapInfo(
-                fromToken,
-                {
-                  decimals: parseInt((await toTokenConstrat.decimals()).toString()),
-                  address: token,
-                },
-                amounts[index].toString(),
-                parseInt(100 * parseFloat(slipper)) || 0,
-                ORACLE_ADDITIONAL_SLIPPAGE,
-                exchangePlatformAdapters,
-                EXCHANGE_EXTRA_PARAMS,
-              )
-              if (isEmpty(bestSwapInfo)) {
-                throw new Error("兑换路径获取失败")
-              }
-              return {
-                fromToken: tokenItem,
-                toToken: token,
-                fromAmount: exchangeAmounts,
-                exchangeParam: bestSwapInfo,
-              }
-            } catch (error) {
-              return
-            }
-          }),
-        )
-      }
+          } catch (error) {
+            return
+          }
+        }),
+      )
       console.log("exchangeArray=", exchangeArray)
       if (some(exchangeArray, isUndefined)) {
         return setWithdrawError({
@@ -393,9 +381,9 @@ export default function Withdraw ({
       if (isNumber(MULTIPLE_OF_GAS) && MULTIPLE_OF_GAS !== 1) {
         const gas = await vaultContractWithSigner.estimateGas.burn(
           nextValue,
-          token,
+          ETH_ADDRESS,
           allowMaxLossValue,
-          shouldExchange,
+          true,
           nextArray,
         )
         setCurrentStep(4)
@@ -403,11 +391,11 @@ export default function Withdraw ({
         const gasLimit = Math.ceil(gas * MULTIPLE_OF_GAS)
         // 乘以倍数后，如果大于3千万gas，则按3千万执行
         const maxGasLimit = gasLimit < MAX_GAS_LIMIT ? gasLimit : MAX_GAS_LIMIT
-        tx = await vaultContractWithSigner.burn(nextValue, token, allowMaxLossValue, shouldExchange, nextArray, {
+        tx = await vaultContractWithSigner.burn(nextValue, ETH_ADDRESS, allowMaxLossValue, true, nextArray, {
           gasLimit: maxGasLimit,
         })
       } else {
-        tx = await vaultContractWithSigner.burn(nextValue, token, allowMaxLossValue, shouldExchange, nextArray)
+        tx = await vaultContractWithSigner.burn(nextValue, ETH_ADDRESS, allowMaxLossValue, true, nextArray)
       }
       withdrawFinish = Date.now()
 
@@ -499,40 +487,10 @@ export default function Withdraw ({
     })
   }
 
-  const addToken = async token => {
-    try {
-      const tokenContract = new ethers.Contract(token, IERC20_ABI, userProvider)
-      // wasAdded is a boolean. Like any RPC method, an error may be thrown.
-      const wasAdded = await window.ethereum.request({
-        method: "wallet_watchAsset",
-        params: {
-          type: "ERC20", // Initially only supports ERC20, but eventually more!
-          options: {
-            address: token, // The address that the token is at.
-            symbol: await tokenContract.symbol(), // A ticker symbol or shorthand, up to 5 chars.
-            decimals: await tokenContract.decimals(), // The number of decimals in the token
-          },
-        },
-      })
-
-      if (wasAdded) {
-        console.log("Thanks for your interest!")
-      } else {
-        console.log("Your loss!")
-      }
-    } catch (error) {
-      console.log(error)
-    }
-  }
-
   function imgError (e) {
     const evn = e
     const img = evn.srcElement ? evn.srcElement : evn.target
     img.src = "/default.png"
-  }
-
-  const handleTokenChange = (value) => {
-    setToken(value);
   }
 
   /**
@@ -546,7 +504,7 @@ export default function Withdraw ({
     const nextValue = BN(toValue)
     const nextToValue = nextValue.multipliedBy(
       BigNumber.from(10)
-        .pow(ethDecimals)
+        .pow(ethiDecimals)
         .toString(),
     )
     // 判断值为正数
@@ -554,12 +512,12 @@ export default function Withdraw ({
     // 精度处理完之后，应该为整数
     const nextToValueString = nextValue.multipliedBy(
       BigNumber.from(10)
-        .pow(ethDecimals)
+        .pow(ethiDecimals)
         .toString(),
     )
     if (nextToValueString.toFixed().indexOf(".") !== -1) return false
     // 数值小于最大数量
-    if (toBalance.lt(BigNumber.from(nextToValue.toFixed()))) return false
+    if (ethiBalance.lt(BigNumber.from(nextToValue.toFixed()))) return false
     return true
   }
 
@@ -592,7 +550,7 @@ export default function Withdraw ({
     }
     return () => estimateWithdraw.cancel()
     // eslint-disable-next-line
-  }, [toValue, allowMaxLoss, slipper, shouldExchange, isOpenEstimate, token])
+  }, [toValue, allowMaxLoss, slipper, isOpenEstimate])
 
   const handleAmountChange = event => {
     try {
@@ -603,7 +561,7 @@ export default function Withdraw ({
   }
 
   const handleMaxClick = () => {
-    setToValue(formatBalance(toBalance, ethDecimals, { showAll: true }))
+    setToValue(formatBalance(ethiBalance, ethiDecimals, { showAll: true }))
   }
 
   const renderEstimate = () => {
@@ -644,7 +602,6 @@ export default function Withdraw ({
             color='transparent'
             target='_blank'
             style={{ fontSize: 14, paddingBottom: 20 }}
-            onClick={() => addToken(item.tokenAddress)}
           >
             <AddIcon fontSize='small' style={{ position: "absolute", top: 25, left: 45 }} />
             <img
@@ -662,23 +619,6 @@ export default function Withdraw ({
   }
 
   const SettingIcon = isOpenEstimate ? CropIcon : CropFreeIcon
-  const selectOptions = [
-    {
-      label: "USDT",
-      value: USDT_ADDRESS,
-      img: `./images/${USDT_ADDRESS}.png`,
-    },
-    {
-      label: "USDC",
-      value: USDC_ADDRESS,
-      img: `./images/${USDC_ADDRESS}.png`,
-    },
-    {
-      label: "DAI",
-      value: DAI_ADDRESS,
-      img: `./images/${DAI_ADDRESS}.png`,
-    },
-  ]
 
   const isValidToValueFlag = isValidToValue()
   const isValidAllowLossFlag = isValidAllowLoss()

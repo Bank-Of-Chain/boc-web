@@ -45,9 +45,9 @@ const configBase = {
     description: '这是ethi的池子',
     img_path: "https://bankofchain.io/logo256.png",
     path: '#/ethi',
-    abi_version: 'beta-v1.5',
-    VAULT_ADDRESS: '',
-    ETHI_ADDRESS: '',
+    abi_version: 'ethi',
+    VAULT_ADDRESS: '0x51C65cd0Cdb1A8A8b79dfc2eE965B1bA0bb8fc89',
+    ETHI_ADDRESS: '0x359570B3a0437805D0a71457D61AD26a28cAC9A2',
     WETHI_ADDRESS: ''
   }]
 }

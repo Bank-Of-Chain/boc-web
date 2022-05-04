@@ -43,3 +43,14 @@ export const getAPYByDate = async ({
   }).then(resp => resp.data)
   return rs
 }
+
+export const getGasPrice = async () => {
+  const res = await axios.get('https://ethgasstation.info/api/ethgasAPI.json');
+  const data = res.data;
+  return {
+    instant: data.fastest / 10,
+    fast: data.fast / 10,
+    standard: data.average / 10,
+    slow: data.safeLow / 10
+  }
+}
