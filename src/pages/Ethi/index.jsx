@@ -33,6 +33,7 @@ import { warmDialog } from "./../../reducers/meta-reducer"
 
 // === constants === //
 import { CHAIN_BROWSER_URL, NET_WORKS } from "../../constants"
+import { ETH_ADDRESS, ETH_DECIMALS } from "../../constants/token"
 
 // === Utils === //
 import { toFixed, formatBalance } from "../../helpers/number-format"
@@ -61,7 +62,6 @@ function Ethi (props) {
     address,
     userProvider,
     loadWeb3Modal,
-    ETH_ADDRESS,
     ETHI_ADDRESS,
     VAULT_ADDRESS,
     VAULT_ABI,
@@ -71,9 +71,9 @@ function Ethi (props) {
   } = props
 
   const [ethBalance, setEthBalance] = useState(BigNumber.from(0))
-  const [ethDecimals, setEthDecimals] = useState(0)
   const [ethiBalance, setEthiBalance] = useState(BigNumber.from(0))
   const [ethiDecimals, setEthiDecimals] = useState(0)
+  const ethDecimals = ETH_DECIMALS
 
   const [beforeTotalValue, setBeforeTotalValue] = useState(BigNumber.from(0))
   const [totalValue, setTotalValue] = useState(BigNumber.from(0))
@@ -82,15 +82,15 @@ function Ethi (props) {
 
   // 载入账户数据
   const loadBanlance = () => {
-    if (isEmpty(address)) return loadBanlance
+    if (isEmpty(address) || isEmpty(userProvider)) {
+      return
+    }
     const ethiContract = new ethers.Contract(ETHI_ADDRESS, IERC20_ABI, userProvider)
-    console.log(ethiContract)
-    // TODO get ETH and ETHi and WETHi data
-    Promise.all([]).catch(() => {
-      setEthBalance(BigNumber.from(10 * 10 * 18))
-      setEthDecimals(18)
-      setEthiBalance(BigNumber.from(5.5 * 10 * 18))
-      setEthiDecimals(18)
+    Promise.all([
+      userProvider.getBalance(address).then(setEthBalance),
+      ethiContract.balanceOf(address).then(setEthiBalance),
+      ethiContract.decimals().then(setEthiDecimals),
+    ]).catch(() => {
       dispatch(
         warmDialog({
           open: true,
@@ -249,6 +249,7 @@ function Ethi (props) {
                   userProvider={userProvider}
                   onConnect={loadWeb3Modal}
                   VAULT_ADDRESS={VAULT_ADDRESS}
+                  ETH_ADDRESS={ETH_ADDRESS}
                   VAULT_ABI={VAULT_ABI}
                   IERC20_ABI={IERC20_ABI}
                   EXCHANGE_AGGREGATOR_ABI={EXCHANGE_AGGREGATOR_ABI}

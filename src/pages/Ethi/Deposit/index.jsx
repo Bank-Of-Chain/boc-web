@@ -17,7 +17,8 @@ import CustomTextField from "../../../components/CustomTextField"
 import Muted from "../../../components/Typography/Muted"
 import Button from "../../../components/CustomButtons/Button"
 import { warmDialog } from "./../../../reducers/meta-reducer"
-import { formatBalance } from "../../../helpers/number-format"
+import { toFixed, formatBalance } from "../../../helpers/number-format"
+import { getGasPrice } from "../../../services/api-service"
 
 import styles from "./style"
 
@@ -31,16 +32,23 @@ export default function Deposit({
   userProvider,
   onConnect,
   VAULT_ABI,
-  IERC20_ABI,
   VAULT_ADDRESS,
   ETH_ADDRESS
 }) {
   const classes = useStyles()
   const dispatch = useDispatch()
   const [ethValue, setEthValue] = useState("")
+
+  const [mintGas, setMintGas] = useState(BigNumber.from("163550"))
+  const [gasPrice, setGasPrice] = useState(35)
   const [estimateValue, setEstimateValue] = useState("")
   const [isLoading, setIsLoading] = useState(false)
   const loadingTimer = useRef()
+
+  const getGasLimit = () => {
+    const gasPriceDecimals = 1e9
+    return mintGas.mul(gasPrice).mul(gasPriceDecimals)
+  }
 
   /**
    * 校验value是否为有效输入
@@ -70,6 +78,9 @@ export default function Deposit({
     if (nextFromValueString.toFixed().indexOf(".") !== -1) return false
     // 数值小于最大数量
     if (balance.lt(BigNumber.from(nextFromValue.toFixed()))) return false
+
+    if (balance.sub(BigNumber.from(nextFromValue.toFixed())).lt(getGasLimit())) return false
+
     return true
   }
 
@@ -78,13 +89,11 @@ export default function Deposit({
   }
 
   const handleMaxClick = () => {
-    setEthValue(formatBalance(ethBalance, ethDecimals, { showAll: true }))
+    setEthValue(formatBalance(ethBalance.sub(getGasLimit()), ethDecimals, { showAll: true }))
   }
 
   const diposit = async () => {
-    // 取款逻辑参考：https://github.com/PiggyFinance/piggy-finance-web/issues/178
     clearTimeout(loadingTimer.current)
-    // step1: 校验三个币，起码一个有值
     const isValid = isValidValue()
     if (!isValid) {
       return dispatch(
@@ -95,11 +104,8 @@ export default function Deposit({
         }),
       )
     }
-    // step2：折算精度，授权三个币及数值
     setIsLoading(true)
-    const nextTokens = []
-    const nextAmounts = []
-    const nextUsdtValue = BigNumber.from(
+    const amount = BigNumber.from(
       BN(ethValue)
         .multipliedBy(
           BigNumber.from(10)
@@ -108,48 +114,13 @@ export default function Deposit({
         )
         .toFixed(),
     )
-    nextAmounts.push(nextUsdtValue)
-    nextTokens.push(ETH_ADDRESS)
-    console.log('nextTokens=', nextTokens, nextAmounts)
+    console.log('nextTokens=', ETH_ADDRESS, amount)
     const signer = userProvider.getSigner()
-    for (const key in nextTokens) {
-      const contract = new ethers.Contract(nextTokens[key], IERC20_ABI, userProvider)
-      const contractWithUser = contract.connect(signer)
-        // 获取当前允许的额度
-      const allowanceAmount = await contractWithUser.allowance(address, VAULT_ADDRESS)
-      // 如果充值金额大于允许的额度，则需要重新设置额度
-      if (nextAmounts[key].gt(allowanceAmount)) {
-        // 如果允许的额度为0，则直接设置新的额度。否则，则设置为0后，再设置新的额度。
-        if (allowanceAmount.gt(0)) {
-          console.log('补充allowance:', nextAmounts[key].sub(allowanceAmount).toString())
-          await contractWithUser.increaseAllowance(VAULT_ADDRESS, nextAmounts[key].sub(allowanceAmount)).then(tx => tx.wait()).catch((e) => {
-            // 如果是用户自行取消的，则直接返回
-            if(e.code === 4001) {
-              setIsLoading(false)
-              return Promise.reject(e)
-            }
-            // 如果补齐失败，则需要使用最糟的方式，将allowance设置为0后，再设置成新的额度。
-            return contractWithUser.approve(VAULT_ADDRESS, 0)
-              .then(tx => tx.wait())
-              .then(() => contractWithUser.approve(VAULT_ADDRESS, nextAmounts[key]).then(tx => tx.wait()))
-          })
-        } else {
-          console.log("当前授权：", allowanceAmount.toString(), "准备授权：", nextAmounts[key].toString())
-          await contractWithUser.approve(VAULT_ADDRESS, nextAmounts[key]).then(tx => tx.wait()).catch((e) => {
-            // 如果是用户自行取消的，则直接返回
-            if(e.code === 4001) {
-              setIsLoading(false)
-              return Promise.reject(e)
-            }
-          })
-        }
-      }
-    }
-    // step3: 存钱
     const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider)
     const nVaultWithUser = vaultContract.connect(signer)
     let isSuccess = false
-    await nVaultWithUser.mint(nextTokens, nextAmounts, 0)
+    
+    await nVaultWithUser.mint(ETH_ADDRESS, amount, { from: address, value: amount })
       .then(tx => tx.wait())
       .then(() => {
         isSuccess = true
@@ -199,9 +170,42 @@ export default function Deposit({
   }
 
   const estimateMint = debounce(async () => {
-    setEstimateValue(0)
+    const isValid = isValidValue()
+    if (!isValid) {
+      setEstimateValue(toFixed(0, BigNumber.from(10).pow(ethDecimals), 6))
+      return
+    }
+    const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider)
+    const amount = BigNumber.from(
+      BN(ethValue)
+        .multipliedBy(
+          BigNumber.from(10)
+            .pow(ethDecimals)
+            .toString(),
+        )
+        .toFixed(),
+    )
+    const result = await vaultContract.callStatic.estimateMint(ETH_ADDRESS, amount)
+    setEstimateValue(toFixed(result._ethiAmount, BigNumber.from(10).pow(ethDecimals), 6))
   }, 500)
 
+  useEffect(() => {
+    if (isEmpty(userProvider)) {
+      return
+    }
+    const signer = userProvider.getSigner()
+    const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider)
+    const nVaultWithUser = vaultContract.connect(signer)
+    nVaultWithUser.estimateGas.mint(ETH_ADDRESS, BigNumber.from(10).pow(ethDecimals), {
+      from: address,
+      value: BigNumber.from(10).pow(ethDecimals)
+    }).then(setMintGas)
+
+    getGasPrice().then((data) => {
+      setGasPrice(data.standard)
+    })
+    // eslint-disable-next-line
+  }, [userProvider])
 
   useEffect(() => {
     estimateMint()
