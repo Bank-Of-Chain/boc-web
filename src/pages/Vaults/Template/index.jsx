@@ -10,7 +10,7 @@ import CardContent from "@material-ui/core/CardContent"
 import CardMedia from "@material-ui/core/CardMedia"
 import Button from "@material-ui/core/Button"
 import Typography from "@material-ui/core/Typography"
-import Divider from '@material-ui/core/Divider';
+import Divider from "@material-ui/core/Divider"
 
 // === Styles === //
 import styles from "./style"
@@ -19,36 +19,28 @@ const useStyles = makeStyles(styles)
 export default function Template (props) {
   const history = useHistory()
   const classes = useStyles()
-  const {
-    name,
-    description,
-    path,
-    img_path = "https://bankofchain.io/logo256.png",
-  } = props
+  const { name, description, path, img_path } = props
 
   return (
-    <Card className={classes.root}>
-      <CardActionArea>
-        <CardMedia
-          component='img'
-          alt='Contemplative Reptile'
-          height='140'
-          image={img_path}
-          title='Contemplative Reptile'
-        />
+    <Card className={classes.card}>
+      <CardActionArea className={classes.actionArea}>
+        <CardMedia component='img' className={classes.img} alt={description} image={img_path} title={name} />
         <Divider />
         <CardContent>
           <Typography gutterBottom variant='h5' component='h2'>
             {name}
           </Typography>
-          <Typography variant='body2' color='textSecondary' component='p'>
+          <Typography variant='body2' component='p'>
             {description}
           </Typography>
         </CardContent>
       </CardActionArea>
       <CardActions>
-        <Button size='small' color='primary' onClick={() => history.push(path.slice(1))}>
+        <Button size='small' color='inherit' onClick={() => history.push(path.slice(1))}>
           Invest
+        </Button>
+        <Button size='small' color='inherit'>
+          Dashboard
         </Button>
       </CardActions>
     </Card>

@@ -34,7 +34,7 @@ export default function Vaults () {
   const vaults = map(VAULTS, i => {
     const { path, id } = i
     return (
-      <GridItem key={path} xs={6} sm={6} md={4} className={classNames(classes.centerItem)}>
+      <GridItem key={path} xs={12} sm={12} md={12} className={classNames(classes.centerItem)}>
         {get(TEMPLATE_MAP, id, noop)(i)}
       </GridItem>
     )
