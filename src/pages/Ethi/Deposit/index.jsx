@@ -10,6 +10,9 @@ import { makeStyles } from "@material-ui/core/styles"
 import CircularProgress from "@material-ui/core/CircularProgress"
 import Modal from "@material-ui/core/Modal"
 import Paper from "@material-ui/core/Paper"
+import FormControlLabel from "@material-ui/core/FormControlLabel"
+import CustomRadio from "./../../../components/Radio/Radio"
+import RadioGroup from "@material-ui/core/RadioGroup"
 
 import GridContainer from "../../../components/Grid/GridContainer"
 import GridItem from "../../../components/Grid/GridItem"
@@ -20,10 +23,15 @@ import { warmDialog } from "./../../../reducers/meta-reducer"
 import { toFixed, formatBalance } from "../../../helpers/number-format"
 import { getGasPrice } from "../../../services/api-service"
 
+// === Utils === //
+import map from "lodash/map"
+
 import styles from "./style"
 
 const { BigNumber } = ethers
 const useStyles = makeStyles(styles)
+
+const gasPriceSpeed = ['fast', 'standard', 'slow']
 
 export default function Deposit({
   address,
@@ -41,13 +49,15 @@ export default function Deposit({
 
   const [mintGas, setMintGas] = useState(BigNumber.from("163550"))
   const [gasPrice, setGasPrice] = useState(35)
+  const [gasPriceCurrent, setGasPriceCurrent] = useState({ instant: 39, fast: 36, standard: 30, slow: 27 })
+  const [gasPriceLevel, setGasPriceLevel] = useState(gasPriceSpeed[1])
   const [estimateValue, setEstimateValue] = useState("")
   const [isLoading, setIsLoading] = useState(false)
   const loadingTimer = useRef()
 
   const getGasLimit = () => {
     const gasPriceDecimals = 1e9
-    return mintGas.mul(gasPrice).mul(gasPriceDecimals)
+    return mintGas.mul(gasPriceCurrent[gasPriceLevel]).mul(gasPriceDecimals)
   }
 
   /**
@@ -202,6 +212,7 @@ export default function Deposit({
     }).then(setMintGas)
 
     getGasPrice().then((data) => {
+      console.log('data=', data)
       setGasPrice(data.standard)
     })
     // eslint-disable-next-line
@@ -212,6 +223,14 @@ export default function Deposit({
     return () => estimateMint.cancel()
     // eslint-disable-next-line
   }, [ethValue])
+
+  // TODO: 待开启
+  // 每隔30s获取一下最新的gasprice，获取异常，则不修改原有数值
+  // useEffect(() => {
+  //   const reloadGasPrice = () => getGasPrice().then(setGasPriceCurrent)
+  //   const timer = setInterval(reloadGasPrice, 30000)
+  //   return () => clearInterval(timer)
+  // }, [])
 
   const isLogin = !isEmpty(userProvider)
   const isValid = isValidValue()
@@ -243,6 +262,32 @@ export default function Deposit({
               />
             </GridItem>
           </GridContainer>
+        </GridItem>
+        <GridItem xs={12} sm={12} md={12} lg={12}>
+          <FormControlLabel
+            labelPlacement='start'
+            control={
+              <RadioGroup row value={gasPriceLevel} onChange={event => setGasPriceLevel(event.target.value)}>
+                {map(gasPriceSpeed, value => (
+                  <FormControlLabel
+                    key={value}
+                    value={value}
+                    style={{ color: "#fff" }}
+                    control={<CustomRadio size='small' style={{ padding: 6 }} />}
+                    label={`${value} ${gasPriceCurrent[value]} Gwei`}
+                  />
+                ))}
+              </RadioGroup>
+            }
+            style={{ marginLeft: 0 }}
+            label={
+              <div className={classes.settingItemLabel}>
+                <Muted className={classes.mutedLabel}>
+                  GasPrice:
+                </Muted>
+              </div>
+            }
+          />
         </GridItem>
         <GridItem xs={12} sm={12} md={12} lg={12}>
           <div className={classes.depositComfirmArea}>

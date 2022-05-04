@@ -38,6 +38,9 @@ const componentsStyle = (theme) => ({
     fontSize: "16px",
     color: "#fff"
   },
+  settingItemLabel: {
+    marginRight: 16,
+  },
 });
 
 export default componentsStyle;
