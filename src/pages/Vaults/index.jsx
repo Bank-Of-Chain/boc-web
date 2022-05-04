@@ -29,13 +29,13 @@ const TEMPLATE_MAP = {
   mutilCoins: props => <Template {...props} />,
 }
 
-export default function Vaults () {
+export default function Vaults (props) {
   const classes = useStyles()
   const vaults = map(VAULTS, i => {
     const { path, id } = i
     return (
       <GridItem key={path} xs={12} sm={12} md={12} className={classNames(classes.centerItem)}>
-        {get(TEMPLATE_MAP, id, noop)(i)}
+        {get(TEMPLATE_MAP, id, noop)({ ...props, ...i })}
       </GridItem>
     )
   })
