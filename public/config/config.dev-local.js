@@ -20,7 +20,7 @@ const configBase = {
     '137': 'https://api.thegraph.com/subgraphs/name/bankofchain/boc-subgraph-matic'
   },
   multiple_of_gas: 2,
-  dashboard_url: '/',
+  dashboard_url: 'http://localhost:8000',
   oracle_additional_slippage: 20,
   vaults: [{
     id: 'invest',
@@ -30,15 +30,18 @@ const configBase = {
     path: '#/invest',
     abi_version: 'v4.6',
     VAULT_ADDRESS: '0x547382C0D1b23f707918D3c83A77317B71Aa8470',
+    dashboard_url: 'http://localhost:8000'
   }, {
     id: 'mutilCoins',
     name: 'Vault v1.5',
     description: '这是v1.5版本的Vault池',
     img_path: "https://bankofchain.io/logo256.png",
     path: '#/mutils',
+    isAudit: true,
     abi_version: 'beta-v1.5',
     VAULT_ADDRESS: '0x9BcC604D4381C5b0Ad12Ff3Bf32bEdE063416BC7',
     USDI_ADDRESS: '0xf090f16dEc8b6D24082Edd25B1C8D26f2bC86128',
+    dashboard_url: 'http://localhost:8000'
   }, {
     id: 'ethi',
     name: 'ETHI',
@@ -48,7 +51,8 @@ const configBase = {
     abi_version: 'beta-v1.5',
     VAULT_ADDRESS: '',
     ETHI_ADDRESS: '',
-    WETHI_ADDRESS: ''
+    WETHI_ADDRESS: '',
+    dashboard_url: 'http://localhost:8000'
   }]
 }
 
