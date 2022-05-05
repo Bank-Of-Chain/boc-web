@@ -294,7 +294,7 @@ function Ethi (props) {
                   <TableCell className={classNames(classes.tableCell)}>
                     <CountTo from={Number(beforeTotalValue.toBigInt())} to={Number(totalValue.toBigInt())} speed={3500}>
                       {v => {
-                        return `${toFixed(v, BigNumber.from(10).pow(ethiDecimals), 6)} USDi`
+                        return `${toFixed(v, BigNumber.from(10).pow(ethiDecimals), 6)} ETHi`
                       }}
                     </CountTo>
                   </TableCell>
