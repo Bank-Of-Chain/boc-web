@@ -29,18 +29,24 @@ export const getDefiRate = async () => {
   return rs
 }
 
-export const getAPYByDate = async ({
+export const getAPY = async ({
   date = moment().utcOffset(0).subtract(1, 'days').format('YYYY-MM-DD'), // 展示昨天数据
   duration = 'monthly',
-  chainId = ENV_NETWORK_TYPE
+  chainId = ENV_NETWORK_TYPE,
+  tokenType = 'USDi'
 } = {}) => {
   const validChainId = !map(NET_WORKS, 'chainId').includes(parseInt(chainId)) ? ETH.chainId : chainId
-  const rs = await axios.get(`${BOC_SERVER}/apy/vault_apy/date/${date}`, {
+  const rs = await axios.get(`${BOC_SERVER}/apy/vault_apy`, {
     params: {
       chainId: validChainId,
-      duration
+      duration,
+      offset: 0,
+      limit: 1,
+      tokenType
     }
-  }).then(resp => resp.data)
+  }).then(resp => {
+    return resp.data.content[0]?.apy
+  })
   return rs
 }
 
