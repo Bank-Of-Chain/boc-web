@@ -446,6 +446,7 @@ export default function Withdraw ({
       } else if (
         errorMsg.endsWith("'Return amount is not enough'") ||
         errorMsg.endsWith("'callBytes failed: Error(Uniswap: INSUFFICIENT_OUTPUT_AMOUNT)'") ||
+        errorMsg.endsWith("'callBytes failed: Error(UniswapV2Router: INSUFFICIENT_OUTPUT_AMOUNT)'") ||
         errorMsg.endsWith("'1inch V4 swap failed: Error(Min return not reached)'") ||
         errorMsg.endsWith("'callBytes failed: Error(Received amount of tokens are less then expected)'") ||
         errorMsg.endsWith("'1inch V4 swap failed: Error(Return amount is not enough)'") ||

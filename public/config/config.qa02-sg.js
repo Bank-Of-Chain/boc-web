@@ -14,14 +14,14 @@
   blog_url: 'https://piggyfinance.github.io/docs/zh/blog/',
   licenses_url: 'https://piggyfinance.github.io/docs/zh/licenses/',
   document_url: "https://docs.bankofchain.io",
-  boc_server: 'http://service-stage-sg.bankofchain.io',
+  boc_server: 'https://service-qa02-sg.bankofchain.io',
   sub_graph_url: {
     '1': 'https://api.thegraph.com/subgraphs/name/bankofchain/boc-subgraph-eth',
     '56': 'https://api.thegraph.com/subgraphs/name/bankofchain/boc-subgraph-bsc',
     '137': 'https://api.thegraph.com/subgraphs/name/bankofchain/boc-subgraph-matic'
   },
   multiple_of_gas: 2,
-  dashboard_url: 'http://dashboard-stage-sg.bankofchain.io',
+  dashboard_url: 'http://dashboard-qa02-sg.bankofchain.io',
   oracle_additional_slippage: 20
 }
 
@@ -72,7 +72,7 @@ const config56 = {
 const config1 = {
   ...configBase,
   abi_version: 'beta-v1.5',
-  apy_server: 'http://stage-sg-keeper-eth.bankofchain.io',
+  apy_server: 'https://qa02-sg-keeper-eth.bankofchain.io',
   vault_address: "0x9BcC604D4381C5b0Ad12Ff3Bf32bEdE063416BC7",
   usdt_address: "0xdAC17F958D2ee523a2206206994597C13D831ec7",
   usdc_address: "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
