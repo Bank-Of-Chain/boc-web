@@ -312,7 +312,7 @@ function App () {
                 </Backdrop>
               }
             >
-              <Frame>
+              <Frame {...nextProps}>
                 <Home {...nextProps} />
               </Frame>
             </Suspense>
@@ -325,7 +325,7 @@ function App () {
                 </Backdrop>
               }
             >
-              <Frame>
+              <Frame {...nextProps}>
                 <Vaults {...nextProps} />
               </Frame>
             </Suspense>
@@ -338,7 +338,7 @@ function App () {
                 </Backdrop>
               }
             >
-              <Frame>
+              <Frame {...nextProps}>
                 <Invest {...nextProps} />
               </Frame>
             </Suspense>
@@ -351,7 +351,7 @@ function App () {
                 </Backdrop>
               }
             >
-              <Frame>
+              <Frame {...nextProps}>
                 <InvestNew {...nextProps} />
               </Frame>
             </Suspense>
@@ -364,7 +364,7 @@ function App () {
                 </Backdrop>
               }
             >
-              <Frame>
+              <Frame {...nextProps}>
                 <Ethi {...nextProps} />
               </Frame>
             </Suspense>
