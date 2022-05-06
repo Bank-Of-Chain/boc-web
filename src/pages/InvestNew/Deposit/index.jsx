@@ -381,19 +381,6 @@ export default function Deposit({
     setEstimateValue(toFixed(result.priceAdjustedDeposit, BigNumber.from(10).pow(usdiDecimals), 6))
   }, 500)
 
-  //TODO: 方便测试，待删除
-  const printOutAllowance = async () => {
-    const [nextTokens] = getTokenAndAmonut()
-    const signer = userProvider.getSigner()
-    for (const key in nextTokens) {
-      const contract = new ethers.Contract(nextTokens[key], IERC20_ABI, userProvider)
-      const contractWithUser = contract.connect(signer)
-        // 获取当前允许的额度
-      const allowanceAmount = await contractWithUser.allowance(address, VAULT_ADDRESS)
-      console.log(nextTokens[key], 'allowanceAmount=', allowanceAmount.toString())
-    }
-  }
-
   useEffect(() => {
     estimateMint()
     return () => estimateMint.cancel()
@@ -435,7 +422,7 @@ export default function Deposit({
         <GridItem xs={12} sm={12} md={12} lg={12}>
           <div className={classes.depositComfirmArea}>
             <Muted>
-              <p onClick={printOutAllowance} style={{ fontSize: 16, wordBreak: "break-all", letterSpacing: "0.01071em" }}>
+              <p style={{ fontSize: 16, wordBreak: "break-all", letterSpacing: "0.01071em" }}>
                 Estimated:
                 &nbsp;{estimateValue}
                 &nbsp;USDi
