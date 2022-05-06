@@ -20,7 +20,7 @@ import ExpandLessIcon from "@material-ui/icons/ExpandLess"
 // === Utils === //
 import isEmpty from "lodash/isEmpty"
 import resolver from "../../../services/abi-resolver"
-import { ethers } from "ethers"
+import { BigNumber, ethers } from "ethers"
 
 // === Styles === //
 import styles from "./style"
@@ -29,7 +29,7 @@ const useStyles = makeStyles(styles)
 
 const { Contract } = ethers
 
-export default function Template (props) {
+export default function TemplateForETHi (props) {
   const history = useHistory()
   const classes = useStyles()
   const { name, description, path, dashboard_url, VAULT_ADDRESS, userProvider, isAudit } = props
@@ -37,6 +37,10 @@ export default function Template (props) {
   const [tvl, setTvl] = useState("0.00")
   const [apy, setApy] = useState(0)
   const [expanded, setExpanded] = useState(false)
+
+  const [totalAssets, setTotalAssets] = useState(BigNumber.from(0))
+  const [trackedAssets, setTrackedAssets] = useState([])
+  console.log("totalAssets=", totalAssets.toString(), trackedAssets)
 
   const abis = resolver(props.abi_version)
   const { VAULT_ABI } = abis
@@ -47,11 +51,10 @@ export default function Template (props) {
 
   useEffect(() => {
     if (isEmpty(VAULT_ABI) || isEmpty(VAULT_ADDRESS) || isEmpty(userProvider)) return
-    const constact = new Contract(VAULT_ADDRESS, VAULT_ABI, userProvider)
+    const vaultContract = new Contract(VAULT_ADDRESS, VAULT_ABI, userProvider)
     try {
-      Promise.all([constact.tvl(), constact.decimals()]).then(([tvl, decimals]) => {
-        setTvl(toFixed(tvl, decimals, 2))
-      })
+      vaultContract.totalAssets().then(setTotalAssets)
+      vaultContract.getTrackedAssets().then(setTrackedAssets)
     } catch (error) {
       console.log("error=", error)
     }
@@ -79,7 +82,7 @@ export default function Template (props) {
             Deposited: ETH/3CRV
           </Typography>
           <Typography align='left' variant='body2' component='p'>
-            Liquidity: ${tvl}
+            Liquidity: {toFixed(totalAssets, 1e6, 2)} USDT
           </Typography>
           <Typography align='left' variant='body2' component='p'>
             Rewards(last 7 days): $123.23

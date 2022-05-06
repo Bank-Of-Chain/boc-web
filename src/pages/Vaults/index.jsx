@@ -7,7 +7,7 @@ import { makeStyles } from "@material-ui/core/styles"
 // core components
 import GridContainer from "../../components/Grid/GridContainer"
 import GridItem from "../../components/Grid/GridItem"
-import Template from "./Template/index"
+import { TemplateForUSDi, TemplateForETHi} from "./Template"
 
 // === constants === //
 import { VAULTS } from "../../constants"
@@ -24,9 +24,10 @@ const useStyles = makeStyles(styles)
 
 // vaults 不同的版本使用不同的模板
 const TEMPLATE_MAP = {
-  ethi: props => <Template {...props} />,
-  invest: props => <Template {...props} />,
-  mutilCoins: props => <Template {...props} />,
+  //TODO: V1.1 has no template for it
+  // invest: props => <Template {...props} />,
+  ethi: props => <TemplateForETHi {...props} />,
+  mutilCoins: props => <TemplateForUSDi {...props} />,
 }
 
 export default function Vaults (props) {
