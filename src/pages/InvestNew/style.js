@@ -180,6 +180,17 @@ const componentsStyle = (theme) => ({
   },
   detailWrapper: {
     margin: "42px 0 0 0"
+  },
+  slider: {
+    position: 'fixed',
+    top: '40%',
+    backgroundColor: 'azure'
+  },
+  check:{
+    backgroundColor: 'darkgray'
+  },
+  text: {
+    color: '#3f51b5'
   }
 });
 

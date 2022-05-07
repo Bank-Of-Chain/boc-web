@@ -5,6 +5,7 @@ import classNames from "classnames"
 // react components for routing our app without refresh
 // @material-ui/core components
 import { makeStyles } from "@material-ui/core/styles"
+import { useHistory } from "react-router-dom"
 import CountTo from "react-count-to"
 // core components
 import GridContainer from "../../components/Grid/GridContainer"
@@ -22,6 +23,11 @@ import Tabs from "@material-ui/core/Tabs"
 import Tab from "@material-ui/core/Tab"
 import AddCircleOutlineIcon from "@material-ui/icons/AddCircleOutline"
 import TabPanel from "../../components/TabPanel"
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
+import ListItemText from '@material-ui/core/ListItemText';
+import ScatterPlotIcon from '@material-ui/icons/ScatterPlot';
 
 import Deposit from "./Deposit"
 import Withdraw from "./Withdraw"
@@ -32,7 +38,7 @@ import { useDispatch } from "react-redux"
 import { warmDialog } from "./../../reducers/meta-reducer"
 
 // === constants === //
-import { CHAIN_BROWSER_URL, NET_WORKS } from "../../constants"
+import { CHAIN_BROWSER_URL, NET_WORKS, VAULTS } from "../../constants"
 import { ETH_ADDRESS, ETH_DECIMALS } from "../../constants/token"
 
 // === Utils === //
@@ -58,6 +64,8 @@ const { BigNumber } = ethers
 function Ethi (props) {
   const classes = useStyles()
   const dispatch = useDispatch()
+  const history = useHistory()
+
   const { 
     address,
     userProvider,
@@ -302,6 +310,25 @@ function Ethi (props) {
               </TableBody>
             </Table>
           </TableContainer>
+          
+        </div>
+        <div className={classes.slider}>
+          <List component="nav" aria-label="main mailbox folders">
+            {
+              map(VAULTS, item => {
+                const { path } = item
+                const isCheck = window.location.hash === path
+                if(item.isOpen){
+                  return <ListItem button className={classNames( isCheck && classes.check )} onClick={() => history.push(path.slice(1))}>
+                    <ListItemIcon>
+                      <ScatterPlotIcon color={isCheck ? "primary" : "action"} />
+                    </ListItemIcon>
+                    <ListItemText primary={item.name} className={classNames( isCheck && classes.text )} />
+                  </ListItem>
+                }
+              })
+            }
+          </List>
         </div>
       </div>
     </div>

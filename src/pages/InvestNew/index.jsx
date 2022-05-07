@@ -5,6 +5,7 @@ import classNames from "classnames"
 // react components for routing our app without refresh
 // @material-ui/core components
 import { makeStyles } from "@material-ui/core/styles"
+import { useHistory } from "react-router-dom"
 import CountTo from "react-count-to"
 // core components
 import GridContainer from "../../components/Grid/GridContainer"
@@ -20,6 +21,11 @@ import Paper from "@material-ui/core/Paper"
 import Card from "@material-ui/core/Card"
 import Tabs from '@material-ui/core/Tabs'
 import Tab from '@material-ui/core/Tab'
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
+import ListItemText from '@material-ui/core/ListItemText';
+import ScatterPlotIcon from '@material-ui/icons/ScatterPlot';
 
 import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline'
 import TabPanel from '../../components/TabPanel'
@@ -33,7 +39,7 @@ import { useDispatch } from "react-redux"
 import { warmDialog } from "./../../reducers/meta-reducer"
 
 // === constants === //
-import { USDT_ADDRESS, USDC_ADDRESS, DAI_ADDRESS, CHAIN_BROWSER_URL, NET_WORKS } from "../../constants"
+import { USDT_ADDRESS, USDC_ADDRESS, DAI_ADDRESS, CHAIN_BROWSER_URL, NET_WORKS, VAULTS } from "../../constants"
 
 // === Utils === //
 import { toFixed, formatBalance } from "../../helpers/number-format"
@@ -58,6 +64,7 @@ const { BigNumber } = ethers
 function Invest (props) {
   const classes = useStyles()
   const dispatch = useDispatch()
+  const history = useHistory()
   const { address, userProvider, loadWeb3Modal, VAULT_ADDRESS, VAULT_ABI, USDI_ADDRESS, IERC20_ABI, EXCHANGE_AGGREGATOR_ABI, USDI_ABI, EXCHANGE_ADAPTER_ABI } = props
   const [usdtBalance, setUsdtBalance] = useState(BigNumber.from(0))
   const [usdtDecimals, setUsdtDecimals] = useState(0)
@@ -317,6 +324,24 @@ function Invest (props) {
                 </TableBody>
               </Table>
             </TableContainer>
+        </div>
+        <div className={classes.slider}>
+          <List component="nav" aria-label="main mailbox folders">
+            {
+              map(VAULTS, item => {
+                const { path } = item
+                const isCheck = window.location.hash === path
+                if(item.isOpen){
+                  return <ListItem button className={classNames( isCheck && classes.check )} onClick={() => history.push(path.slice(1))}>
+                    <ListItemIcon>
+                      <ScatterPlotIcon color={isCheck ? "primary" : "action"} />
+                    </ListItemIcon>
+                    <ListItemText primary={item.name} className={classNames( isCheck && classes.text )} />
+                  </ListItem>
+                }
+              })
+            }
+          </List>
         </div>
       </div>
     </div>

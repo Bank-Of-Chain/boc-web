@@ -48,11 +48,6 @@ export default function HeaderLinks (props) {
         </Button>
       </ListItem>
       <ListItem className={classes.listItem}>
-        <Button color='transparent' href={'/#/vaults'} className={classes.navLink}>
-          <ScatterPlotIcon className={classes.icons}></ScatterPlotIcon> Vaults
-        </Button>
-      </ListItem>
-      <ListItem className={classes.listItem}>
         <CustomDropdown
           noLiPadding
           buttonText='Bridge'
@@ -89,7 +84,7 @@ export default function HeaderLinks (props) {
       </ListItem>
       {location.hash === "#/" ? (
         <ListItem className={classes.listItem}>
-          <Button className={`${classes.navLink} ${classes.colorfulLink}`} color='colorfull' size='lg' href='/#/vaults'>
+          <Button className={`${classes.navLink} ${classes.colorfulLink}`} color='colorfull' size='lg' href='/#/mutils'>
             <AccountBalanceWallet className={classes.icons}></AccountBalanceWallet> Launch App
           </Button>
         </ListItem>

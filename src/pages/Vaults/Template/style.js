@@ -4,7 +4,6 @@ import {
   cardHeader
 } from "../../../assets/jss/material-kit-react.js";
 
-console.log('card=', card, container)
 const componentsStyle = (theme) => ({
   container,
   card: {
@@ -18,7 +17,7 @@ const componentsStyle = (theme) => ({
     backgroundColor: "rgb(39,31,114)",
     color: "#fff",
     borderRadius: 6,
-    width: 'auto'
+    width: 'auto',
   },
   header: cardHeader,
   img: {
@@ -26,12 +25,17 @@ const componentsStyle = (theme) => ({
     padding: 4
   },
   actionArea: {
+    border: 0,
     paddingLeft: 10,
     border: '1px solid',
     borderRadius: 4
   },
   avatar: {
-    backgroundColor: '#f44336'
+    borderRadius: '20px',
+    backgroundColor: '#fff',
+    color: '#000',
+    width: '160px',
+    fontWeight: 'bold'
   },
   expand: {
     transform: 'rotate(0deg)',
