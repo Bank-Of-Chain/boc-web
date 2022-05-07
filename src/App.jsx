@@ -57,7 +57,6 @@ Date.prototype.format = function (fmt) {
 const Home = lazy(() => import("./pages/Home/index"))
 const Invest = lazy(() => import("./pages/Invest/index"))
 const InvestNew = lazy(() => import("./pages/InvestNew/index"))
-const Vaults = lazy(() => import("./pages/Vaults/index"))
 const Ethi = lazy(() => import("./pages/Ethi/index"))
 
 const web3Modal = new SafeAppWeb3Modal({
@@ -314,19 +313,6 @@ function App () {
             >
               <Frame {...nextProps}>
                 <Home {...nextProps} />
-              </Frame>
-            </Suspense>
-          </Route>
-          <Route path='/vaults'>
-            <Suspense
-              fallback={
-                <Backdrop className={classes.backdrop} open>
-                  <CircularProgress color='inherit' />
-                </Backdrop>
-              }
-            >
-              <Frame {...nextProps}>
-                <Vaults {...nextProps} />
               </Frame>
             </Suspense>
           </Route>
