@@ -332,7 +332,7 @@ function Invest (props) {
                 const { path } = item
                 const isCheck = window.location.hash === path
                 if(item.isOpen){
-                  return <ListItem button className={classNames( isCheck && classes.check )} onClick={() => history.push(path.slice(1))}>
+                  return <ListItem key={item.id} button className={classNames( isCheck && classes.check )} onClick={() => history.push(path.slice(1))}>
                     <ListItemIcon>
                       <ScatterPlotIcon color={isCheck ? "primary" : "action"} />
                     </ListItemIcon>

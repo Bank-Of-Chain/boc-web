@@ -278,8 +278,6 @@ function Ethi (props) {
                 <TableRow>
                   <TableCell className={classNames(classes.tableCell)}>Vault Symbol</TableCell>
                   <TableCell className={classNames(classes.tableCell)}>Vault Address</TableCell>
-                  {/* <TableCell className={classNames(classes.tableCell)}>质押通证符号</TableCell>
-                    <TableCell className={classNames(classes.tableCell)}>质押合约地址</TableCell> */}
                   <TableCell className={classNames(classes.tableCell)}>Total Supply</TableCell>
                 </TableRow>
               </TableHead>
@@ -318,7 +316,7 @@ function Ethi (props) {
                 const { path } = item
                 const isCheck = window.location.hash === path
                 if(item.isOpen){
-                  return <ListItem button className={classNames( isCheck && classes.check )} onClick={() => history.push(path.slice(1))}>
+                  return <ListItem key={item.id} button className={classNames( isCheck && classes.check )} onClick={() => history.push(path.slice(1))}>
                     <ListItemIcon>
                       <ScatterPlotIcon color={isCheck ? "primary" : "action"} />
                     </ListItemIcon>

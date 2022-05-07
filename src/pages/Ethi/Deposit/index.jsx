@@ -13,6 +13,7 @@ import Paper from "@material-ui/core/Paper"
 import FormControlLabel from "@material-ui/core/FormControlLabel"
 import CustomRadio from "./../../../components/Radio/Radio"
 import RadioGroup from "@material-ui/core/RadioGroup"
+import AllInclusiveIcon from '@material-ui/icons/AllInclusive';
 
 import GridContainer from "../../../components/Grid/GridContainer"
 import GridItem from "../../../components/Grid/GridItem"
@@ -25,6 +26,7 @@ import { getGasPrice } from "../../../services/api-service"
 
 // === Utils === //
 import map from "lodash/map"
+import noop from "lodash/noop"
 
 import styles from "./style"
 
@@ -47,17 +49,17 @@ export default function Deposit({
   const dispatch = useDispatch()
   const [ethValue, setEthValue] = useState("")
 
-  const [mintGas, setMintGas] = useState(BigNumber.from("163550"))
-  const [gasPrice, setGasPrice] = useState(35)
-  const [gasPriceCurrent, setGasPriceCurrent] = useState({ instant: 39, fast: 36, standard: 30, slow: 27 })
+  const [mintGas, setMintGas] = useState(BigNumber.from("0"))
+  const [gasPriceCurrent, setGasPriceCurrent] = useState({})
   const [gasPriceLevel, setGasPriceLevel] = useState(gasPriceSpeed[1])
   const [estimateValue, setEstimateValue] = useState("")
   const [isLoading, setIsLoading] = useState(false)
   const loadingTimer = useRef()
 
   const getGasLimit = () => {
+    const gas = gasPriceCurrent[gasPriceLevel] || 0
     const gasPriceDecimals = 1e9
-    return mintGas.mul(gasPriceCurrent[gasPriceLevel]).mul(gasPriceDecimals)
+    return mintGas.mul(gas).mul(gasPriceDecimals)
   }
 
   /**
@@ -99,7 +101,18 @@ export default function Deposit({
   }
 
   const handleMaxClick = () => {
-    setEthValue(formatBalance(ethBalance.sub(getGasLimit()), ethDecimals, { showAll: true }))
+    const v = getGasLimit();
+    if (v.lte(0)) {
+      dispatch(
+        warmDialog({
+          open: true,
+          type: "warning",
+          message: "Since the latest Gasprice is not available, it is impossible to estimate the gas fee currently!",
+        }),
+      )
+      return 
+    }
+    setEthValue(formatBalance(ethBalance.sub(v), ethDecimals, { showAll: true }))
   }
 
   const diposit = async () => {
@@ -200,7 +213,7 @@ export default function Deposit({
   }, 500)
 
   useEffect(() => {
-    if (isEmpty(userProvider)) {
+    if (isEmpty(userProvider) || mintGas.gt(0)) {
       return
     }
     const signer = userProvider.getSigner()
@@ -211,10 +224,6 @@ export default function Deposit({
       value: BigNumber.from(10).pow(ethDecimals)
     }).then(setMintGas)
 
-    getGasPrice().then((data) => {
-      console.log('data=', data)
-      setGasPrice(data.standard)
-    })
     // eslint-disable-next-line
   }, [userProvider])
 
@@ -224,13 +233,14 @@ export default function Deposit({
     // eslint-disable-next-line
   }, [ethValue])
 
-  // TODO: 待开启
+  const reloadGasPriceCall = () => getGasPrice().then(setGasPriceCurrent).catch(noop)
+
   // 每隔30s获取一下最新的gasprice，获取异常，则不修改原有数值
-  // useEffect(() => {
-  //   const reloadGasPrice = () => getGasPrice().then(setGasPriceCurrent)
-  //   const timer = setInterval(reloadGasPrice, 30000)
-  //   return () => clearInterval(timer)
-  // }, [])
+  useEffect(() => {
+    const reloadGasPrice = getGasPrice().then(setGasPriceCurrent).catch(noop)
+    const timer = setInterval(reloadGasPrice, 30000)
+    return () => clearInterval(timer)
+  }, [])
 
   const isLogin = !isEmpty(userProvider)
   const isValid = isValidValue()
@@ -267,7 +277,9 @@ export default function Deposit({
           <FormControlLabel
             labelPlacement='start'
             control={
-              <RadioGroup row value={gasPriceLevel} onChange={event => setGasPriceLevel(event.target.value)}>
+              isEmpty(gasPriceCurrent) 
+                ? <AllInclusiveIcon color="primary" onClick={reloadGasPriceCall} /> 
+                : <RadioGroup row value={gasPriceLevel} onChange={event => setGasPriceLevel(event.target.value)}>
                 {map(gasPriceSpeed, value => (
                   <FormControlLabel
                     key={value}
