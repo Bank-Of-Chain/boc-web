@@ -13,6 +13,7 @@ import Apps from "@material-ui/icons/Apps"
 import Transform from "@material-ui/icons/Transform"
 import InsertChartIcon from "@material-ui/icons/InsertChart"
 import LibraryBooksIcon from "@material-ui/icons/LibraryBooks"
+import ScatterPlotIcon from '@material-ui/icons/ScatterPlot';
 
 // core components
 import Button from "../CustomButtons/Button"
@@ -83,7 +84,7 @@ export default function HeaderLinks (props) {
       </ListItem>
       {location.hash === "#/" ? (
         <ListItem className={classes.listItem}>
-          <Button className={`${classes.navLink} ${classes.colorfulLink}`} color='colorfull' size='lg' href='/#/invest'>
+          <Button className={`${classes.navLink} ${classes.colorfulLink}`} color='colorfull' size='lg' href='/#/mutils'>
             <AccountBalanceWallet className={classes.icons}></AccountBalanceWallet> Launch App
           </Button>
         </ListItem>

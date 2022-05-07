@@ -17,7 +17,7 @@ import isNaN from "lodash/isNaN"
 import filter from "lodash/filter"
 import sortBy from "lodash/sortBy"
 import { toFixed } from "./../../../helpers/number-format"
-// import { getDefiRate, getAPYByDate } from "./../../../services/api-service"
+// import { getDefiRate, getAPY } from "./../../../services/api-service"
 import { getDefiRate } from "./../../../services/api-service"
 
 // === Styles === //
@@ -52,7 +52,7 @@ export default function LendingSection () {
   useEffect(() => {
     setLoading(true)
     Promise.all([
-      // getAPYByDate().then(data => {
+      // getAPY().then(data => {
       //   return {
       //     title: bocTitle,
       //     imagePath: "/logo.png",

@@ -20,7 +20,7 @@ import Alert from "@material-ui/lab/Alert"
 import { Button } from "@material-ui/core"
 
 // === Utils === //
-import { USDT_ADDRESS, NET_WORKS, abiPrefix, LOCAL_CHAIN_ID } from "./constants"
+import { USDT_ADDRESS, NET_WORKS, LOCAL_CHAIN_ID } from "./constants"
 import { makeStyles } from "@material-ui/core/styles"
 import { SafeAppWeb3Modal } from "@gnosis.pm/safe-apps-web3modal"
 import { lendSwap } from "piggy-finance-utils"
@@ -57,7 +57,8 @@ Date.prototype.format = function (fmt) {
 const Home = lazy(() => import("./pages/Home/index"))
 const Invest = lazy(() => import("./pages/Invest/index"))
 const InvestNew = lazy(() => import("./pages/InvestNew/index"))
-const Index = lazy(() => import("./pages/Index/index"))
+const Vaults = lazy(() => import("./pages/Vaults/index"))
+const Ethi = lazy(() => import("./pages/Ethi/index"))
 
 const web3Modal = new SafeAppWeb3Modal({
   // network: "mainnet", // optional
@@ -316,6 +317,19 @@ function App () {
               </Frame>
             </Suspense>
           </Route>
+          <Route path='/vaults'>
+            <Suspense
+              fallback={
+                <Backdrop className={classes.backdrop} open>
+                  <CircularProgress color='inherit' />
+                </Backdrop>
+              }
+            >
+              <Frame {...nextProps}>
+                <Vaults {...nextProps} />
+              </Frame>
+            </Suspense>
+          </Route>
           <Route path='/invest'>
             <Suspense
               fallback={
@@ -325,12 +339,11 @@ function App () {
               }
             >
               <Frame {...nextProps}>
-                {/* beta-v1.5 使用的是多币，所以需要采用新的存储界面 */}
-                { abiPrefix === 'beta-v1.5' ? <InvestNew {...nextProps} /> : <Invest {...nextProps} /> }
+                <Invest {...nextProps} />
               </Frame>
             </Suspense>
           </Route>
-          <Route path='/index'>
+          <Route path='/mutils'>
             <Suspense
               fallback={
                 <Backdrop className={classes.backdrop} open>
@@ -339,7 +352,20 @@ function App () {
               }
             >
               <Frame {...nextProps}>
-                <Index {...nextProps} />
+                <InvestNew {...nextProps} />
+              </Frame>
+            </Suspense>
+          </Route>
+          <Route path='/ethi'>
+            <Suspense
+              fallback={
+                <Backdrop className={classes.backdrop} open>
+                  <CircularProgress color='inherit' />
+                </Backdrop>
+              }
+            >
+              <Frame {...nextProps}>
+                <Ethi {...nextProps} />
               </Frame>
             </Suspense>
           </Route>

@@ -13,13 +13,10 @@ import AndroidIcon from "@material-ui/icons/Android"
 import CropFreeIcon from "@material-ui/icons/CropFree"
 import CropIcon from "@material-ui/icons/Crop"
 import RadioGroup from "@material-ui/core/RadioGroup"
-import Tooltip from "@material-ui/core/Tooltip"
-import InfoIcon from "@material-ui/icons/Info"
 import Step from "@material-ui/core/Step"
 import WarningIcon from "@material-ui/icons/Warning"
 import FormControlLabel from "@material-ui/core/FormControlLabel"
 
-import SimpleSelect from "../../../components/SimpleSelect"
 import CustomTextField from "../../../components/CustomTextField"
 import BocStepper from "../../../components/Stepper/Stepper"
 import BocStepLabel from "../../../components/Stepper/StepLabel"
@@ -34,9 +31,6 @@ import CustomInput from "../../../components/CustomInput/CustomInput"
 import { warmDialog } from "./../../../reducers/meta-reducer"
 import { toFixed, formatBalance } from "../../../helpers/number-format"
 import {
-  USDT_ADDRESS,
-  USDC_ADDRESS,
-  DAI_ADDRESS,
   EXCHANGE_EXTRA_PARAMS,
   MULTIPLE_OF_GAS,
   MAX_GAS_LIMIT,
@@ -68,14 +62,12 @@ const steps = [
   { title: "Withdraw" },
 ]
 
-
-const RECEIVE_MIX_VALUE = "Mix"
-
 export default function Withdraw ({
-  toBalance,
-  usdiDecimals,
+  ethiBalance,
+  ethiDecimals,
   userProvider,
   onConnect,
+  ETH_ADDRESS,
   VAULT_ADDRESS,
   VAULT_ABI,
   IERC20_ABI,
@@ -84,7 +76,6 @@ export default function Withdraw ({
 }) {
   const classes = useStyles()
   const dispatch = useDispatch()
-  const [receiveToken, setReceiveToken] = useState(USDT_ADDRESS)
   const [toValue, setToValue] = useState("")
   const [allowMaxLoss, setAllowMaxLoss] = useState("0.3")
   const [slipper, setSlipper] = useState("0.3")
@@ -94,8 +85,6 @@ export default function Withdraw ({
   const [isWithdrawLoading, setIsWithdrawLoading] = useState(false)
   const [currentStep, setCurrentStep] = useState(0)
   const [withdrawError, setWithdrawError] = useState({})
-  const shouldExchange = receiveToken !== RECEIVE_MIX_VALUE
-  const token = shouldExchange ? receiveToken : USDT_ADDRESS
 
   const getExchangePlatformAdapters = async (exchangeAggregator, userProvider) => {
     const adapters = await exchangeAggregator.getExchangeAdapters()
@@ -113,104 +102,100 @@ export default function Withdraw ({
       BN(toValue)
         .multipliedBy(
           BigNumber.from(10)
-            .pow(usdiDecimals)
+            .pow(ethiDecimals)
             .toString(),
         )
         .toFixed(),
     )
-    const allowMaxLossValue = BigNumber.from(10000 - parseInt(100 * parseFloat(allowMaxLoss))).mul(nextValue).div(BigNumber.from(1e4))
+    const allowMaxLossValue = BigNumber.from(10000 - parseInt(100 * parseFloat(allowMaxLoss)))
+      .mul(nextValue)
+      .div(BigNumber.from(1e4))
     const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider)
     const signer = userProvider.getSigner()
     const vaultContractWithSigner = vaultContract.connect(signer)
 
     try {
-      console.log("estimate shouldExchange:", shouldExchange)
       let [tokens, amounts] = await vaultContractWithSigner.callStatic.burn(
         nextValue,
-        token,
+        ETH_ADDRESS,
         allowMaxLossValue,
         false,
         [],
       )
-      if (shouldExchange) {
-        const exchangeManager = await vaultContract.exchangeManager()
-        const exchangeManagerContract = new ethers.Contract(exchangeManager, EXCHANGE_AGGREGATOR_ABI, userProvider)
-        const exchangePlatformAdapters = await getExchangePlatformAdapters(exchangeManagerContract, userProvider)
-        console.log("estimate get exchange path:", tokens, amounts)
-        // 查询兑换路径
-        let exchangeArray = await Promise.all(
-          map(tokens, async (tokenItem, index) => {
-            const exchangeAmounts = amounts[index].toString()
-            if (tokenItem === token || exchangeAmounts === "0") {
-              return {}
+      const exchangeManager = await vaultContract.exchangeManager()
+      const exchangeManagerContract = new ethers.Contract(exchangeManager, EXCHANGE_AGGREGATOR_ABI, userProvider)
+      const exchangePlatformAdapters = await getExchangePlatformAdapters(exchangeManagerContract, userProvider)
+      console.log("estimate get exchange path:", tokens, amounts)
+      // 查询兑换路径
+      let exchangeArray = await Promise.all(
+        map(tokens, async (tokenItem, index) => {
+          const exchangeAmounts = amounts[index].toString()
+          if (tokenItem === ETH_ADDRESS || exchangeAmounts === "0") {
+            return {}
+          }
+          const fromConstrat = new ethers.Contract(tokenItem, IERC20_ABI, userProvider)
+          const toTokenConstrat = new ethers.Contract(ETH_ADDRESS, IERC20_ABI, userProvider)
+          const fromToken = {
+            decimals: parseInt((await fromConstrat.decimals()).toString()),
+            symbol: await fromConstrat.symbol(),
+            address: tokenItem,
+          }
+          try {
+            const bestSwapInfo = await getBestSwapInfo(
+              fromToken,
+              {
+                decimals: parseInt((await toTokenConstrat.decimals()).toString()),
+                address: ETH_ADDRESS,
+              },
+              amounts[index].toString(),
+              parseInt(100 * parseFloat(slipper)) || 0,
+              ORACLE_ADDITIONAL_SLIPPAGE,
+              exchangePlatformAdapters,
+              EXCHANGE_EXTRA_PARAMS,
+            )
+            if (isEmpty(bestSwapInfo)) {
+              throw new Error("兑换路径获取失败")
             }
-            const fromConstrat = new ethers.Contract(tokenItem, IERC20_ABI, userProvider)
-            const toTokenConstrat = new ethers.Contract(token, IERC20_ABI, userProvider)
-            const fromToken = {
-              decimals: parseInt((await fromConstrat.decimals()).toString()),
-              symbol: await fromConstrat.symbol(),
-              address: tokenItem,
+            return {
+              fromToken: tokenItem,
+              toToken: ETH_ADDRESS,
+              fromAmount: exchangeAmounts,
+              exchangeParam: bestSwapInfo,
             }
-            try {
-              const bestSwapInfo = await getBestSwapInfo(
-                fromToken,
-                {
-                  decimals: parseInt((await toTokenConstrat.decimals()).toString()),
-                  address: token,
-                },
-                amounts[index].toString(),
-                parseInt(100 * parseFloat(slipper)) || 0,
-                ORACLE_ADDITIONAL_SLIPPAGE,
-                exchangePlatformAdapters,
-                EXCHANGE_EXTRA_PARAMS,
-              )
-              if (isEmpty(bestSwapInfo)) {
-                throw new Error("兑换路径获取失败")
-              }
-              return {
-                fromToken: tokenItem,
-                toToken: token,
-                fromAmount: exchangeAmounts,
-                exchangeParam: bestSwapInfo,
-              }
-            } catch (error) {
-              return
-            }
+          } catch (error) {
+            return
+          }
+        }),
+      )
+
+      if (some(exchangeArray, isUndefined)) {
+        dispatch(
+          warmDialog({
+            open: true,
+            type: "error",
+            message: "Failed to fetch the exchange path. Please cancel the exchange or try again later.",
           }),
         )
-
-        if (some(exchangeArray, isUndefined)) {
-          dispatch(
-            warmDialog({
-              open: true,
-              type: "error",
-              message: "Failed to fetch the exchange path. Please cancel the exchange or try again later.",
-            }),
-          )
-          return
-        }
-        console.log("exchangeArray=", exchangeArray)
-        const nextArray = filter(exchangeArray, i => !isEmpty(i));
-        [tokens, amounts] = await vaultContractWithSigner.callStatic.burn(
-          nextValue,
-          token,
-          allowMaxLossValue,
-          true,
-          nextArray,
-        )
-        console.log("estimate withdraw result:", tokens, amounts)
-      } else {
-        console.log("estimate directly return:", tokens, amounts)
+        return
       }
+      console.log("exchangeArray=", exchangeArray)
+      const nextArray = filter(exchangeArray, i => !isEmpty(i))
+      ;[tokens, amounts] = await vaultContractWithSigner.callStatic.burn(
+        nextValue,
+        ETH_ADDRESS,
+        allowMaxLossValue,
+        true,
+        nextArray,
+      )
+      console.log("estimate withdraw result:", tokens, amounts)
       let nextEstimateWithdrawArray = compact(
         await Promise.all(
           map(tokens, async (token, index) => {
-            const tokenContract = new ethers.Contract(token, IERC20_ABI, userProvider)
             const amount = get(amounts, index, BigNumber.from(0))
             if (amount.gt(0)) {
               return {
                 tokenAddress: token,
-                decimals: await tokenContract.decimals(),
+                decimals: ethiDecimals,
                 amounts: amount,
               }
             }
@@ -232,18 +217,19 @@ export default function Withdraw ({
       if (error?.error?.data?.originalError?.message) {
         errorMsg = error.error.data.originalError.message
       }
-      if (error?.error?.data?.message) {
-        errorMsg = error.error.data.message
-      }
-      let tip = ''
+      let tip = ""
       if (errorMsg.endsWith("'ES or AD'") || errorMsg.endsWith("'ES'")) {
-        tip = 'Vault has been shut down, please try again later!'
+        tip = "Vault has been shut down, please try again later!"
       } else if (errorMsg.endsWith("'AD'")) {
-        tip = 'Vault is in adjustment status, please try again later!'
+        tip = "Vault is in adjustment status, please try again later!"
       } else if (errorMsg.endsWith("'RP'")) {
-        tip = 'Vault is in rebase status, please try again later!'
-      } else if (errorMsg.endsWith("'loss much'") || errorMsg.indexOf("loss much") !== -1 || errorMsg.endsWith('"amount lower than minimum"')) {
-        tip = 'Failed to withdraw, please increase the Max Loss!'
+        tip = "Vault is in rebase status, please try again later!"
+      } else if (
+        errorMsg.endsWith("'loss much'") ||
+        errorMsg.indexOf("loss much") !== -1 ||
+        errorMsg.endsWith('"amount lower than minimum"')
+      ) {
+        tip = "Failed to withdraw, please increase the Max Loss!"
       } else if (
         errorMsg.endsWith("'Return amount is not enough'") ||
         errorMsg.endsWith("'callBytes failed: Error(Uniswap: INSUFFICIENT_OUTPUT_AMOUNT)'") ||
@@ -253,7 +239,7 @@ export default function Withdraw ({
         errorMsg.endsWith("'Received amount of tokens are less then expected'") ||
         errorMsg.endsWith("Error: VM Exception while processing transaction: reverted with reason string 'OL'")
       ) {
-        tip = 'Failed to exchange, please increase the exchange slippage or close exchange!'
+        tip = "Failed to exchange, please increase the exchange slippage or close exchange!"
       } else {
         tip = errorMsg
       }
@@ -296,7 +282,7 @@ export default function Withdraw ({
       })
     }
 
-    if (shouldExchange && !isValidSlipper()) {
+    if (!isValidSlipper()) {
       return setWithdrawError({
         type: "warning",
         message: "Please enter the correct slippage value.",
@@ -309,76 +295,76 @@ export default function Withdraw ({
       BN(toValue)
         .multipliedBy(
           BigNumber.from(10)
-            .pow(usdiDecimals)
+            .pow(ethiDecimals)
             .toString(),
         )
         .toFixed(),
     )
-    const allowMaxLossValue = BigNumber.from(10000 - parseInt(100 * parseFloat(allowMaxLoss))).mul(nextValue).div(BigNumber.from(1e4))
+    const allowMaxLossValue = BigNumber.from(10000 - parseInt(100 * parseFloat(allowMaxLoss)))
+      .mul(nextValue)
+      .div(BigNumber.from(1e4))
     try {
       const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider)
       const vaultContractWithSigner = vaultContract.connect(signer)
       let exchangeArray = []
       // 如果不需要兑换则按照多币返回
-      if (shouldExchange) {
-        console.log("----------start callStatic withdraw----------", nextValue, allowMaxLossValue)
+      console.log("----------start callStatic withdraw----------", nextValue, allowMaxLossValue)
 
-        const [tokens, amounts] = await vaultContractWithSigner.callStatic.burn(
-          nextValue,
-          token,
-          allowMaxLossValue,
-          false,
-          [],
-        )
+      const [tokens, amounts] = await vaultContractWithSigner.callStatic.burn(
+        nextValue,
+        ETH_ADDRESS,
+        allowMaxLossValue,
+        false,
+        [],
+      )
 
-        console.log("tokens, amounts=", tokens, amounts)
-        preWithdrawGetCoins = Date.now()
-        setCurrentStep(2)
-        const exchangeManager = await vaultContract.exchangeManager()
-        const exchangeManagerContract = new ethers.Contract(exchangeManager, EXCHANGE_AGGREGATOR_ABI, userProvider)
-        const exchangePlatformAdapters = await getExchangePlatformAdapters(exchangeManagerContract, userProvider)
-        // 查询兑换路径
-        exchangeArray = await Promise.all(
-          map(tokens, async (tokenItem, index) => {
-            const exchangeAmounts = amounts[index].toString()
-            if (tokenItem === token || exchangeAmounts === "0") {
-              return {}
+      console.log("tokens, amounts=", tokens, amounts)
+      preWithdrawGetCoins = Date.now()
+      setCurrentStep(2)
+      const exchangeManager = await vaultContract.exchangeManager()
+      const exchangeManagerContract = new ethers.Contract(exchangeManager, EXCHANGE_AGGREGATOR_ABI, userProvider)
+      const exchangePlatformAdapters = await getExchangePlatformAdapters(exchangeManagerContract, userProvider)
+      // 查询兑换路径
+      exchangeArray = await Promise.all(
+        map(tokens, async (tokenItem, index) => {
+          const exchangeAmounts = amounts[index].toString()
+          if (tokenItem === ETH_ADDRESS || exchangeAmounts === "0") {
+            return {}
+          }
+          const fromConstrat = new ethers.Contract(tokenItem, IERC20_ABI, userProvider)
+          const toTokenConstrat = new ethers.Contract(ETH_ADDRESS, IERC20_ABI, userProvider)
+          const fromToken = {
+            decimals: parseInt((await fromConstrat.decimals()).toString()),
+            symbol: await fromConstrat.symbol(),
+            address: tokenItem,
+          }
+          try {
+            const bestSwapInfo = await getBestSwapInfo(
+              fromToken,
+              {
+                decimals: parseInt((await toTokenConstrat.decimals()).toString()),
+                address: ETH_ADDRESS,
+              },
+              amounts[index].toString(),
+              parseInt(100 * parseFloat(slipper)) || 0,
+              ORACLE_ADDITIONAL_SLIPPAGE,
+              exchangePlatformAdapters,
+              EXCHANGE_EXTRA_PARAMS,
+            )
+            if (isEmpty(bestSwapInfo)) {
+              throw new Error("兑换路径获取失败")
             }
-            const fromConstrat = new ethers.Contract(tokenItem, IERC20_ABI, userProvider)
-            const toTokenConstrat = new ethers.Contract(token, IERC20_ABI, userProvider)
-            const fromToken = {
-              decimals: parseInt((await fromConstrat.decimals()).toString()),
-              symbol: await fromConstrat.symbol(),
-              address: tokenItem,
+            return {
+              fromToken: tokenItem,
+              toToken: ETH_ADDRESS,
+              fromAmount: exchangeAmounts,
+              exchangeParam: bestSwapInfo,
             }
-            try {
-              const bestSwapInfo = await getBestSwapInfo(
-                fromToken,
-                {
-                  decimals: parseInt((await toTokenConstrat.decimals()).toString()),
-                  address: token,
-                },
-                amounts[index].toString(),
-                parseInt(100 * parseFloat(slipper)) || 0,
-                ORACLE_ADDITIONAL_SLIPPAGE,
-                exchangePlatformAdapters,
-                EXCHANGE_EXTRA_PARAMS,
-              )
-              if (isEmpty(bestSwapInfo)) {
-                throw new Error("兑换路径获取失败")
-              }
-              return {
-                fromToken: tokenItem,
-                toToken: token,
-                fromAmount: exchangeAmounts,
-                exchangeParam: bestSwapInfo,
-              }
-            } catch (error) {
-              return
-            }
-          }),
-        )
-      }
+          } catch (error) {
+            return
+          }
+        }),
+      )
       console.log("exchangeArray=", exchangeArray)
       if (some(exchangeArray, isUndefined)) {
         return setWithdrawError({
@@ -393,17 +379,23 @@ export default function Withdraw ({
       let tx
       // gasLimit如果需要配置倍数的话，则需要estimateGas一下
       if (isNumber(MULTIPLE_OF_GAS) && MULTIPLE_OF_GAS !== 1) {
-        const gas = await vaultContractWithSigner.estimateGas.burn(nextValue, token, allowMaxLossValue, shouldExchange, nextArray)
+        const gas = await vaultContractWithSigner.estimateGas.burn(
+          nextValue,
+          ETH_ADDRESS,
+          allowMaxLossValue,
+          true,
+          nextArray,
+        )
         setCurrentStep(4)
         estimateGasFinish = Date.now()
         const gasLimit = Math.ceil(gas * MULTIPLE_OF_GAS)
         // 乘以倍数后，如果大于3千万gas，则按3千万执行
         const maxGasLimit = gasLimit < MAX_GAS_LIMIT ? gasLimit : MAX_GAS_LIMIT
-        tx = await vaultContractWithSigner.burn(nextValue, token, allowMaxLossValue, shouldExchange, nextArray, {
+        tx = await vaultContractWithSigner.burn(nextValue, ETH_ADDRESS, allowMaxLossValue, true, nextArray, {
           gasLimit: maxGasLimit,
         })
       } else {
-        tx = await vaultContractWithSigner.burn(nextValue, token, allowMaxLossValue, shouldExchange, nextArray)
+        tx = await vaultContractWithSigner.burn(nextValue, ETH_ADDRESS, allowMaxLossValue, true, nextArray)
       }
       withdrawFinish = Date.now()
 
@@ -431,29 +423,29 @@ export default function Withdraw ({
       if (error?.error?.data?.originalError?.message) {
         errorMsg = error.error.data.originalError.message
       }
-      if (error?.error?.data?.message) {
-        errorMsg = error.error.data.message
-      }
-      let tip = ''
+      let tip = ""
       if (errorMsg.endsWith("'ES or AD'") || errorMsg.endsWith("'ES'")) {
-        tip = 'Vault has been shut down, please try again later!'
-      }  else if (errorMsg.endsWith("'AD'")) {
-        tip = 'Vault is in adjustment status, please try again later!'
+        tip = "Vault has been shut down, please try again later!"
+      } else if (errorMsg.endsWith("'AD'")) {
+        tip = "Vault is in adjustment status, please try again later!"
       } else if (errorMsg.endsWith("'RP'")) {
-        tip = 'Vault is in rebase status, please try again later!'
-      } else if (errorMsg.endsWith("'loss much'") || errorMsg.indexOf("loss much") !== -1 || errorMsg.endsWith('"amount lower than minimum"')) {
-        tip = 'Failed to withdraw, please increase the Max Loss!'
+        tip = "Vault is in rebase status, please try again later!"
+      } else if (
+        errorMsg.endsWith("'loss much'") ||
+        errorMsg.indexOf("loss much") !== -1 ||
+        errorMsg.endsWith('"amount lower than minimum"')
+      ) {
+        tip = "Failed to withdraw, please increase the Max Loss!"
       } else if (
         errorMsg.endsWith("'Return amount is not enough'") ||
         errorMsg.endsWith("'callBytes failed: Error(Uniswap: INSUFFICIENT_OUTPUT_AMOUNT)'") ||
-        errorMsg.endsWith("'callBytes failed: Error(UniswapV2Router: INSUFFICIENT_OUTPUT_AMOUNT)'") ||
         errorMsg.endsWith("'1inch V4 swap failed: Error(Min return not reached)'") ||
         errorMsg.endsWith("'callBytes failed: Error(Received amount of tokens are less then expected)'") ||
         errorMsg.endsWith("'1inch V4 swap failed: Error(Return amount is not enough)'") ||
         errorMsg.endsWith("'Received amount of tokens are less then expected'") ||
         errorMsg.endsWith("Error: VM Exception while processing transaction: reverted with reason string 'OL'")
       ) {
-        tip = 'Failed to exchange, please increase the exchange slippage or close exchange!'
+        tip = "Failed to exchange, please increase the exchange slippage or close exchange!"
       } else {
         tip = errorMsg
       }
@@ -495,67 +487,37 @@ export default function Withdraw ({
     })
   }
 
-  const addToken = async token => {
-    try {
-      const tokenContract = new ethers.Contract(token, IERC20_ABI, userProvider)
-      // wasAdded is a boolean. Like any RPC method, an error may be thrown.
-      const wasAdded = await window.ethereum.request({
-        method: "wallet_watchAsset",
-        params: {
-          type: "ERC20", // Initially only supports ERC20, but eventually more!
-          options: {
-            address: token, // The address that the token is at.
-            symbol: await tokenContract.symbol(), // A ticker symbol or shorthand, up to 5 chars.
-            decimals: await tokenContract.decimals(), // The number of decimals in the token
-          },
-        },
-      })
-
-      if (wasAdded) {
-        console.log("Thanks for your interest!")
-      } else {
-        console.log("Your loss!")
-      }
-    } catch (error) {
-      console.log(error)
-    }
-  }
-
   function imgError (e) {
     const evn = e
     const img = evn.srcElement ? evn.srcElement : evn.target
     img.src = "/default.png"
   }
 
-  const handleReceiveTokenChange = (value) => {
-    setReceiveToken(value);
-  }
-
   /**
    * 校验toValue是否为有效输入
    * @returns
    */
-   const isValidToValue = () => {
+  const isValidToValue = () => {
     if (toValue === "" || toValue === "-") return
     // 如果不是一个数值
     if (isNaN(Number(toValue))) return false
     const nextValue = BN(toValue)
     const nextToValue = nextValue.multipliedBy(
       BigNumber.from(10)
-        .pow(usdiDecimals)
+        .pow(ethiDecimals)
         .toString(),
     )
     // 判断值为正数
     if (nextToValue.lte(0)) return false
-      // 精度处理完之后，应该为整数
+    // 精度处理完之后，应该为整数
     const nextToValueString = nextValue.multipliedBy(
       BigNumber.from(10)
-        .pow(usdiDecimals)
+        .pow(ethiDecimals)
         .toString(),
     )
     if (nextToValueString.toFixed().indexOf(".") !== -1) return false
     // 数值小于最大数量
-    if (toBalance.lt(BigNumber.from(nextToValue.toFixed()))) return false
+    if (ethiBalance.lt(BigNumber.from(nextToValue.toFixed()))) return false
     return true
   }
 
@@ -580,7 +542,7 @@ export default function Withdraw ({
   useEffect(() => {
     // 未打开高级选项页面，则不继续数值预估
     // 如果输入的slipper等值不正确，则不继续数值预估
-    if (isOpenEstimate && isValidAllowLoss() && isValidSlipper() && isValidToValue()){
+    if (isOpenEstimate && isValidAllowLoss() && isValidSlipper() && isValidToValue()) {
       estimateWithdraw()
     }
     if (isEmpty(toValue)) {
@@ -588,9 +550,9 @@ export default function Withdraw ({
     }
     return () => estimateWithdraw.cancel()
     // eslint-disable-next-line
-  }, [toValue, allowMaxLoss, slipper, shouldExchange, isOpenEstimate, token])
+  }, [toValue, allowMaxLoss, slipper, isOpenEstimate])
 
-  const handleAmountChange = (event) => {
+  const handleAmountChange = event => {
     try {
       setToValue(event.target.value)
     } catch (error) {
@@ -599,7 +561,7 @@ export default function Withdraw ({
   }
 
   const handleMaxClick = () => {
-    setToValue(formatBalance(toBalance, usdiDecimals, { showAll: true }))
+    setToValue(formatBalance(ethiBalance, ethiDecimals, { showAll: true }))
   }
 
   const renderEstimate = () => {
@@ -640,10 +602,15 @@ export default function Withdraw ({
             color='transparent'
             target='_blank'
             style={{ fontSize: 14, paddingBottom: 20 }}
-            onClick={() => addToken(item.tokenAddress)}
           >
             <AddIcon fontSize='small' style={{ position: "absolute", top: 25, left: 45 }} />
-            <img className={classes.img} style={{ borderRadius: '50%' }} alt='' src={`./images/${item.tokenAddress}.png`} onError={imgError} />
+            <img
+              className={classes.img}
+              style={{ borderRadius: "50%" }}
+              alt=''
+              src={`./images/${item.tokenAddress}.png`}
+              onError={imgError}
+            />
             &nbsp;&nbsp;~&nbsp;{toFixed(item.amounts, BigNumber.from(10).pow(item.decimals), 6)}
           </Button>
         </GridItem>
@@ -652,29 +619,6 @@ export default function Withdraw ({
   }
 
   const SettingIcon = isOpenEstimate ? CropIcon : CropFreeIcon
-  const selectOptions = [{
-    label: 'USDT',
-    value: USDT_ADDRESS,
-    img: `./images/${USDT_ADDRESS}.png`
-  }, {
-    label: 'USDC',
-    value: USDC_ADDRESS,
-    img: `./images/${USDC_ADDRESS}.png`
-  }, 
-  {
-    label: 'DAI',
-    value: DAI_ADDRESS,
-    img: `./images/${DAI_ADDRESS}.png`
-  }, 
-  {
-    label: 'Mix',
-    value: RECEIVE_MIX_VALUE,
-    img: [
-      `./images/${USDT_ADDRESS}.png`,
-      `./images/${USDC_ADDRESS}.png`,
-      `./images/${DAI_ADDRESS}.png`,
-    ]
-  }]
 
   const isValidToValueFlag = isValidToValue()
   const isValidAllowLossFlag = isValidAllowLoss()
@@ -686,27 +630,19 @@ export default function Withdraw ({
     <>
       <GridContainer classes={{ root: classes.withdrawContainer }}>
         <GridItem xs={12} sm={12} md={12} lg={12} className={classes.withdrawItem}>
-          <Muted className={classes.withdrawItemLabel}>USDi: </Muted>
+          <Muted className={classes.withdrawItemLabel}>ETHi: </Muted>
           <CustomTextField
             value={toValue}
-            placeholder="amount"
+            placeholder='amount'
             maxEndAdornment
             onMaxClick={() => handleMaxClick()}
             onChange={handleAmountChange}
-            error={!isUndefined(isValidToValueFlag) && !isValidToValueFlag && (toValue !== '0')}
-          />
-        </GridItem>
-        <GridItem xs={12} sm={12} md={12} lg={12} className={classNames(classes.withdrawItem, classes.receiveTokenItem)}>
-          <Muted className={classes.withdrawItemLabel}>Receive: </Muted>
-          <SimpleSelect
-            value={receiveToken}
-            onChange={handleReceiveTokenChange}
-            options={selectOptions}
+            error={!isUndefined(isValidToValueFlag) && !isValidToValueFlag && toValue !== "0"}
           />
         </GridItem>
         <GridItem xs={12} sm={12} md={12} lg={12}>
           <div className={classes.withdrawComfirmArea}>
-            <div className={classes.settingBtn} style={{ color: isOpenEstimate ? '#39d0d8' : '#da2eef' }}>
+            <div className={classes.settingBtn} style={{ color: isOpenEstimate ? "#39d0d8" : "#da2eef" }}>
               <SettingIcon
                 fontSize='large'
                 style={{ float: "right", cursor: "pointer" }}
@@ -717,9 +653,7 @@ export default function Withdraw ({
               </span>
             </div>
             <Button
-              disabled={isLogin && (
-                isUndefined(isValidToValueFlag) || !isValidToValueFlag
-              )}
+              disabled={isLogin && (isUndefined(isValidToValueFlag) || !isValidToValueFlag)}
               color='colorfull'
               onClick={isLogin ? withdraw : onConnect}
               style={{ minWidth: 122, padding: "12px 16px" }}
@@ -732,10 +666,7 @@ export default function Withdraw ({
           <GridItem xs={12} sm={12} md={12} lg={12}>
             <GridContainer>
               <GridItem xs={12} sm={12} md={12} lg={12} style={{ padding: "24px 0px 16px 15px" }}>
-                <span
-                  title='Withdrawal tokens and estimated amount'
-                  className={classes.settingTitle}
-                >
+                <span title='Withdrawal tokens and estimated amount' className={classes.settingTitle}>
                   Withdrawal tokens and estimated amount
                 </span>
               </GridItem>
@@ -765,8 +696,8 @@ export default function Withdraw ({
                       formControlProps={{
                         fullWidth: true,
                         classes: {
-                          root: classes.maxLossFormCtrl
-                        }
+                          root: classes.maxLossFormCtrl,
+                        },
                       }}
                     />
                   }
@@ -778,73 +709,64 @@ export default function Withdraw ({
                   }
                 />
               </GridItem>
-              {shouldExchange && (
-                <GridItem className={classNames(classes.settingItem, classes.slippageItem)} xs={12} sm={12} md={12} lg={12}>
-                  <FormControlLabel
-                    labelPlacement='start'
-                    control={
-                      <RadioGroup
-                        row
-                        value={slipper}
-                        onChange={event => setSlipper(event.target.value)}
-                      >
-                        {map(["0.3", "0.5", "1"], (value) => (
-                          <FormControlLabel
-                            key={value}
-                            value={value}
-                            style={{ color: "#fff" }}
-                            control={<CustomRadio size="small" style={{ padding: 6 }} />}
-                            label={`${value}%`}
-                          />
-                        ))}
-                      </RadioGroup>
-                    }
-                    style={{ marginLeft: 0 }}
-                    label={
-                      <div className={classes.settingItemLabel}>
-                        <Muted className={classes.mutedLabel}>
-                          <Tooltip
-                            classes={{
-                              tooltip: classes.tooltip
-                            }}
-                            placement='top'
-                            title='Please pre-set the acceptable exchange loss when the received token is a specified one'
-                          >
-                            <InfoIcon classes={{ root: classes.labelToolTipIcon }} />
-                          </Tooltip>
-                          Slippage:
-                        </Muted>
-                      </div>
-                    }
-                  />
-                  <CustomInput
-                    inputProps={{
-                      placeholder: "Allow loss percent",
-                      value: slipper,
-                      endAdornment: (
-                        <span style={{ color: "#69c0ff" }}>
-                          %&nbsp;&nbsp;&nbsp;
-                          <span style={{ cursor: "pointer" }} onClick={() => setSlipper("45")}>
-                            Max
-                          </span>
+              <GridItem
+                className={classNames(classes.settingItem, classes.slippageItem)}
+                xs={12}
+                sm={12}
+                md={12}
+                lg={12}
+              >
+                <FormControlLabel
+                  labelPlacement='start'
+                  control={
+                    <RadioGroup row value={slipper} onChange={event => setSlipper(event.target.value)}>
+                      {map(["0.3", "0.5", "1"], value => (
+                        <FormControlLabel
+                          key={value}
+                          value={value}
+                          style={{ color: "#fff" }}
+                          control={<CustomRadio size='small' style={{ padding: 6 }} />}
+                          label={`${value}%`}
+                        />
+                      ))}
+                    </RadioGroup>
+                  }
+                  style={{ marginLeft: 0 }}
+                  label={
+                    <div className={classes.settingItemLabel}>
+                      <Muted className={classes.mutedLabel}>
+                        Slippage:
+                      </Muted>
+                    </div>
+                  }
+                />
+                <CustomInput
+                  inputProps={{
+                    placeholder: "Allow loss percent",
+                    value: slipper,
+                    endAdornment: (
+                      <span style={{ color: "#69c0ff" }}>
+                        %&nbsp;&nbsp;&nbsp;
+                        <span style={{ cursor: "pointer" }} onClick={() => setSlipper("45")}>
+                          Max
                         </span>
-                      ),
-                      onChange: event => {
-                        const value = event.target.value
-                        setSlipper(value)
-                      },
-                    }}
-                    error={!isUndefined(isValidSlipperFlag) && !isValidSlipperFlag}
-                    success={!isUndefined(isValidSlipperFlag) && isValidSlipperFlag}
-                    formControlProps={{
-                      fullWidth: true,
-                      classes: {
-                        root: classes.slippageInput
-                      }
-                    }}
-                  />
-                </GridItem>
-              )}
+                      </span>
+                    ),
+                    onChange: event => {
+                      const value = event.target.value
+                      setSlipper(value)
+                    },
+                  }}
+                  error={!isUndefined(isValidSlipperFlag) && !isValidSlipperFlag}
+                  success={!isUndefined(isValidSlipperFlag) && isValidSlipperFlag}
+                  formControlProps={{
+                    fullWidth: true,
+                    classes: {
+                      root: classes.slippageInput,
+                    },
+                  }}
+                />
+              </GridItem>
               {renderEstimate()}
             </GridContainer>
           </GridItem>
@@ -856,10 +778,7 @@ export default function Withdraw ({
         aria-labelledby='simple-modal-title'
         aria-describedby='simple-modal-description'
       >
-        <Paper
-          elevation={3}
-          className={classes.widthdrawLoadingPaper}
-        >
+        <Paper elevation={3} className={classes.widthdrawLoadingPaper}>
           <div className={classes.modalBody}>
             {isEmpty(withdrawError) && <CircularProgress color='inherit' />}
             {isEmpty(withdrawError) ? <p>In Withdrawing...</p> : <p>Withdraw Error !</p>}

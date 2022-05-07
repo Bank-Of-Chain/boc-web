@@ -13,34 +13,12 @@ if (!config) {
   throw new Error('配置未正确加载');
 }
 
-export const abiPrefix = config.abi_version || 'v4.6'
-
-const vaultAbi = require(`./abis/${abiPrefix}/vault-abi.json`);
-const strategyAbi = require(`./abis/${abiPrefix}/strategy-abi.json`);
-const ierc20Abi = require(`./abis/${abiPrefix}/ierc20-abi.json`);
-const treasureAbi = require(`./abis/${abiPrefix}/treasure-abi.json`);
-const exchangeAggreatorAbi = require(`./abis/${abiPrefix}/exchange-aggregator-abi.json`);
-let usdiAbi, exchangeAdapterAbi;
-try {
-  usdiAbi = require(`./abis/${abiPrefix}/usdi.json`);
-} catch (error) {
-  usdiAbi = []
-}
-
-try {
-  exchangeAdapterAbi = require(`./abis/${abiPrefix}/exchange-adapter-abi.json`);
-} catch (error) {
-  exchangeAdapterAbi = []
-}
-
 // === configs === //
 export const APY_SERVER = config.apy_server;
-export const VAULT_ADDRESS = config.vault_address;
 export const EXCHANGE_EXTRA_PARAMS = config.exchange_extra_params;
 export const USDT_ADDRESS = config.usdt_address;
 export const USDC_ADDRESS = config.usdc_address;
 export const DAI_ADDRESS = config.dai_address;
-export const USDI_ADDRESS = config.usdi_address;
 export const CHAIN_BROWSER_URL = config.chain_browser_url;
 export const TELEGRAM_URL = config.telegram_url;
 export const SUB_GRAPH_URL = config.sub_graph_url;
@@ -55,21 +33,8 @@ export const BOC_SERVER = config.boc_server;
 export const MULTIPLE_OF_GAS = config.multiple_of_gas;
 export const DASHBOARD_URL = config.dashboard_url;
 export const ORACLE_ADDITIONAL_SLIPPAGE = config.oracle_additional_slippage
+export const VAULTS = config.vaults;
 
-// === abi === //
-export const VAULT_ABI = vaultAbi;
-
-export const STRATEGY_ABI = strategyAbi;
-
-export const IERC20_ABI = ierc20Abi;
-
-export const EXCHANGE_AGGREGATOR_ABI = exchangeAggreatorAbi;
-
-export const TREASURE_ABI = treasureAbi;
-
-export const USDI_ABI = usdiAbi;
-
-export const EXCHANGE_ADAPTER_ABI = exchangeAdapterAbi;
 
 export const NET_WORKS = [
   {
