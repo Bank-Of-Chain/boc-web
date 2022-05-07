@@ -92,7 +92,7 @@ export default function Withdraw({
 }) {
   const classes = useStyles()
   const dispatch = useDispatch()
-  const [receiveToken, setReceiveToken] = useState(USDT_ADDRESS)
+  const [receiveToken, setReceiveToken] = useState(USDT_ADDRESS || 'USDT')
   const [toValue, setToValue] = useState("")
   const [allowMaxLoss, setAllowMaxLoss] = useState("0.3")
   const [slipper, setSlipper] = useState("0.3")
@@ -653,25 +653,25 @@ export default function Withdraw({
   const SettingIcon = isOpenEstimate ? CropIcon : CropFreeIcon
   const selectOptions = [{
     label: 'USDT',
-    value: USDT_ADDRESS,
-    img: `./images/${USDT_ADDRESS}.png`
+    value: USDT_ADDRESS || 'USDT',
+    img: './images/0x55d398326f99059fF775485246999027B3197955.png'
   }, {
     label: 'USDC',
-    value: USDC_ADDRESS,
-    img: `./images/${USDC_ADDRESS}.png`
+    value: USDC_ADDRESS || 'USDC',
+    img: './images/0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d.png'
   }, 
   {
     label: 'DAI',
-    value: DAI_ADDRESS,
-    img: `./images/${DAI_ADDRESS}.png`
+    value: DAI_ADDRESS || 'DAI',
+    img: './images/0x1AF3F329e8BE154074D8769D1FFa4eE058B1DBc3.png'
   }, 
   {
     label: 'Mix',
-    value: RECEIVE_MIX_VALUE,
+    value: RECEIVE_MIX_VALUE || 'Mix',
     img: [
-      `./images/${USDT_ADDRESS}.png`,
-      `./images/${USDC_ADDRESS}.png`,
-      `./images/${DAI_ADDRESS}.png`,
+      './images/0x55d398326f99059fF775485246999027B3197955.png',
+      './images/0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d.png',
+      './images/0x1AF3F329e8BE154074D8769D1FFa4eE058B1DBc3.png',
     ]
   }]
 
