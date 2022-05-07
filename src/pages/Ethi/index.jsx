@@ -157,9 +157,8 @@ function Ethi (props) {
   }, [address, VAULT_ADDRESS, VAULT_ABI, userProvider])
 
   const loadTotalAssets = () => {
-    // const ethiContract = new ethers.Contract(ETHI_ADDRESS, ETHI_ABI, userProvider)
-    // return ethiContract.totalSupply()
-    return Promise.resolve(BigNumber.from(0))
+    const ethiContract = new ethers.Contract(ETHI_ADDRESS, IERC20_ABI, userProvider)
+    return ethiContract.totalSupply()
   }
 
   const handleTabChange = (event, value) => setTab(value)
