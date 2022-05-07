@@ -74,7 +74,6 @@ const config56 = {
 const config1 = {
   ...configBase,
   apy_server: 'https://qa04-sg-keeper-eth.bankofchain.io',
-  vault_address: "0x5302E909d1e93e30F05B5D6Eea766363D14F9892",
   usdt_address: "0xdAC17F958D2ee523a2206206994597C13D831ec7",
   usdc_address: "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
   dai_address: "0x6B175474E89094C44Da98b954EedeAC495271d0F",
@@ -92,12 +91,43 @@ const config1 = {
     }
   },
   // ETH链一个区块3千万，使用90%的空间即可，过大会造成打块过慢
-  max_gas_limit: 2700 * 10 ** 4
+  max_gas_limit: 2700 * 10 ** 4,
+  vaults: [{
+    id: 'invest',
+    name: 'Vault for Stable Coins',
+    description: '这是v1.1版本的Vault池',
+    path: '#/invest',
+    abi_version: 'v4.6',
+    VAULT_ADDRESS: '0x547382C0D1b23f707918D3c83A77317B71Aa8470',
+    dashboard_url: 'http://localhost:8000',
+  }, {
+    id: 'mutilCoins',
+    name: 'Vault for USDi',
+    description: '这是v1.5版本的Vault池',
+    path: '#/mutils',
+    isAudit: true,
+    abi_version: 'beta-v1.5',
+    VAULT_ADDRESS: '0x547382C0D1b23f707918D3c83A77317B71Aa8470',
+    USDI_ADDRESS: '0xeAd789bd8Ce8b9E94F5D0FCa99F8787c7e758817',
+    dashboard_url: 'http://localhost:8000',
+    isOpen: true
+  }, {
+    id: 'ethi',
+    name: 'Vault for ETHi',
+    description: '这是ethi的池子',
+    path: '#/ethi',
+    abi_version: 'ethi',
+    VAULT_ADDRESS: '0x114e375B6FCC6d6fCb68c7A1d407E652C54F25FB',
+    ETHI_ADDRESS: '0x8bEe2037448F096900Fd9affc427d38aE6CC0350',
+    WETHI_ADDRESS: '',
+    dashboard_url: 'http://dashboard-qa04-sg.bankofchain.io',
+    isOpen: true
+  }]
 }
 
 window.config = {
   // 本地链
-  31337: config137,
+  31337: config1,
   // polygon
   137: config137,
   // bsc

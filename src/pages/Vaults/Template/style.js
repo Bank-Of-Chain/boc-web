@@ -39,6 +39,24 @@ const componentsStyle = (theme) => ({
       duration: theme.transitions.duration.shortest,
     }),
   },
+  optMultiImgWrapper: {
+    height: "20px",
+    display: 'inline-block',
+    whiteSpace: 'nowrap',
+    verticalAlign: 'sub'
+  },
+  optMultiImg: {
+    width: "auto",
+    height: "20px",
+    borderRadius: "50%",
+    marginLeft: "-5px",
+    "&:first-child": {
+      marginLeft: 0
+    },
+    "&:last-child": {
+      marginRight: "8px"
+    }
+  },
 });
 
 export default componentsStyle;
