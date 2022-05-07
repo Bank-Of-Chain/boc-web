@@ -134,7 +134,6 @@ export default function Withdraw ({
             return {}
           }
           const fromConstrat = new ethers.Contract(tokenItem, IERC20_ABI, userProvider)
-          const toTokenConstrat = new ethers.Contract(ETH_ADDRESS, IERC20_ABI, userProvider)
           const fromToken = {
             decimals: parseInt((await fromConstrat.decimals()).toString()),
             symbol: await fromConstrat.symbol(),
@@ -144,7 +143,7 @@ export default function Withdraw ({
             const bestSwapInfo = await getBestSwapInfo(
               fromToken,
               {
-                decimals: parseInt((await toTokenConstrat.decimals()).toString()),
+                decimals: 18,
                 address: ETH_ADDRESS,
               },
               amounts[index].toString(),
@@ -332,7 +331,6 @@ export default function Withdraw ({
             return {}
           }
           const fromConstrat = new ethers.Contract(tokenItem, IERC20_ABI, userProvider)
-          const toTokenConstrat = new ethers.Contract(ETH_ADDRESS, IERC20_ABI, userProvider)
           const fromToken = {
             decimals: parseInt((await fromConstrat.decimals()).toString()),
             symbol: await fromConstrat.symbol(),
@@ -342,7 +340,7 @@ export default function Withdraw ({
             const bestSwapInfo = await getBestSwapInfo(
               fromToken,
               {
-                decimals: parseInt((await toTokenConstrat.decimals()).toString()),
+                decimals: 18,
                 address: ETH_ADDRESS,
               },
               amounts[index].toString(),

@@ -334,7 +334,7 @@ function Invest (props) {
                 if(item.isOpen){
                   return <ListItem key={item.id} button className={classNames( isCheck && classes.check )} onClick={() => history.push(path.slice(1))}>
                     <ListItemIcon>
-                      <ScatterPlotIcon color={isCheck ? "primary" : "action"} />
+                      { isCheck && <ScatterPlotIcon color="primary" /> }
                     </ListItemIcon>
                     <ListItemText primary={item.name} className={classNames( isCheck && classes.text )} />
                   </ListItem>
