@@ -50,6 +50,7 @@ import noop from "lodash/noop"
 import find from "lodash/find"
 import * as ethers from "ethers"
 import useVersionWapper from "../../hooks/useVersionWapper"
+import useMediaQuery from '@material-ui/core/useMediaQuery'
 
 // === Styles === //
 import styles from "./style"
@@ -65,6 +66,7 @@ function Ethi (props) {
   const classes = useStyles()
   const dispatch = useDispatch()
   const history = useHistory()
+  const isMd = useMediaQuery('(min-width: 768px)')
 
   const { 
     address,
@@ -185,6 +187,25 @@ function Ethi (props) {
     <div className={classNames(classes.main, classes.mainRaised)}>
       <div className={classes.container}>
         <GridContainer className={classNames(classes.center)}>
+          <div className={classes.slider} style={isMd ? {} : { position: 'inherit', width: '94%', marginBottom: '20px' }}>
+            <List>
+              {
+                map(VAULTS, item => {
+                  const { path } = item
+                  const isCheck = window.location.hash === path
+                  if(item.isOpen){
+                    return <ListItem key={item.id} button className={classNames( classes.item, isCheck && classes.check )} onClick={() => history.push(path.slice(1))}>
+                      <ListItemText primary={item.name} className={classNames( isCheck && classes.text )}  />
+                      { isCheck && <div className={classes.spliter}></div> }
+                      <ListItemIcon>
+                        { isCheck && <ForwardIcon color="primary" style={{ color: 'azure', marginLeft: 20 }} /> }
+                      </ListItemIcon>
+                    </ListItem>
+                  }
+                })
+              }
+            </List>
+          </div>
           <GridItem xs={12} sm={12} md={8} className={classNames(classes.centerItem)}>
             <Card className={classes.balanceCard}>
               <div className={classes.balanceCardItem}>
@@ -308,24 +329,6 @@ function Ethi (props) {
             </Table>
           </TableContainer>
           
-        </div>
-        <div className={classes.slider}>
-          <List component="nav" aria-label="main mailbox folders">
-            {
-              map(VAULTS, item => {
-                const { path } = item
-                const isCheck = window.location.hash === path
-                if(item.isOpen){
-                  return <ListItem key={item.id} button className={classNames( isCheck && classes.check )} onClick={() => history.push(path.slice(1))}>
-                    <ListItemText primary={item.name} className={classNames( isCheck && classes.text )} />
-                    <ListItemIcon>
-                      { isCheck && <ForwardIcon color="primary" style={{color: 'azure'}} /> }
-                    </ListItemIcon>
-                  </ListItem>
-                }
-              })
-            }
-          </List>
         </div>
       </div>
     </div>

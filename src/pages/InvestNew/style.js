@@ -184,7 +184,7 @@ const componentsStyle = (theme) => ({
   slider: {
     position: 'absolute',
     top: '50px',
-    left: '40px',
+    left: 'calc(50% - 33rem)',
     backgroundColor: '#271f72',
     color: 'azure'
   },
@@ -193,6 +193,16 @@ const componentsStyle = (theme) => ({
   },
   text: {
     color: 'azure'
+  },
+  spliter: {
+    display: 'flex',
+    justifyContent: 'center',
+    bottom: 0,
+    height: 2,
+    position: 'absolute',
+    transition: 'all 300ms cubic-bezier(0.4, 0, 0.2, 1) 0ms',
+    width: '54%',
+    backgroundColor: '#fff',
   }
 });
 
