@@ -43,6 +43,9 @@ import {
   ORACLE_ADDITIONAL_SLIPPAGE,
 } from "../../../constants"
 
+// === Hooks === //
+import useRedeemFeeBps from "../../../hooks/useRedeemFeeBps"
+
 // === Utils === //
 import { getBestSwapInfo } from "piggy-finance-utils"
 import isUndefined from "lodash/isUndefined"
@@ -94,6 +97,15 @@ export default function Withdraw ({
   const [isWithdrawLoading, setIsWithdrawLoading] = useState(false)
   const [currentStep, setCurrentStep] = useState(0)
   const [withdrawError, setWithdrawError] = useState({})
+  
+  const { value: redeemFeeBps } = useRedeemFeeBps({
+    userProvider,
+    VAULT_ADDRESS,
+    VAULT_ABI
+  })
+
+  const redeemFeeBpsPercent = redeemFeeBps.toNumber() / 100
+
   const shouldExchange = receiveToken !== RECEIVE_MIX_VALUE
   const token = shouldExchange ? receiveToken : USDT_ADDRESS
 
@@ -118,7 +130,7 @@ export default function Withdraw ({
         )
         .toFixed(),
     )
-    const allowMaxLossValue = BigNumber.from(10000 - parseInt(100 * parseFloat(allowMaxLoss))).mul(nextValue).div(BigNumber.from(1e4))
+    const allowMaxLossValue = BigNumber.from(10000 - parseInt(100 * (parseFloat(allowMaxLoss) + redeemFeeBpsPercent))).mul(nextValue).div(BigNumber.from(1e4))
     const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider)
     const signer = userProvider.getSigner()
     const vaultContractWithSigner = vaultContract.connect(signer)
@@ -314,7 +326,7 @@ export default function Withdraw ({
         )
         .toFixed(),
     )
-    const allowMaxLossValue = BigNumber.from(10000 - parseInt(100 * parseFloat(allowMaxLoss))).mul(nextValue).div(BigNumber.from(1e4))
+    const allowMaxLossValue = BigNumber.from(10000 - parseInt(100 * (parseFloat(allowMaxLoss) + redeemFeeBpsPercent))).mul(nextValue).div(BigNumber.from(1e4))
     try {
       const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider)
       const vaultContractWithSigner = vaultContract.connect(signer)
@@ -743,7 +755,8 @@ export default function Withdraw ({
                 <FormControlLabel
                   labelPlacement='start'
                   control={
-                    <CustomInput
+                    <div>
+                      <CustomInput
                       inputProps={{
                         placeholder: "Allow loss percent",
                         value: allowMaxLoss,
@@ -769,11 +782,24 @@ export default function Withdraw ({
                         }
                       }}
                     />
+                      { redeemFeeBpsPercent > 0 && <span style={{ color: '#da2eef', marginLeft: 20, fontWeight: 'bold' }}>+&nbsp;{redeemFeeBpsPercent}%</span> }
+                    </div> 
                   }
                   style={{ marginLeft: 0 }}
                   label={
                     <div className={classes.settingItemLabel}>
-                      <Muted>Max Loss:</Muted>
+                      <Muted className={classes.mutedLabel}>
+                        <Tooltip
+                            classes={{
+                              tooltip: classes.tooltip
+                            }}
+                            placement='top'
+                            title={`MaxLoss consists of two parts: base rate and allowable loss. The current base rate is ${redeemFeeBpsPercent}% of the principal, as determined by the administrator.`}
+                          >
+                            <InfoIcon classes={{ root: classes.labelToolTipIcon }} />
+                          </Tooltip>
+                          Max Loss:
+                      </Muted>
                     </div>
                   }
                 />
