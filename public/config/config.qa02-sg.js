@@ -113,8 +113,8 @@ const config1 = {
     description: '这是ethi的池子',
     path: '#/ethi',
     abi_version: 'ethi',
-    VAULT_ADDRESS: '0xCBBe2A5c3A22BE749D5DDF24e9534f98951983e2',
-    ETHI_ADDRESS: '0xE8F7d98bE6722d42F29b50500B0E318EF2be4fc8',
+    VAULT_ADDRESS: '0xaC47e91215fb80462139756f43438402998E4A3a',
+    ETHI_ADDRESS: '0xdFdE6B33f13de2CA1A75A6F7169f50541B14f75b',
     WETHI_ADDRESS: '',
     isOpen: true
   }]

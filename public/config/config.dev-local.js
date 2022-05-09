@@ -25,35 +25,27 @@ const configBase = {
   vaults: [{
     id: 'invest',
     name: 'Vault for Stable Coins',
-    description: '这是v1.1版本的Vault池',
-    img_path: "https://bankofchain.io/logo256.png",
     path: '#/invest',
     abi_version: 'v4.6',
     VAULT_ADDRESS: '0x547382C0D1b23f707918D3c83A77317B71Aa8470',
-    dashboard_url: 'http://localhost:8000',
   }, {
     id: 'mutilCoins',
     name: 'Vault for USDi',
-    description: '这是v1.5版本的Vault池',
-    img_path: "https://bankofchain.io/logo256.png",
     path: '#/mutils',
     isAudit: true,
     abi_version: 'beta-v1.5',
     VAULT_ADDRESS: '0x9BcC604D4381C5b0Ad12Ff3Bf32bEdE063416BC7',
     USDI_ADDRESS: '0xf090f16dEc8b6D24082Edd25B1C8D26f2bC86128',
-    dashboard_url: 'http://localhost:8000',
     isOpen: true
   }, {
     id: 'ethi',
     name: 'Vault for ETHi',
     description: '这是ethi的池子',
-    img_path: "https://bankofchain.io/logo256.png",
     path: '#/ethi',
     abi_version: 'ethi',
-    VAULT_ADDRESS: '0x63fea6E447F120B8Faf85B53cdaD8348e645D80E',
-    ETHI_ADDRESS: '0x38A70c040CA5F5439ad52d0e821063b0EC0B52b6',
+    VAULT_ADDRESS: '0x9385556B571ab92bf6dC9a0DbD75429Dd4d56F91',
+    ETHI_ADDRESS: '0x114e375B6FCC6d6fCb68c7A1d407E652C54F25FB',
     WETHI_ADDRESS: '',
-    dashboard_url: 'http://localhost:8000',
     isOpen: true
   }]
 }
