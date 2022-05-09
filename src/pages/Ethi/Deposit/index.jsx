@@ -112,7 +112,8 @@ export default function Deposit({
       )
       return 
     }
-    setEthValue(formatBalance(ethBalance.sub(v), ethDecimals, { showAll: true }))
+    const maxValue = ethBalance.sub(v)
+    setEthValue(formatBalance(maxValue.gt(0) ? maxValue : 0, ethDecimals, { showAll: true }))
   }
 
   const diposit = async () => {
@@ -142,8 +143,17 @@ export default function Deposit({
     const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider)
     const nVaultWithUser = vaultContract.connect(signer)
     let isSuccess = false
-    
-    await nVaultWithUser.mint(ETH_ADDRESS, amount, { from: address, value: amount })
+
+    let gasPrice
+    if (gasPriceCurrent[gasPriceLevel]) {
+      gasPrice = ethers.utils.parseUnits((gasPriceCurrent[gasPriceLevel]).toString(), 'gwei')
+    }
+
+    await nVaultWithUser.mint(ETH_ADDRESS, amount, {
+      from: address,
+      value: amount,
+      gasPrice
+    })
       .then(tx => tx.wait())
       .then(() => {
         isSuccess = true
