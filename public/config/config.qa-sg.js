@@ -1,5 +1,5 @@
 /**
- * 测试环境配置文件
+ * qa-sg环境配置文件
  */
  const configBase = {
   vault_address: "",
@@ -14,21 +14,21 @@
   blog_url: 'https://piggyfinance.github.io/docs/zh/blog/',
   licenses_url: 'https://piggyfinance.github.io/docs/zh/licenses/',
   document_url: "https://docs.bankofchain.io",
-  boc_server: 'http://service-qa-sg.bankofchain.io',
+  boc_server: 'https://service-qa-sg.bankofchain.io',
   sub_graph_url: {
     '1': 'https://api.thegraph.com/subgraphs/name/bankofchain/boc-subgraph-eth',
     '56': 'https://api.thegraph.com/subgraphs/name/bankofchain/boc-subgraph-bsc',
     '137': 'https://api.thegraph.com/subgraphs/name/bankofchain/boc-subgraph-matic'
   },
   multiple_of_gas: 2,
-  dashboard_url: 'http://dashboard-qa-sg.bankofchain.io',
+  dashboard_url: 'https://dashboard-qa-sg.bankofchain.io',
   oracle_additional_slippage: 20
 }
 
 const config137 = {
   ...configBase,
   abi_version: 'beta-v1.5',
-  apy_server: 'http://qa-sg-keeper-polygon.bankofchain.io',
+  apy_server: 'https://qa-sg-keeper-polygon.bankofchain.io',
   vault_address: "0x204d2e5c581506e939295daf99079b590ace906e",
   usdt_address: "0xc2132D05D31c914a87C6611C10748AEb04B58e8F",
   usdc_address: "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174",
@@ -51,7 +51,7 @@ const config137 = {
 
 const config56 = {
   ...configBase,
-  apy_server: 'http://qa-sg-keeper-bsc.bankofchain.io',
+  apy_server: 'https://qa-sg-keeper-bsc.bankofchain.io',
   vault_address: "0x2C328D592819524F741A88A18572372CCE196782",
   usdt_address: "0x55d398326f99059fF775485246999027B3197955",
   usdc_address: "0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d",
@@ -73,8 +73,7 @@ const config56 = {
 
 const config1 = {
   ...configBase,
-  apy_server: 'qa-sg-keeper-eth.bankofchain.io',
-  vault_address: "0x5302E909d1e93e30F05B5D6Eea766363D14F9892",
+  apy_server: 'https://qa-sg-keeper-eth.bankofchain.io',
   usdt_address: "0xdAC17F958D2ee523a2206206994597C13D831ec7",
   usdc_address: "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
   dai_address: "0x6B175474E89094C44Da98b954EedeAC495271d0F",
@@ -92,12 +91,38 @@ const config1 = {
     }
   },
   // ETH链一个区块3千万，使用90%的空间即可，过大会造成打块过慢
-  max_gas_limit: 2700 * 10 ** 4
+  max_gas_limit: 2700 * 10 ** 4,
+  vaults: [{
+    id: 'invest',
+    name: 'Vault for Stable Coins',
+    path: '#/invest',
+    abi_version: 'v4.6',
+    VAULT_ADDRESS: '0x547382C0D1b23f707918D3c83A77317B71Aa8470',
+  }, {
+    id: 'mutilCoins',
+    name: 'Vault for USDi',
+    path: '#/mutils',
+    isAudit: true,
+    abi_version: 'beta-v1.5',
+    VAULT_ADDRESS: '0x9BcC604D4381C5b0Ad12Ff3Bf32bEdE063416BC7',
+    USDI_ADDRESS: '0xf090f16dEc8b6D24082Edd25B1C8D26f2bC86128',
+    isOpen: true
+  }, {
+    id: 'ethi',
+    name: 'Vault for ETHi',
+    description: '这是ethi的池子',
+    path: '#/ethi',
+    abi_version: 'ethi',
+    VAULT_ADDRESS: '0xCBBe2A5c3A22BE749D5DDF24e9534f98951983e2',
+    ETHI_ADDRESS: '0xE8F7d98bE6722d42F29b50500B0E318EF2be4fc8',
+    WETHI_ADDRESS: '',
+    isOpen: true
+  }]
 }
 
 window.config = {
   // 本地链
-  31337: config137,
+  31337: config1,
   // polygon
   137: config137,
   // bsc
