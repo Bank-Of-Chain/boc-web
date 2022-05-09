@@ -27,7 +27,7 @@ import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
-import ScatterPlotIcon from '@material-ui/icons/ScatterPlot';
+import ForwardIcon from '@material-ui/icons/Forward';
 
 import Deposit from "./Deposit"
 import Withdraw from "./Withdraw"
@@ -317,10 +317,10 @@ function Ethi (props) {
                 const isCheck = window.location.hash === path
                 if(item.isOpen){
                   return <ListItem key={item.id} button className={classNames( isCheck && classes.check )} onClick={() => history.push(path.slice(1))}>
-                    <ListItemIcon>
-                      { isCheck && <ScatterPlotIcon color="primary" /> }
-                    </ListItemIcon>
                     <ListItemText primary={item.name} className={classNames( isCheck && classes.text )} />
+                    <ListItemIcon>
+                      { isCheck && <ForwardIcon color="primary" style={{color: 'azure'}} /> }
+                    </ListItemIcon>
                   </ListItem>
                 }
               })

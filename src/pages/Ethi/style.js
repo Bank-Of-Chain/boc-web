@@ -182,15 +182,17 @@ const componentsStyle = (theme) => ({
     margin: "42px 0 0 0"
   },
   slider: {
-    position: 'fixed',
-    top: '40%',
-    backgroundColor: 'azure'
+    position: 'absolute',
+    top: '50px',
+    left: '40px',
+    backgroundColor: '#271f72',
+    color: 'azure'
   },
   check:{
-    backgroundColor: 'darkgray'
+    background: '#271f72'
   },
   text: {
-    color: '#3f51b5'
+    color: 'azure'
   }
 });
 

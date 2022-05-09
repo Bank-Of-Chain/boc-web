@@ -93,7 +93,7 @@ export default function Withdraw ({
   const [slipper, setSlipper] = useState("0.3")
   const [estimateWithdrawArray, setEstimateWithdrawArray] = useState([])
   const [isEstimate, setIsEstimate] = useState(false)
-  const [isOpenEstimate, setIsOpenEstimate] = useState(false)
+  const [isOpenEstimate, setIsOpenEstimate] = useState(true)
   const [isWithdrawLoading, setIsWithdrawLoading] = useState(false)
   const [currentStep, setCurrentStep] = useState(0)
   const [withdrawError, setWithdrawError] = useState({})
@@ -738,6 +738,15 @@ export default function Withdraw ({
             >
               {isLogin ? "Withdraw" : "Connect Wallet"}
             </Button>
+            <Tooltip
+              classes={{
+                tooltip: classes.tooltip
+              }}
+              placement='top'
+              title={`The current base rate is ${redeemFeeBpsPercent}% of the principal, as determined by the administrator.`}
+            >
+              <InfoIcon classes={{ root: classes.labelToolTipIcon }} style={{ right: '-5px', left: 'auto' }} />
+            </Tooltip>
           </div>
         </GridItem>
         {isOpenEstimate && (
@@ -755,7 +764,6 @@ export default function Withdraw ({
                 <FormControlLabel
                   labelPlacement='start'
                   control={
-                    <div>
                       <CustomInput
                       inputProps={{
                         placeholder: "Allow loss percent",
@@ -782,22 +790,11 @@ export default function Withdraw ({
                         }
                       }}
                     />
-                      { redeemFeeBpsPercent > 0 && <span style={{ color: '#da2eef', marginLeft: 20, fontWeight: 'bold' }}>+&nbsp;{redeemFeeBpsPercent}%</span> }
-                    </div> 
                   }
                   style={{ marginLeft: 0 }}
                   label={
                     <div className={classes.settingItemLabel}>
                       <Muted className={classes.mutedLabel}>
-                        <Tooltip
-                            classes={{
-                              tooltip: classes.tooltip
-                            }}
-                            placement='top'
-                            title={`MaxLoss consists of two parts: base rate and allowable loss. The current base rate is ${redeemFeeBpsPercent}% of the principal, as determined by the administrator.`}
-                          >
-                            <InfoIcon classes={{ root: classes.labelToolTipIcon }} />
-                          </Tooltip>
                           Max Loss:
                       </Muted>
                     </div>
