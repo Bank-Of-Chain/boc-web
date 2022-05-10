@@ -75,11 +75,13 @@ const config56 = {
 
 const config1 = {
   ...configBase,
+  abi_version: 'beta-v1.5',
   apy_server: 'https://bankofchain.io/api/1',
-  vault_address: "0x008586B7f6768EDc269D9e5cd276316d33CECE6d",
+  vault_address: "0xd5C7A01E49ab534e31ABcf63bA5a394fF1E5EfAC",
   usdt_address: "0xdAC17F958D2ee523a2206206994597C13D831ec7",
   usdc_address: "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
   dai_address: "0x6B175474E89094C44Da98b954EedeAC495271d0F",
+  usdi_address: "0xBe15Eed7D8e91D20263d4521c9eB0F4e3510bfBF",
   chain_browser_url:'https://etherscan.io',
   exchange_extra_params: {
     oneInchV4: {
