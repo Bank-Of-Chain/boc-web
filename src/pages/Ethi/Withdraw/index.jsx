@@ -16,6 +16,8 @@ import RadioGroup from "@material-ui/core/RadioGroup"
 import Step from "@material-ui/core/Step"
 import WarningIcon from "@material-ui/icons/Warning"
 import FormControlLabel from "@material-ui/core/FormControlLabel"
+import Tooltip from "@material-ui/core/Tooltip"
+import InfoIcon from "@material-ui/icons/Info"
 
 import CustomTextField from "../../../components/CustomTextField"
 import BocStepper from "../../../components/Stepper/Stepper"
@@ -36,6 +38,9 @@ import {
   MAX_GAS_LIMIT,
   ORACLE_ADDITIONAL_SLIPPAGE,
 } from "../../../constants"
+
+// === Hooks === //
+import useRedeemFeeBps from "../../../hooks/useRedeemFeeBps"
 
 // === Utils === //
 import { getBestSwapInfo } from "piggy-finance-utils"
@@ -85,6 +90,14 @@ export default function Withdraw ({
   const [isWithdrawLoading, setIsWithdrawLoading] = useState(false)
   const [currentStep, setCurrentStep] = useState(0)
   const [withdrawError, setWithdrawError] = useState({})
+
+  const { value: redeemFeeBps } = useRedeemFeeBps({
+    userProvider,
+    VAULT_ADDRESS,
+    VAULT_ABI
+  })
+
+  const redeemFeeBpsPercent = redeemFeeBps.toNumber() / 100
 
   const getExchangePlatformAdapters = async (exchangeAggregator, userProvider) => {
     const adapters = await exchangeAggregator.getExchangeAdapters()
@@ -658,6 +671,15 @@ export default function Withdraw ({
             >
               {isLogin ? "Withdraw" : "Connect Wallet"}
             </Button>
+            <Tooltip
+              classes={{
+                tooltip: classes.tooltip
+              }}
+              placement='top'
+              title={`The current base rate is ${redeemFeeBpsPercent}% of the principal, as determined by the administrator.`}
+            >
+              <InfoIcon classes={{ root: classes.labelToolTipIcon }} style={{ right: '-5px', left: 'auto' }} />
+            </Tooltip>
           </div>
         </GridItem>
         {isOpenEstimate && (
