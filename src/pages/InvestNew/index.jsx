@@ -304,8 +304,6 @@ function Invest (props) {
                   <TableRow>
                     <TableCell className={classNames(classes.tableCell)}>Vault Symbol</TableCell>
                     <TableCell className={classNames(classes.tableCell)}>Vault Address</TableCell>
-                    {/* <TableCell className={classNames(classes.tableCell)}>质押通证符号</TableCell>
-                    <TableCell className={classNames(classes.tableCell)}>质押合约地址</TableCell> */}
                     <TableCell className={classNames(classes.tableCell)}>Total Supply</TableCell>
                   </TableRow>
                 </TableHead>
@@ -324,17 +322,6 @@ function Invest (props) {
                         {VAULT_ADDRESS}
                       </a>
                     </TableCell>
-                    {/* <TableCell className={classNames(classes.tableCell)}>USDT</TableCell>
-                    <TableCell className={classNames(classes.tableCell)}>
-                      <a
-                        style={{ color: "rgb(105, 192, 255)" }}
-                        href={CHAIN_BROWSER_URL && `${CHAIN_BROWSER_URL}/address/${USDT_ADDRESS}`}
-                        target='_blank'
-                        rel='noopener noreferrer'
-                      >
-                        {USDT_ADDRESS}
-                      </a>
-                    </TableCell> */}
                     <TableCell className={classNames(classes.tableCell)}>
                       <CountTo from={Number(beforeTotalValue.toBigInt())} to={Number(totalValue.toBigInt())} speed={3500}>
                         {v => {

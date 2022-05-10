@@ -42,7 +42,7 @@ function Select({
               : (
                 <div className={classes.optMultiImgWrapper}>
                   {map(selectedOpt.img, (img) => (
-                    <img className={classes.optMultiImg} src={img} alt="logo" />
+                    <img key={img} className={classes.optMultiImg} src={img} alt="logo" />
                   ))}
                 </div>
               )

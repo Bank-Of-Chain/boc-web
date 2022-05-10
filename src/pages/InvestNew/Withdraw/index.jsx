@@ -715,6 +715,15 @@ export default function Withdraw ({
             onChange={handleReceiveTokenChange}
             options={selectOptions}
           />
+          {receiveToken === 'Mix' && <Tooltip
+            classes={{
+              tooltip: classes.tooltip
+            }}
+            placement='top'
+            title={'Mix mode will return a variety of coins, such as USDT/USDC/TUSD/BUSD, etc. You can view the estimated currency and quantity in Advanced Setting'}
+          >
+            <InfoIcon style={{ fontSize: 16 }} />
+          </Tooltip>}
         </GridItem>
         <GridItem xs={12} sm={12} md={12} lg={12}>
           <div className={classes.withdrawComfirmArea}>
