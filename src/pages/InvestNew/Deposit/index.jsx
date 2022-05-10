@@ -82,18 +82,21 @@ export default function Deposit({
   const formConfig = [{
     name: TOKEN.USDT,
     address: USDT_ADDRESS,
+    image: './images/0x55d398326f99059fF775485246999027B3197955.png',
     setValue: setUsdtValue,
     isValid: isValidValue(TOKEN.USDT),
     ...tokenBasicState[TOKEN.USDT],
   }, {
     name: TOKEN.USDC,
     address: USDC_ADDRESS,
+    image: './images/0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d.png',
     setValue: setUsdcValue,
     isValid: isValidValue(TOKEN.USDC),
     ...tokenBasicState[TOKEN.USDC],
   }, {
     name: TOKEN.DAI,
     address: DAI_ADDRESS,
+    image: './images/0x1AF3F329e8BE154074D8769D1FFa4eE058B1DBc3.png',
     setValue: setDaiValue,
     isValid: isValidValue(TOKEN.DAI),
     ...tokenBasicState[TOKEN.DAI],
@@ -381,19 +384,6 @@ export default function Deposit({
     setEstimateValue(toFixed(result.priceAdjustedDeposit, BigNumber.from(10).pow(usdiDecimals), 6))
   }, 500)
 
-  //TODO: 方便测试，待删除
-  const printOutAllowance = async () => {
-    const [nextTokens] = getTokenAndAmonut()
-    const signer = userProvider.getSigner()
-    for (const key in nextTokens) {
-      const contract = new ethers.Contract(nextTokens[key], IERC20_ABI, userProvider)
-      const contractWithUser = contract.connect(signer)
-        // 获取当前允许的额度
-      const allowanceAmount = await contractWithUser.allowance(address, VAULT_ADDRESS)
-      console.log(nextTokens[key], 'allowanceAmount=', allowanceAmount.toString())
-    }
-  }
-
   useEffect(() => {
     estimateMint()
     return () => estimateMint.cancel()
@@ -411,7 +401,7 @@ export default function Deposit({
               <GridItem xs={12} sm={12} md={12} lg={12}>
                 <div className={classes.inputLabelWrapper}>
                   <div className={classes.tokenInfo}>
-                    <img className={classes.tokenLogo} alt='' src={`./images/${item.address}.png`} />
+                    <img className={classes.tokenLogo} alt='' src={item.image} />
                     <span className={classes.tokenName}>{item.name}</span>
                   </div> 
                   <Muted title={formatBalance(item.balance, item.decimals, { showAll: true })}>
@@ -435,7 +425,7 @@ export default function Deposit({
         <GridItem xs={12} sm={12} md={12} lg={12}>
           <div className={classes.depositComfirmArea}>
             <Muted>
-              <p onClick={printOutAllowance} style={{ fontSize: 16, wordBreak: "break-all", letterSpacing: "0.01071em" }}>
+              <p style={{ fontSize: 16, wordBreak: "break-all", letterSpacing: "0.01071em" }}>
                 Estimated:
                 &nbsp;{estimateValue}
                 &nbsp;USDi

@@ -16,10 +16,9 @@ import maxBy from "lodash/maxBy"
 import isNaN from "lodash/isNaN"
 import filter from "lodash/filter"
 import sortBy from "lodash/sortBy"
-// import { calVaultAPY } from "./../../../helpers/apy"
 import { toFixed } from "./../../../helpers/number-format"
+// import { getDefiRate, getAPYByDate } from "./../../../services/api-service"
 import { getDefiRate } from "./../../../services/api-service"
-// import { getETHLast30DaysVaultData } from "./../../../services/subgraph-service"
 
 // === Styles === //
 import styles, { smStyle } from "./lendingStyle"
@@ -42,6 +41,7 @@ const apyType = {
   BOC: "Current Rate",
   Bitfinex: "Fixed Rate",
 }
+
 export default function LendingSection () {
   const isLayoutSm = useMediaQuery('(max-width: 960px)')
   const smClasses = useSmStyles()
@@ -52,11 +52,11 @@ export default function LendingSection () {
   useEffect(() => {
     setLoading(true)
     Promise.all([
-      // getETHLast30DaysVaultData().then(a => {
+      // getAPYByDate().then(data => {
       //   return {
       //     title: bocTitle,
       //     imagePath: "/logo.png",
-      //     percent: (100 * calVaultAPY(a)).toFixed(2),
+      //     percent: parseFloat(data.apy).toFixed(2),
       //     text: get(apyType, bocTitle, ""),
       //   }
       // }),
