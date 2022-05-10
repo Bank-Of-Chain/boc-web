@@ -144,11 +144,11 @@ export default function Withdraw ({
         false,
         [],
       )
+      console.log('tokens, amounts=', tokens, map(amounts, i => i.toString()))
       if (shouldExchange) {
         const exchangeManager = await vaultContract.exchangeManager()
         const exchangeManagerContract = new ethers.Contract(exchangeManager, EXCHANGE_AGGREGATOR_ABI, userProvider)
         const exchangePlatformAdapters = await getExchangePlatformAdapters(exchangeManagerContract, userProvider)
-        console.log("estimate get exchange path:", tokens, amounts)
         // 查询兑换路径
         let exchangeArray = await Promise.all(
           map(tokens, async (tokenItem, index) => {
@@ -157,6 +157,11 @@ export default function Withdraw ({
               return {}
             }
             const fromConstrat = new ethers.Contract(tokenItem, IERC20_ABI, userProvider)
+            const fromDecimal = await fromConstrat.decimals()
+            if(BigNumber.from(10).pow(fromDecimal).gt(exchangeAmounts)) {
+              //TODO: 理论上这里面，不进行兑换即可，但是目前vault不支持
+              return {}
+            }
             const toTokenConstrat = new ethers.Contract(token, IERC20_ABI, userProvider)
             const fromToken = {
               decimals: parseInt((await fromConstrat.decimals()).toString()),
@@ -343,7 +348,7 @@ export default function Withdraw ({
           [],
         )
 
-        console.log("tokens, amounts=", tokens, amounts)
+        console.log("tokens, amounts=", tokens, map(amounts, i => i.toString()))
         preWithdrawGetCoins = Date.now()
         setCurrentStep(2)
         const exchangeManager = await vaultContract.exchangeManager()
@@ -358,6 +363,11 @@ export default function Withdraw ({
             }
             const fromConstrat = new ethers.Contract(tokenItem, IERC20_ABI, userProvider)
             const toTokenConstrat = new ethers.Contract(token, IERC20_ABI, userProvider)
+            const fromDecimal = await fromConstrat.decimals()
+            if(BigNumber.from(10).pow(fromDecimal).gt(exchangeAmounts)) {
+              //TODO: 理论上这里面，不进行兑换即可，但是目前vault不支持
+              return {}
+            }
             const fromToken = {
               decimals: parseInt((await fromConstrat.decimals()).toString()),
               symbol: await fromConstrat.symbol(),
