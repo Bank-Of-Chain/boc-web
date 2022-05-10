@@ -80,15 +80,16 @@ const config1 = {
   chain_browser_url: 'https://etherscan.io',
   exchange_extra_params: {
     oneInchV4: {
-      useHttp: true,
       network: 1,
       protocols: ['CURVE', 'CURVE_V2', 'SUSHI', 'UNISWAP_V2', 'UNISWAP_V3', 'DODO_V2', 'COMPOUND', 'AAVE', 'BALANCER', 'BANCOR', 'MSTABLE', 'AAVE_V2', 'BALANCER_V2']
     },
+    /*
     paraswap: {
       network: 1,
       includeDEXS: 'UniswapV2,UniswapV3,SushiSwap,mStable,DODOV2,DODOV1,Curve,CurveV2,Compound,Bancor,BalancerV2,Aave2',
       excludeContractMethods: ['swapOnZeroXv2', 'swapOnZeroXv4']
     }
+    */
   },
   // ETH链一个区块3千万，使用90%的空间即可，过大会造成打块过慢
   max_gas_limit: 2700 * 10 ** 4,
