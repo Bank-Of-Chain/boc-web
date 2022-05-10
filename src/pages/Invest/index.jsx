@@ -400,16 +400,6 @@ function Invest (props) {
     }, 2000)
   }
 
-  //TODO: 方便测试，待删除
-  const printOutAllowance = async () => {
-      const contract = new ethers.Contract(USDT_ADDRESS, IERC20_ABI, userProvider)
-      const signer = userProvider.getSigner()
-      const contractWithUser = contract.connect(signer)
-        // 获取当前允许的额度
-      const allowanceAmount = await contractWithUser.allowance(address, VAULT_ADDRESS)
-      console.log(USDT_ADDRESS, 'allowanceAmount=', allowanceAmount.toString(), address, VAULT_ADDRESS, signer)
-  }
-
   const withdraw = async () => {
     let withdrawTimeStart = Date.now(),
       withdrawValidFinish = 0,
@@ -975,7 +965,7 @@ function Invest (props) {
                   <GridItem xs={12} sm={12} md={12} lg={12}>
                     <div className={classes.depositComfirmArea}>
                       <Muted>
-                        <p style={{ fontSize: 16, wordBreak: "break-all", letterSpacing: "0.01071em" }} onClick={printOutAllowance}>
+                        <p style={{ fontSize: 16, wordBreak: "break-all", letterSpacing: "0.01071em" }}>
                           Estimated Shares：
                           {isValidFromValueFlag &&
                             toFixed(
