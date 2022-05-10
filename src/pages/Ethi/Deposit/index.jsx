@@ -247,8 +247,9 @@ export default function Deposit({
 
   // 每隔30s获取一下最新的gasprice，获取异常，则不修改原有数值
   useEffect(() => {
-    const reloadGasPrice = getGasPrice().then(setGasPriceCurrent).catch(noop)
-    const timer = setInterval(reloadGasPrice, 30000)
+    const timer = setInterval(() => {
+      getGasPrice().then(setGasPriceCurrent).catch(noop)
+    }, 30000)
     return () => clearInterval(timer)
   }, [])
 
