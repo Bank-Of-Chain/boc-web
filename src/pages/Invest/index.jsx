@@ -52,15 +52,12 @@ import { warmDialog } from "./../../reducers/meta-reducer"
 
 // === constants === //
 import {
-  VAULT_ADDRESS,
-  VAULT_ABI,
-  IERC20_ABI,
   USDT_ADDRESS,
-  EXCHANGE_AGGREGATOR_ABI,
   EXCHANGE_EXTRA_PARAMS,
+  MAX_GAS_LIMIT,
   MULTIPLE_OF_GAS,
   CHAIN_BROWSER_URL,
-  MAX_GAS_LIMIT, ORACLE_ADDITIONAL_SLIPPAGE,
+  ORACLE_ADDITIONAL_SLIPPAGE,
 } from "../../constants"
 
 // === Utils === //
@@ -79,6 +76,7 @@ import noop from "lodash/noop"
 import isNumber from "lodash/isNumber"
 import * as ethers from "ethers"
 import BN from "bignumber.js"
+import useVersionWapper from "../../hooks/useVersionWapper"
 
 // === Styles === //
 import styles from "./style"
@@ -108,10 +106,10 @@ const getExchangePlatformAdapters = async exchangeAggregator => {
   return exchangePlatformAdapters
 }
 
-export default function Invest (props) {
+function Invest (props) {
   const classes = useStyles()
   const dispatch = useDispatch()
-  const { address, userProvider, loadWeb3Modal } = props
+  const { address, userProvider, loadWeb3Modal, VAULT_ADDRESS, VAULT_ABI, IERC20_ABI, EXCHANGE_AGGREGATOR_ABI } = props
   const [usdtDecimals, setUsdtDecimals] = useState(0)
   const [beforeTotalAssets, setBeforeTotalAssets] = useState(BigNumber.from(0))
   const [totalAssets, setTotalAssets] = useState(BigNumber.from(0))
@@ -140,6 +138,75 @@ export default function Invest (props) {
   const [withdrawError, setWithdrawError] = useState({})
 
   const [tab, setTab] = useState(TABS.DEPOSIT)
+
+  useEffect(() => {
+    if (isEmpty(VAULT_ADDRESS)) return
+    const loadTotalAssetsFn = () =>
+      loadTotalAssets()
+        .then(([afterTotalAssets, afterPerFullShare, afterTotalSupply]) => {
+          if (!afterTotalAssets.eq(beforeTotalAssets)) {
+            setBeforeTotalAssets(totalAssets)
+            setTotalAssets(afterTotalAssets)
+          }
+          if (!afterPerFullShare.eq(beforePerFullShare)) {
+            setBeforePerFullShare(perFullShare)
+            setPerFullShare(afterPerFullShare)
+          }
+          if (!afterTotalSupply.eq(totalSupply)) {
+            setTotalSupply(afterTotalSupply)
+          }
+        })
+        .catch(noop)
+    const timer = setInterval(loadTotalAssetsFn, 3000)
+    return () => clearInterval(timer)
+    // eslint-disable-next-line
+  }, [totalAssets.toString(), perFullShare.toString()])
+
+  useEffect(() => {
+    return listener()
+    // eslint-disable-next-line
+  }, [address])
+
+  useEffect(() => {
+    // 未打开高级选项页面，则不继续数值预估
+    // 如果输入的slipper等值不正确，则不继续数值预估
+    if (isOpenEstimate && isValidAllowLoss() && isValidSlipper() && isValidToValue()) {
+      estimateWithdraw()
+    }
+    if (isEmpty(toValue)) {
+      setEstimateWithdrawArray([])
+    }
+    return () => estimateWithdraw.cancel()
+    // eslint-disable-next-line
+  }, [toValue, allowMaxLoss, slipper, shouldExchange, isOpenEstimate])
+
+  const listener = () => {
+    if (isEmpty(VAULT_ADDRESS) || isEmpty(VAULT_ABI)) return
+    loadBanlance()
+    const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider)
+    if (!isEmpty(address)) {
+      vaultContract.on("Deposit", (...eventArgs) => {
+        console.log("Deposit=", eventArgs)
+        const block = last(eventArgs)
+        block &&
+          block
+            .getTransaction()
+            .then(tx => tx.wait())
+            .then(loadBanlance)
+      })
+      vaultContract.on("Withdraw", (...eventArgs) => {
+        console.log("Withdraw=", eventArgs)
+        const block = last(eventArgs)
+        block &&
+          block
+            .getTransaction()
+            .then(tx => tx.wait())
+            .then(loadBanlance)
+      })
+    }
+
+    return () => vaultContract.removeAllListeners(["Deposit", "Withdraw"])
+  }
 
   // 载入账户数据
   const loadBanlance = () => {
@@ -566,57 +633,6 @@ export default function Invest (props) {
     const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider)
     return Promise.all([vaultContract.totalAssets(), vaultContract.pricePerShare(), vaultContract.totalSupply()])
   }
-  useEffect(() => {
-    if (isEmpty(VAULT_ADDRESS)) return
-    const loadTotalAssetsFn = () =>
-      loadTotalAssets()
-        .then(([afterTotalAssets, afterPerFullShare, afterTotalSupply]) => {
-          if (!afterTotalAssets.eq(beforeTotalAssets)) {
-            setBeforeTotalAssets(totalAssets)
-            setTotalAssets(afterTotalAssets)
-          }
-          if (!afterPerFullShare.eq(beforePerFullShare)) {
-            setBeforePerFullShare(perFullShare)
-            setPerFullShare(afterPerFullShare)
-          }
-          if (!afterTotalSupply.eq(totalSupply)) {
-            setTotalSupply(afterTotalSupply)
-          }
-        })
-        .catch(noop)
-    const timer = setInterval(loadTotalAssetsFn, 3000)
-    return () => clearInterval(timer)
-    // eslint-disable-next-line
-  }, [totalAssets.toString(), perFullShare.toString()])
-
-  useEffect(() => {
-    if (isEmpty(VAULT_ADDRESS)) return
-    loadBanlance()
-    const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider)
-    if (!isEmpty(address)) {
-      vaultContract.on("Deposit", (...eventArgs) => {
-        console.log("Deposit=", eventArgs)
-        const block = last(eventArgs)
-        block &&
-          block
-            .getTransaction()
-            .then(tx => tx.wait())
-            .then(loadBanlance)
-      })
-      vaultContract.on("Withdraw", (...eventArgs) => {
-        console.log("Withdraw=", eventArgs)
-        const block = last(eventArgs)
-        block &&
-          block
-            .getTransaction()
-            .then(tx => tx.wait())
-            .then(loadBanlance)
-      })
-    }
-
-    return () => vaultContract.removeAllListeners(["Deposit", "Withdraw"])
-    // eslint-disable-next-line
-  }, [address])
 
   const estimateWithdraw = debounce(async () => {
     setIsEstimate(true)
@@ -789,19 +805,6 @@ export default function Invest (props) {
       }, 1000)
     }
   }, 1000)
-
-  useEffect(() => {
-    // 未打开高级选项页面，则不继续数值预估
-    // 如果输入的slipper等值不正确，则不继续数值预估
-    if (isOpenEstimate && isValidAllowLoss() && isValidSlipper() && isValidToValue()){
-      estimateWithdraw()
-    }
-    if (isEmpty(toValue)) {
-      setEstimateWithdrawArray([])
-    }
-    return () => estimateWithdraw.cancel()
-    // eslint-disable-next-line
-  }, [toValue, allowMaxLoss, slipper, shouldExchange, isOpenEstimate])
 
   // 展示vault.totalAssets
   // const fn = value => <span>{toFixed(value, 10 ** 6, 6)} USDT</span>
@@ -1364,3 +1367,5 @@ export default function Invest (props) {
     </div>
   )
 }
+
+export default useVersionWapper(Invest, 'invest')

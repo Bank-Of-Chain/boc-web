@@ -22,9 +22,6 @@ import Button from "../../../components/CustomButtons/Button"
 import { warmDialog } from "./../../../reducers/meta-reducer"
 import { toFixed, formatBalance } from "../../../helpers/number-format"
 import {
-  VAULT_ADDRESS,
-  VAULT_ABI,
-  IERC20_ABI,
   USDT_ADDRESS,
   USDC_ADDRESS,
   DAI_ADDRESS,
@@ -50,7 +47,10 @@ export default function Deposit({
   daiDecimals,
   usdiDecimals,
   userProvider,
-  onConnect
+  onConnect,
+  VAULT_ABI,
+  IERC20_ABI,
+  VAULT_ADDRESS
 }) {
   const classes = useStyles()
   const dispatch = useDispatch()

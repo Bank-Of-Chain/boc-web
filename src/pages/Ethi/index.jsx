@@ -19,19 +19,18 @@ import TableHead from "@material-ui/core/TableHead"
 import TableRow from "@material-ui/core/TableRow"
 import Paper from "@material-ui/core/Paper"
 import Card from "@material-ui/core/Card"
-import Tabs from '@material-ui/core/Tabs'
-import Tab from '@material-ui/core/Tab'
+import Tabs from "@material-ui/core/Tabs"
+import Tab from "@material-ui/core/Tab"
+import AddCircleOutlineIcon from "@material-ui/icons/AddCircleOutline"
+import TabPanel from "../../components/TabPanel"
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import ScatterPlotIcon from '@material-ui/icons/ScatterPlot';
 
-import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline'
-import TabPanel from '../../components/TabPanel'
-
-import Deposit from './Deposit'
-import Withdraw from './Withdraw'
+import Deposit from "./Deposit"
+import Withdraw from "./Withdraw"
 
 import { useDispatch } from "react-redux"
 
@@ -39,7 +38,8 @@ import { useDispatch } from "react-redux"
 import { warmDialog } from "./../../reducers/meta-reducer"
 
 // === constants === //
-import { USDT_ADDRESS, USDC_ADDRESS, DAI_ADDRESS, CHAIN_BROWSER_URL, NET_WORKS, VAULTS } from "../../constants"
+import { CHAIN_BROWSER_URL, NET_WORKS, VAULTS } from "../../constants"
+import { ETH_ADDRESS, ETH_DECIMALS } from "../../constants/token"
 
 // === Utils === //
 import { toFixed, formatBalance } from "../../helpers/number-format"
@@ -47,7 +47,7 @@ import map from "lodash/map"
 import isEmpty from "lodash/isEmpty"
 import last from "lodash/last"
 import noop from "lodash/noop"
-import find from 'lodash/find'
+import find from "lodash/find"
 import * as ethers from "ethers"
 import useVersionWapper from "../../hooks/useVersionWapper"
 
@@ -55,26 +55,34 @@ import useVersionWapper from "../../hooks/useVersionWapper"
 import styles from "./style"
 
 const TABS = {
-  DEPOSIT: 'Deposit',
-  WITHDRAW: 'Withdraw'
+  DEPOSIT: "Deposit",
+  WITHDRAW: "Withdraw",
 }
 const useStyles = makeStyles(styles)
 const { BigNumber } = ethers
 
-function Invest (props) {
+function Ethi (props) {
   const classes = useStyles()
   const dispatch = useDispatch()
   const history = useHistory()
-  const { address, userProvider, loadWeb3Modal, VAULT_ADDRESS, VAULT_ABI, USDI_ADDRESS, IERC20_ABI, EXCHANGE_AGGREGATOR_ABI, USDI_ABI, EXCHANGE_ADAPTER_ABI } = props
-  const [usdtBalance, setUsdtBalance] = useState(BigNumber.from(0))
-  const [usdtDecimals, setUsdtDecimals] = useState(0)
-  const [usdcBalance, setUsdcBalance] = useState(BigNumber.from(0))
-  const [usdcDecimals, setUsdcDecimals] = useState(0)
-  const [daiBalance, setDaiBalance] = useState(BigNumber.from(0))
-  const [daiDecimals, setDaiDecimals] = useState(0)
-  const [usdiDecimals, setUsdiDecimals] = useState(0)
 
-  const [toBalance, setToBalance] = useState(BigNumber.from(0))
+  const { 
+    address,
+    userProvider,
+    loadWeb3Modal,
+    ETHI_ADDRESS,
+    VAULT_ADDRESS,
+    VAULT_ABI,
+    IERC20_ABI,
+    EXCHANGE_AGGREGATOR_ABI,
+    EXCHANGE_ADAPTER_ABI
+  } = props
+
+  const [ethBalance, setEthBalance] = useState(BigNumber.from(0))
+  const [ethiBalance, setEthiBalance] = useState(BigNumber.from(0))
+  const [ethiDecimals, setEthiDecimals] = useState(0)
+  const ethDecimals = ETH_DECIMALS
+
   const [beforeTotalValue, setBeforeTotalValue] = useState(BigNumber.from(0))
   const [totalValue, setTotalValue] = useState(BigNumber.from(0))
 
@@ -82,29 +90,14 @@ function Invest (props) {
 
   // 载入账户数据
   const loadBanlance = () => {
-    if (isEmpty(address)) return loadBanlance
-    const usdtContract = new ethers.Contract(USDT_ADDRESS, IERC20_ABI, userProvider)
-    const usdcContract = new ethers.Contract(USDC_ADDRESS, IERC20_ABI, userProvider)
-    const daiContract = new ethers.Contract(DAI_ADDRESS, IERC20_ABI, userProvider)
-    const usdiContract = new ethers.Contract(USDI_ADDRESS, USDI_ABI, userProvider)
+    if (isEmpty(address) || isEmpty(userProvider)) {
+      return
+    }
+    const ethiContract = new ethers.Contract(ETHI_ADDRESS, IERC20_ABI, userProvider)
     Promise.all([
-      usdtContract.balanceOf(address).then(setUsdtBalance),
-      usdcContract.balanceOf(address).then(setUsdcBalance),
-      daiContract.balanceOf(address).then(setDaiBalance),
-      usdiContract.balanceOf(address).then(setToBalance).catch(noop),
-      loadTotalAssets()
-        .then((afterTotalValue) => {
-          setTotalValue(afterTotalValue)
-        })
-        .catch(noop),
-      // TODO:此处的usdtDecimals较特别为10的幂的数值，主要是因为lend方法里的usdtDecimals取幂操作
-      // 其他处的usdtDecimals都是为10**18或10**6
-      usdtContract.decimals().then(setUsdtDecimals),
-      usdcContract.decimals().then(setUsdcDecimals),
-      daiContract.decimals().then(setDaiDecimals),
-      usdiContract.decimals().then(setUsdiDecimals),
-      // vaultContract.token().then(setToken),
-      // vaultContract.getTrackedAssets().then(setTrackedAssets)
+      userProvider.getBalance(address).then(setEthBalance),
+      ethiContract.balanceOf(address).then(setEthiBalance),
+      ethiContract.decimals().then(setEthiDecimals),
     ]).catch(() => {
       dispatch(
         warmDialog({
@@ -120,7 +113,7 @@ function Invest (props) {
     if (isEmpty(VAULT_ADDRESS)) return
     const loadTotalAssetsFn = () =>
       loadTotalAssets()
-        .then((afterTotalValue) => {
+        .then(afterTotalValue => {
           if (!afterTotalValue.eq(beforeTotalValue)) {
             setBeforeTotalValue(totalValue)
             setTotalValue(afterTotalValue)
@@ -157,29 +150,30 @@ function Invest (props) {
               .then(loadBanlance)
         })
       }
-
-      return () => vaultContract.removeAllListeners(["Deposit", "Withdraw"])
+  
+      return () => vaultContract.removeAllListeners(["Mint", "Burn"])
     }
     return listener()
   }, [address, VAULT_ADDRESS, VAULT_ABI, userProvider])
 
   const loadTotalAssets = () => {
-    const usdiContract = new ethers.Contract(USDI_ADDRESS, USDI_ABI, userProvider)
-    return usdiContract.totalSupply()
+    // const ethiContract = new ethers.Contract(ETHI_ADDRESS, ETHI_ABI, userProvider)
+    // return ethiContract.totalSupply()
+    return Promise.resolve(BigNumber.from(0))
   }
 
   const handleTabChange = (event, value) => setTab(value)
 
-  const handleAddUSDi = () =>  {
+  const handleAddETHi = () =>  {
     if (window.ethereum) {
       window.ethereum.request({
         method: "wallet_watchAsset",
         params: {
           type: "ERC20",
           options: {
-            address: USDI_ADDRESS,
-            symbol: "USDi",
-            decimals: usdiDecimals,
+            address: ETHI_ADDRESS,
+            symbol: "ETHi",
+            decimals: 18,
           },
         },
       })
@@ -195,11 +189,15 @@ function Invest (props) {
           <GridItem xs={12} sm={12} md={8} className={classNames(classes.centerItem)}>
             <Card className={classes.balanceCard}>
               <div className={classes.balanceCardItem}>
-                <div className={classes.balanceCardValue}>
-                  <span title={formatBalance(toBalance, usdiDecimals, { showAll: true })}>{`${formatBalance(toBalance, usdiDecimals)} USDi`}</span>
+                <div
+                  className={classes.balanceCardValue}
+                >
+                  <span title={formatBalance(ethiBalance, ethiDecimals, { showAll: true })}>
+                    {`${formatBalance(ethiBalance, ethiDecimals)} ETHi`}
+                  </span>
                   {window.ethereum && userProvider && (
                     <span title="Add token address to wallet">
-                      <AddCircleOutlineIcon className={classes.addTokenIcon} onClick={handleAddUSDi} fontSize='small' />
+                      <AddCircleOutlineIcon className={classes.addTokenIcon} onClick={handleAddETHi} fontSize='small' />
                     </span>
                   )}
                 </div>
@@ -208,7 +206,7 @@ function Invest (props) {
               <div className={classes.tokenInfo}>
                 {userProvider && (
                   <a
-                    href={`${net.blockExplorer}/address/${USDI_ADDRESS}`}
+                    href={`${net.blockExplorer}/address/${ETHI_ADDRESS}`}
                     target='_blank'
                     rel='noopener noreferrer'
                   >
@@ -223,46 +221,43 @@ function Invest (props) {
                 onChange={handleTabChange}
                 classes={{
                   root: classes.tabsRoot,
-                  indicator: classes.tabsIndicator
+                  indicator: classes.tabsIndicator,
                 }}
                 TabIndicatorProps={{ children: <span /> }}
               >
-                  {map(Object.keys(TABS), (key) => (
-                    <Tab
-                      key={key}
-                      label={TABS[key]}
-                      value={TABS[key]}
-                      classes={{
-                        root: classes.tabRoot,
-                        textColorInherit: classes.tabTextColor
-                      }}
-                    />
-                  ))}
+                {map(Object.keys(TABS), key => (
+                  <Tab
+                    key={key}
+                    label={TABS[key]}
+                    value={TABS[key]}
+                    classes={{
+                      root: classes.tabRoot,
+                      textColorInherit: classes.tabTextColor,
+                    }}
+                  />
+                ))}
               </Tabs>
               <TabPanel value={tab} index={TABS.DEPOSIT}>
                 <Deposit
                   address={address}
-                  usdtBalance={usdtBalance}
-                  usdtDecimals={usdtDecimals}
-                  usdcBalance={usdcBalance}
-                  usdcDecimals={usdcDecimals}
-                  daiBalance={daiBalance}
-                  daiDecimals={daiDecimals}
-                  usdiDecimals={usdiDecimals}
+                  ethBalance={ethBalance}
+                  ethDecimals={ethDecimals}
                   userProvider={userProvider}
                   onConnect={loadWeb3Modal}
                   VAULT_ABI={VAULT_ABI}
                   IERC20_ABI={IERC20_ABI}
                   VAULT_ADDRESS={VAULT_ADDRESS}
+                  ETH_ADDRESS={ETH_ADDRESS}
                 />
               </TabPanel>
               <TabPanel value={tab} index={TABS.WITHDRAW}>
                 <Withdraw
-                  toBalance={toBalance}
-                  usdiDecimals={usdiDecimals}
+                  ethiBalance={ethiBalance}
+                  ethiDecimals={ethiDecimals}
                   userProvider={userProvider}
                   onConnect={loadWeb3Modal}
                   VAULT_ADDRESS={VAULT_ADDRESS}
+                  ETH_ADDRESS={ETH_ADDRESS}
                   VAULT_ABI={VAULT_ABI}
                   IERC20_ABI={IERC20_ABI}
                   EXCHANGE_AGGREGATOR_ABI={EXCHANGE_AGGREGATOR_ABI}
@@ -272,58 +267,50 @@ function Invest (props) {
             </Card>
           </GridItem>
         </GridContainer>
-        <div className={classNames(classes.detailWrapper, {
-            [classes.hidden]: isEmpty(userProvider)
-          })}>
-            <p style={{ color: "#fff", letterSpacing: "0.01071em" }}>More Details</p>
-            <TableContainer component={Paper} style={{ borderRadius: 0 }}>
-              <Table className={classNames(classes.table)} aria-label='simple table'>
-                <TableHead>
-                  <TableRow>
-                    <TableCell className={classNames(classes.tableCell)}>Vault Symbol</TableCell>
-                    <TableCell className={classNames(classes.tableCell)}>Vault Address</TableCell>
-                    {/* <TableCell className={classNames(classes.tableCell)}>质押通证符号</TableCell>
+        <div
+          className={classNames(classes.detailWrapper, {
+            [classes.hidden]: isEmpty(userProvider),
+          })}
+        >
+          <p style={{ color: "#fff", letterSpacing: "0.01071em" }}>More Details</p>
+          <TableContainer component={Paper} style={{ borderRadius: 0 }}>
+            <Table className={classNames(classes.table)} aria-label='simple table'>
+              <TableHead>
+                <TableRow>
+                  <TableCell className={classNames(classes.tableCell)}>Vault Symbol</TableCell>
+                  <TableCell className={classNames(classes.tableCell)}>Vault Address</TableCell>
+                  {/* <TableCell className={classNames(classes.tableCell)}>质押通证符号</TableCell>
                     <TableCell className={classNames(classes.tableCell)}>质押合约地址</TableCell> */}
-                    <TableCell className={classNames(classes.tableCell)}>Total Supply</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  <TableRow>
-                    <TableCell className={classNames(classes.tableCell)} component='th' scope='row'>
-                      BOC_Vault
-                    </TableCell>
-                    <TableCell className={classNames(classes.tableCell)}>
-                      <a
-                        style={{ color: "rgb(105, 192, 255)" }}
-                        href={CHAIN_BROWSER_URL && `${CHAIN_BROWSER_URL}/address/${VAULT_ADDRESS}`}
-                        target='_blank'
-                        rel='noopener noreferrer'
-                      >
-                        {VAULT_ADDRESS}
-                      </a>
-                    </TableCell>
-                    {/* <TableCell className={classNames(classes.tableCell)}>USDT</TableCell>
-                    <TableCell className={classNames(classes.tableCell)}>
-                      <a
-                        style={{ color: "rgb(105, 192, 255)" }}
-                        href={CHAIN_BROWSER_URL && `${CHAIN_BROWSER_URL}/address/${USDT_ADDRESS}`}
-                        target='_blank'
-                        rel='noopener noreferrer'
-                      >
-                        {USDT_ADDRESS}
-                      </a>
-                    </TableCell> */}
-                    <TableCell className={classNames(classes.tableCell)}>
-                      <CountTo from={Number(beforeTotalValue.toBigInt())} to={Number(totalValue.toBigInt())} speed={3500}>
-                        {v => {
-                          return `${toFixed(v, BigNumber.from(10).pow(usdiDecimals), 6)} USDi`
-                        }}
-                      </CountTo>
-                    </TableCell>
-                  </TableRow>
-                </TableBody>
-              </Table>
-            </TableContainer>
+                  <TableCell className={classNames(classes.tableCell)}>Total Supply</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                <TableRow>
+                  <TableCell className={classNames(classes.tableCell)} component='th' scope='row'>
+                    BOC_Vault
+                  </TableCell>
+                  <TableCell className={classNames(classes.tableCell)}>
+                    <a
+                      style={{ color: "rgb(105, 192, 255)" }}
+                      href={CHAIN_BROWSER_URL && `${CHAIN_BROWSER_URL}/address/${VAULT_ADDRESS}`}
+                      target='_blank'
+                      rel='noopener noreferrer'
+                    >
+                      {VAULT_ADDRESS}
+                    </a>
+                  </TableCell>
+                  <TableCell className={classNames(classes.tableCell)}>
+                    <CountTo from={Number(beforeTotalValue.toBigInt())} to={Number(totalValue.toBigInt())} speed={3500}>
+                      {v => {
+                        return `${toFixed(v, BigNumber.from(10).pow(ethiDecimals), 6)} ETHi`
+                      }}
+                    </CountTo>
+                  </TableCell>
+                </TableRow>
+              </TableBody>
+            </Table>
+          </TableContainer>
+          
         </div>
         <div className={classes.slider}>
           <List component="nav" aria-label="main mailbox folders">
@@ -348,5 +335,4 @@ function Invest (props) {
   )
 }
 
-
-export default useVersionWapper(Invest, 'mutilCoins')
+export default useVersionWapper(Ethi, 'ethi')
