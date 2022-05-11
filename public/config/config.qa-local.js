@@ -46,7 +46,8 @@ const config137 = {
     }
   },
   // 币安链一个区块2千万，使用90%的空间即可，过大会造成打块过慢
-  max_gas_limit: 1800 * 10 ** 4
+  max_gas_limit: 1800 * 10 ** 4,
+  chain_id: 137,
 }
 
 const config56 = {
@@ -70,7 +71,8 @@ const config56 = {
     }
   },
   // 币安链一个区块8千万，使用90%的空间即可，过大会造成打块过慢
-  max_gas_limit: 7200 * 10 ** 4
+  max_gas_limit: 7200 * 10 ** 4,
+  chain_id: 56,
 }
 
 const config1 = {
@@ -94,7 +96,8 @@ const config1 = {
     }
   },
   // ETH链一个区块3千万，使用90%的空间即可，过大会造成打块过慢
-  max_gas_limit: 2700 * 10 ** 4
+  max_gas_limit: 2700 * 10 ** 4,
+  chain_id: 1,
 }
 
 window.config = {

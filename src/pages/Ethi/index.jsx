@@ -38,7 +38,7 @@ import { useDispatch } from "react-redux"
 import { warmDialog } from "./../../reducers/meta-reducer"
 
 // === constants === //
-import { CHAIN_BROWSER_URL, NET_WORKS, VAULTS } from "../../constants"
+import { CHAIN_BROWSER_URL, NET_WORKS, VAULTS, CHAIN_ID } from "../../constants"
 import { ETH_ADDRESS, ETH_DECIMALS } from "../../constants/token"
 
 // === Utils === //
@@ -184,7 +184,7 @@ function Ethi (props) {
 
   const net = find(NET_WORKS, (item) => item.chainId === props.selectedChainId) || NET_WORKS[0]
 
-  if(!isUndefined(props.selectedChainId) && (props.selectedChainId === 56 || props.selectedChainId === 137)) {
+  if(!isUndefined(props.selectedChainId) && CHAIN_ID !== NET_WORKS[0].chainId) {
     return <Redirect to={{ pathname: "/mutils" }} />
   }
   return (
