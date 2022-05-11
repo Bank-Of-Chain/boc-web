@@ -52,7 +52,7 @@ export default function Deposit({
     }
     const gasPrice = BigNumber.from(parseInt(gasPriceCurrent, 16).toString())
     // metamask gaslimit 比预估大些
-    const metamaskExtraLimit = 80
+    const metamaskExtraLimit = 114
     return mintGasLimit.add(metamaskExtraLimit).mul(gasPrice)
   }
 
