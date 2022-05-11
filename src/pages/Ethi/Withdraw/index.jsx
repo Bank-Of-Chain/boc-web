@@ -237,9 +237,8 @@ export default function Withdraw ({
       } else if (errorMsg.endsWith("'RP'")) {
         tip = "Vault is in rebase status, please try again later!"
       } else if (
-        errorMsg.endsWith("'loss much'") ||
         errorMsg.indexOf("loss much") !== -1 ||
-        errorMsg.endsWith('"amount lower than minimum"')
+        errorMsg.indexOf("amount lower than minimum") !== -1
       ) {
         tip = "Failed to withdraw, please increase the Max Loss!"
       } else if (
