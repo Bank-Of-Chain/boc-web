@@ -31,6 +31,7 @@ import ForwardIcon from '@material-ui/icons/Forward';
 
 import Deposit from "./Deposit"
 import Withdraw from "./Withdraw"
+import DepositWeth from "./DepositWeth"
 
 import { useDispatch } from "react-redux"
 
@@ -58,6 +59,7 @@ import styles from "./style"
 
 const TABS = {
   DEPOSIT: "Deposit",
+  DEPOSIT_WETH: "DEPOSIT_WETH",
   WITHDRAW: "Withdraw",
 }
 const useStyles = makeStyles(styles)
@@ -89,7 +91,7 @@ function Ethi (props) {
   const [beforeTotalValue, setBeforeTotalValue] = useState(BigNumber.from(0))
   const [totalValue, setTotalValue] = useState(BigNumber.from(0))
 
-  const [tab, setTab] = useState(TABS.DEPOSIT)
+  const [tab, setTab] = useState(TABS.DEPOSIT_WETH)
 
   // 载入账户数据
   const loadBanlance = () => {
@@ -263,6 +265,19 @@ function Ethi (props) {
               </Tabs>
               <TabPanel value={tab} index={TABS.DEPOSIT}>
                 <Deposit
+                  address={address}
+                  ethBalance={ethBalance}
+                  ethDecimals={ethDecimals}
+                  userProvider={userProvider}
+                  onConnect={loadWeb3Modal}
+                  VAULT_ABI={VAULT_ABI}
+                  IERC20_ABI={IERC20_ABI}
+                  VAULT_ADDRESS={VAULT_ADDRESS}
+                  ETH_ADDRESS={ETH_ADDRESS}
+                />
+              </TabPanel>
+              <TabPanel value={tab} index={TABS.DEPOSIT_WETH}>
+                <DepositWeth
                   address={address}
                   ethBalance={ethBalance}
                   ethDecimals={ethDecimals}
