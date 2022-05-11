@@ -608,7 +608,10 @@ export default function Withdraw ({
     if (isEmpty(toValue)) {
       setEstimateWithdrawArray([])
     }
-    return () => estimateWithdraw.cancel()
+    return () => {
+      setEstimateWithdrawArray([])
+      return estimateWithdraw.cancel()
+    }
     // eslint-disable-next-line
   }, [toValue, allowMaxLoss, slipper, shouldExchange, isOpenEstimate, token])
 
