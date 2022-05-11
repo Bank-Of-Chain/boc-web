@@ -184,7 +184,7 @@ function Ethi (props) {
 
   const net = find(NET_WORKS, (item) => item.chainId === props.selectedChainId) || NET_WORKS[0]
 
-  if(!isUndefined(props.selectedChainId) && props.selectedChainId !== 1) {
+  if(!isUndefined(props.selectedChainId) && (props.selectedChainId === 56 || props.selectedChainId === 137)) {
     return <Redirect to={{ pathname: "/mutils" }} />
   }
   return (
