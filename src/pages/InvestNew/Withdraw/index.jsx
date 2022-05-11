@@ -201,7 +201,7 @@ export default function Withdraw ({
             warmDialog({
               open: true,
               type: "error",
-              message: "Failed to fetch the exchange path. Please cancel the exchange or try again later.",
+              message: "Failed to fetch the exchange path. Please try again later or choose mixed token",
             }),
           )
           return
@@ -259,7 +259,10 @@ export default function Withdraw ({
         tip = 'Vault is in adjustment status, please try again later!'
       } else if (errorMsg.endsWith("'RP'")) {
         tip = 'Vault is in rebase status, please try again later!'
-      } else if (errorMsg.endsWith("'loss much'") || errorMsg.indexOf("loss much") !== -1 || errorMsg.endsWith('"amount lower than minimum"')) {
+      } else if (
+        errorMsg.indexOf("loss much") !== -1 ||
+        errorMsg.indexOf('amount lower than minimum') !== -1
+      ) {
         tip = 'Failed to withdraw, please increase the Max Loss!'
       } else if (
         errorMsg.endsWith("'Return amount is not enough'") ||
@@ -270,7 +273,7 @@ export default function Withdraw ({
         errorMsg.endsWith("'Received amount of tokens are less then expected'") ||
         errorMsg.endsWith("Error: VM Exception while processing transaction: reverted with reason string 'OL'")
       ) {
-        tip = 'Failed to exchange, please increase the exchange slippage or close exchange!'
+        tip = 'Failed to exchange, please increase the exchange slippage or choose mixed token!'
       } else {
         tip = errorMsg
       }
@@ -405,7 +408,7 @@ export default function Withdraw ({
       if (some(exchangeArray, isUndefined)) {
         return setWithdrawError({
           type: "error",
-          message: "Failed to fetch the exchange path. Please cancel the exchange or try again later.",
+          message: "Failed to fetch the exchange path. Please try again later or choose mixed token",
         })
       }
       getSwapInfoFinish = Date.now()
@@ -475,7 +478,7 @@ export default function Withdraw ({
         errorMsg.endsWith("'Received amount of tokens are less then expected'") ||
         errorMsg.endsWith("Error: VM Exception while processing transaction: reverted with reason string 'OL'")
       ) {
-        tip = 'Failed to exchange, please increase the exchange slippage or close exchange!'
+        tip = 'Failed to exchange, please increase the exchange slippage or choose mixed token!'
       } else {
         tip = errorMsg
       }

@@ -78,7 +78,8 @@ function Ethi (props) {
     VAULT_ABI,
     IERC20_ABI,
     EXCHANGE_AGGREGATOR_ABI,
-    EXCHANGE_ADAPTER_ABI
+    EXCHANGE_ADAPTER_ABI,
+    ETHI_MINT_GAS_LIMIT
   } = props
 
   const [ethBalance, setEthBalance] = useState(BigNumber.from(0))
@@ -272,6 +273,7 @@ function Ethi (props) {
                   IERC20_ABI={IERC20_ABI}
                   VAULT_ADDRESS={VAULT_ADDRESS}
                   ETH_ADDRESS={ETH_ADDRESS}
+                  ETHI_MINT_GAS_LIMIT={ETHI_MINT_GAS_LIMIT}
                 />
               </TabPanel>
               <TabPanel value={tab} index={TABS.WITHDRAW}>
