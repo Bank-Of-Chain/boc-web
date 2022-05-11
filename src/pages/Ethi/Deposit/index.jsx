@@ -223,7 +223,7 @@ export default function Deposit({
   }, 500)
 
   useEffect(() => {
-    if (isEmpty(userProvider) || mintGas.gt(0)) {
+    if (isEmpty(userProvider) || mintGas.gt(0) || isEmpty(VAULT_ADDRESS) || isEmpty(VAULT_ABI)) {
       return
     }
     const signer = userProvider.getSigner()
@@ -232,10 +232,10 @@ export default function Deposit({
     nVaultWithUser.estimateGas.mint(ETH_ADDRESS, BigNumber.from(10).pow(ethDecimals), {
       from: address,
       value: BigNumber.from(10).pow(ethDecimals)
-    }).then(setMintGas)
+    }).then(setMintGas).catch(noop)
 
     // eslint-disable-next-line
-  }, [userProvider])
+  }, [userProvider, VAULT_ADDRESS, VAULT_ABI])
 
   useEffect(() => {
     estimateMint()
