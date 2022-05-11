@@ -23,7 +23,7 @@ const componentsStyle = (theme) => ({
   depositComfirmArea: {
     display: "flex",
     justifyContent: "space-between",
-    marginTop: 16
+    marginTop: 14
   },
   tokenInfo: {
     display: "flex",

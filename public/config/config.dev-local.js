@@ -43,8 +43,8 @@ const configBase = {
     description: '这是ethi的池子',
     path: '#/ethi',
     abi_version: 'ethi',
-    VAULT_ADDRESS: '0x9385556B571ab92bf6dC9a0DbD75429Dd4d56F91',
-    ETHI_ADDRESS: '0x114e375B6FCC6d6fCb68c7A1d407E652C54F25FB',
+    VAULT_ADDRESS: '0xaC47e91215fb80462139756f43438402998E4A3a',
+    ETHI_ADDRESS: '0xdFdE6B33f13de2CA1A75A6F7169f50541B14f75b',
     WETHI_ADDRESS: '',
     isOpen: true
   }]
@@ -100,7 +100,7 @@ const config1 = {
   ...configBase,
   apy_server: 'http://localhost:5000',
   abi_version: 'beta-v1.5',
-  vault_address: "0xf2Bf7C00B4696726B3c1f6E7b87d1a4acB050a8F",
+  vault_address: "0xdFdE6B33f13de2CA1A75A6F7169f50541B14f75b",
   usdt_address: "0xdAC17F958D2ee523a2206206994597C13D831ec7",
   usdc_address: "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
   dai_address: "0x6B175474E89094C44Da98b954EedeAC495271d0F",
