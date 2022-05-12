@@ -29,7 +29,7 @@ import find from "lodash/find"
 import { hasWalletInstalled } from "./../../helpers/plugin-util"
 
 // === Constants === //
-import { NET_WORKS, DASHBOARD_URL, DOCUMENT_URL } from "./../../constants"
+import { NET_WORKS, DASHBOARD_URL, DOCUMENT_URL, CHAIN_ID } from "./../../constants"
 
 const useStyles = makeStyles(styles)
 export default function HeaderLinks (props) {
@@ -43,7 +43,7 @@ export default function HeaderLinks (props) {
         </Button>
       </ListItem>
       <ListItem className={classes.listItem}>
-        <Button color='transparent' target='_blank' href={DASHBOARD_URL} className={classes.navLink}>
+        <Button color='transparent' target='_blank' href={`${DASHBOARD_URL}/#/?chain=${CHAIN_ID}&vault=${ window.location.hash === '#/ethi' ? 'ethi' : 'usdi' }`} className={classes.navLink}>
           <InsertChartIcon className={classes.icons}></InsertChartIcon> Dashboard
         </Button>
       </ListItem>
