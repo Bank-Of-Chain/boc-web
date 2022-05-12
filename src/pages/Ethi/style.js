@@ -174,7 +174,7 @@ const componentsStyle = (theme) => ({
     color: '#fff'
   },
   tabRoot: {
-    width: '33%',
+    width: '50%',
     fontSize: '16px',
     maxWidth: 'none'
   },
