@@ -41,6 +41,18 @@ const componentsStyle = (theme) => ({
   settingItemLabel: {
     marginRight: 16,
   },
+  ethBalanceWrapper: {
+    display: "flex",
+    alignItems: "center"
+  },
+  labelToolTipIcon: {
+    fontSize: 16,
+    marginRight: 2
+  },
+  tooltip: {
+    fontSize: 14,
+    width: 186
+  }
 });
 
 export default componentsStyle;

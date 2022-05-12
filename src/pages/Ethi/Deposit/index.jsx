@@ -10,6 +10,8 @@ import { makeStyles } from "@material-ui/core/styles"
 import CircularProgress from "@material-ui/core/CircularProgress"
 import Modal from "@material-ui/core/Modal"
 import Paper from "@material-ui/core/Paper"
+import Tooltip from "@material-ui/core/Tooltip"
+import InfoIcon from "@material-ui/icons/Info"
 
 import GridContainer from "../../../components/Grid/GridContainer"
 import GridItem from "../../../components/Grid/GridItem"
@@ -257,8 +259,19 @@ export default function Deposit({
                   <img className={classes.tokenLogo} alt='' src={`./images/0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE.png`} />
                   <span className={classes.tokenName}>ETH</span>
                 </div> 
-                <Muted title={formatBalance(ethBalance, ethDecimals, { showAll: true })}>
-                  {`Balance: ${formatBalance(ethBalance, ethDecimals)}`}
+                <Muted className={classes.ethBalanceWrapper}>
+                  <Tooltip
+                    classes={{
+                      tooltip: classes.tooltip
+                    }}
+                    placement='top'
+                    title="Please reserve some ETH as transaction gas fee"
+                  >
+                    <InfoIcon classes={{ root: classes.labelToolTipIcon }} />
+                  </Tooltip>
+                  <span title={formatBalance(ethBalance, ethDecimals, { showAll: true })}>
+                    {`Balance: ${formatBalance(ethBalance, ethDecimals)}`}
+                  </span>
                 </Muted>
               </div>
             </GridItem>
