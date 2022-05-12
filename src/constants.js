@@ -34,6 +34,7 @@ export const MULTIPLE_OF_GAS = config.multiple_of_gas;
 export const DASHBOARD_URL = config.dashboard_url;
 export const ORACLE_ADDITIONAL_SLIPPAGE = config.oracle_additional_slippage
 export const VAULTS = config.vaults;
+export const CHAIN_ID = config.chain_id;
 
 
 export const NET_WORKS = [

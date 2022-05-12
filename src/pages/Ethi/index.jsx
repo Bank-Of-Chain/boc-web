@@ -39,7 +39,7 @@ import { useDispatch } from "react-redux"
 import { warmDialog } from "./../../reducers/meta-reducer"
 
 // === constants === //
-import { CHAIN_BROWSER_URL, NET_WORKS, VAULTS } from "../../constants"
+import { CHAIN_BROWSER_URL, NET_WORKS, VAULTS, CHAIN_ID } from "../../constants"
 import { ETH_ADDRESS, ETH_DECIMALS } from "../../constants/token"
 
 // === Utils === //
@@ -80,7 +80,8 @@ function Ethi (props) {
     VAULT_ABI,
     IERC20_ABI,
     EXCHANGE_AGGREGATOR_ABI,
-    EXCHANGE_ADAPTER_ABI
+    EXCHANGE_ADAPTER_ABI,
+    ETHI_MINT_GAS_LIMIT
   } = props
 
   const [ethBalance, setEthBalance] = useState(BigNumber.from(0))
@@ -186,7 +187,7 @@ function Ethi (props) {
 
   const net = find(NET_WORKS, (item) => item.chainId === props.selectedChainId) || NET_WORKS[0]
 
-  if(!isUndefined(props.selectedChainId) && (props.selectedChainId === 56 || props.selectedChainId === 137)) {
+  if(!isUndefined(props.selectedChainId) && CHAIN_ID !== NET_WORKS[0].chainId) {
     return <Redirect to={{ pathname: "/mutils" }} />
   }
   return (
@@ -274,6 +275,7 @@ function Ethi (props) {
                   IERC20_ABI={IERC20_ABI}
                   VAULT_ADDRESS={VAULT_ADDRESS}
                   ETH_ADDRESS={ETH_ADDRESS}
+                  ETHI_MINT_GAS_LIMIT={ETHI_MINT_GAS_LIMIT}
                 />
               </TabPanel>
               <TabPanel value={tab} index={TABS.DEPOSIT_WETH}>

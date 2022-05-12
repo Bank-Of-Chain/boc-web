@@ -128,6 +128,19 @@
     "anonymous": false,
     "inputs": [
       {
+        "indexed": false,
+        "internalType": "uint8",
+        "name": "version",
+        "type": "uint8"
+      }
+    ],
+    "name": "Initialized",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
         "indexed": true,
         "internalType": "address",
         "name": "strategy",
@@ -180,12 +193,6 @@
         "indexed": false,
         "internalType": "uint256",
         "name": "_sharesAmount",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "_ethiAmount",
         "type": "uint256"
       }
     ],
@@ -292,6 +299,43 @@
     "anonymous": false,
     "inputs": [
       {
+        "indexed": true,
+        "internalType": "address",
+        "name": "strategy",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "strategyWithdrawValue",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "strategyTotalValue",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "address[]",
+        "name": "_assets",
+        "type": "address[]"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256[]",
+        "name": "_amounts",
+        "type": "uint256[]"
+      }
+    ],
+    "name": "RepayFromStrategy",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
         "indexed": false,
         "internalType": "bool",
         "name": "_adjustPositionPeriod",
@@ -391,59 +435,20 @@
     "type": "event"
   },
   {
+    "stateMutability": "payable",
+    "type": "fallback"
+  },
+  {
     "inputs": [],
     "name": "accessControlProxy",
     "outputs": [
       {
-        "internalType": "address",
+        "internalType": "contract IAccessControlProxy",
         "name": "",
         "type": "address"
       }
     ],
     "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "_asset",
-        "type": "address"
-      }
-    ],
-    "name": "addAsset",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "components": [
-          {
-            "internalType": "address",
-            "name": "strategy",
-            "type": "address"
-          },
-          {
-            "internalType": "uint256",
-            "name": "profitLimitRatio",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "lossLimitRatio",
-            "type": "uint256"
-          }
-        ],
-        "internalType": "struct IETHVault.StrategyAdd[]",
-        "name": "strategyAdds",
-        "type": "tuple[]"
-      }
-    ],
-    "name": "addStrategy",
-    "outputs": [],
-    "stateMutability": "nonpayable",
     "type": "function"
   },
   {
@@ -556,7 +561,7 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "strategy",
+        "name": "_strategy",
         "type": "address"
       }
     ],
@@ -569,7 +574,7 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "asset",
+        "name": "_asset",
         "type": "address"
       }
     ],
@@ -695,25 +700,12 @@
     "type": "function"
   },
   {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "_strategy",
-        "type": "address"
-      }
-    ],
-    "name": "forceRemoveStrategy",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
     "inputs": [],
     "name": "getStrategies",
     "outputs": [
       {
         "internalType": "address[]",
-        "name": "_strategies",
+        "name": "",
         "type": "address[]"
       }
     ],
@@ -726,7 +718,7 @@
     "outputs": [
       {
         "internalType": "address[]",
-        "name": "assets",
+        "name": "",
         "type": "address[]"
       }
     ],
@@ -739,7 +731,7 @@
     "outputs": [
       {
         "internalType": "address[]",
-        "name": "assets",
+        "name": "",
         "type": "address[]"
       }
     ],
@@ -760,16 +752,31 @@
     "type": "function"
   },
   {
-    "inputs": [],
-    "name": "getWithdrawalQueue",
-    "outputs": [
+    "inputs": [
       {
-        "internalType": "address[]",
-        "name": "",
-        "type": "address[]"
+        "internalType": "address",
+        "name": "_accessControlProxy",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "_treasury",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "_exchangeManager",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "_priceProvider",
+        "type": "address"
       }
     ],
-    "stateMutability": "view",
+    "name": "initialize",
+    "outputs": [],
+    "stateMutability": "nonpayable",
     "type": "function"
   },
   {
@@ -858,11 +865,6 @@
         "internalType": "uint256",
         "name": "_sharesAmount",
         "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "_ethiAmount",
-        "type": "uint256"
       }
     ],
     "stateMutability": "payable",
@@ -913,45 +915,6 @@
     "type": "function"
   },
   {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "_asset",
-        "type": "address"
-      }
-    ],
-    "name": "removeAsset",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address[]",
-        "name": "_strategies",
-        "type": "address[]"
-      }
-    ],
-    "name": "removeStrategy",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address[]",
-        "name": "_strategies",
-        "type": "address[]"
-      }
-    ],
-    "name": "removeStrategyFromQueue",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
     "inputs": [],
     "name": "report",
     "outputs": [],
@@ -961,51 +924,12 @@
   {
     "inputs": [
       {
-        "internalType": "bool",
-        "name": "_adjustPositionPeriod",
-        "type": "bool"
-      }
-    ],
-    "name": "setAdjustPositionPeriod",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
         "internalType": "address",
-        "name": "_address",
+        "name": "newImpl",
         "type": "address"
       }
     ],
-    "name": "setETHiAddress",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "bool",
-        "name": "active",
-        "type": "bool"
-      }
-    ],
-    "name": "setEmergencyShutdown",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "_redeemFeeBps",
-        "type": "uint256"
-      }
-    ],
-    "name": "setRedeemFeeBps",
+    "name": "setAdminImpl",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -1014,123 +938,36 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "_strategy",
-        "type": "address"
-      },
-      {
-        "internalType": "bool",
-        "name": "_enabled",
-        "type": "bool"
-      }
-    ],
-    "name": "setStrategyEnforceChangeLimit",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "_strategy",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "_lossRatioLimit",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "_profitLimitRatio",
-        "type": "uint256"
-      }
-    ],
-    "name": "setStrategySetLimitRatio",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "_address",
-        "type": "address"
-      }
-    ],
-    "name": "setTreasuryAddress",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "_basis",
-        "type": "uint256"
-      }
-    ],
-    "name": "setTrusteeFeeBps",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address[]",
-        "name": "queues",
-        "type": "address[]"
-      }
-    ],
-    "name": "setWithdrawalQueue",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "_strategy",
+        "name": "",
         "type": "address"
       }
     ],
     "name": "strategies",
     "outputs": [
       {
-        "components": [
-          {
-            "internalType": "uint256",
-            "name": "lastReport",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "totalDebt",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "profitLimitRatio",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "lossLimitRatio",
-            "type": "uint256"
-          },
-          {
-            "internalType": "bool",
-            "name": "enforceChangeLimit",
-            "type": "bool"
-          }
-        ],
-        "internalType": "struct IETHVault.StrategyParams",
-        "name": "",
-        "type": "tuple"
+        "internalType": "uint256",
+        "name": "lastReport",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "totalDebt",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "profitLimitRatio",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "lossLimitRatio",
+        "type": "uint256"
+      },
+      {
+        "internalType": "bool",
+        "name": "enforceChangeLimit",
+        "type": "bool"
       }
     ],
     "stateMutability": "view",
@@ -1233,7 +1070,7 @@
     "outputs": [
       {
         "internalType": "uint256",
-        "name": "_totalValue",
+        "name": "",
         "type": "uint256"
       }
     ],
@@ -1241,16 +1078,26 @@
     "type": "function"
   },
   {
-    "inputs": [],
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
     "name": "withdrawQueue",
     "outputs": [
       {
-        "internalType": "address[]",
+        "internalType": "address",
         "name": "",
-        "type": "address[]"
+        "type": "address"
       }
     ],
     "stateMutability": "view",
     "type": "function"
+  },
+  {
+    "stateMutability": "payable",
+    "type": "receive"
   }
 ]

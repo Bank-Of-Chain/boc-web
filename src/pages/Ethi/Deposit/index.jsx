@@ -10,10 +10,6 @@ import { makeStyles } from "@material-ui/core/styles"
 import CircularProgress from "@material-ui/core/CircularProgress"
 import Modal from "@material-ui/core/Modal"
 import Paper from "@material-ui/core/Paper"
-import FormControlLabel from "@material-ui/core/FormControlLabel"
-import CustomRadio from "./../../../components/Radio/Radio"
-import RadioGroup from "@material-ui/core/RadioGroup"
-import AllInclusiveIcon from '@material-ui/icons/AllInclusive';
 
 import GridContainer from "../../../components/Grid/GridContainer"
 import GridItem from "../../../components/Grid/GridItem"
@@ -22,18 +18,14 @@ import Muted from "../../../components/Typography/Muted"
 import Button from "../../../components/CustomButtons/Button"
 import { warmDialog } from "./../../../reducers/meta-reducer"
 import { toFixed, formatBalance } from "../../../helpers/number-format"
-import { getGasPrice } from "../../../services/api-service"
 
 // === Utils === //
-import map from "lodash/map"
 import noop from "lodash/noop"
 
 import styles from "./style"
 
 const { BigNumber } = ethers
 const useStyles = makeStyles(styles)
-
-const gasPriceSpeed = ['fast', 'standard', 'slow']
 
 export default function Deposit({
   address,
@@ -43,23 +35,25 @@ export default function Deposit({
   onConnect,
   VAULT_ABI,
   VAULT_ADDRESS,
-  ETH_ADDRESS
+  ETH_ADDRESS,
 }) {
   const classes = useStyles()
   const dispatch = useDispatch()
   const [ethValue, setEthValue] = useState("")
-
-  const [mintGas, setMintGas] = useState(BigNumber.from("0"))
-  const [gasPriceCurrent, setGasPriceCurrent] = useState({})
-  const [gasPriceLevel, setGasPriceLevel] = useState(gasPriceSpeed[1])
+  const [mintGasLimit, setMintGasLimit] = useState(BigNumber.from("0"))
+  const [gasPriceCurrent, setGasPriceCurrent] = useState()
   const [estimateValue, setEstimateValue] = useState("")
   const [isLoading, setIsLoading] = useState(false)
   const loadingTimer = useRef()
 
-  const getGasLimit = () => {
-    const gas = gasPriceCurrent[gasPriceLevel] || 0
-    const gasPriceDecimals = 1e9
-    return mintGas.mul(gas).mul(gasPriceDecimals)
+  const getGasFee = () => {
+    if (!gasPriceCurrent) {
+      return 0
+    }
+    const gasPrice = BigNumber.from(parseInt(gasPriceCurrent, 16).toString())
+    // metamask gaslimit 比预估大些
+    const metamaskExtraLimit = 114
+    return mintGasLimit.add(metamaskExtraLimit).mul(gasPrice)
   }
 
   /**
@@ -91,7 +85,7 @@ export default function Deposit({
     // 数值小于最大数量
     if (balance.lt(BigNumber.from(nextFromValue.toFixed()))) return false
 
-    if (balance.sub(BigNumber.from(nextFromValue.toFixed())).lt(getGasLimit())) return false
+    if (balance.sub(BigNumber.from(nextFromValue.toFixed())).lt(getGasFee())) return false
 
     return true
   }
@@ -101,7 +95,7 @@ export default function Deposit({
   }
 
   const handleMaxClick = () => {
-    const v = getGasLimit();
+    const v = getGasFee();
     if (v.lte(0)) {
       dispatch(
         warmDialog({
@@ -144,15 +138,9 @@ export default function Deposit({
     const nVaultWithUser = vaultContract.connect(signer)
     let isSuccess = false
 
-    let gasPrice
-    if (gasPriceCurrent[gasPriceLevel]) {
-      gasPrice = ethers.utils.parseUnits((gasPriceCurrent[gasPriceLevel]).toString(), 'gwei')
-    }
-
     await nVaultWithUser.mint(ETH_ADDRESS, amount, {
       from: address,
       value: amount,
-      gasPrice
     })
       .then(tx => tx.wait())
       .then(() => {
@@ -223,35 +211,37 @@ export default function Deposit({
   }, 500)
 
   useEffect(() => {
-    if (isEmpty(userProvider) || mintGas.gt(0) || isEmpty(VAULT_ADDRESS) || isEmpty(VAULT_ABI)) {
-      return
-    }
-    const signer = userProvider.getSigner()
-    const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider)
-    const nVaultWithUser = vaultContract.connect(signer)
-    nVaultWithUser.estimateGas.mint(ETH_ADDRESS, BigNumber.from(10).pow(ethDecimals), {
-      from: address,
-      value: BigNumber.from(10).pow(ethDecimals)
-    }).then(setMintGas).catch(noop)
-
-    // eslint-disable-next-line
-  }, [userProvider, VAULT_ADDRESS, VAULT_ABI])
-
-  useEffect(() => {
     estimateMint()
     return () => estimateMint.cancel()
     // eslint-disable-next-line
   }, [ethValue])
 
-  const reloadGasPriceCall = () => getGasPrice().then(setGasPriceCurrent).catch(noop)
-
   // 每隔30s获取一下最新的gasprice，获取异常，则不修改原有数值
   useEffect(() => {
+    if (!userProvider) {
+      return
+    }
     const timer = setInterval(() => {
-      getGasPrice().then(setGasPriceCurrent).catch(noop)
-    }, 30000)
+      userProvider.send("eth_gasPrice").then(setGasPriceCurrent).catch(noop)
+    }, 15000)
     return () => clearInterval(timer)
-  }, [])
+  }, [userProvider])
+
+  useEffect(() => {
+    if (isEmpty(userProvider) || mintGasLimit.gt(0) || isEmpty(VAULT_ADDRESS) || isEmpty(VAULT_ABI)) {
+      return
+    }
+    userProvider.send("eth_gasPrice").then(setGasPriceCurrent).catch(noop)
+    const signer = userProvider.getSigner()
+    const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider)
+    const nVaultWithUser = vaultContract.connect(signer)
+    nVaultWithUser.estimateGas.mint(ETH_ADDRESS, BigNumber.from(1).pow(ethDecimals), {
+      from: address,
+      value: BigNumber.from(1).pow(ethDecimals)
+    }).then(setMintGasLimit)
+
+    // eslint-disable-next-line
+  }, [userProvider, VAULT_ADDRESS, VAULT_ABI])
 
   const isLogin = !isEmpty(userProvider)
   const isValid = isValidValue()
@@ -285,34 +275,6 @@ export default function Deposit({
           </GridContainer>
         </GridItem>
         <GridItem xs={12} sm={12} md={12} lg={12}>
-          <FormControlLabel
-            labelPlacement='start'
-            control={
-              isEmpty(gasPriceCurrent) 
-                ? <AllInclusiveIcon color="primary" onClick={reloadGasPriceCall} /> 
-                : <RadioGroup row value={gasPriceLevel} onChange={event => setGasPriceLevel(event.target.value)}>
-                {map(gasPriceSpeed, value => (
-                  <FormControlLabel
-                    key={value}
-                    value={value}
-                    style={{ color: "#fff" }}
-                    control={<CustomRadio size='small' style={{ padding: 6 }} />}
-                    label={`${value} ${gasPriceCurrent[value]} Gwei`}
-                  />
-                ))}
-              </RadioGroup>
-            }
-            style={{ marginLeft: 0 }}
-            label={
-              <div className={classes.settingItemLabel}>
-                <Muted className={classes.mutedLabel}>
-                  GasPrice:
-                </Muted>
-              </div>
-            }
-          />
-        </GridItem>
-        <GridItem xs={12} sm={12} md={12} lg={12}>
           <div className={classes.depositComfirmArea}>
             <Muted>
               <p style={{ fontSize: 16, wordBreak: "break-all", letterSpacing: "0.01071em" }}>
@@ -322,7 +284,7 @@ export default function Deposit({
               </p>
             </Muted>
             <Button
-              disabled={isLogin && (!isUndefined(isValid) && !isValid)}
+              disabled={isLogin && !isValid}
               color='colorfull'
               onClick={isLogin ? diposit : onConnect}
               style={{ minWidth: 122, padding: "12px 16px", margin: "6px 0" }}
