@@ -677,7 +677,7 @@ export default function Withdraw ({
                 tooltip: classes.tooltip
               }}
               placement='top'
-              title={`The current base rate is ${redeemFeeBpsPercent}% of the principal, as determined by the administrator.`}
+              title={`${redeemFeeBpsPercent}% withdrawal fee of the principal.`}
             >
               <InfoIcon classes={{ root: classes.labelToolTipIcon }} style={{ right: '-5px', left: 'auto' }} />
             </Tooltip>
