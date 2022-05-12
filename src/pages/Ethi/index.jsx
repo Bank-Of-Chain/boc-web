@@ -31,7 +31,6 @@ import ForwardIcon from '@material-ui/icons/Forward';
 
 import Deposit from "./Deposit"
 import Withdraw from "./Withdraw"
-import DepositWeth from "./DepositWeth"
 
 import { useDispatch } from "react-redux"
 
@@ -40,7 +39,7 @@ import { warmDialog } from "./../../reducers/meta-reducer"
 
 // === constants === //
 import { CHAIN_BROWSER_URL, NET_WORKS, VAULTS, CHAIN_ID } from "../../constants"
-import { ETH_ADDRESS, ETH_DECIMALS } from "../../constants/token"
+import { ETH_ADDRESS, ETH_DECIMALS, WETH_ADDRESS } from "../../constants/token"
 
 // === Utils === //
 import { toFixed, formatBalance } from "../../helpers/number-format"
@@ -59,7 +58,6 @@ import styles from "./style"
 
 const TABS = {
   DEPOSIT: "Deposit",
-  DEPOSIT_WETH: "DEPOSIT_WETH",
   WITHDRAW: "Withdraw",
 }
 const useStyles = makeStyles(styles)
@@ -87,12 +85,14 @@ function Ethi (props) {
   const [ethBalance, setEthBalance] = useState(BigNumber.from(0))
   const [ethiBalance, setEthiBalance] = useState(BigNumber.from(0))
   const [ethiDecimals, setEthiDecimals] = useState(0)
+  const [wethBalance, setWethBalance] = useState(BigNumber.from(0))
+  const [wethDecimals, setWethDecimals] = useState(0)
   const ethDecimals = ETH_DECIMALS
 
   const [beforeTotalValue, setBeforeTotalValue] = useState(BigNumber.from(0))
   const [totalValue, setTotalValue] = useState(BigNumber.from(0))
 
-  const [tab, setTab] = useState(TABS.DEPOSIT_WETH)
+  const [tab, setTab] = useState(TABS.DEPOSIT)
 
   // 载入账户数据
   const loadBanlance = () => {
@@ -100,8 +100,11 @@ function Ethi (props) {
       return
     }
     const ethiContract = new ethers.Contract(ETHI_ADDRESS, IERC20_ABI, userProvider)
+    const wethContract = new ethers.Contract(WETH_ADDRESS, IERC20_ABI, userProvider)
     Promise.all([
       userProvider.getBalance(address).then(setEthBalance),
+      wethContract.balanceOf(address).then(setWethBalance),
+      wethContract.decimals().then(setWethDecimals),
       ethiContract.balanceOf(address).then(setEthiBalance),
       ethiContract.decimals().then(setEthiDecimals),
     ]).catch(() => {
@@ -269,6 +272,8 @@ function Ethi (props) {
                   address={address}
                   ethBalance={ethBalance}
                   ethDecimals={ethDecimals}
+                  wethBalance={wethBalance}
+                  wethDecimals={wethDecimals}
                   userProvider={userProvider}
                   onConnect={loadWeb3Modal}
                   VAULT_ABI={VAULT_ABI}
@@ -276,19 +281,6 @@ function Ethi (props) {
                   VAULT_ADDRESS={VAULT_ADDRESS}
                   ETH_ADDRESS={ETH_ADDRESS}
                   ETHI_MINT_GAS_LIMIT={ETHI_MINT_GAS_LIMIT}
-                />
-              </TabPanel>
-              <TabPanel value={tab} index={TABS.DEPOSIT_WETH}>
-                <DepositWeth
-                  address={address}
-                  ethBalance={ethBalance}
-                  ethDecimals={ethDecimals}
-                  userProvider={userProvider}
-                  onConnect={loadWeb3Modal}
-                  VAULT_ABI={VAULT_ABI}
-                  IERC20_ABI={IERC20_ABI}
-                  VAULT_ADDRESS={VAULT_ADDRESS}
-                  ETH_ADDRESS={ETH_ADDRESS}
                 />
               </TabPanel>
               <TabPanel value={tab} index={TABS.WITHDRAW}>

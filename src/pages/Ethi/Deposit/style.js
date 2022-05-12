@@ -41,6 +41,18 @@ const componentsStyle = (theme) => ({
   settingItemLabel: {
     marginRight: 16,
   },
+  tokenInputWrapper: {
+    cursor: 'pointer',
+    opacity: 0.5,
+    padding: '20px',
+    border: '1px solid gray'
+  },
+  currentDeposit: {
+    cursor: 'pointer',
+    padding: '20px',
+    border: '1px solid gray',
+    backgroundColor: 'slateblue'
+  }
 });
 
 export default componentsStyle;
