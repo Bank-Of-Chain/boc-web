@@ -3,9 +3,9 @@
  */
  const configBase = {
   vault_address: "",
-  usdt_address: "",
-  usdc_address: "",
-  dai_address: "",
+  usdt_address: "0xdAC17F958D2ee523a2206206994597C13D831ec7",
+  usdc_address: "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+  dai_address: "0x6B175474E89094C44Da98b954EedeAC495271d0F",
   chain_browser_url: '',
   abi_version: 'v4.6',
   community_url: 'https://discord.com/channels/910840145039749141',
@@ -48,6 +48,26 @@ const config137 = {
   // 币安链一个区块2千万，使用90%的空间即可，过大会造成打块过慢
   max_gas_limit: 1800 * 10 ** 4,
   chain_id: 137,
+  vaults: [{
+    id: 'mutilCoins',
+    name: 'Vault for USDi',
+    path: '#/mutils',
+    isAudit: true,
+    abi_version: 'beta-v1.5',
+    VAULT_ADDRESS: '0x70eE76691Bdd9696552AF8d4fd634b3cF79DD529',
+    USDI_ADDRESS: '0xcD0048A5628B37B8f743cC2FeA18817A29e97270',
+    isOpen: true
+  }, {
+    id: 'ethi',
+    name: 'Vault for ETHi',
+    description: '这是ethi的池子',
+    path: '#/ethi',
+    abi_version: 'ethi',
+    VAULT_ADDRESS: '',
+    ETHI_ADDRESS: '',
+    WETHI_ADDRESS: '',
+    isOpen: true
+  }]
 }
 
 const config56 = {
@@ -71,6 +91,26 @@ const config56 = {
   // 币安链一个区块8千万，使用90%的空间即可，过大会造成打块过慢
   max_gas_limit: 7200 * 10 ** 4,
   chain_id: 56,
+  vaults: [{
+    id: 'mutilCoins',
+    name: 'Vault for USDi',
+    path: '#/mutils',
+    isAudit: true,
+    abi_version: 'beta-v1.5',
+    VAULT_ADDRESS: '0x70eE76691Bdd9696552AF8d4fd634b3cF79DD529',
+    USDI_ADDRESS: '0xcD0048A5628B37B8f743cC2FeA18817A29e97270',
+    isOpen: true
+  }, {
+    id: 'ethi',
+    name: 'Vault for ETHi',
+    description: '这是ethi的池子',
+    path: '#/ethi',
+    abi_version: 'ethi',
+    VAULT_ADDRESS: '',
+    ETHI_ADDRESS: '',
+    WETHI_ADDRESS: '',
+    isOpen: true
+  }]
 }
 
 const config1 = {
@@ -82,16 +122,15 @@ const config1 = {
   chain_browser_url: 'https://etherscan.io',
   exchange_extra_params: {
     oneInchV4: {
+      useHttp: true,
       network: 1,
-      protocols: ['CURVE', 'CURVE_V2', 'SUSHI', 'UNISWAP_V2', 'UNISWAP_V3', 'DODO_V2', 'COMPOUND', 'AAVE', 'BALANCER', 'BANCOR', 'MSTABLE', 'AAVE_V2', 'BALANCER_V2']
+      protocols: 'CURVE_V2,SUSHI,CURVE,UNISWAP_V2,UNISWAP_V3,BALANCER,BALANCER_V2,ETH_BANCOR_V3,CURVE_V2_ETH_PAL,POOLTOGETHER,SYNAPSE,CURVE_V2_THRESHOLDNETWORK_2_ASSET,CURVE_V2_YFI_2_ASSET,CURVE_V2_SPELL_2_ASSET,WSTETH,CURVE_V2_XAUT_2_ASSET,CURVE_V2_ETH_CVX,SYNTHETIX_WRAPPER,FIXED_FEE_SWAP_V3,CURVE_V2_ETH_CRV,DEFI_PLAZA,ONE_INCH_LP_MIGRATOR,SUSHISWAP_MIGRATOR,UNISWAP_V2_MIGRATOR,ONE_INCH_LP_MIGRATOR_V1_1,ONE_INCH_LP_1_1,LINKSWAP,ONE_INCH_LP,AAVE_V2,SYNTHETIX,AAVE_LIQUIDATOR,MSTABLE,MINISWAP,BANCOR,CREAMSWAP,COMPOUND,MOONISWAP,WETH,CURVE_V2_EURT_2_ASSET,CURVE_V2_EURT_3_ASSET'
     },
-    /*
     paraswap: {
       network: 1,
-      includeDEXS: 'UniswapV2,UniswapV3,SushiSwap,mStable,DODOV2,DODOV1,Curve,CurveV2,Compound,Bancor,BalancerV2,Aave2',
+      includeDEXS: 'Uniswap,Bancor,Compound,MakerDAO,ParaSwapPool,Aave,Aave2,MultiPath,MegaPath,Curve,Curve3,Saddle,IronV2,idle,Weth,Beth,UniswapV2, Balancer,ParaSwapPool2,ParaSwapPool3,ParaSwapPool4,ParaSwapPool5,ParaSwapPool6,SushiSwap,LINKSWAP,Synthetix,DefiSwap,PancakeSwap, PancakeSwapV2,ApeSwap,Wbnb,beltfi,ellipsis,QuickSwap,Wmatic,UniswapV3,PantherSwap,OneInchLP,CurveV2,WaultFinance,MDEX,ShibaSwap, CoinSwap',
       excludeContractMethods: ['swapOnZeroXv2', 'swapOnZeroXv4']
     }
-    */
   },
   // ETH链一个区块3千万，使用90%的空间即可，过大会造成打块过慢
   max_gas_limit: 2700 * 10 ** 4,
