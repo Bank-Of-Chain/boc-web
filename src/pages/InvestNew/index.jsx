@@ -39,7 +39,7 @@ import { useDispatch } from "react-redux"
 import { warmDialog } from "./../../reducers/meta-reducer"
 
 // === constants === //
-import { USDT_ADDRESS, USDC_ADDRESS, DAI_ADDRESS, CHAIN_BROWSER_URL, NET_WORKS, VAULTS } from "../../constants"
+import { USDT_ADDRESS, USDC_ADDRESS, DAI_ADDRESS, CHAIN_BROWSER_URL, NET_WORKS, VAULTS, CHAIN_ID } from "../../constants"
 
 // === Utils === //
 import { toFixed, formatBalance } from "../../helpers/number-format"
@@ -189,6 +189,15 @@ function Invest (props) {
     }
   }
 
+  const changeRouter = (path) => {
+    let promise = Promise.resolve({})
+    if(path==="#/ethi" && CHAIN_ID !== 1) {
+      promise = props.changeNetwork(NET_WORKS[0])
+    }
+    promise.then(() =>{
+      history.push(path.slice(1))
+    })
+  }
   const net = find(NET_WORKS, (item) => item.chainId === props.selectedChainId) || NET_WORKS[0]
 
   return (
@@ -202,7 +211,7 @@ function Invest (props) {
                   const { path } = item
                   const isCheck = window.location.hash === path
                   if(item.isOpen){
-                    return <ListItem key={item.id} button className={classNames(classes.item, isCheck && classes.check )} onClick={() => history.push(path.slice(1))}>
+                    return <ListItem key={item.id} button className={classNames(classes.item, isCheck && classes.check )} onClick={() => changeRouter(path)}>
                       <ListItemText primary={item.name} className={classNames( isCheck && classes.text )} />
                       { isCheck && <div className={classes.spliter}></div> }
                       <ListItemIcon>
