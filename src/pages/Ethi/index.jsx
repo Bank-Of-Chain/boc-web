@@ -5,7 +5,7 @@ import classNames from "classnames"
 // react components for routing our app without refresh
 // @material-ui/core components
 import { makeStyles } from "@material-ui/core/styles"
-import { useHistory, Redirect } from "react-router-dom"
+import { useHistory } from "react-router-dom"
 import CountTo from "react-count-to"
 // core components
 import GridContainer from "../../components/Grid/GridContainer"
@@ -38,7 +38,7 @@ import { useDispatch } from "react-redux"
 import { warmDialog } from "./../../reducers/meta-reducer"
 
 // === constants === //
-import { CHAIN_BROWSER_URL, NET_WORKS, VAULTS, CHAIN_ID } from "../../constants"
+import { CHAIN_BROWSER_URL, NET_WORKS, VAULTS } from "../../constants"
 import { ETH_ADDRESS, ETH_DECIMALS } from "../../constants/token"
 
 // === Utils === //
@@ -48,7 +48,6 @@ import isEmpty from "lodash/isEmpty"
 import last from "lodash/last"
 import noop from "lodash/noop"
 import find from "lodash/find"
-import isUndefined from "lodash/isUndefined"
 import * as ethers from "ethers"
 import useVersionWapper from "../../hooks/useVersionWapper"
 import useMediaQuery from '@material-ui/core/useMediaQuery'
@@ -185,9 +184,6 @@ function Ethi (props) {
 
   const net = find(NET_WORKS, (item) => item.chainId === props.selectedChainId) || NET_WORKS[0]
 
-  if(!isUndefined(props.selectedChainId) && CHAIN_ID !== NET_WORKS[0].chainId) {
-    return <Redirect to={{ pathname: "/mutils" }} />
-  }
   return (
     <div className={classNames(classes.main, classes.mainRaised)}>
       <div className={classes.container}>

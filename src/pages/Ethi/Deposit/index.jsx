@@ -240,7 +240,7 @@ export default function Deposit({
     nVaultWithUser.estimateGas.mint(ETH_ADDRESS, BigNumber.from(1).pow(ethDecimals), {
       from: address,
       value: BigNumber.from(1).pow(ethDecimals)
-    }).then(setMintGasLimit)
+    }).then(setMintGasLimit).catch(noop)
 
     // eslint-disable-next-line
   }, [userProvider, VAULT_ADDRESS, VAULT_ABI])
@@ -306,6 +306,11 @@ export default function Deposit({
             </Button>
           </div>
         </GridItem>
+        {
+          isEmpty(VAULT_ADDRESS) && <GridItem xs={12} sm={12} md={12} lg={12}>
+            <p style={{ textAlign:'center', color: 'red' }}>Switch to the ETH chain firstly!</p>
+          </GridItem>
+        }
       </GridContainer>
       <Modal
         className={classes.modal}
