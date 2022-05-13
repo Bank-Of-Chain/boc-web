@@ -792,6 +792,11 @@ export default function Withdraw ({
             </GridContainer>
           </GridItem>
         )}
+        {
+          isEmpty(VAULT_ADDRESS) && <GridItem xs={12} sm={12} md={12} lg={12}>
+            <p style={{ textAlign:'center', color: 'red' }}>Switch to the ETH chain firstly!</p>
+          </GridItem>
+        }
       </GridContainer>
       <Modal
         className={classes.modal}
