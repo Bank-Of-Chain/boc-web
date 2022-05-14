@@ -42,7 +42,7 @@ export default function Deposit({
   const classes = useStyles()
   const dispatch = useDispatch()
   const [ethValue, setEthValue] = useState("")
-  const [mintGasLimit, setMintGasLimit] = useState(BigNumber.from("0"))
+  const [mintGasLimit, setMintGasLimit] = useState(BigNumber.from("174107"))
   const [gasPriceCurrent, setGasPriceCurrent] = useState()
   const [estimateValue, setEstimateValue] = useState("")
   const [isLoading, setIsLoading] = useState(false)
@@ -53,7 +53,7 @@ export default function Deposit({
       return 0
     }
     const gasPrice = BigNumber.from(parseInt(gasPriceCurrent, 16).toString())
-    // metamask gaslimit 比预估大些
+    // metamask gaslimit great than contract gaslimit, so add extra limit
     const metamaskExtraLimit = 114
     return mintGasLimit.add(metamaskExtraLimit).mul(gasPrice)
   }
@@ -223,6 +223,7 @@ export default function Deposit({
     if (!userProvider) {
       return
     }
+    userProvider.send("eth_gasPrice").then(setGasPriceCurrent).catch(noop)
     const timer = setInterval(() => {
       userProvider.send("eth_gasPrice").then(setGasPriceCurrent).catch(noop)
     }, 15000)
@@ -230,20 +231,20 @@ export default function Deposit({
   }, [userProvider])
 
   useEffect(() => {
-    if (isEmpty(userProvider) || mintGasLimit.gt(0) || isEmpty(VAULT_ADDRESS) || isEmpty(VAULT_ABI)) {
+    const estimatedUsedValue = BigNumber.from(10).pow(ethDecimals)
+    if (isEmpty(userProvider) || isEmpty(VAULT_ADDRESS) || isEmpty(VAULT_ABI) || ethBalance.lt(estimatedUsedValue)) {
       return
     }
-    userProvider.send("eth_gasPrice").then(setGasPriceCurrent).catch(noop)
     const signer = userProvider.getSigner()
     const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider)
     const nVaultWithUser = vaultContract.connect(signer)
-    nVaultWithUser.estimateGas.mint(ETH_ADDRESS, BigNumber.from(1).pow(ethDecimals), {
+    nVaultWithUser.estimateGas.mint(ETH_ADDRESS, estimatedUsedValue, {
       from: address,
-      value: BigNumber.from(1).pow(ethDecimals)
+      value: estimatedUsedValue
     }).then(setMintGasLimit).catch(noop)
 
     // eslint-disable-next-line
-  }, [userProvider, VAULT_ADDRESS, VAULT_ABI])
+  }, [userProvider, VAULT_ADDRESS, ethBalance, VAULT_ABI])
 
   const isLogin = !isEmpty(userProvider)
   const isValid = isValidValue()
@@ -288,8 +289,8 @@ export default function Deposit({
           </GridContainer>
         </GridItem>
         <GridItem xs={12} sm={12} md={12} lg={12} className={classes.gasPriceWrapper}>
-          <Muted>Gas Price:</Muted>
-          <Muted>&nbsp;&nbsp;{toFixed(parseInt(gasPriceCurrent?.toString() || 0, 16).toString(), 1e9, 6)} Gwei</Muted>
+          <Muted>Estimated Gas Fee:</Muted>
+          <Muted>&nbsp;&nbsp;{toFixed(getGasFee(), BigNumber.from(10).pow(ethDecimals), 6)} ETH</Muted>
         </GridItem>
         <GridItem xs={12} sm={12} md={12} lg={12}>
           <div className={classes.depositComfirmArea}>
