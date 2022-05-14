@@ -611,6 +611,35 @@ export default function Withdraw ({
     setToValue(formatBalance(ethiBalance, ethiDecimals, { showAll: true }))
   }
 
+  const addToken = async token => {
+    if (token === ETH_ADDRESS) {
+      return
+    }
+    try {
+      const tokenContract = new ethers.Contract(token, IERC20_ABI, userProvider)
+      // wasAdded is a boolean. Like any RPC method, an error may be thrown.
+      const wasAdded = await window.ethereum.request({
+        method: "wallet_watchAsset",
+        params: {
+          type: "ERC20", // Initially only supports ERC20, but eventually more!
+          options: {
+            address: token, // The address that the token is at.
+            symbol: await tokenContract.symbol(), // A ticker symbol or shorthand, up to 5 chars.
+            decimals: await tokenContract.decimals(), // The number of decimals in the token
+          },
+        },
+      })
+
+      if (wasAdded) {
+        console.log("Thanks for your interest!")
+      } else {
+        console.log("Your loss!")
+      }
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
   const renderEstimate = () => {
     if (isEstimate) {
       return (
@@ -649,8 +678,9 @@ export default function Withdraw ({
             color='transparent'
             target='_blank'
             style={{ fontSize: 14, paddingBottom: 20 }}
+            onClick={() => addToken(item.tokenAddress)}
           >
-            <AddIcon fontSize='small' style={{ position: "absolute", top: 25, left: 45 }} />
+            {item.tokenAddress !== ETH_ADDRESS && <AddIcon fontSize='small' style={{ position: "absolute", top: 25, left: 45 }} />}
             <img
               title='Add token address to wallet'
               className={classes.img}

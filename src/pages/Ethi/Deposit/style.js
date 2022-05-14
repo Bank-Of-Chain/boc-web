@@ -23,7 +23,6 @@ const componentsStyle = (theme) => ({
   depositComfirmArea: {
     display: "flex",
     justifyContent: "space-between",
-    marginTop: 14
   },
   tokenInfo: {
     display: "flex",
@@ -52,7 +51,13 @@ const componentsStyle = (theme) => ({
   tooltip: {
     fontSize: 14,
     width: 186
-  }
+  },
+  gasPriceWrapper: {
+    display: "flex",
+    height: "32px",
+    alignItems: "center",
+    marginTop: 12
+  },
 });
 
 export default componentsStyle;

@@ -287,6 +287,10 @@ export default function Deposit({
             </GridItem>
           </GridContainer>
         </GridItem>
+        <GridItem xs={12} sm={12} md={12} lg={12} className={classes.gasPriceWrapper}>
+          <Muted>Gas Price:</Muted>
+          <Muted>&nbsp;&nbsp;{toFixed(parseInt(gasPriceCurrent?.toString() || 0, 16).toString(), 1e9, 6)} Gwei</Muted>
+        </GridItem>
         <GridItem xs={12} sm={12} md={12} lg={12}>
           <div className={classes.depositComfirmArea}>
             <Muted>
