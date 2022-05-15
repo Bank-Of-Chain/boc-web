@@ -40,7 +40,8 @@ export default function HeaderLinks (props) {
 
   const dashboardUrlRender = () => {
     let nextChainId = CHAIN_ID
-    let nextVault = window.location.hash === '#/ethi' ? 'ethi' : 'usdi'
+    //TODO: 先默认都跳转usdi
+    let nextVault = window.location.hash === '#/ethi' ? 'usdi' : 'usdi'
 
     // 如果是ethi模块，则必须跳转eth链
     if(nextVault === 'ethi') {
