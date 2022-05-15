@@ -45,7 +45,34 @@ const config137 = {
     }
   },
   // 币安链一个区块2千万，使用90%的空间即可，过大会造成打块过慢
-  max_gas_limit: 1800 * 10 ** 4
+  max_gas_limit: 1800 * 10 ** 4,
+  chain_id: 137,
+  vaults: [{
+    id: 'invest',
+    name: 'Vault for Stable Coins',
+    path: '#/invest',
+    abi_version: 'v4.6',
+    VAULT_ADDRESS: '0x547382C0D1b23f707918D3c83A77317B71Aa8470',
+  }, {
+    id: 'mutilCoins',
+    name: 'Vault for USDi',
+    path: '#/mutils',
+    isAudit: true,
+    abi_version: 'beta-v1.5',
+    VAULT_ADDRESS: '0xd3feAe6c4fdfDE73Bd2fE99c8fE6944904DAA68A',
+    USDI_ADDRESS: '0x8DEb399a86f28f62f0F24daF56c4aDD8e57EEcD5',
+    isOpen: true
+  }, {
+    id: 'ethi',
+    name: 'Vault for ETHi',
+    description: '这是ethi的池子',
+    path: '#/ethi',
+    abi_version: 'ethi',
+    VAULT_ADDRESS: '',
+    ETHI_ADDRESS: '',
+    WETHI_ADDRESS: '',
+    isOpen: true
+  }]
 }
 
 const config56 = {
@@ -69,7 +96,34 @@ const config56 = {
     }
   },
   // 币安链一个区块8千万，使用90%的空间即可，过大会造成打块过慢
-  max_gas_limit: 7200 * 10 ** 4
+  max_gas_limit: 7200 * 10 ** 4,
+  chain_id: 56,
+  vaults: [{
+    id: 'invest',
+    name: 'Vault for Stable Coins',
+    path: '#/invest',
+    abi_version: 'v4.6',
+    VAULT_ADDRESS: '0x547382C0D1b23f707918D3c83A77317B71Aa8470',
+  }, {
+    id: 'mutilCoins',
+    name: 'Vault for USDi',
+    path: '#/mutils',
+    isAudit: true,
+    abi_version: 'beta-v1.5',
+    VAULT_ADDRESS: '0x76609c83dD684F0D4c0F0c9849db0a1b5a96CAB2',
+    USDI_ADDRESS: '0xCFC6E8577a414f561D459fC4a030e3463A500d29',
+    isOpen: true
+  }, {
+    id: 'ethi',
+    name: 'Vault for ETHi',
+    description: '这是ethi的池子',
+    path: '#/ethi',
+    abi_version: 'ethi',
+    VAULT_ADDRESS: '',
+    ETHI_ADDRESS: '',
+    WETHI_ADDRESS: '',
+    isOpen: true
+  }]
 }
 
 
@@ -95,7 +149,34 @@ const config1 = {
     }
   },
   // ETH链一个区块3千万，使用90%的空间即可，过大会造成打块过慢
-  max_gas_limit: 2700 * 10 ** 4
+  max_gas_limit: 2700 * 10 ** 4,
+  chain_id: 1,
+  vaults: [{
+    id: 'invest',
+    name: 'Vault for Stable Coins',
+    path: '#/invest',
+    abi_version: 'v4.6',
+    VAULT_ADDRESS: '0x547382C0D1b23f707918D3c83A77317B71Aa8470',
+  }, {
+    id: 'mutilCoins',
+    name: 'Vault for USDi',
+    path: '#/mutils',
+    isAudit: true,
+    abi_version: 'beta-v1.5',
+    VAULT_ADDRESS: '0xd5C7A01E49ab534e31ABcf63bA5a394fF1E5EfAC',
+    USDI_ADDRESS: '0xBe15Eed7D8e91D20263d4521c9eB0F4e3510bfBF',
+    isOpen: true
+  }, {
+    id: 'ethi',
+    name: 'Vault for ETHi',
+    description: '这是ethi的池子',
+    path: '#/ethi',
+    abi_version: 'ethi',
+    VAULT_ADDRESS: '0xDae16f755941cbC0C9D240233a6F581d1734DaA2',
+    ETHI_ADDRESS: '0x8cB9Aca95D1EdebBfe6BD9Da4DC4a2024457bD32',
+    WETHI_ADDRESS: '',
+    isOpen: true
+  }]
 }
 
 window.config = {

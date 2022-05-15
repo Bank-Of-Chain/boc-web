@@ -16,6 +16,8 @@ import RadioGroup from "@material-ui/core/RadioGroup"
 import Step from "@material-ui/core/Step"
 import WarningIcon from "@material-ui/icons/Warning"
 import FormControlLabel from "@material-ui/core/FormControlLabel"
+import Tooltip from "@material-ui/core/Tooltip"
+import InfoIcon from "@material-ui/icons/Info"
 
 import CustomTextField from "../../../components/CustomTextField"
 import BocStepper from "../../../components/Stepper/Stepper"
@@ -36,6 +38,9 @@ import {
   MAX_GAS_LIMIT,
   ORACLE_ADDITIONAL_SLIPPAGE,
 } from "../../../constants"
+
+// === Hooks === //
+import useRedeemFeeBps from "../../../hooks/useRedeemFeeBps"
 
 // === Utils === //
 import { getBestSwapInfo } from "piggy-finance-utils"
@@ -86,6 +91,14 @@ export default function Withdraw ({
   const [currentStep, setCurrentStep] = useState(0)
   const [withdrawError, setWithdrawError] = useState({})
 
+  const { value: redeemFeeBps } = useRedeemFeeBps({
+    userProvider,
+    VAULT_ADDRESS,
+    VAULT_ABI
+  })
+
+  const redeemFeeBpsPercent = redeemFeeBps.toNumber() / 100
+
   const getExchangePlatformAdapters = async (exchangeAggregator, userProvider) => {
     const adapters = await exchangeAggregator.getExchangeAdapters()
     const exchangePlatformAdapters = {}
@@ -125,7 +138,7 @@ export default function Withdraw ({
       const exchangeManager = await vaultContract.exchangeManager()
       const exchangeManagerContract = new ethers.Contract(exchangeManager, EXCHANGE_AGGREGATOR_ABI, userProvider)
       const exchangePlatformAdapters = await getExchangePlatformAdapters(exchangeManagerContract, userProvider)
-      console.log("estimate get exchange path:", tokens, amounts)
+      console.log("estimate get exchange path:", tokens, map(amounts, i => i.toString()))
       // 查询兑换路径
       let exchangeArray = await Promise.all(
         map(tokens, async (tokenItem, index) => {
@@ -134,7 +147,23 @@ export default function Withdraw ({
             return {}
           }
           const fromConstrat = new ethers.Contract(tokenItem, IERC20_ABI, userProvider)
-          const toTokenConstrat = new ethers.Contract(ETH_ADDRESS, IERC20_ABI, userProvider)
+          const fromDecimal = await fromConstrat.decimals()
+          if(BigNumber.from(10).pow(fromDecimal).gt(exchangeAmounts)) {
+            //TODO: 理论上这里面，不进行兑换即可，但是目前vault不支持
+            return {
+              fromAmount: exchangeAmounts,
+              fromToken: tokenItem,
+              toToken: tokenItem,
+              exchangeParam: {
+                encodeExchangeArgs: "0x0000000000000000000000000000000000000000000000000000000000000020000000000000000000000000c02aaa39b223fe8d0a0e5c4f27ead9083c756cc2000000000000000000000000eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee0000000000000000000000000000000000000000000000029c54a1016ca4e51f0000000000000000000000000000000000000000000000029a5359ddd60bd3060000000000000000000000000000000000000000000000029c54a1016ca4e51f00000000000000000000000000000000000000000000000000000000000001e00000000000000000000000000000000000000000000000000000000000000220000000000000000000000000000000000000000000000000000000000000028000000000000000000000000000000000000000000000000000000000000002e0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000050494747590100000000000000000000000000000000000000000000000000000000004000000000000000000000000000000000000000000000000000000000000000032000000000000000000000000000000000000000000000000000000000627eb8b8f583eed0d2c411ec918c2bb862191012000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001000000000000000000000000c02aaa39b223fe8d0a0e5c4f27ead9083c756cc200000000000000000000000000000000000000000000000000000000000000242e1a7d4d0000000000000000000000000000000000000000000000029c54a1016ca4e51f00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000024000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+                method: 0,
+                name: "paraswap",
+                oracleAdditionalSlippage: 0,
+                platform: "0x5133BBdfCCa3Eb4F739D599ee4eC45cBCD0E16c5",
+                slippage: 0,
+              }
+            }
+          }
           const fromToken = {
             decimals: parseInt((await fromConstrat.decimals()).toString()),
             symbol: await fromConstrat.symbol(),
@@ -144,7 +173,7 @@ export default function Withdraw ({
             const bestSwapInfo = await getBestSwapInfo(
               fromToken,
               {
-                decimals: parseInt((await toTokenConstrat.decimals()).toString()),
+                decimals: 18,
                 address: ETH_ADDRESS,
               },
               amounts[index].toString(),
@@ -173,7 +202,7 @@ export default function Withdraw ({
           warmDialog({
             open: true,
             type: "error",
-            message: "Failed to fetch the exchange path. Please cancel the exchange or try again later.",
+            message: "Failed to fetch the exchange path. Please try again later.",
           }),
         )
         return
@@ -225,9 +254,8 @@ export default function Withdraw ({
       } else if (errorMsg.endsWith("'RP'")) {
         tip = "Vault is in rebase status, please try again later!"
       } else if (
-        errorMsg.endsWith("'loss much'") ||
         errorMsg.indexOf("loss much") !== -1 ||
-        errorMsg.endsWith('"amount lower than minimum"')
+        errorMsg.indexOf("amount lower than minimum") !== -1
       ) {
         tip = "Failed to withdraw, please increase the Max Loss!"
       } else if (
@@ -239,7 +267,7 @@ export default function Withdraw ({
         errorMsg.endsWith("'Received amount of tokens are less then expected'") ||
         errorMsg.endsWith("Error: VM Exception while processing transaction: reverted with reason string 'OL'")
       ) {
-        tip = "Failed to exchange, please increase the exchange slippage or close exchange!"
+        tip = "Failed to exchange, please increase the exchange slippage"
       } else {
         tip = errorMsg
       }
@@ -318,7 +346,7 @@ export default function Withdraw ({
         [],
       )
 
-      console.log("tokens, amounts=", tokens, amounts)
+      console.log("tokens, amounts=", tokens, map(amounts, i => i.toString()))
       preWithdrawGetCoins = Date.now()
       setCurrentStep(2)
       const exchangeManager = await vaultContract.exchangeManager()
@@ -332,7 +360,24 @@ export default function Withdraw ({
             return {}
           }
           const fromConstrat = new ethers.Contract(tokenItem, IERC20_ABI, userProvider)
-          const toTokenConstrat = new ethers.Contract(ETH_ADDRESS, IERC20_ABI, userProvider)
+          // const toTokenConstrat = new ethers.Contract(token, IERC20_ABI, userProvider)
+          const fromDecimal = await fromConstrat.decimals()
+          if(BigNumber.from(10).pow(fromDecimal).gt(exchangeAmounts)) {
+            //TODO: 理论上这里面，不进行兑换即可，但是目前vault不支持
+            return {
+              fromAmount: exchangeAmounts,
+              fromToken: tokenItem,
+              toToken: tokenItem,
+              exchangeParam: {
+                encodeExchangeArgs: "0x0000000000000000000000000000000000000000000000000000000000000020000000000000000000000000c02aaa39b223fe8d0a0e5c4f27ead9083c756cc2000000000000000000000000eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee0000000000000000000000000000000000000000000000029c54a1016ca4e51f0000000000000000000000000000000000000000000000029a5359ddd60bd3060000000000000000000000000000000000000000000000029c54a1016ca4e51f00000000000000000000000000000000000000000000000000000000000001e00000000000000000000000000000000000000000000000000000000000000220000000000000000000000000000000000000000000000000000000000000028000000000000000000000000000000000000000000000000000000000000002e0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000050494747590100000000000000000000000000000000000000000000000000000000004000000000000000000000000000000000000000000000000000000000000000032000000000000000000000000000000000000000000000000000000000627eb8b8f583eed0d2c411ec918c2bb862191012000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001000000000000000000000000c02aaa39b223fe8d0a0e5c4f27ead9083c756cc200000000000000000000000000000000000000000000000000000000000000242e1a7d4d0000000000000000000000000000000000000000000000029c54a1016ca4e51f00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000024000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+                method: 0,
+                name: "paraswap",
+                oracleAdditionalSlippage: 0,
+                platform: "0x5133BBdfCCa3Eb4F739D599ee4eC45cBCD0E16c5",
+                slippage: 0,
+              }
+            }
+          }
           const fromToken = {
             decimals: parseInt((await fromConstrat.decimals()).toString()),
             symbol: await fromConstrat.symbol(),
@@ -342,7 +387,7 @@ export default function Withdraw ({
             const bestSwapInfo = await getBestSwapInfo(
               fromToken,
               {
-                decimals: parseInt((await toTokenConstrat.decimals()).toString()),
+                decimals: 18,
                 address: ETH_ADDRESS,
               },
               amounts[index].toString(),
@@ -369,7 +414,7 @@ export default function Withdraw ({
       if (some(exchangeArray, isUndefined)) {
         return setWithdrawError({
           type: "error",
-          message: "Failed to fetch the exchange path. Please cancel the exchange or try again later.",
+          message: "Failed to fetch the exchange path. Please try again later.",
         })
       }
       getSwapInfoFinish = Date.now()
@@ -431,9 +476,8 @@ export default function Withdraw ({
       } else if (errorMsg.endsWith("'RP'")) {
         tip = "Vault is in rebase status, please try again later!"
       } else if (
-        errorMsg.endsWith("'loss much'") ||
         errorMsg.indexOf("loss much") !== -1 ||
-        errorMsg.endsWith('"amount lower than minimum"')
+        errorMsg.indexOf('amount lower than minimum') !== -1
       ) {
         tip = "Failed to withdraw, please increase the Max Loss!"
       } else if (
@@ -445,7 +489,7 @@ export default function Withdraw ({
         errorMsg.endsWith("'Received amount of tokens are less then expected'") ||
         errorMsg.endsWith("Error: VM Exception while processing transaction: reverted with reason string 'OL'")
       ) {
-        tip = "Failed to exchange, please increase the exchange slippage or close exchange!"
+        tip = "Failed to exchange, please increase the exchange slippage!"
       } else {
         tip = errorMsg
       }
@@ -548,7 +592,10 @@ export default function Withdraw ({
     if (isEmpty(toValue)) {
       setEstimateWithdrawArray([])
     }
-    return () => estimateWithdraw.cancel()
+    return () => {
+      setEstimateWithdrawArray([])
+      return estimateWithdraw.cancel()
+    }
     // eslint-disable-next-line
   }, [toValue, allowMaxLoss, slipper, isOpenEstimate])
 
@@ -562,6 +609,35 @@ export default function Withdraw ({
 
   const handleMaxClick = () => {
     setToValue(formatBalance(ethiBalance, ethiDecimals, { showAll: true }))
+  }
+
+  const addToken = async token => {
+    if (token === ETH_ADDRESS) {
+      return
+    }
+    try {
+      const tokenContract = new ethers.Contract(token, IERC20_ABI, userProvider)
+      // wasAdded is a boolean. Like any RPC method, an error may be thrown.
+      const wasAdded = await window.ethereum.request({
+        method: "wallet_watchAsset",
+        params: {
+          type: "ERC20", // Initially only supports ERC20, but eventually more!
+          options: {
+            address: token, // The address that the token is at.
+            symbol: await tokenContract.symbol(), // A ticker symbol or shorthand, up to 5 chars.
+            decimals: await tokenContract.decimals(), // The number of decimals in the token
+          },
+        },
+      })
+
+      if (wasAdded) {
+        console.log("Thanks for your interest!")
+      } else {
+        console.log("Your loss!")
+      }
+    } catch (error) {
+      console.log(error)
+    }
   }
 
   const renderEstimate = () => {
@@ -598,13 +674,15 @@ export default function Withdraw ({
       return (
         <GridItem key={item.tokenAddress} xs={12} sm={12} md={6} lg={6}>
           <Button
-            title='Add token address to wallet'
+            title={toFixed(item.amounts, BigNumber.from(10).pow(item.decimals))}
             color='transparent'
             target='_blank'
             style={{ fontSize: 14, paddingBottom: 20 }}
+            onClick={() => addToken(item.tokenAddress)}
           >
-            <AddIcon fontSize='small' style={{ position: "absolute", top: 25, left: 45 }} />
+            {item.tokenAddress !== ETH_ADDRESS && <AddIcon fontSize='small' style={{ position: "absolute", top: 25, left: 45 }} />}
             <img
+              title='Add token address to wallet'
               className={classes.img}
               style={{ borderRadius: "50%" }}
               alt=''
@@ -660,6 +738,15 @@ export default function Withdraw ({
             >
               {isLogin ? "Withdraw" : "Connect Wallet"}
             </Button>
+            <Tooltip
+              classes={{
+                tooltip: classes.tooltip
+              }}
+              placement='top'
+              title={`${redeemFeeBpsPercent}% withdrawal fee of the principal.`}
+            >
+              <InfoIcon classes={{ root: classes.labelToolTipIcon }} style={{ right: '-5px', left: 'auto' }} />
+            </Tooltip>
           </div>
         </GridItem>
         {isOpenEstimate && (
@@ -771,6 +858,11 @@ export default function Withdraw ({
             </GridContainer>
           </GridItem>
         )}
+        {
+          isEmpty(VAULT_ADDRESS) && <GridItem xs={12} sm={12} md={12} lg={12}>
+            <p style={{ textAlign:'center', color: 'red' }}>Switch to the ETH chain firstly!</p>
+          </GridItem>
+        }
       </GridContainer>
       <Modal
         className={classes.modal}

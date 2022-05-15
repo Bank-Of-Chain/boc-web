@@ -45,7 +45,8 @@ const config137 = {
     }
   },
   // 币安链一个区块2千万，使用90%的空间即可，过大会造成打块过慢
-  max_gas_limit: 1800 * 10 ** 4
+  max_gas_limit: 1800 * 10 ** 4,
+  chain_id: 137,
 }
 
 const config56 = {
@@ -66,7 +67,8 @@ const config56 = {
     }
   },
   // 币安链一个区块8千万，使用90%的空间即可，过大会造成打块过慢
-  max_gas_limit: 7200 * 10 ** 4
+  max_gas_limit: 7200 * 10 ** 4,
+  chain_id: 56,
 }
 
 const config1 = {
@@ -80,7 +82,6 @@ const config1 = {
   usdi_address: "0xf090f16dEc8b6D24082Edd25B1C8D26f2bC86128",
   exchange_extra_params: {
     oneInchV4: {
-      useHttp: true,
       network: 1,
       protocols: ['CURVE', 'CURVE_V2', 'SUSHI', 'UNISWAP_V2', 'UNISWAP_V3', 'DODO_V2', 'COMPOUND', 'AAVE', 'BALANCER', 'BANCOR', 'MSTABLE', 'AAVE_V2', 'BALANCER_V2']
     },
@@ -91,7 +92,34 @@ const config1 = {
     }
   },
   // ETH链一个区块3千万，使用90%的空间即可，过大会造成打块过慢
-  max_gas_limit: 2700 * 10 ** 4
+  max_gas_limit: 2700 * 10 ** 4,
+  chain_id: 1,
+  vaults: [{
+    id: 'invest',
+    name: 'Vault for Stable Coins',
+    path: '#/invest',
+    abi_version: 'v4.6',
+    VAULT_ADDRESS: '0x547382C0D1b23f707918D3c83A77317B71Aa8470',
+  }, {
+    id: 'mutilCoins',
+    name: 'Vault for USDi',
+    path: '#/mutils',
+    isAudit: true,
+    abi_version: 'beta-v1.5',
+    VAULT_ADDRESS: '0x9BcC604D4381C5b0Ad12Ff3Bf32bEdE063416BC7',
+    USDI_ADDRESS: '0xf090f16dEc8b6D24082Edd25B1C8D26f2bC86128',
+    isOpen: true
+  }, {
+    id: 'ethi',
+    name: 'Vault for ETHi',
+    description: '这是ethi的池子',
+    path: '#/ethi',
+    abi_version: 'ethi',
+    VAULT_ADDRESS: '0xaC47e91215fb80462139756f43438402998E4A3a',
+    ETHI_ADDRESS: '0xdFdE6B33f13de2CA1A75A6F7169f50541B14f75b',
+    WETHI_ADDRESS: '',
+    isOpen: true
+  }]
 }
 
 window.config = {

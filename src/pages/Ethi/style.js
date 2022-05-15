@@ -182,15 +182,27 @@ const componentsStyle = (theme) => ({
     margin: "42px 0 0 0"
   },
   slider: {
-    position: 'fixed',
-    top: '40%',
-    backgroundColor: 'azure'
+    position: 'absolute',
+    top: '50px',
+    left: 'calc(50% - 33rem)',
+    backgroundColor: '#271f72',
+    color: 'azure'
   },
   check:{
-    backgroundColor: 'darkgray'
+    background: '#271f72'
   },
   text: {
-    color: '#3f51b5'
+    color: 'azure'
+  },
+  spliter: {
+    display: 'flex',
+    justifyContent: 'center',
+    bottom: 0,
+    height: 2,
+    position: 'absolute',
+    transition: 'all 300ms cubic-bezier(0.4, 0, 0.2, 1) 0ms',
+    width: '54%',
+    backgroundColor: '#fff'
   }
 });
 

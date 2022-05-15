@@ -43,6 +43,9 @@ import {
   ORACLE_ADDITIONAL_SLIPPAGE,
 } from "../../../constants"
 
+// === Hooks === //
+import useRedeemFeeBps from "../../../hooks/useRedeemFeeBps"
+
 // === Utils === //
 import { getBestSwapInfo } from "piggy-finance-utils"
 import isUndefined from "lodash/isUndefined"
@@ -90,10 +93,19 @@ export default function Withdraw ({
   const [slipper, setSlipper] = useState("0.3")
   const [estimateWithdrawArray, setEstimateWithdrawArray] = useState([])
   const [isEstimate, setIsEstimate] = useState(false)
-  const [isOpenEstimate, setIsOpenEstimate] = useState(false)
+  const [isOpenEstimate, setIsOpenEstimate] = useState(true)
   const [isWithdrawLoading, setIsWithdrawLoading] = useState(false)
   const [currentStep, setCurrentStep] = useState(0)
   const [withdrawError, setWithdrawError] = useState({})
+  
+  const { value: redeemFeeBps } = useRedeemFeeBps({
+    userProvider,
+    VAULT_ADDRESS,
+    VAULT_ABI
+  })
+
+  const redeemFeeBpsPercent = redeemFeeBps.toNumber() / 100
+
   const shouldExchange = receiveToken !== RECEIVE_MIX_VALUE
   const token = shouldExchange ? receiveToken : USDT_ADDRESS
 
@@ -118,7 +130,7 @@ export default function Withdraw ({
         )
         .toFixed(),
     )
-    const allowMaxLossValue = BigNumber.from(10000 - parseInt(100 * parseFloat(allowMaxLoss))).mul(nextValue).div(BigNumber.from(1e4))
+    const allowMaxLossValue = BigNumber.from(10000 - parseInt(100 * (parseFloat(allowMaxLoss) + redeemFeeBpsPercent))).mul(nextValue).div(BigNumber.from(1e4))
     const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider)
     const signer = userProvider.getSigner()
     const vaultContractWithSigner = vaultContract.connect(signer)
@@ -132,11 +144,11 @@ export default function Withdraw ({
         false,
         [],
       )
+      console.log('tokens, amounts=', tokens, map(amounts, i => i.toString()))
       if (shouldExchange) {
         const exchangeManager = await vaultContract.exchangeManager()
         const exchangeManagerContract = new ethers.Contract(exchangeManager, EXCHANGE_AGGREGATOR_ABI, userProvider)
         const exchangePlatformAdapters = await getExchangePlatformAdapters(exchangeManagerContract, userProvider)
-        console.log("estimate get exchange path:", tokens, amounts)
         // 查询兑换路径
         let exchangeArray = await Promise.all(
           map(tokens, async (tokenItem, index) => {
@@ -145,6 +157,11 @@ export default function Withdraw ({
               return {}
             }
             const fromConstrat = new ethers.Contract(tokenItem, IERC20_ABI, userProvider)
+            const fromDecimal = await fromConstrat.decimals()
+            if(BigNumber.from(10).pow(fromDecimal).gt(exchangeAmounts)) {
+              //TODO: 理论上这里面，不进行兑换即可，但是目前vault不支持
+              return {}
+            }
             const toTokenConstrat = new ethers.Contract(token, IERC20_ABI, userProvider)
             const fromToken = {
               decimals: parseInt((await fromConstrat.decimals()).toString()),
@@ -184,7 +201,7 @@ export default function Withdraw ({
             warmDialog({
               open: true,
               type: "error",
-              message: "Failed to fetch the exchange path. Please cancel the exchange or try again later.",
+              message: "Failed to fetch the exchange path. Please try again later or choose mixed token",
             }),
           )
           return
@@ -242,7 +259,10 @@ export default function Withdraw ({
         tip = 'Vault is in adjustment status, please try again later!'
       } else if (errorMsg.endsWith("'RP'")) {
         tip = 'Vault is in rebase status, please try again later!'
-      } else if (errorMsg.endsWith("'loss much'") || errorMsg.indexOf("loss much") !== -1 || errorMsg.endsWith('"amount lower than minimum"')) {
+      } else if (
+        errorMsg.indexOf("loss much") !== -1 ||
+        errorMsg.indexOf('amount lower than minimum') !== -1
+      ) {
         tip = 'Failed to withdraw, please increase the Max Loss!'
       } else if (
         errorMsg.endsWith("'Return amount is not enough'") ||
@@ -254,7 +274,7 @@ export default function Withdraw ({
         errorMsg.endsWith("'Received amount of tokens are less then expected'") ||
         errorMsg.endsWith("Error: VM Exception while processing transaction: reverted with reason string 'OL'")
       ) {
-        tip = 'Failed to exchange, please increase the exchange slippage or close exchange!'
+        tip = 'Failed to exchange, please increase the exchange slippage or choose mixed token!'
       } else {
         tip = errorMsg
       }
@@ -315,7 +335,7 @@ export default function Withdraw ({
         )
         .toFixed(),
     )
-    const allowMaxLossValue = BigNumber.from(10000 - parseInt(100 * parseFloat(allowMaxLoss))).mul(nextValue).div(BigNumber.from(1e4))
+    const allowMaxLossValue = BigNumber.from(10000 - parseInt(100 * (parseFloat(allowMaxLoss) + redeemFeeBpsPercent))).mul(nextValue).div(BigNumber.from(1e4))
     try {
       const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider)
       const vaultContractWithSigner = vaultContract.connect(signer)
@@ -332,7 +352,7 @@ export default function Withdraw ({
           [],
         )
 
-        console.log("tokens, amounts=", tokens, amounts)
+        console.log("tokens, amounts=", tokens, map(amounts, i => i.toString()))
         preWithdrawGetCoins = Date.now()
         setCurrentStep(2)
         const exchangeManager = await vaultContract.exchangeManager()
@@ -347,6 +367,11 @@ export default function Withdraw ({
             }
             const fromConstrat = new ethers.Contract(tokenItem, IERC20_ABI, userProvider)
             const toTokenConstrat = new ethers.Contract(token, IERC20_ABI, userProvider)
+            const fromDecimal = await fromConstrat.decimals()
+            if(BigNumber.from(10).pow(fromDecimal).gt(exchangeAmounts)) {
+              //TODO: 理论上这里面，不进行兑换即可，但是目前vault不支持
+              return {}
+            }
             const fromToken = {
               decimals: parseInt((await fromConstrat.decimals()).toString()),
               symbol: await fromConstrat.symbol(),
@@ -384,7 +409,7 @@ export default function Withdraw ({
       if (some(exchangeArray, isUndefined)) {
         return setWithdrawError({
           type: "error",
-          message: "Failed to fetch the exchange path. Please cancel the exchange or try again later.",
+          message: "Failed to fetch the exchange path. Please try again later or choose mixed token",
         })
       }
       getSwapInfoFinish = Date.now()
@@ -454,7 +479,7 @@ export default function Withdraw ({
         errorMsg.endsWith("'Received amount of tokens are less then expected'") ||
         errorMsg.endsWith("Error: VM Exception while processing transaction: reverted with reason string 'OL'")
       ) {
-        tip = 'Failed to exchange, please increase the exchange slippage or close exchange!'
+        tip = 'Failed to exchange, please increase the exchange slippage or choose mixed token!'
       } else {
         tip = errorMsg
       }
@@ -587,7 +612,10 @@ export default function Withdraw ({
     if (isEmpty(toValue)) {
       setEstimateWithdrawArray([])
     }
-    return () => estimateWithdraw.cancel()
+    return () => {
+      setEstimateWithdrawArray([])
+      return estimateWithdraw.cancel()
+    }
     // eslint-disable-next-line
   }, [toValue, allowMaxLoss, slipper, shouldExchange, isOpenEstimate, token])
 
@@ -704,6 +732,15 @@ export default function Withdraw ({
             onChange={handleReceiveTokenChange}
             options={selectOptions}
           />
+          {receiveToken === 'Mix' && <Tooltip
+            classes={{
+              tooltip: classes.tooltip
+            }}
+            placement='top'
+            title={'Mix mode will return a variety of coins, such as USDT/USDC/TUSD/BUSD, etc. You can view the estimated currency and quantity in Advanced Setting'}
+          >
+            <InfoIcon style={{ fontSize: 16 }} />
+          </Tooltip>}
         </GridItem>
         <GridItem xs={12} sm={12} md={12} lg={12}>
           <div className={classes.withdrawComfirmArea}>
@@ -727,6 +764,15 @@ export default function Withdraw ({
             >
               {isLogin ? "Withdraw" : "Connect Wallet"}
             </Button>
+            <Tooltip
+              classes={{
+                tooltip: classes.tooltip
+              }}
+              placement='top'
+              title={`${redeemFeeBpsPercent}% withdrawal fee of the principal.`}
+            >
+              <InfoIcon classes={{ root: classes.labelToolTipIcon }} style={{ right: '-5px', left: 'auto' }} />
+            </Tooltip>
           </div>
         </GridItem>
         {isOpenEstimate && (
@@ -744,7 +790,7 @@ export default function Withdraw ({
                 <FormControlLabel
                   labelPlacement='start'
                   control={
-                    <CustomInput
+                      <CustomInput
                       inputProps={{
                         placeholder: "Allow loss percent",
                         value: allowMaxLoss,
@@ -774,7 +820,9 @@ export default function Withdraw ({
                   style={{ marginLeft: 0 }}
                   label={
                     <div className={classes.settingItemLabel}>
-                      <Muted>Max Loss:</Muted>
+                      <Muted className={classes.mutedLabel}>
+                          Max Loss:
+                      </Muted>
                     </div>
                   }
                 />

@@ -45,7 +45,8 @@ const config137 = {
     }
   },
   // 币安链一个区块2千万，使用90%的空间即可，过大会造成打块过慢
-  max_gas_limit: 1800 * 10 ** 4
+  max_gas_limit: 1800 * 10 ** 4,
+  chain_id: 137,
 }
 
 const config56 = {
@@ -68,16 +69,19 @@ const config56 = {
     }
   },
   // 币安链一个区块8千万，使用90%的空间即可，过大会造成打块过慢
-  max_gas_limit: 7200 * 10 ** 4
+  max_gas_limit: 7200 * 10 ** 4,
+  chain_id: 56,
 }
 
 const config1 = {
   ...configBase,
+  abi_version: 'beta-v1.5',
   apy_server: 'https://service-inte.bankofchain.io/api/1',
-  vault_address: "",
+  vault_address: "0x9BcC604D4381C5b0Ad12Ff3Bf32bEdE063416BC7",
   usdt_address: "0xdAC17F958D2ee523a2206206994597C13D831ec7",
   usdc_address: "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
   dai_address: "0x6B175474E89094C44Da98b954EedeAC495271d0F",
+  usdi_address: "0xf090f16dEc8b6D24082Edd25B1C8D26f2bC86128",
   exchange_extra_params: {
     oneInchV4: {
       useHttp: true,
@@ -91,12 +95,13 @@ const config1 = {
     }
   },
   // ETH链一个区块3千万，使用90%的空间即可，过大会造成打块过慢
-  max_gas_limit: 2700 * 10 ** 4
+  max_gas_limit: 2700 * 10 ** 4,
+  chain_id: 1,
 }
 
 window.config = {
   // 本地链
-  31337: config56,
+  31337: config1,
   // polygon
   137: config137,
   // bsc
