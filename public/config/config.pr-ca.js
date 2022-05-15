@@ -6,7 +6,7 @@
   usdt_address: '',
   usdc_address: "",
   dai_address: "",
-  abi_version: 'v4.6',
+  abi_version: 'beta-v1.5',
   community_url: 'https://discord.com/channels/910840145039749141',
   telegram_url: 'https://t.me/joinchat/mSxXlD_it0QyNzll',
   aboutus_url: 'https://piggyfinance.github.io/docs/zh/aboutus/',

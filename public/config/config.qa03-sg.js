@@ -7,7 +7,7 @@ const configBase = {
   usdc_address: "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
   dai_address: "0x6B175474E89094C44Da98b954EedeAC495271d0F",
   chain_browser_url: '',
-  abi_version: 'v4.6',
+  abi_version: 'beta-v1.5',
   community_url: 'https://discord.com/channels/910840145039749141',
   telegram_url: 'https://t.me/joinchat/mSxXlD_it0QyNzll',
   aboutus_url: 'https://piggyfinance.github.io/docs/zh/aboutus/',

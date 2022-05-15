@@ -7,6 +7,7 @@ const configBase = {
   usdc_address: "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
   dai_address: "0x6B175474E89094C44Da98b954EedeAC495271d0F",
   chain_browser_url: '',
+  abi_version: 'beta-v1.5',
   community_url: 'https://discord.com/channels/910840145039749141',
   telegram_url: 'https://t.me/joinchat/mSxXlD_it0QyNzll',
   aboutus_url: 'https://piggyfinance.github.io/docs/zh/aboutus/',
@@ -115,9 +116,10 @@ const config56 = {
 
 const config1 = {
   ...configBase,
-  apy_server: 'http://localhost:5000',
   abi_version: 'beta-v1.5',
-  vault_address: "0xdFdE6B33f13de2CA1A75A6F7169f50541B14f75b",
+  apy_server: 'http://localhost:5000',
+  vault_address: "0x38A70c040CA5F5439ad52d0e821063b0EC0B52b6",
+  usdi_address: "0xe039608E695D21aB11675EBBA00261A0e750526c",
   usdt_address: "0xdAC17F958D2ee523a2206206994597C13D831ec7",
   usdc_address: "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
   dai_address: "0x6B175474E89094C44Da98b954EedeAC495271d0F",

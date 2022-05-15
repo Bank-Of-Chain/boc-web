@@ -55,7 +55,7 @@ function Select({
         })}>
           {map(options, (opt) => (
             <li
-            key={opt.value}
+              key={opt.value}
               className={classNames(classes.selectItem, {
                 [classes.selectActiveItem]: value === opt.value
               })}
