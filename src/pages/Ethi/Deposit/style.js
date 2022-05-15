@@ -23,7 +23,6 @@ const componentsStyle = (theme) => ({
   depositComfirmArea: {
     display: "flex",
     justifyContent: "space-between",
-    marginTop: 16
   },
   tokenInfo: {
     display: "flex",
@@ -40,6 +39,24 @@ const componentsStyle = (theme) => ({
   },
   settingItemLabel: {
     marginRight: 16,
+  },
+  ethBalanceWrapper: {
+    display: "flex",
+    alignItems: "center"
+  },
+  labelToolTipIcon: {
+    fontSize: 16,
+    marginRight: 2
+  },
+  tooltip: {
+    fontSize: 14,
+    width: 186
+  },
+  gasPriceWrapper: {
+    display: "flex",
+    height: "32px",
+    alignItems: "center",
+    marginTop: 12
   },
 });
 

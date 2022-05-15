@@ -29,12 +29,27 @@ import find from "lodash/find"
 import { hasWalletInstalled } from "./../../helpers/plugin-util"
 
 // === Constants === //
-import { NET_WORKS, DASHBOARD_URL, DOCUMENT_URL } from "./../../constants"
+import { NET_WORKS, DASHBOARD_URL, DOCUMENT_URL, CHAIN_ID } from "./../../constants"
+
+const CHAIN_SELECTOR_SHOW_ROUTER = ['#/mutils']
 
 const useStyles = makeStyles(styles)
 export default function HeaderLinks (props) {
   const { address, userProvider, loadWeb3Modal, logoutOfWeb3Modal } = props
   const classes = useStyles()
+
+  const dashboardUrlRender = () => {
+    let nextChainId = CHAIN_ID
+    //TODO: 先默认都跳转usdi
+    let nextVault = window.location.hash === '#/ethi' ? 'usdi' : 'usdi'
+
+    // 如果是ethi模块，则必须跳转eth链
+    if(nextVault === 'ethi') {
+      nextChainId = 1
+    }
+    return `${DASHBOARD_URL}/#/?chain=${nextChainId}&vault=${nextVault}`
+  }
+
   return (
     <List className={classes.list}>
       <ListItem className={classes.listItem}>
@@ -43,7 +58,7 @@ export default function HeaderLinks (props) {
         </Button>
       </ListItem>
       <ListItem className={classes.listItem}>
-        <Button color='transparent' target='_blank' href={DASHBOARD_URL} className={classes.navLink}>
+        <Button color='transparent' target='_blank' href={dashboardUrlRender()} className={classes.navLink}>
           <InsertChartIcon className={classes.icons}></InsertChartIcon> Dashboard
         </Button>
       </ListItem>
@@ -66,22 +81,24 @@ export default function HeaderLinks (props) {
           ]}
         />
       </ListItem>
-      <ListItem className={classes.listItem}>
-        <CustomDropdown
-          noLiPadding
-          buttonText={get(find(NET_WORKS, { chainId: props.selectedChainId }), "name", "Networks")}
-          buttonProps={{
-            className: classes.navLink,
-            color: "transparent",
-          }}
-          buttonIcon={Apps}
-          dropdownList={map(NET_WORKS, i => (
-            <a onClick={() => props.changeNetwork(i)} className={classes.dropdownLink}>
-              {i.name}
-            </a>
-          ))}
-        />
-      </ListItem>
+      {
+        CHAIN_SELECTOR_SHOW_ROUTER.includes(window.location.hash) && <ListItem className={classes.listItem}>
+          <CustomDropdown
+            noLiPadding
+            buttonText={get(find(NET_WORKS, { chainId: CHAIN_ID }), "name", "Networks")}
+            buttonProps={{
+              className: classes.navLink,
+              color: "transparent",
+            }}
+            buttonIcon={Apps}
+            dropdownList={map(NET_WORKS, i => (
+              <a onClick={() => props.changeNetwork(i)} className={classes.dropdownLink}>
+                {i.name}
+              </a>
+            ))}
+          />
+        </ListItem>
+      }
       {location.hash === "#/" ? (
         <ListItem className={classes.listItem}>
           <Button className={`${classes.navLink} ${classes.colorfulLink}`} color='colorfull' size='lg' href='/#/mutils'>

@@ -57,7 +57,6 @@ Date.prototype.format = function (fmt) {
 const Home = lazy(() => import("./pages/Home/index"))
 const Invest = lazy(() => import("./pages/Invest/index"))
 const InvestNew = lazy(() => import("./pages/InvestNew/index"))
-const Vaults = lazy(() => import("./pages/Vaults/index"))
 const Ethi = lazy(() => import("./pages/Ethi/index"))
 
 const web3Modal = new SafeAppWeb3Modal({
@@ -145,51 +144,58 @@ function App () {
       }, 100)
     }
   }, [selectedChainId])
-  const changeNetwork = async targetNetwork => {
-    if (isEmpty(targetNetwork)) return
-    // 如果metamask已经使用的是targetNetwork的话，则修改localStorage.REACT_APP_NETWORK_TYPE之后，进行页面刷新。
-    if (targetNetwork.chainId === selectedChainId) {
-      localStorage.REACT_APP_NETWORK_TYPE = targetNetwork.chainId
-      setTimeout(() => {
-        window.location.reload()
-      }, 1)
-      return
-    }
-    const ethereum = window.ethereum
-    const data = [
-      {
-        chainId: "0x" + targetNetwork.chainId.toString(16),
-        chainName: targetNetwork.name,
-        nativeCurrency: targetNetwork.nativeCurrency,
-        rpcUrls: [targetNetwork.rpcUrl],
-        blockExplorerUrls: [targetNetwork.blockExplorer],
-      },
-    ]
-    console.log("data", data)
+  const changeNetwork = targetNetwork => {
+    return new Promise(async (resolver, rejcet) => {
+      if (isEmpty(targetNetwork)) return
+      // 如果metamask已经使用的是targetNetwork的话，则修改localStorage.REACT_APP_NETWORK_TYPE之后，进行页面刷新。
+      if (targetNetwork.chainId === selectedChainId) {
+        localStorage.REACT_APP_NETWORK_TYPE = targetNetwork.chainId
+        setTimeout(() => {
+          window.location.reload()
+        }, 1)
+        return
+      }
+      const ethereum = window.ethereum
+      const data = [
+        {
+          chainId: "0x" + targetNetwork.chainId.toString(16),
+          chainName: targetNetwork.name,
+          nativeCurrency: targetNetwork.nativeCurrency,
+          rpcUrls: [targetNetwork.rpcUrl],
+          blockExplorerUrls: [targetNetwork.blockExplorer],
+        },
+      ]
+      console.log("data", data)
 
-    let switchTx
-    // https://docs.metamask.io/guide/rpc-api.html#other-rpc-methods
-    try {
-      switchTx = await ethereum.request({
-        method: "wallet_switchEthereumChain",
-        params: [{ chainId: data[0].chainId }],
-      })
-    } catch (switchError) {
-      // not checking specific error code, because maybe we're not using MetaMask
+      let switchTx
+      // https://docs.metamask.io/guide/rpc-api.html#other-rpc-methods
       try {
         switchTx = await ethereum.request({
-          method: "wallet_addEthereumChain",
-          params: data,
+          method: "wallet_switchEthereumChain",
+          params: [{ chainId: data[0].chainId }],
         })
-      } catch (addError) {
-        console.log("addError=", addError)
-        // handle "add" error
+      } catch (switchError) {
+        if (switchError.code === 4001) {
+          rejcet()
+        }
+        // not checking specific error code, because maybe we're not using MetaMask
+        try {
+          switchTx = await ethereum.request({
+            method: "wallet_addEthereumChain",
+            params: data,
+          })
+        } catch (addError) {
+          console.log("addError=", addError)
+          rejcet()
+          // handle "add" error
+        }
       }
-    }
 
-    if (switchTx) {
-      console.log(switchTx)
-    }
+      if (switchTx) {
+        console.log(switchTx)
+      }
+      resolver()
+    })
   }
 
   const modalJsx = (isOpen, renderText) => {
@@ -314,19 +320,6 @@ function App () {
             >
               <Frame {...nextProps}>
                 <Home {...nextProps} />
-              </Frame>
-            </Suspense>
-          </Route>
-          <Route path='/vaults'>
-            <Suspense
-              fallback={
-                <Backdrop className={classes.backdrop} open>
-                  <CircularProgress color='inherit' />
-                </Backdrop>
-              }
-            >
-              <Frame {...nextProps}>
-                <Vaults {...nextProps} />
               </Frame>
             </Suspense>
           </Route>

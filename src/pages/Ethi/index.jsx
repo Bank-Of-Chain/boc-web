@@ -27,7 +27,7 @@ import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
-import ScatterPlotIcon from '@material-ui/icons/ScatterPlot';
+import ForwardIcon from '@material-ui/icons/Forward';
 
 import Deposit from "./Deposit"
 import Withdraw from "./Withdraw"
@@ -50,6 +50,7 @@ import noop from "lodash/noop"
 import find from "lodash/find"
 import * as ethers from "ethers"
 import useVersionWapper from "../../hooks/useVersionWapper"
+import useMediaQuery from '@material-ui/core/useMediaQuery'
 
 // === Styles === //
 import styles from "./style"
@@ -65,6 +66,7 @@ function Ethi (props) {
   const classes = useStyles()
   const dispatch = useDispatch()
   const history = useHistory()
+  const isMd = useMediaQuery('(min-width: 768px)')
 
   const { 
     address,
@@ -75,7 +77,8 @@ function Ethi (props) {
     VAULT_ABI,
     IERC20_ABI,
     EXCHANGE_AGGREGATOR_ABI,
-    EXCHANGE_ADAPTER_ABI
+    EXCHANGE_ADAPTER_ABI,
+    ETHI_MINT_GAS_LIMIT
   } = props
 
   const [ethBalance, setEthBalance] = useState(BigNumber.from(0))
@@ -157,9 +160,8 @@ function Ethi (props) {
   }, [address, VAULT_ADDRESS, VAULT_ABI, userProvider])
 
   const loadTotalAssets = () => {
-    // const ethiContract = new ethers.Contract(ETHI_ADDRESS, ETHI_ABI, userProvider)
-    // return ethiContract.totalSupply()
-    return Promise.resolve(BigNumber.from(0))
+    const ethiContract = new ethers.Contract(ETHI_ADDRESS, IERC20_ABI, userProvider)
+    return ethiContract.totalSupply()
   }
 
   const handleTabChange = (event, value) => setTab(value)
@@ -186,6 +188,25 @@ function Ethi (props) {
     <div className={classNames(classes.main, classes.mainRaised)}>
       <div className={classes.container}>
         <GridContainer className={classNames(classes.center)}>
+          <div className={classes.slider} style={isMd ? {} : { position: 'inherit', width: '94%', marginBottom: '20px' }}>
+            <List>
+              {
+                map(VAULTS, item => {
+                  const { path } = item
+                  const isCheck = window.location.hash === path
+                  if(item.isOpen){
+                    return <ListItem key={item.id} button className={classNames( classes.item, isCheck && classes.check )} onClick={() => history.push(path.slice(1))}>
+                      <ListItemText primary={item.name} className={classNames( isCheck && classes.text )}  />
+                      { isCheck && <div className={classes.spliter}></div> }
+                      <ListItemIcon>
+                        { isCheck && <ForwardIcon color="primary" style={{ color: 'azure', marginLeft: 20 }} /> }
+                      </ListItemIcon>
+                    </ListItem>
+                  }
+                })
+              }
+            </List>
+          </div>
           <GridItem xs={12} sm={12} md={8} className={classNames(classes.centerItem)}>
             <Card className={classes.balanceCard}>
               <div className={classes.balanceCardItem}>
@@ -248,6 +269,7 @@ function Ethi (props) {
                   IERC20_ABI={IERC20_ABI}
                   VAULT_ADDRESS={VAULT_ADDRESS}
                   ETH_ADDRESS={ETH_ADDRESS}
+                  ETHI_MINT_GAS_LIMIT={ETHI_MINT_GAS_LIMIT}
                 />
               </TabPanel>
               <TabPanel value={tab} index={TABS.WITHDRAW}>
@@ -279,8 +301,6 @@ function Ethi (props) {
                 <TableRow>
                   <TableCell className={classNames(classes.tableCell)}>Vault Symbol</TableCell>
                   <TableCell className={classNames(classes.tableCell)}>Vault Address</TableCell>
-                  {/* <TableCell className={classNames(classes.tableCell)}>质押通证符号</TableCell>
-                    <TableCell className={classNames(classes.tableCell)}>质押合约地址</TableCell> */}
                   <TableCell className={classNames(classes.tableCell)}>Total Supply</TableCell>
                 </TableRow>
               </TableHead>
@@ -311,24 +331,6 @@ function Ethi (props) {
             </Table>
           </TableContainer>
           
-        </div>
-        <div className={classes.slider}>
-          <List component="nav" aria-label="main mailbox folders">
-            {
-              map(VAULTS, item => {
-                const { path } = item
-                const isCheck = window.location.hash === path
-                if(item.isOpen){
-                  return <ListItem button className={classNames( isCheck && classes.check )} onClick={() => history.push(path.slice(1))}>
-                    <ListItemIcon>
-                      <ScatterPlotIcon color={isCheck ? "primary" : "action"} />
-                    </ListItemIcon>
-                    <ListItemText primary={item.name} className={classNames( isCheck && classes.text )} />
-                  </ListItem>
-                }
-              })
-            }
-          </List>
         </div>
       </div>
     </div>
