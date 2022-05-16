@@ -75,7 +75,7 @@ export default function HeaderLinks (props) {
               Polygon Bridge
             </a>,
             <a target='_blank' href='https://www.binance.org/en/bridge' className={classes.dropdownLink}>
-              Binance Bridge
+              BNB Bridge
             </a>,
           ]}
         />
