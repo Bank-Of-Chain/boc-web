@@ -109,7 +109,7 @@ const getExchangePlatformAdapters = async exchangeAggregator => {
 function Invest (props) {
   const classes = useStyles()
   const dispatch = useDispatch()
-  const { address, userProvider, loadWeb3Modal, VAULT_ADDRESS, VAULT_ABI, IERC20_ABI, EXCHANGE_AGGREGATOR_ABI } = props
+  const { address, userProvider, VAULT_ADDRESS, VAULT_ABI, IERC20_ABI, EXCHANGE_AGGREGATOR_ABI } = props
   const [usdtDecimals, setUsdtDecimals] = useState(0)
   const [beforeTotalAssets, setBeforeTotalAssets] = useState(BigNumber.from(0))
   const [totalAssets, setTotalAssets] = useState(BigNumber.from(0))
@@ -237,7 +237,7 @@ function Invest (props) {
         warmDialog({
           open: true,
           type: "warning",
-          message: "Please confirm MetaMask's network!",
+          message: "Please confirm wallet's network!",
         }),
       )
     })
@@ -981,12 +981,12 @@ function Invest (props) {
                         </p>
                       </Muted>
                       <Button
-                        disabled={isLogin && (!isValidFromValueFlag || isUndefined(isValidFromValueFlag))}
+                        disabled={!isLogin || (isLogin && (!isValidFromValueFlag || isUndefined(isValidFromValueFlag)))}
                         color='colorfull'
-                        onClick={isLogin ? diposit : loadWeb3Modal}
+                        onClick={diposit}
                         style={{ minWidth: 122, padding: "12px 16px", margin: "6px 0" }}
                       >
-                        {isLogin ? "Deposit" : "Connect Wallet"}
+                        Deposit
                       </Button>
                     </div>
                   </GridItem>
@@ -1046,12 +1046,12 @@ function Invest (props) {
                         </span>
                       </div>
                       <Button
-                        disabled={isLogin && (isUndefined(isValidToValueFlag) || !isValidToValueFlag)}
+                        disabled={!isLogin || (isLogin && (isUndefined(isValidToValueFlag) || !isValidToValueFlag))}
                         color='colorfull'
-                        onClick={isLogin ? withdraw : loadWeb3Modal}
+                        onClick={withdraw}
                         style={{ minWidth: 122, padding: "12px 16px" }}
                       >
-                        {isLogin ? "Withdraw" : "Connect Wallet"}
+                        Withdraw
                       </Button>
                     </div>
                   </GridItem>

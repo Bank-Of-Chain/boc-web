@@ -18,6 +18,8 @@ import Popper from "@material-ui/core/Popper";
 // core components
 import Button from "../CustomButtons/Button";
 
+import isFunction from "lodash/isFunction";
+
 import styles from "./customDropdownStyle";
 
 const useStyles = makeStyles(styles);
@@ -76,6 +78,9 @@ export default function CustomDropdown(props) {
     case "string":
       icon = <Icon className={classes.buttonIcon}>{props.buttonIcon}</Icon>;
       break;
+    case "function":
+      icon = buttonIcon();
+      break;
     default:
       icon = null;
       break;
@@ -91,7 +96,7 @@ export default function CustomDropdown(props) {
           onClick={handleClick}
         >
           {icon}
-          {buttonText !== undefined ? buttonText : null}
+          {buttonText && isFunction(buttonText) ? buttonText() : buttonText}
           {caret ? <b className={caretClasses} /> : null}
         </Button>
       </div>
@@ -180,8 +185,8 @@ CustomDropdown.propTypes = {
     "danger",
     "rose",
   ]),
-  buttonText: PropTypes.node,
-  buttonIcon: PropTypes.oneOfType([PropTypes.object, PropTypes.string]),
+  buttonText: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
+  buttonIcon: PropTypes.oneOfType([PropTypes.object, PropTypes.string, PropTypes.func]),
   dropdownList: PropTypes.array,
   buttonProps: PropTypes.object,
   dropup: PropTypes.bool,

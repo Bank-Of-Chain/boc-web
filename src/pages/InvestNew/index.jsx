@@ -68,7 +68,7 @@ function Invest (props) {
   const history = useHistory()
 
   const isMd = useMediaQuery('(min-width: 768px)')
-  const { address, userProvider, loadWeb3Modal, VAULT_ADDRESS, VAULT_ABI, USDI_ADDRESS, IERC20_ABI, EXCHANGE_AGGREGATOR_ABI, USDI_ABI, EXCHANGE_ADAPTER_ABI } = props
+  const { address, userProvider, VAULT_ADDRESS, VAULT_ABI, USDI_ADDRESS, IERC20_ABI, EXCHANGE_AGGREGATOR_ABI, USDI_ABI, EXCHANGE_ADAPTER_ABI } = props
   const [usdtBalance, setUsdtBalance] = useState(BigNumber.from(0))
   const [usdtDecimals, setUsdtDecimals] = useState(0)
   const [usdcBalance, setUsdcBalance] = useState(BigNumber.from(0))
@@ -113,7 +113,7 @@ function Invest (props) {
         warmDialog({
           open: true,
           type: "warning",
-          message: "Please confirm MetaMask's network!",
+          message: "Please confirm wallet's network!",
         }),
       )
     })
@@ -281,7 +281,6 @@ function Invest (props) {
                   daiDecimals={daiDecimals}
                   usdiDecimals={usdiDecimals}
                   userProvider={userProvider}
-                  onConnect={loadWeb3Modal}
                   VAULT_ABI={VAULT_ABI}
                   IERC20_ABI={IERC20_ABI}
                   VAULT_ADDRESS={VAULT_ADDRESS}
@@ -292,7 +291,6 @@ function Invest (props) {
                   toBalance={toBalance}
                   usdiDecimals={usdiDecimals}
                   userProvider={userProvider}
-                  onConnect={loadWeb3Modal}
                   VAULT_ADDRESS={VAULT_ADDRESS}
                   VAULT_ABI={VAULT_ABI}
                   IERC20_ABI={IERC20_ABI}
