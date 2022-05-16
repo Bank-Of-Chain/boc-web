@@ -41,6 +41,7 @@ import {
 
 // === Hooks === //
 import useRedeemFeeBps from "../../../hooks/useRedeemFeeBps"
+import usePriceProvider from "../../../hooks/usePriceProvider"
 
 // === Utils === //
 import { getBestSwapInfo } from "piggy-finance-utils"
@@ -67,6 +68,8 @@ const steps = [
   { title: "Withdraw" },
 ]
 
+const WITHDRAW_EXCHANGE_THRESHOLD = BigNumber.from(10).pow(16)
+
 export default function Withdraw ({
   ethiBalance,
   ethiDecimals,
@@ -78,6 +81,7 @@ export default function Withdraw ({
   IERC20_ABI,
   EXCHANGE_AGGREGATOR_ABI,
   EXCHANGE_ADAPTER_ABI,
+  PRICE_ORCALE_ABI
 }) {
   const classes = useStyles()
   const dispatch = useDispatch()
@@ -90,6 +94,12 @@ export default function Withdraw ({
   const [isWithdrawLoading, setIsWithdrawLoading] = useState(false)
   const [currentStep, setCurrentStep] = useState(0)
   const [withdrawError, setWithdrawError] = useState({})
+  const { getPriceProvider } = usePriceProvider({
+    userProvider,
+    VAULT_ADDRESS,
+    VAULT_ABI,
+    PRICE_ORCALE_ABI
+  })
 
   const { value: redeemFeeBps } = useRedeemFeeBps({
     userProvider,
@@ -147,9 +157,10 @@ export default function Withdraw ({
             return {}
           }
           const fromConstrat = new ethers.Contract(tokenItem, IERC20_ABI, userProvider)
-          const fromDecimal = await fromConstrat.decimals()
-          if(BigNumber.from(10).pow(fromDecimal).gt(exchangeAmounts)) {
-            //TODO: 理论上这里面，不进行兑换即可，但是目前vault不支持
+          const priceProvider = await getPriceProvider()
+          const amountsInEth = await priceProvider.valueInEth(tokenItem, exchangeAmounts)
+          if(WITHDRAW_EXCHANGE_THRESHOLD.gt(amountsInEth)) {
+            // token less then 0.01 eth, cancel exchange
             return {
               fromAmount: exchangeAmounts,
               fromToken: tokenItem,
@@ -360,10 +371,10 @@ export default function Withdraw ({
             return {}
           }
           const fromConstrat = new ethers.Contract(tokenItem, IERC20_ABI, userProvider)
-          // const toTokenConstrat = new ethers.Contract(token, IERC20_ABI, userProvider)
-          const fromDecimal = await fromConstrat.decimals()
-          if(BigNumber.from(10).pow(fromDecimal).gt(exchangeAmounts)) {
-            //TODO: 理论上这里面，不进行兑换即可，但是目前vault不支持
+          const priceProvider = await getPriceProvider()
+          const amountsInEth = await priceProvider.valueInEth(tokenItem, exchangeAmounts)
+          if(WITHDRAW_EXCHANGE_THRESHOLD.gt(amountsInEth)) {
+            // token less then 0.01 eth, cancel exchange
             return {
               fromAmount: exchangeAmounts,
               fromToken: tokenItem,
