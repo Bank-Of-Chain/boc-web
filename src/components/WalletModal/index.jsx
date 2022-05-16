@@ -6,7 +6,7 @@ import { makeStyles } from "@material-ui/core/styles"
 import Modal from "@material-ui/core/Modal"
 import Paper from "@material-ui/core/Paper"
 import CloseIcon from "@material-ui/icons/Close"
-import { displayWalletList } from "../../reducers/wallet-reducer"
+import { WALLET_OPTIONS } from "../../reducers/wallet-reducer"
 
 import styles from "./style"
 
@@ -41,7 +41,7 @@ export default function WalletModal({
           <CloseIcon onClick={onClose} className={classes.cancelButton} />
         </div>
         <div className={classes.content}>
-          {map(displayWalletList, (wallet) => (
+          {map(WALLET_OPTIONS, (wallet) => (
             <div
               key={wallet.value}
               className={classNames(classes.walletItemWrapper, {

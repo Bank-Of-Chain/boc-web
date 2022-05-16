@@ -74,7 +74,6 @@ export default function Withdraw ({
   ethiBalance,
   ethiDecimals,
   userProvider,
-  onConnect,
   ETH_ADDRESS,
   VAULT_ADDRESS,
   VAULT_ABI,
@@ -742,12 +741,12 @@ export default function Withdraw ({
               </span>
             </div>
             <Button
-              disabled={isLogin && (isUndefined(isValidToValueFlag) || !isValidToValueFlag)}
+              disabled={!isLogin || (isLogin && (isUndefined(isValidToValueFlag) || !isValidToValueFlag))}
               color='colorfull'
-              onClick={isLogin ? withdraw : onConnect}
+              onClick={withdraw}
               style={{ minWidth: 122, padding: "12px 16px" }}
             >
-              {isLogin ? "Withdraw" : "Connect Wallet"}
+              Withdraw
             </Button>
             <Tooltip
               classes={{

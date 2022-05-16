@@ -5,12 +5,12 @@ const style = {
     justifyContent: "center",
   },
   papar: {
-    padding: "32px 48px",
+    padding: "28px 32px 32px",
     width: 420,
     borderRadius: 4,
+    border: "1px solid rgba(255, 255, 255, 0.12)",
     color: "rgba(255,255,255, 0.87)",
-    border: "1px solid",
-    background: "#150752"
+    background: "#271f72"
   },
   titleWrapper: {
     position: "relative"

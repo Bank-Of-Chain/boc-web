@@ -1,12 +1,12 @@
 import {
   createSlice
 } from '@reduxjs/toolkit'
+import keys from 'lodash/keys'
+import map from 'lodash/map'
 import { SafeAppWeb3Modal } from "@gnosis.pm/safe-apps-web3modal"
 import WalletConnectProvider from "@walletconnect/web3-provider"
-// import CoinbaseWalletSDK from "@coinbase/wallet-sdk"
 import { Web3Provider } from "@ethersproject/providers"
 
-const SUPPORT_WALLETS = ['MetaMask', 'WalletConnect']
 const WALLETS = {
   MetaMask: {
     info: {
@@ -36,43 +36,14 @@ const WALLETS = {
         }
       }
     })
-  },
-  Coinbase: {
-    info: {
-      name: "Coinbase",
-      value: "custom-coinbase",
-      symbol: "custom-coinbase",
-      logo: "./images/wallets/CoinBase.png"
-    },
-    getProviderOption: () => ({
-      "custom-coinbase": {
-        display: {},
-        // package: CoinbaseWalletSDK,
-        options: {},
-        connector: async (ProviderPackage, options) => {
-          const coinbaseWallet = new ProviderPackage({
-            appName: "BOC"
-           });
-           const provider =  coinbaseWallet.makeWeb3Provider("", 1);
-           await provider.request({ method: "eth_requestAccounts" })
-           return provider
-        }
-      }
-    })
   }
 }
 
-const displayWalletList = []
-SUPPORT_WALLETS.forEach((name) => {
-  displayWalletList.push(WALLETS[name].info)
-})
-export {
-  displayWalletList
-}
+export const WALLET_OPTIONS = map(WALLETS, (wallet) => wallet.info)
 
 export const createWeb3Modal = () => {
   let providerOptions = {}
-  SUPPORT_WALLETS.forEach((name) => {
+  keys(WALLETS).forEach((name) => {
     providerOptions = {
       ...providerOptions,
       ...WALLETS[name].getProviderOption()

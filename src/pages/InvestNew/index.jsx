@@ -137,7 +137,7 @@ function Invest (props) {
 
   useEffect(() => {
     const listener = () => {
-      if (isEmpty(VAULT_ADDRESS) || isEmpty(VAULT_ABI)) return
+      if (isEmpty(VAULT_ADDRESS) || isEmpty(VAULT_ABI) || isEmpty(userProvider)) return
       loadBanlance()
       const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider)
       if (!isEmpty(address)) {

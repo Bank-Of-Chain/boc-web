@@ -17,7 +17,6 @@
   "dependencies": {
     "@apollo/client": "^3.5.7",
     "@apollo/react-hooks": "^4.0.0",
-    "@coinbase/wallet-sdk": "^3.0.8",
     "@esri/react-arcgis": "^5.1.0",
     "@ethersproject/address": "^5.0.5",
     "@ethersproject/bignumber": "^5.0.8",

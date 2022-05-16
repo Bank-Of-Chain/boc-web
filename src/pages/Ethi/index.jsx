@@ -71,7 +71,6 @@ function Ethi (props) {
   const { 
     address,
     userProvider,
-    loadWeb3Modal,
     ETHI_ADDRESS,
     VAULT_ADDRESS,
     VAULT_ABI,
@@ -106,7 +105,7 @@ function Ethi (props) {
         warmDialog({
           open: true,
           type: "warning",
-          message: "Please confirm MetaMask's network!",
+          message: "Please confirm wallet's network!",
         }),
       )
     })
@@ -130,7 +129,7 @@ function Ethi (props) {
 
   useEffect(() => {
     const listener = () => {
-      if (isEmpty(VAULT_ADDRESS) || isEmpty(VAULT_ABI)) return
+      if (isEmpty(VAULT_ADDRESS) || isEmpty(VAULT_ABI) || isEmpty(userProvider)) return
       loadBanlance()
       const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider)
       if (!isEmpty(address)) {
@@ -264,7 +263,6 @@ function Ethi (props) {
                   ethBalance={ethBalance}
                   ethDecimals={ethDecimals}
                   userProvider={userProvider}
-                  onConnect={loadWeb3Modal}
                   VAULT_ABI={VAULT_ABI}
                   IERC20_ABI={IERC20_ABI}
                   VAULT_ADDRESS={VAULT_ADDRESS}
@@ -276,7 +274,6 @@ function Ethi (props) {
                   ethiBalance={ethiBalance}
                   ethiDecimals={ethiDecimals}
                   userProvider={userProvider}
-                  onConnect={loadWeb3Modal}
                   VAULT_ADDRESS={VAULT_ADDRESS}
                   ETH_ADDRESS={ETH_ADDRESS}
                   VAULT_ABI={VAULT_ABI}
