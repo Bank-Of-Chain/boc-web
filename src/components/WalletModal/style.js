@@ -8,9 +8,9 @@ const style = {
     padding: "28px 32px 32px",
     width: 420,
     borderRadius: 4,
-    border: "1px solid rgba(255, 255, 255, 0.12)",
+    // border: "1px solid rgba(255, 255, 255, 0.12)",
     color: "rgba(255,255,255, 0.87)",
-    background: "#271f72"
+    background: "#313E40"
   },
   titleWrapper: {
     position: "relative"
@@ -42,9 +42,6 @@ const style = {
     "&:last-child": {
       marginBottom: 0
     },
-    // "&:hover": {
-      //   backgroundColor: "#f4f4f5",
-      // },
     "&:after": {
       display: "none",
       content: "''",
@@ -54,7 +51,7 @@ const style = {
       width: 8,
       height: 8,
       borderRadius: "50%",
-      backgroundColor: "#784af4",
+      backgroundColor: "#1976d2",
     }
   },
   walletItem: {
