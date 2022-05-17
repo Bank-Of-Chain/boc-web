@@ -51,6 +51,7 @@ import find from 'lodash/find'
 import * as ethers from "ethers"
 import useVersionWapper from "../../hooks/useVersionWapper"
 import useMediaQuery from '@material-ui/core/useMediaQuery'
+import { addToken } from "../../helpers/wallet"
 
 // === Styles === //
 import styles from "./style"
@@ -174,19 +175,7 @@ function Invest (props) {
   const handleTabChange = (event, value) => setTab(value)
 
   const handleAddUSDi = () =>  {
-    if (window.ethereum) {
-      window.ethereum.request({
-        method: "wallet_watchAsset",
-        params: {
-          type: "ERC20",
-          options: {
-            address: USDI_ADDRESS,
-            symbol: "USDi",
-            decimals: usdiDecimals,
-          },
-        },
-      })
-    }
+    addToken(USDI_ADDRESS, "USDi", usdiDecimals)
   }
 
   const changeRouter = (path) => {

@@ -2,44 +2,9 @@ import {
   createSlice
 } from '@reduxjs/toolkit'
 import keys from 'lodash/keys'
-import map from 'lodash/map'
 import { SafeAppWeb3Modal } from "@gnosis.pm/safe-apps-web3modal"
-import WalletConnectProvider from "@walletconnect/web3-provider"
 import { Web3Provider } from "@ethersproject/providers"
-
-const WALLETS = {
-  MetaMask: {
-    info: {
-      name: "MetaMask",
-      value: "injected", // connectTo 参数
-      symbol: "metamask", // 是否为当前连接判断, 统一全小写
-      logo: "./images/wallets/MetaMask.png"
-    },
-    getProviderOption: () => {}
-  },
-  WalletConnect: {
-    info: {
-      name: "WalletConnect",
-      value: "walletconnect",
-      symbol: "walletconnect",
-      logo: "./images/wallets/WalletConnect.png",
-    },
-    getProviderOption: () => ({
-      walletconnect: {
-        package: WalletConnectProvider, // required
-        options: {
-          rpc: {
-            1: "https://eth-mainnet.alchemyapi.io/v2/cDrbyA3BIcXQcF3EYjsf_PX8qC6YBlhV",
-            56: "https://bsc-dataseed.binance.org/",
-            137: "https://rpc-mainnet.maticvigil.com"
-          }
-        }
-      }
-    })
-  }
-}
-
-export const WALLET_OPTIONS = map(WALLETS, (wallet) => wallet.info)
+import { WALLETS } from "../constants/wallet"
 
 export const createWeb3Modal = () => {
   let providerOptions = {}

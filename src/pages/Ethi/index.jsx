@@ -51,6 +51,7 @@ import find from "lodash/find"
 import * as ethers from "ethers"
 import useVersionWapper from "../../hooks/useVersionWapper"
 import useMediaQuery from '@material-ui/core/useMediaQuery'
+import { addToken } from "../../helpers/wallet"
 
 // === Styles === //
 import styles from "./style"
@@ -166,19 +167,7 @@ function Ethi (props) {
   const handleTabChange = (event, value) => setTab(value)
 
   const handleAddETHi = () =>  {
-    if (window.ethereum) {
-      window.ethereum.request({
-        method: "wallet_watchAsset",
-        params: {
-          type: "ERC20",
-          options: {
-            address: ETHI_ADDRESS,
-            symbol: "ETHi",
-            decimals: 18,
-          },
-        },
-      })
-    }
+    addToken(ETHI_ADDRESS, "ETHi", 18)
   }
 
   const net = find(NET_WORKS, (item) => item.chainId === props.selectedChainId) || NET_WORKS[0]

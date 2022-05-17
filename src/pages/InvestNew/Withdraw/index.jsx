@@ -33,6 +33,7 @@ import Button from "../../../components/CustomButtons/Button"
 import CustomInput from "../../../components/CustomInput/CustomInput"
 import { warmDialog } from "./../../../reducers/meta-reducer"
 import { toFixed, formatBalance } from "../../../helpers/number-format"
+import { addToken } from "../../../helpers/wallet"
 import {
   USDT_ADDRESS,
   USDC_ADDRESS,
@@ -542,32 +543,6 @@ export default function Withdraw ({
       取款: `${qk}(${qkPercents}%)`,
       事务确认: `${swc}(${swcPercents}%)`,
     })
-  }
-
-  const addToken = async token => {
-    try {
-      const tokenContract = new ethers.Contract(token, IERC20_ABI, userProvider)
-      // wasAdded is a boolean. Like any RPC method, an error may be thrown.
-      const wasAdded = await window.ethereum.request({
-        method: "wallet_watchAsset",
-        params: {
-          type: "ERC20", // Initially only supports ERC20, but eventually more!
-          options: {
-            address: token, // The address that the token is at.
-            symbol: await tokenContract.symbol(), // A ticker symbol or shorthand, up to 5 chars.
-            decimals: await tokenContract.decimals(), // The number of decimals in the token
-          },
-        },
-      })
-
-      if (wasAdded) {
-        console.log("Thanks for your interest!")
-      } else {
-        console.log("Your loss!")
-      }
-    } catch (error) {
-      console.log(error)
-    }
   }
 
   function imgError (e) {

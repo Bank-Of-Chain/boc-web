@@ -26,6 +26,8 @@ import isEmpty from "lodash/isEmpty"
 import isUndefined from "lodash/isUndefined"
 import map from "lodash/map"
 
+import { WALLETS } from "./constants/wallet"
+
 // === Styles === //
 import "./App.css"
 
@@ -84,6 +86,9 @@ function App () {
 
   const alertState = useSelector(state => state.metaReducer.warmMsg)
   const dispatch = useDispatch()
+  const address = useUserAddress(userProvider)
+  const selectedChainId = getChainId(userProvider)
+  const walletName = getWalletName()
 
   useEffect(() => {
     if (userProvider) {
@@ -102,8 +107,27 @@ function App () {
     }
   }, [connect, web3Modal.cachedProvider])
 
-  const address = useUserAddress(userProvider)
-  const selectedChainId = getChainId(userProvider)
+  useEffect(() => {
+    const isBrowserPluginWallet = [WALLETS.MetaMask.info.symbol].includes(walletName)
+    if (!window.ethereum || !isBrowserPluginWallet) {
+      return
+    }
+    function chainChangedReload (chainId) {
+      localStorage.REACT_APP_NETWORK_TYPE = parseInt(chainId)
+      reload()
+    }
+    function reload () {
+      setTimeout(() => {
+        window.location.reload()
+      }, 1)
+    }
+    window.ethereum.on("chainChanged", chainChangedReload)
+    window.ethereum.on("accountsChanged", reload)
+    return () => {
+      window.ethereum.removeListener("chainChanged", chainChangedReload)
+      window.ethereum.removeListener("accountsChanged", reload)
+    }
+  }, [walletName])
 
   useEffect(() => {
     if (isUndefined(selectedChainId)) return
@@ -116,7 +140,7 @@ function App () {
   }, [selectedChainId])
 
   const changeNetwork = targetNetwork => {
-    return new Promise(async (resolver, rejcet) => {
+    return new Promise(async (resolver, reject) => {
       if (isEmpty(targetNetwork)) return
       // 如果metamask已经使用的是targetNetwork的话，则修改localStorage.REACT_APP_NETWORK_TYPE之后，进行页面刷新。
       if (targetNetwork.chainId === selectedChainId) {
@@ -126,7 +150,21 @@ function App () {
         }, 1)
         return
       }
-      if (!userProvider) {
+      // unlogin and no browser wallet plugin, allow switch tab
+      if (!window.ethereum && !userProvider) {
+        resolver()
+        return
+      }
+      const supportSwitch = [WALLETS.MetaMask.info.symbol]
+      if (userProvider && !supportSwitch.includes(walletName)) {
+        dispatch(
+          warmDialog({
+            open: true,
+            type: "warning",
+            message: "Switch networks in your wallet, then reconnect",
+          })
+        )
+        reject()
         return
       }
       const data = [
@@ -143,17 +181,24 @@ function App () {
       let switchTx
       // https://docs.metamask.io/guide/rpc-api.html#other-rpc-methods
       try {
-        switchTx = await userProvider.send("wallet_switchEthereumChain", [{ chainId: data[0].chainId }])
+        // wallet connect does not support change chain, so use window.ethereum, otherwise use userProvider.send
+        switchTx = await window.ethereum.request({
+          method: 'wallet_switchEthereumChain',
+          params: [{ chainId: data[0].chainId }],
+        })
       } catch (switchError) {
         if (switchError.code === 4001) {
-          rejcet()
+          reject()
         }
         // not checking specific error code, because maybe we're not using MetaMask
         try {
-          switchTx = await userProvider.send("wallet_addEthereumChain", data)
+          switchTx = await window.ethereum.request({
+            method: 'wallet_addEthereumChain',
+            params: data,
+          })
         } catch (addError) {
           console.log("addError=", addError)
-          rejcet()
+          reject()
           // handle "add" error
         }
       }
@@ -228,7 +273,7 @@ function App () {
     disconnect,
     userProvider,
     changeNetwork,
-    walletName: getWalletName(),
+    walletName,
     selectedChainId,
   }
 
@@ -309,21 +354,5 @@ function App () {
     </div>
   )
 }
-
-// eslint-disable-next-line no-unused-expressions
-window.ethereum &&
-  (() => {
-    function chainChangedReload (chainId) {
-      localStorage.REACT_APP_NETWORK_TYPE = parseInt(chainId)
-      reload()
-    }
-    function reload () {
-      setTimeout(() => {
-        window.location.reload()
-      }, 1)
-    }
-    window.ethereum.on("chainChanged", chainChangedReload)
-    window.ethereum.on("accountsChanged", reload)
-  })()
 
 export default App

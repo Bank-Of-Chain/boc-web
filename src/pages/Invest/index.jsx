@@ -77,6 +77,7 @@ import isNumber from "lodash/isNumber"
 import * as ethers from "ethers"
 import BN from "bignumber.js"
 import useVersionWapper from "../../hooks/useVersionWapper"
+import { addToken } from "../../helpers/wallet"
 
 // === Styles === //
 import styles from "./style"
@@ -808,35 +809,6 @@ function Invest (props) {
 
   // 展示vault.totalAssets
   // const fn = value => <span>{toFixed(value, 10 ** 6, 6)} USDT</span>
-
-  /**
-   * 将ERC20币添加入metamask账户中
-   */
-  const addToken = async token => {
-    try {
-      const tokenContract = new ethers.Contract(token, IERC20_ABI, userProvider)
-      // wasAdded is a boolean. Like any RPC method, an error may be thrown.
-      const wasAdded = await window.ethereum.request({
-        method: "wallet_watchAsset",
-        params: {
-          type: "ERC20", // Initially only supports ERC20, but eventually more!
-          options: {
-            address: token, // The address that the token is at.
-            symbol: await tokenContract.symbol(), // A ticker symbol or shorthand, up to 5 chars.
-            decimals: await tokenContract.decimals(), // The number of decimals in the token
-          },
-        },
-      })
-
-      if (wasAdded) {
-        console.log("Thanks for your interest!")
-      } else {
-        console.log("Your loss!")
-      }
-    } catch (error) {
-      console.log(error)
-    }
-  }
 
   function imgError (e) {
     const evn = e
