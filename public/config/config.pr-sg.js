@@ -22,9 +22,7 @@
   multiple_of_gas: 1,
   dashboard_url: 'https://dashboard-v1.bankofchain.io',
   oracle_additional_slippage: 20,
-  legacys: [
-    { title: 'USDT VAULT', url: 'https://v1.bankofchain.io' }
-  ]
+  legacys: { title: 'legacys', url: 'https://bankofchain.io' }
 }
 
 const config137 = {

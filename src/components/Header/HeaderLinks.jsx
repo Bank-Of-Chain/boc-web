@@ -51,25 +51,6 @@ export default function HeaderLinks (props) {
 
   return (
     <List className={classes.list}>
-      {
-        !isEmpty(LEGACYS) && <ListItem className={classes.listItem}>
-          <CustomDropdown
-            noLiPadding
-            buttonText='legacy'
-            buttonProps={{
-              className: classes.navLink,
-              color: "transparent",
-            }}
-            buttonIcon={ClearAllIcon}
-            dropdownList={map(LEGACYS, i => {
-              const { title, url } = i
-              return <a target='_blank' href={url} className={classes.dropdownLink}>
-                {title}
-              </a>
-            })}
-          />
-        </ListItem>
-      }
       <ListItem className={classes.listItem}>
         <Button color='transparent' target='_blank' href={DOCUMENT_URL} className={classes.navLink}>
           <LibraryBooksIcon className={classes.icons}></LibraryBooksIcon> DOCS
@@ -99,6 +80,13 @@ export default function HeaderLinks (props) {
           ]}
         />
       </ListItem>
+      {
+        !isEmpty(LEGACYS) && <ListItem className={classes.listItem}>
+        <Button color='transparent' target='_blank' href={LEGACYS.url} className={classes.navLink}>
+          <ClearAllIcon className={classes.icons}></ClearAllIcon> {LEGACYS.title}
+        </Button>
+      </ListItem>
+      }
       {
         CHAIN_SELECTOR_SHOW_ROUTER.includes(window.location.hash) && <ListItem className={classes.listItem}>
           <CustomDropdown
