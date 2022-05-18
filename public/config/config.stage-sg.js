@@ -21,7 +21,7 @@
     '137': 'https://api.thegraph.com/subgraphs/name/bankofchain/boc-subgraph-matic'
   },
   rpc_url: {
-    '1': "https://rpc.ankr.com/eth",
+    '1': "http://122.248.220.253:8545",
     '56': "https://bsc-dataseed.binance.org/",
     '137': "https://rpc-mainnet.maticvigil.com"
   },
