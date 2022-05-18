@@ -24,15 +24,17 @@ export default function WalletModal({
   const dispatch = useDispatch()
 
   const handleConnect = (name) => {
-    connectTo(name).then(console.log).catch(error => {
+    connectTo(name).catch(error => {
       console.error('connect wallet error', error)
-      dispatch(
-        warmDialog({
-          open: true,
-          type: "warning",
-          message: "Please install the wallet first. If you have installed, reload the page and retry",
-        })
-      )
+      if (name === 'injected') {
+        dispatch(
+          warmDialog({
+            open: true,
+            type: "warning",
+            message: "Please install the wallet first. If you have installed, reload the page and retry",
+          })
+        )
+      }
     })
   }
 
