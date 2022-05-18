@@ -20,6 +20,11 @@ const configBase = {
     '56': 'https://api.thegraph.com/subgraphs/name/bankofchain/boc-subgraph-bsc',
     '137': 'https://api.thegraph.com/subgraphs/name/bankofchain/boc-subgraph-matic'
   },
+  rpc_url: {
+    '1': "http://54.179.161.168:8545",
+    '56': "https://bsc-dataseed.binance.org/",
+    '137': "https://rpc-mainnet.maticvigil.com"
+  },
   multiple_of_gas: 2,
   dashboard_url: 'http://dashboard-qa02-sg.bankofchain.io',
   oracle_additional_slippage: 20

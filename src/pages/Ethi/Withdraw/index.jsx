@@ -32,6 +32,7 @@ import Button from "../../../components/CustomButtons/Button"
 import CustomInput from "../../../components/CustomInput/CustomInput"
 import { warmDialog } from "./../../../reducers/meta-reducer"
 import { toFixed, formatBalance } from "../../../helpers/number-format"
+import { addToken } from "../../../helpers/wallet"
 import {
   EXCHANGE_EXTRA_PARAMS,
   MULTIPLE_OF_GAS,
@@ -74,7 +75,6 @@ export default function Withdraw ({
   ethiBalance,
   ethiDecimals,
   userProvider,
-  onConnect,
   ETH_ADDRESS,
   VAULT_ADDRESS,
   VAULT_ABI,
@@ -622,35 +622,6 @@ export default function Withdraw ({
     setToValue(formatBalance(ethiBalance, ethiDecimals, { showAll: true }))
   }
 
-  const addToken = async token => {
-    if (token === ETH_ADDRESS) {
-      return
-    }
-    try {
-      const tokenContract = new ethers.Contract(token, IERC20_ABI, userProvider)
-      // wasAdded is a boolean. Like any RPC method, an error may be thrown.
-      const wasAdded = await window.ethereum.request({
-        method: "wallet_watchAsset",
-        params: {
-          type: "ERC20", // Initially only supports ERC20, but eventually more!
-          options: {
-            address: token, // The address that the token is at.
-            symbol: await tokenContract.symbol(), // A ticker symbol or shorthand, up to 5 chars.
-            decimals: await tokenContract.decimals(), // The number of decimals in the token
-          },
-        },
-      })
-
-      if (wasAdded) {
-        console.log("Thanks for your interest!")
-      } else {
-        console.log("Your loss!")
-      }
-    } catch (error) {
-      console.log(error)
-    }
-  }
-
   const renderEstimate = () => {
     if (isEstimate) {
       return (
@@ -742,12 +713,12 @@ export default function Withdraw ({
               </span>
             </div>
             <Button
-              disabled={isLogin && (isUndefined(isValidToValueFlag) || !isValidToValueFlag)}
+              disabled={!isLogin || (isLogin && (isUndefined(isValidToValueFlag) || !isValidToValueFlag))}
               color='colorfull'
-              onClick={isLogin ? withdraw : onConnect}
+              onClick={withdraw}
               style={{ minWidth: 122, padding: "12px 16px" }}
             >
-              {isLogin ? "Withdraw" : "Connect Wallet"}
+              Withdraw
             </Button>
             <Tooltip
               classes={{

@@ -35,6 +35,7 @@ export const DASHBOARD_URL = config.dashboard_url;
 export const ORACLE_ADDITIONAL_SLIPPAGE = config.oracle_additional_slippage
 export const VAULTS = config.vaults;
 export const CHAIN_ID = config.chain_id;
+export const RPC_URL = config.rpc_url;
 
 
 export const NET_WORKS = [
