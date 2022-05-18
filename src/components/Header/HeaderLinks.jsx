@@ -13,7 +13,7 @@ import Apps from "@material-ui/icons/Apps"
 import Transform from "@material-ui/icons/Transform"
 import InsertChartIcon from "@material-ui/icons/InsertChart"
 import LibraryBooksIcon from "@material-ui/icons/LibraryBooks"
-import ScatterPlotIcon from '@material-ui/icons/ScatterPlot';
+import ClearAllIcon from '@material-ui/icons/ClearAll';
 
 // core components
 import Button from "../CustomButtons/Button"
@@ -29,7 +29,7 @@ import find from "lodash/find"
 import { hasWalletInstalled } from "./../../helpers/plugin-util"
 
 // === Constants === //
-import { NET_WORKS, DASHBOARD_URL, DOCUMENT_URL, CHAIN_ID } from "./../../constants"
+import { NET_WORKS, DASHBOARD_URL, DOCUMENT_URL, CHAIN_ID, LEGACYS } from "./../../constants"
 
 const CHAIN_SELECTOR_SHOW_ROUTER = ['#/mutils']
 
@@ -51,6 +51,25 @@ export default function HeaderLinks (props) {
 
   return (
     <List className={classes.list}>
+      {
+        !isEmpty(LEGACYS) && <ListItem className={classes.listItem}>
+          <CustomDropdown
+            noLiPadding
+            buttonText='legacy'
+            buttonProps={{
+              className: classes.navLink,
+              color: "transparent",
+            }}
+            buttonIcon={ClearAllIcon}
+            dropdownList={map(LEGACYS, i => {
+              const { title, url } = i
+              return <a target='_blank' href={url} className={classes.dropdownLink}>
+                {title}
+              </a>
+            })}
+          />
+        </ListItem>
+      }
       <ListItem className={classes.listItem}>
         <Button color='transparent' target='_blank' href={DOCUMENT_URL} className={classes.navLink}>
           <LibraryBooksIcon className={classes.icons}></LibraryBooksIcon> DOCS
