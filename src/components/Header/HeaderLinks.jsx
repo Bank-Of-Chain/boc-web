@@ -60,13 +60,12 @@ export default function HeaderLinks (props) {
   }
 
   const dashboardUrlRender = () => {
-    let nextChainId = CHAIN_ID
-    //TODO: 先默认都跳转usdi
-    let nextVault = window.location.hash === '#/ethi' ? 'usdi' : 'usdi'
+    let nextChainId = CHAIN_ID || '1'
+    let nextVault = window.location.hash === '#/ethi' ? 'ethi' : 'usdi'
 
     // 如果是ethi模块，则必须跳转eth链
     if(nextVault === 'ethi') {
-      nextChainId = 1
+      nextChainId = '1'
     }
     return `${DASHBOARD_URL}/#/?chain=${nextChainId}&vault=${nextVault}`
   }
@@ -98,7 +97,7 @@ export default function HeaderLinks (props) {
                 Polygon Bridge
               </a>,
               <a target='_blank' href='https://www.binance.org/en/bridge' className={classes.dropdownLink}>
-                Binance Bridge
+                BNB Bridge
               </a>,
             ]}
           />
