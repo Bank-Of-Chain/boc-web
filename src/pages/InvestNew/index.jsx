@@ -51,6 +51,7 @@ import find from 'lodash/find'
 import * as ethers from "ethers"
 import useVersionWapper from "../../hooks/useVersionWapper"
 import useMediaQuery from '@material-ui/core/useMediaQuery'
+import { addToken } from "../../helpers/wallet"
 
 // === Styles === //
 import styles from "./style"
@@ -68,7 +69,7 @@ function Invest (props) {
   const history = useHistory()
 
   const isMd = useMediaQuery('(min-width: 768px)')
-  const { address, userProvider, loadWeb3Modal, VAULT_ADDRESS, VAULT_ABI, USDI_ADDRESS, IERC20_ABI, EXCHANGE_AGGREGATOR_ABI, USDI_ABI, EXCHANGE_ADAPTER_ABI } = props
+  const { address, userProvider, VAULT_ADDRESS, VAULT_ABI, USDI_ADDRESS, IERC20_ABI, EXCHANGE_AGGREGATOR_ABI, USDI_ABI, EXCHANGE_ADAPTER_ABI } = props
   const [usdtBalance, setUsdtBalance] = useState(BigNumber.from(0))
   const [usdtDecimals, setUsdtDecimals] = useState(0)
   const [usdcBalance, setUsdcBalance] = useState(BigNumber.from(0))
@@ -113,7 +114,7 @@ function Invest (props) {
         warmDialog({
           open: true,
           type: "warning",
-          message: "Please confirm MetaMask's network!",
+          message: "Please confirm wallet's network!",
         }),
       )
     })
@@ -137,7 +138,7 @@ function Invest (props) {
 
   useEffect(() => {
     const listener = () => {
-      if (isEmpty(VAULT_ADDRESS) || isEmpty(VAULT_ABI)) return
+      if (isEmpty(VAULT_ADDRESS) || isEmpty(VAULT_ABI) || isEmpty(userProvider)) return
       loadBanlance()
       const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider)
       if (!isEmpty(address)) {
@@ -174,19 +175,7 @@ function Invest (props) {
   const handleTabChange = (event, value) => setTab(value)
 
   const handleAddUSDi = () =>  {
-    if (window.ethereum) {
-      window.ethereum.request({
-        method: "wallet_watchAsset",
-        params: {
-          type: "ERC20",
-          options: {
-            address: USDI_ADDRESS,
-            symbol: "USDi",
-            decimals: usdiDecimals,
-          },
-        },
-      })
-    }
+    addToken(USDI_ADDRESS, "USDi", usdiDecimals)
   }
 
   const changeRouter = (path) => {
@@ -281,7 +270,6 @@ function Invest (props) {
                   daiDecimals={daiDecimals}
                   usdiDecimals={usdiDecimals}
                   userProvider={userProvider}
-                  onConnect={loadWeb3Modal}
                   VAULT_ABI={VAULT_ABI}
                   IERC20_ABI={IERC20_ABI}
                   VAULT_ADDRESS={VAULT_ADDRESS}
@@ -292,7 +280,6 @@ function Invest (props) {
                   toBalance={toBalance}
                   usdiDecimals={usdiDecimals}
                   userProvider={userProvider}
-                  onConnect={loadWeb3Modal}
                   VAULT_ADDRESS={VAULT_ADDRESS}
                   VAULT_ABI={VAULT_ABI}
                   IERC20_ABI={IERC20_ABI}

@@ -1,8 +1,8 @@
 /**
- * 开发环境配置文件
+ * qa04-sg环境配置文件
  */
-const configBase = {
-  vault_address: '',
+ const configBase = {
+  vault_address: "",
   usdt_address: "0xdAC17F958D2ee523a2206206994597C13D831ec7",
   usdc_address: "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
   dai_address: "0x6B175474E89094C44Da98b954EedeAC495271d0F",
@@ -14,25 +14,31 @@ const configBase = {
   blog_url: 'https://piggyfinance.github.io/docs/zh/blog/',
   licenses_url: 'https://piggyfinance.github.io/docs/zh/licenses/',
   document_url: "https://docs.bankofchain.io",
-  boc_server: 'http://192.168.60.12/server',
+  boc_server: 'https://service-qa04-sg.bankofchain.io',
   sub_graph_url: {
     '1': 'https://api.thegraph.com/subgraphs/name/bankofchain/boc-subgraph-eth',
     '56': 'https://api.thegraph.com/subgraphs/name/bankofchain/boc-subgraph-bsc',
     '137': 'https://api.thegraph.com/subgraphs/name/bankofchain/boc-subgraph-matic'
   },
+  rpc_url: {
+    '1': "http://13.213.33.247:8545",
+    '56': "https://bsc-dataseed.binance.org/",
+    '137': "https://rpc-mainnet.maticvigil.com"
+  },
   multiple_of_gas: 2,
-  dashboard_url: 'http://localhost:8000',
-  oracle_additional_slippage: 20,
-  vaults: []
+  dashboard_url: 'https://dashboard-qa04-sg.bankofchain.io',
+  oracle_additional_slippage: 20
 }
 
 const config137 = {
   ...configBase,
   abi_version: 'beta-v1.5',
-  apy_server: 'http://localhost:3000',
+  apy_server: 'https://qa04-sg-keeper-polygon.bankofchain.io',
+  vault_address: "0x204d2e5c581506e939295daf99079b590ace906e",
   usdt_address: "0xc2132D05D31c914a87C6611C10748AEb04B58e8F",
   usdc_address: "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174",
   dai_address: "0x8f3Cf7ad23Cd3CaDbD9735AFf958023239c6A063",
+  usdi_address: "0x6dc1bebb8e0881aca6f082f5f53dd740c2ddf379",
   exchange_extra_params: {
     oneInchV4: {
       useHttp: true,
@@ -71,10 +77,8 @@ const config137 = {
 
 const config56 = {
   ...configBase,
-  abi_version: 'beta-v1.5',
-  apy_server: 'http://localhost:4000',
-  vault_address: "0xFEE2d383Ee292283eC43bdf0fa360296BE1e1149",
-  usdi_address: "0xE3e7A4B35574Ce4b9Bc661cD93e8804Da548932a",
+  apy_server: 'https://qa04-sg-keeper-bsc.bankofchain.io',
+  vault_address: "0x2C328D592819524F741A88A18572372CCE196782",
   usdt_address: "0x55d398326f99059fF775485246999027B3197955",
   usdc_address: "0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d",
   dai_address: "0x1AF3F329e8BE154074D8769D1FFa4eE058B1DBc3",
@@ -116,22 +120,20 @@ const config56 = {
 
 const config1 = {
   ...configBase,
-  abi_version: 'beta-v1.5',
-  apy_server: 'http://localhost:5000',
-  vault_address: "0x38A70c040CA5F5439ad52d0e821063b0EC0B52b6",
-  usdi_address: "0xe039608E695D21aB11675EBBA00261A0e750526c",
+  apy_server: 'https://qa04-sg-keeper-eth.bankofchain.io',
   usdt_address: "0xdAC17F958D2ee523a2206206994597C13D831ec7",
   usdc_address: "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
   dai_address: "0x6B175474E89094C44Da98b954EedeAC495271d0F",
+  chain_browser_url: 'https://etherscan.io',
   exchange_extra_params: {
     oneInchV4: {
       useHttp: true,
       network: 1,
-      protocols: 'CURVE_V2,SUSHI,CURVE,UNISWAP_V2,UNISWAP_V3,BALANCER,BALANCER_V2,ETH_BANCOR_V3,CURVE_V2_ETH_PAL,POOLTOGETHER,SYNAPSE,CURVE_V2_THRESHOLDNETWORK_2_ASSET,CURVE_V2_YFI_2_ASSET,CURVE_V2_SPELL_2_ASSET,WSTETH,CURVE_V2_XAUT_2_ASSET,CURVE_V2_ETH_CVX,SYNTHETIX_WRAPPER,FIXED_FEE_SWAP_V3,CURVE_V2_ETH_CRV,DEFI_PLAZA,ONE_INCH_LP_MIGRATOR,SUSHISWAP_MIGRATOR,UNISWAP_V2_MIGRATOR,ONE_INCH_LP_MIGRATOR_V1_1,ONE_INCH_LP_1_1,LINKSWAP,ONE_INCH_LP,AAVE_V2,SYNTHETIX,AAVE_LIQUIDATOR,MSTABLE,MINISWAP,BANCOR,CREAMSWAP,COMPOUND,MOONISWAP,WETH,CURVE_V2_EURT_2_ASSET,CURVE_V2_EURT_3_ASSET'
+      protocols: 'BALANCER,BALANCER_V2,PMMX,UNIFI,SHIBASWAP,CLIPPER,DXSWAP,FIXED_FEE_SWAP,DFX_FINANCE,CONVERGENCE_X,SAKESWAP,CREAM_LENDING,CURVE_V2,CURVE_V2_EURS_2_ASSET,CURVE_V2_EURT_2_ASSET,SETH_WRAPPER,MOONISWAP,SUSHI,COMPOUND,KYBER,CREAMSWAP,AAVE,CURVE,UNISWAP_V1,UNISWAP_V2,CHAI,OASIS,BANCOR,IEARN,SWERVE,VALUELIQUID,DODO,SHELL,BLACKHOLESWAP,PMM1,DEFISWAP,MINISWAP,AAVE_V2,ST_ETH,ONE_INCH_LP,LINKSWAP,S_FINANCE,ONE_INCH_LP_1_1,PSM,POWERINDEX,SMOOTHY_FINANCE,PMM2,PMM3,SADDLE,PMM4,KYBER_DMM,UNISWAP_V3,DEFI_PLAZA,CURVE_V2_ETH_CRV,FIXED_FEE_SWAP_V3,CURVE_V2_ETH_CVX,CURVE_V2_XAUT_2_ASSET,WSTETH,CURVE_V2_SPELL_2_ASSET,CURVE_V2_YFI_2_ASSET,CURVE_V2_THRESHOLDNETWORK_2_ASSET,SYNAPSE,POOLTOGETHER,CURVE_V2_ETH_PAL,ETH_BANCOR_V3'
     },
     paraswap: {
       network: 1,
-      includeDEXS: 'Uniswap,Bancor,Compound,MakerDAO,ParaSwapPool,Aave,Aave2,MultiPath,MegaPath,Curve,Curve3,Saddle,IronV2,idle,Weth,Beth,UniswapV2, Balancer,ParaSwapPool2,ParaSwapPool3,ParaSwapPool4,ParaSwapPool5,ParaSwapPool6,SushiSwap,LINKSWAP,Synthetix,DefiSwap,PancakeSwap, PancakeSwapV2,ApeSwap,Wbnb,beltfi,ellipsis,QuickSwap,Wmatic,UniswapV3,PantherSwap,OneInchLP,CurveV2,WaultFinance,MDEX,ShibaSwap, CoinSwap',
+      excludeDEXS: '0x,0xRFQt,Balancer',
       excludeContractMethods: ['swapOnZeroXv2', 'swapOnZeroXv4']
     }
   },
@@ -150,8 +152,8 @@ const config1 = {
     path: '#/mutils',
     isAudit: true,
     abi_version: 'beta-v1.5',
-    VAULT_ADDRESS: '0x70eE76691Bdd9696552AF8d4fd634b3cF79DD529',
-    USDI_ADDRESS: '0xcD0048A5628B37B8f743cC2FeA18817A29e97270',
+    VAULT_ADDRESS: '0x9BcC604D4381C5b0Ad12Ff3Bf32bEdE063416BC7',
+    USDI_ADDRESS: '0xf090f16dEc8b6D24082Edd25B1C8D26f2bC86128',
     isOpen: true
   }, {
     id: 'ethi',
@@ -159,8 +161,8 @@ const config1 = {
     description: '这是ethi的池子',
     path: '#/ethi',
     abi_version: 'ethi',
-    VAULT_ADDRESS: '0xaC47e91215fb80462139756f43438402998E4A3a',
-    ETHI_ADDRESS: '0xdFdE6B33f13de2CA1A75A6F7169f50541B14f75b',
+    ETHI_ADDRESS: "0x8cB9Aca95D1EdebBfe6BD9Da4DC4a2024457bD32",
+    VAULT_ADDRESS: "0xDae16f755941cbC0C9D240233a6F581d1734DaA2",
     WETHI_ADDRESS: '',
     isOpen: true
   }]

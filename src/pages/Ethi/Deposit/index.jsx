@@ -34,7 +34,6 @@ export default function Deposit({
   ethBalance,
   ethDecimals,
   userProvider,
-  onConnect,
   VAULT_ABI,
   VAULT_ADDRESS,
   ETH_ADDRESS,
@@ -302,12 +301,12 @@ export default function Deposit({
               </p>
             </Muted>
             <Button
-              disabled={isLogin && !isValid}
+              disabled={!isLogin || (isLogin && !isValid)}
               color='colorfull'
-              onClick={isLogin ? diposit : onConnect}
+              onClick={diposit}
               style={{ minWidth: 122, padding: "12px 16px", margin: "6px 0" }}
             >
-              {isLogin ? "Deposit" : "Connect Wallet"}
+              Deposit
             </Button>
           </div>
         </GridItem>
