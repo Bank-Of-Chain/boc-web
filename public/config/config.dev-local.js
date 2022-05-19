@@ -23,7 +23,8 @@ const configBase = {
   multiple_of_gas: 2,
   dashboard_url: 'http://localhost:8000',
   oracle_additional_slippage: 20,
-  vaults: []
+  vaults: [],
+  legacys: { title: 'legacys', url: 'https://legacy-v1-web.bankofchain.io' }
 }
 
 const config137 = {
