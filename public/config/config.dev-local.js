@@ -24,7 +24,7 @@ const configBase = {
   dashboard_url: 'http://localhost:8000',
   oracle_additional_slippage: 20,
   vaults: [],
-  legacys: { title: 'legacys', url: 'https://bankofchain.io' }
+  legacys: { title: 'legacys', url: 'https://legacy-v1-web.bankofchain.io' }
 }
 
 const config137 = {
