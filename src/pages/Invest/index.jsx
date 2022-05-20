@@ -77,6 +77,7 @@ import isNumber from "lodash/isNumber"
 import * as ethers from "ethers"
 import BN from "bignumber.js"
 import useVersionWapper from "../../hooks/useVersionWapper"
+import { addToken } from "../../helpers/wallet"
 
 // === Styles === //
 import styles from "./style"
@@ -109,7 +110,7 @@ const getExchangePlatformAdapters = async exchangeAggregator => {
 function Invest (props) {
   const classes = useStyles()
   const dispatch = useDispatch()
-  const { address, userProvider, loadWeb3Modal, VAULT_ADDRESS, VAULT_ABI, IERC20_ABI, EXCHANGE_AGGREGATOR_ABI } = props
+  const { address, userProvider, VAULT_ADDRESS, VAULT_ABI, IERC20_ABI, EXCHANGE_AGGREGATOR_ABI } = props
   const [usdtDecimals, setUsdtDecimals] = useState(0)
   const [beforeTotalAssets, setBeforeTotalAssets] = useState(BigNumber.from(0))
   const [totalAssets, setTotalAssets] = useState(BigNumber.from(0))
@@ -237,7 +238,7 @@ function Invest (props) {
         warmDialog({
           open: true,
           type: "warning",
-          message: "Please confirm MetaMask's network!",
+          message: "Please confirm wallet's network!",
         }),
       )
     })
@@ -809,35 +810,6 @@ function Invest (props) {
   // 展示vault.totalAssets
   // const fn = value => <span>{toFixed(value, 10 ** 6, 6)} USDT</span>
 
-  /**
-   * 将ERC20币添加入metamask账户中
-   */
-  const addToken = async token => {
-    try {
-      const tokenContract = new ethers.Contract(token, IERC20_ABI, userProvider)
-      // wasAdded is a boolean. Like any RPC method, an error may be thrown.
-      const wasAdded = await window.ethereum.request({
-        method: "wallet_watchAsset",
-        params: {
-          type: "ERC20", // Initially only supports ERC20, but eventually more!
-          options: {
-            address: token, // The address that the token is at.
-            symbol: await tokenContract.symbol(), // A ticker symbol or shorthand, up to 5 chars.
-            decimals: await tokenContract.decimals(), // The number of decimals in the token
-          },
-        },
-      })
-
-      if (wasAdded) {
-        console.log("Thanks for your interest!")
-      } else {
-        console.log("Your loss!")
-      }
-    } catch (error) {
-      console.log(error)
-    }
-  }
-
   function imgError (e) {
     const evn = e
     const img = evn.srcElement ? evn.srcElement : evn.target
@@ -981,12 +953,12 @@ function Invest (props) {
                         </p>
                       </Muted>
                       <Button
-                        disabled={isLogin && (!isValidFromValueFlag || isUndefined(isValidFromValueFlag))}
+                        disabled={!isLogin || (isLogin && (!isValidFromValueFlag || isUndefined(isValidFromValueFlag)))}
                         color='colorfull'
-                        onClick={isLogin ? diposit : loadWeb3Modal}
+                        onClick={diposit}
                         style={{ minWidth: 122, padding: "12px 16px", margin: "6px 0" }}
                       >
-                        {isLogin ? "Deposit" : "Connect Wallet"}
+                        Deposit
                       </Button>
                     </div>
                   </GridItem>
@@ -1046,12 +1018,12 @@ function Invest (props) {
                         </span>
                       </div>
                       <Button
-                        disabled={isLogin && (isUndefined(isValidToValueFlag) || !isValidToValueFlag)}
+                        disabled={!isLogin || (isLogin && (isUndefined(isValidToValueFlag) || !isValidToValueFlag))}
                         color='colorfull'
-                        onClick={isLogin ? withdraw : loadWeb3Modal}
+                        onClick={withdraw}
                         style={{ minWidth: 122, padding: "12px 16px" }}
                       >
-                        {isLogin ? "Withdraw" : "Connect Wallet"}
+                        Withdraw
                       </Button>
                     </div>
                   </GridItem>

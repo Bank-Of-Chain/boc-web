@@ -16,7 +16,7 @@
    'Venus',
    //  'Ellipsis',
    'Belt',
-   //  'DForce',
+   'DForce',
    'Curve',
    'Aave',
    //  'Gravity',

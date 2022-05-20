@@ -19,6 +19,11 @@
     '56': 'https://api.thegraph.com/subgraphs/name/bankofchain/boc-subgraph-bsc',
     '137': 'https://api.thegraph.com/subgraphs/name/bankofchain/boc-subgraph-matic'
   },
+  rpc_url: {
+    '1': "https://mainnet.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161",
+    '56': "https://bsc-dataseed.binance.org",
+    '137': "https://polygon-rpc.com"
+  },
   multiple_of_gas: 1,
   dashboard_url: 'https://dashboard-v1.bankofchain.io',
   oracle_additional_slippage: 20,

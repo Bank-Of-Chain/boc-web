@@ -47,7 +47,6 @@ export default function Deposit({
   daiDecimals,
   usdiDecimals,
   userProvider,
-  onConnect,
   VAULT_ABI,
   IERC20_ABI,
   VAULT_ADDRESS
@@ -432,14 +431,14 @@ export default function Deposit({
               </p>
             </Muted>
             <Button
-              disabled={isLogin && (
+              disabled={!isLogin || (isLogin && (
                 some(formConfig, item => isValidValue(item.name) === false) || every(formConfig, item => isValidValue(item.name) !== true)
-              )}
+              ))}
               color='colorfull'
-              onClick={isLogin ? diposit : onConnect}
+              onClick={diposit}
               style={{ minWidth: 122, padding: "12px 16px", margin: "6px 0" }}
             >
-              {isLogin ? "Deposit" : "Connect Wallet"}
+              Deposit
             </Button>
           </div>
         </GridItem>

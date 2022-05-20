@@ -33,6 +33,7 @@ import Button from "../../../components/CustomButtons/Button"
 import CustomInput from "../../../components/CustomInput/CustomInput"
 import { warmDialog } from "./../../../reducers/meta-reducer"
 import { toFixed, formatBalance } from "../../../helpers/number-format"
+import { addToken } from "../../../helpers/wallet"
 import {
   USDT_ADDRESS,
   USDC_ADDRESS,
@@ -78,7 +79,6 @@ export default function Withdraw ({
   toBalance,
   usdiDecimals,
   userProvider,
-  onConnect,
   VAULT_ADDRESS,
   VAULT_ABI,
   IERC20_ABI,
@@ -159,8 +159,20 @@ export default function Withdraw ({
             const fromConstrat = new ethers.Contract(tokenItem, IERC20_ABI, userProvider)
             const fromDecimal = await fromConstrat.decimals()
             if(BigNumber.from(10).pow(fromDecimal).gt(exchangeAmounts)) {
-              //TODO: 理论上这里面，不进行兑换即可，但是目前vault不支持
-              return {}
+              // if amount less then 1, do not exchange. Keep fromToken and toToken same, exchange just need a fixed value
+              return {
+                fromAmount: exchangeAmounts,
+                fromToken: tokenItem,
+                toToken: tokenItem,
+                exchangeParam: {
+                  encodeExchangeArgs: "0x0000000000000000000000000000000000000000000000000000000000000020000000000000000000000000c02aaa39b223fe8d0a0e5c4f27ead9083c756cc2000000000000000000000000eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee0000000000000000000000000000000000000000000000029c54a1016ca4e51f0000000000000000000000000000000000000000000000029a5359ddd60bd3060000000000000000000000000000000000000000000000029c54a1016ca4e51f00000000000000000000000000000000000000000000000000000000000001e00000000000000000000000000000000000000000000000000000000000000220000000000000000000000000000000000000000000000000000000000000028000000000000000000000000000000000000000000000000000000000000002e0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000050494747590100000000000000000000000000000000000000000000000000000000004000000000000000000000000000000000000000000000000000000000000000032000000000000000000000000000000000000000000000000000000000627eb8b8f583eed0d2c411ec918c2bb862191012000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001000000000000000000000000c02aaa39b223fe8d0a0e5c4f27ead9083c756cc200000000000000000000000000000000000000000000000000000000000000242e1a7d4d0000000000000000000000000000000000000000000000029c54a1016ca4e51f00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000024000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+                  method: 0,
+                  name: "paraswap",
+                  oracleAdditionalSlippage: 0,
+                  platform: "0x5133BBdfCCa3Eb4F739D599ee4eC45cBCD0E16c5",
+                  slippage: 0,
+                }
+              }
             }
             const toTokenConstrat = new ethers.Contract(token, IERC20_ABI, userProvider)
             const fromToken = {
@@ -369,8 +381,20 @@ export default function Withdraw ({
             const toTokenConstrat = new ethers.Contract(token, IERC20_ABI, userProvider)
             const fromDecimal = await fromConstrat.decimals()
             if(BigNumber.from(10).pow(fromDecimal).gt(exchangeAmounts)) {
-              //TODO: 理论上这里面，不进行兑换即可，但是目前vault不支持
-              return {}
+              // if amount less then 1, do not exchange. Keep fromToken and toToken same, exchange just need a fixed value
+              return {
+                fromAmount: exchangeAmounts,
+                fromToken: tokenItem,
+                toToken: tokenItem,
+                exchangeParam: {
+                  encodeExchangeArgs: "0x0000000000000000000000000000000000000000000000000000000000000020000000000000000000000000c02aaa39b223fe8d0a0e5c4f27ead9083c756cc2000000000000000000000000eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee0000000000000000000000000000000000000000000000029c54a1016ca4e51f0000000000000000000000000000000000000000000000029a5359ddd60bd3060000000000000000000000000000000000000000000000029c54a1016ca4e51f00000000000000000000000000000000000000000000000000000000000001e00000000000000000000000000000000000000000000000000000000000000220000000000000000000000000000000000000000000000000000000000000028000000000000000000000000000000000000000000000000000000000000002e0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000050494747590100000000000000000000000000000000000000000000000000000000004000000000000000000000000000000000000000000000000000000000000000032000000000000000000000000000000000000000000000000000000000627eb8b8f583eed0d2c411ec918c2bb862191012000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001000000000000000000000000c02aaa39b223fe8d0a0e5c4f27ead9083c756cc200000000000000000000000000000000000000000000000000000000000000242e1a7d4d0000000000000000000000000000000000000000000000029c54a1016ca4e51f00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000024000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+                  method: 0,
+                  name: "paraswap",
+                  oracleAdditionalSlippage: 0,
+                  platform: "0x5133BBdfCCa3Eb4F739D599ee4eC45cBCD0E16c5",
+                  slippage: 0,
+                }
+              }
             }
             const fromToken = {
               decimals: parseInt((await fromConstrat.decimals()).toString()),
@@ -519,32 +543,6 @@ export default function Withdraw ({
       取款: `${qk}(${qkPercents}%)`,
       事务确认: `${swc}(${swcPercents}%)`,
     })
-  }
-
-  const addToken = async token => {
-    try {
-      const tokenContract = new ethers.Contract(token, IERC20_ABI, userProvider)
-      // wasAdded is a boolean. Like any RPC method, an error may be thrown.
-      const wasAdded = await window.ethereum.request({
-        method: "wallet_watchAsset",
-        params: {
-          type: "ERC20", // Initially only supports ERC20, but eventually more!
-          options: {
-            address: token, // The address that the token is at.
-            symbol: await tokenContract.symbol(), // A ticker symbol or shorthand, up to 5 chars.
-            decimals: await tokenContract.decimals(), // The number of decimals in the token
-          },
-        },
-      })
-
-      if (wasAdded) {
-        console.log("Thanks for your interest!")
-      } else {
-        console.log("Your loss!")
-      }
-    } catch (error) {
-      console.log(error)
-    }
   }
 
   function imgError (e) {
@@ -755,14 +753,14 @@ export default function Withdraw ({
               </span>
             </div>
             <Button
-              disabled={isLogin && (
+              disabled={!isLogin || (isLogin && (
                 isUndefined(isValidToValueFlag) || !isValidToValueFlag
-              )}
+              ))}
               color='colorfull'
-              onClick={isLogin ? withdraw : onConnect}
+              onClick={withdraw}
               style={{ minWidth: 122, padding: "12px 16px" }}
             >
-              {isLogin ? "Withdraw" : "Connect Wallet"}
+              Withdraw
             </Button>
             <Tooltip
               classes={{

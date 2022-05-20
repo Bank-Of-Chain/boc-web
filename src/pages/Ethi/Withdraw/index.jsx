@@ -32,6 +32,7 @@ import Button from "../../../components/CustomButtons/Button"
 import CustomInput from "../../../components/CustomInput/CustomInput"
 import { warmDialog } from "./../../../reducers/meta-reducer"
 import { toFixed, formatBalance } from "../../../helpers/number-format"
+import { addToken } from "../../../helpers/wallet"
 import {
   EXCHANGE_EXTRA_PARAMS,
   MULTIPLE_OF_GAS,
@@ -41,6 +42,7 @@ import {
 
 // === Hooks === //
 import useRedeemFeeBps from "../../../hooks/useRedeemFeeBps"
+import usePriceProvider from "../../../hooks/usePriceProvider"
 
 // === Utils === //
 import { getBestSwapInfo } from "piggy-finance-utils"
@@ -67,17 +69,19 @@ const steps = [
   { title: "Withdraw" },
 ]
 
+const WITHDRAW_EXCHANGE_THRESHOLD = BigNumber.from(10).pow(16)
+
 export default function Withdraw ({
   ethiBalance,
   ethiDecimals,
   userProvider,
-  onConnect,
   ETH_ADDRESS,
   VAULT_ADDRESS,
   VAULT_ABI,
   IERC20_ABI,
   EXCHANGE_AGGREGATOR_ABI,
   EXCHANGE_ADAPTER_ABI,
+  PRICE_ORCALE_ABI
 }) {
   const classes = useStyles()
   const dispatch = useDispatch()
@@ -90,6 +94,12 @@ export default function Withdraw ({
   const [isWithdrawLoading, setIsWithdrawLoading] = useState(false)
   const [currentStep, setCurrentStep] = useState(0)
   const [withdrawError, setWithdrawError] = useState({})
+  const { getPriceProvider } = usePriceProvider({
+    userProvider,
+    VAULT_ADDRESS,
+    VAULT_ABI,
+    PRICE_ORCALE_ABI
+  })
 
   const { value: redeemFeeBps } = useRedeemFeeBps({
     userProvider,
@@ -147,9 +157,10 @@ export default function Withdraw ({
             return {}
           }
           const fromConstrat = new ethers.Contract(tokenItem, IERC20_ABI, userProvider)
-          const fromDecimal = await fromConstrat.decimals()
-          if(BigNumber.from(10).pow(fromDecimal).gt(exchangeAmounts)) {
-            //TODO: 理论上这里面，不进行兑换即可，但是目前vault不支持
+          const priceProvider = await getPriceProvider()
+          const amountsInEth = await priceProvider.valueInEth(tokenItem, exchangeAmounts)
+          if(WITHDRAW_EXCHANGE_THRESHOLD.gt(amountsInEth)) {
+            // token less then 0.01 eth, cancel exchange
             return {
               fromAmount: exchangeAmounts,
               fromToken: tokenItem,
@@ -360,10 +371,10 @@ export default function Withdraw ({
             return {}
           }
           const fromConstrat = new ethers.Contract(tokenItem, IERC20_ABI, userProvider)
-          // const toTokenConstrat = new ethers.Contract(token, IERC20_ABI, userProvider)
-          const fromDecimal = await fromConstrat.decimals()
-          if(BigNumber.from(10).pow(fromDecimal).gt(exchangeAmounts)) {
-            //TODO: 理论上这里面，不进行兑换即可，但是目前vault不支持
+          const priceProvider = await getPriceProvider()
+          const amountsInEth = await priceProvider.valueInEth(tokenItem, exchangeAmounts)
+          if(WITHDRAW_EXCHANGE_THRESHOLD.gt(amountsInEth)) {
+            // token less then 0.01 eth, cancel exchange
             return {
               fromAmount: exchangeAmounts,
               fromToken: tokenItem,
@@ -611,35 +622,6 @@ export default function Withdraw ({
     setToValue(formatBalance(ethiBalance, ethiDecimals, { showAll: true }))
   }
 
-  const addToken = async token => {
-    if (token === ETH_ADDRESS) {
-      return
-    }
-    try {
-      const tokenContract = new ethers.Contract(token, IERC20_ABI, userProvider)
-      // wasAdded is a boolean. Like any RPC method, an error may be thrown.
-      const wasAdded = await window.ethereum.request({
-        method: "wallet_watchAsset",
-        params: {
-          type: "ERC20", // Initially only supports ERC20, but eventually more!
-          options: {
-            address: token, // The address that the token is at.
-            symbol: await tokenContract.symbol(), // A ticker symbol or shorthand, up to 5 chars.
-            decimals: await tokenContract.decimals(), // The number of decimals in the token
-          },
-        },
-      })
-
-      if (wasAdded) {
-        console.log("Thanks for your interest!")
-      } else {
-        console.log("Your loss!")
-      }
-    } catch (error) {
-      console.log(error)
-    }
-  }
-
   const renderEstimate = () => {
     if (isEstimate) {
       return (
@@ -731,12 +713,12 @@ export default function Withdraw ({
               </span>
             </div>
             <Button
-              disabled={isLogin && (isUndefined(isValidToValueFlag) || !isValidToValueFlag)}
+              disabled={!isLogin || (isLogin && (isUndefined(isValidToValueFlag) || !isValidToValueFlag))}
               color='colorfull'
-              onClick={isLogin ? withdraw : onConnect}
+              onClick={withdraw}
               style={{ minWidth: 122, padding: "12px 16px" }}
             >
-              {isLogin ? "Withdraw" : "Connect Wallet"}
+              Withdraw
             </Button>
             <Tooltip
               classes={{

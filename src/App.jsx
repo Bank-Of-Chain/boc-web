@@ -1,9 +1,9 @@
 /* eslint-disable no-extend-native */
-import React, { useState, useCallback, useEffect, Suspense, lazy } from "react"
+import React, { useState, useEffect, Suspense, lazy } from "react"
 import { Switch, Route, Redirect, HashRouter } from "react-router-dom"
-import { Web3Provider } from "@ethersproject/providers"
 import { useUserAddress } from "eth-hooks"
 import { useSelector, useDispatch } from "react-redux"
+import useWallet from "./hooks/useWallet"
 
 // === Reducers === //
 import { warmDialog } from "./reducers/meta-reducer"
@@ -17,16 +17,16 @@ import Paper from "@material-ui/core/Paper"
 import Frame from "./components/Frame/Frame"
 import Snackbar from "@material-ui/core/Snackbar"
 import Alert from "@material-ui/lab/Alert"
-import { Button } from "@material-ui/core"
 
 // === Utils === //
 import { USDT_ADDRESS, NET_WORKS, LOCAL_CHAIN_ID } from "./constants"
 import { makeStyles } from "@material-ui/core/styles"
-import { SafeAppWeb3Modal } from "@gnosis.pm/safe-apps-web3modal"
 import { lendSwap } from "piggy-finance-utils"
 import isEmpty from "lodash/isEmpty"
 import isUndefined from "lodash/isUndefined"
 import map from "lodash/map"
+
+import { WALLETS } from "./constants/wallet"
 
 // === Styles === //
 import "./App.css"
@@ -59,12 +59,6 @@ const Home = lazy(() => import("./pages/Home/index"))
 const InvestNew = lazy(() => import("./pages/InvestNew/index"))
 const Ethi = lazy(() => import("./pages/Ethi/index"))
 
-const web3Modal = new SafeAppWeb3Modal({
-  // network: "mainnet", // optional
-  cacheProvider: true, // optional
-  providerOptions: {},
-})
-
 const useStyles = makeStyles(theme => ({
   backdrop: {
     zIndex: theme.zIndex.drawer + 1,
@@ -80,60 +74,60 @@ const useStyles = makeStyles(theme => ({
 
 function App () {
   const classes = useStyles()
-  const [userProvider, setUserProvider] = useState()
+  const {
+    web3Modal,
+    userProvider,
+    connect,
+    disconnect,
+    getChainId,
+    getWalletName
+  } = useWallet()
   const [isLoadingChainId, setIsLoadingChainId] = useState(false)
-
-  const [runWithoutMeta, setRunWithoutMeta] = useState(false)
 
   const alertState = useSelector(state => state.metaReducer.warmMsg)
   const dispatch = useDispatch()
-  const loadWeb3Modal = useCallback(async () => {
-    const provider = await web3Modal.requestProvider()
+  const address = useUserAddress(userProvider)
+  const selectedChainId = getChainId(userProvider)
+  const walletName = getWalletName()
 
-    const updateProvider = p => {
+  useEffect(() => {
+    if (userProvider) {
       setIsLoadingChainId(true)
-      setUserProvider(p)
-      p._networkPromise.then(v => {
+      userProvider._networkPromise.then(v => {
         setTimeout(() => {
           setIsLoadingChainId(false)
         }, 200)
       })
     }
-
-    updateProvider(new Web3Provider(provider))
-    provider.on("chainChanged", chainId => {
-      console.log(`chain changed to ${chainId}! updating providers`)
-      localStorage.REACT_APP_NETWORK_TYPE = parseInt(chainId)
-      updateProvider(new Web3Provider(provider))
-    })
-
-    provider.on("accountsChanged", () => {
-      console.log(`account changed!`)
-      updateProvider(new Web3Provider(provider))
-    })
-
-    // Subscribe to session disconnection
-    provider.on("disconnect", (code, reason) => {
-      console.log("disconnect", code, reason)
-      localStorage.REACT_APP_NETWORK_TYPE = ""
-    })
-  }, [setUserProvider])
-
-  const logoutOfWeb3Modal = async () => {
-    await web3Modal.clearCachedProvider()
-    setTimeout(() => {
-      window.location.reload()
-    }, 1)
-  }
+  }, [userProvider])
 
   useEffect(() => {
     if (web3Modal.cachedProvider) {
-      loadWeb3Modal()
+      connect()
     }
-  }, [loadWeb3Modal])
+  }, [connect, web3Modal.cachedProvider])
 
-  const address = useUserAddress(userProvider)
-  const selectedChainId = userProvider && userProvider._network && userProvider._network.chainId
+  useEffect(() => {
+    const isBrowserPluginWallet = [WALLETS.MetaMask.info.symbol].includes(walletName)
+    if (!window.ethereum || !isBrowserPluginWallet) {
+      return
+    }
+    function chainChangedReload (chainId) {
+      localStorage.REACT_APP_NETWORK_TYPE = parseInt(chainId)
+      reload()
+    }
+    function reload () {
+      setTimeout(() => {
+        window.location.reload()
+      }, 1)
+    }
+    window.ethereum.on("chainChanged", chainChangedReload)
+    window.ethereum.on("accountsChanged", reload)
+    return () => {
+      window.ethereum.removeListener("chainChanged", chainChangedReload)
+      window.ethereum.removeListener("accountsChanged", reload)
+    }
+  }, [walletName])
 
   useEffect(() => {
     if (isUndefined(selectedChainId)) return
@@ -144,8 +138,9 @@ function App () {
       }, 100)
     }
   }, [selectedChainId])
+
   const changeNetwork = targetNetwork => {
-    return new Promise(async (resolver, rejcet) => {
+    return new Promise(async (resolver, reject) => {
       if (isEmpty(targetNetwork)) return
       // 如果metamask已经使用的是targetNetwork的话，则修改localStorage.REACT_APP_NETWORK_TYPE之后，进行页面刷新。
       if (targetNetwork.chainId === selectedChainId) {
@@ -155,7 +150,23 @@ function App () {
         }, 1)
         return
       }
-      const ethereum = window.ethereum
+      // unlogin and no browser wallet plugin, allow switch tab
+      if (!window.ethereum && !userProvider) {
+        resolver()
+        return
+      }
+      const supportSwitch = [WALLETS.MetaMask.info.symbol]
+      if (userProvider && !supportSwitch.includes(walletName)) {
+        dispatch(
+          warmDialog({
+            open: true,
+            type: "warning",
+            message: "Switch networks in your wallet, then reconnect",
+          })
+        )
+        reject()
+        return
+      }
       const data = [
         {
           chainId: "0x" + targetNetwork.chainId.toString(16),
@@ -170,23 +181,24 @@ function App () {
       let switchTx
       // https://docs.metamask.io/guide/rpc-api.html#other-rpc-methods
       try {
-        switchTx = await ethereum.request({
-          method: "wallet_switchEthereumChain",
+        // wallet connect does not support change chain, so use window.ethereum, otherwise use userProvider.send
+        switchTx = await window.ethereum.request({
+          method: 'wallet_switchEthereumChain',
           params: [{ chainId: data[0].chainId }],
         })
       } catch (switchError) {
         if (switchError.code === 4001) {
-          rejcet()
+          reject()
         }
         // not checking specific error code, because maybe we're not using MetaMask
         try {
-          switchTx = await ethereum.request({
-            method: "wallet_addEthereumChain",
+          switchTx = await window.ethereum.request({
+            method: 'wallet_addEthereumChain',
             params: data,
           })
         } catch (addError) {
           console.log("addError=", addError)
-          rejcet()
+          reject()
           // handle "add" error
         }
       }
@@ -233,41 +245,8 @@ function App () {
       }),
     )
   }
+
   const renderModalValid = () => {
-    if (isEmpty(window.ethereum) && !runWithoutMeta && !localStorage.runWithoutMeta) {
-      return modalJsx(
-        true,
-        <div style={{ textAlign: "center" }}>
-          <p style={{ textAlign: "center" }}>
-            Please install the plugin Metamask first!{" "}
-            <Button
-              color='secondary'
-              target={"_blank"}
-              href='https://chrome.google.com/webstore/detail/metamask/nkbihfbeogaeaoehlefnkodbefgpgknn?hl=zh-CN'
-            >
-              LINK
-            </Button>
-          </p>
-          <p>
-            <Button size='small' variant='contained' color='primary' onClick={() => setRunWithoutMeta(true)}>
-              OK
-            </Button>
-            <Button
-              style={{ marginLeft: 10 }}
-              size='small'
-              variant='contained'
-              color='secondary'
-              onClick={() => {
-                localStorage.runWithoutMeta = true
-                setRunWithoutMeta(true)
-              }}
-            >
-              IGNORE
-            </Button>
-          </p>
-        </div>,
-      )
-    }
     if (isLoadingChainId) {
       return modalJsx(true, [
         <div key='1' style={{ textAlign: "center" }}>
@@ -290,11 +269,12 @@ function App () {
   const nextProps = {
     web3Modal,
     address,
-    loadWeb3Modal,
-    logoutOfWeb3Modal,
+    connect,
+    disconnect,
     userProvider,
     changeNetwork,
-    selectedChainId
+    walletName,
+    selectedChainId,
   }
 
   return (
@@ -374,21 +354,5 @@ function App () {
     </div>
   )
 }
-
-// eslint-disable-next-line no-unused-expressions
-window.ethereum &&
-  (() => {
-    function chainChangedReload (chainId) {
-      localStorage.REACT_APP_NETWORK_TYPE = parseInt(chainId)
-      reload()
-    }
-    function reload () {
-      setTimeout(() => {
-        window.location.reload()
-      }, 1)
-    }
-    window.ethereum.on("chainChanged", chainChangedReload)
-    window.ethereum.on("accountsChanged", reload)
-  })()
 
 export default App

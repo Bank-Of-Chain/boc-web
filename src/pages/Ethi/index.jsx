@@ -51,6 +51,7 @@ import find from "lodash/find"
 import * as ethers from "ethers"
 import useVersionWapper from "../../hooks/useVersionWapper"
 import useMediaQuery from '@material-ui/core/useMediaQuery'
+import { addToken } from "../../helpers/wallet"
 
 // === Styles === //
 import styles from "./style"
@@ -71,14 +72,13 @@ function Ethi (props) {
   const { 
     address,
     userProvider,
-    loadWeb3Modal,
     ETHI_ADDRESS,
     VAULT_ADDRESS,
     VAULT_ABI,
     IERC20_ABI,
     EXCHANGE_AGGREGATOR_ABI,
     EXCHANGE_ADAPTER_ABI,
-    ETHI_MINT_GAS_LIMIT
+    PRICE_ORCALE_ABI
   } = props
 
   const [ethBalance, setEthBalance] = useState(BigNumber.from(0))
@@ -106,7 +106,7 @@ function Ethi (props) {
         warmDialog({
           open: true,
           type: "warning",
-          message: "Please confirm MetaMask's network!",
+          message: "Please confirm wallet's network!",
         }),
       )
     })
@@ -130,7 +130,7 @@ function Ethi (props) {
 
   useEffect(() => {
     const listener = () => {
-      if (isEmpty(VAULT_ADDRESS) || isEmpty(VAULT_ABI)) return
+      if (isEmpty(VAULT_ADDRESS) || isEmpty(VAULT_ABI) || isEmpty(userProvider)) return
       loadBanlance()
       const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider)
       if (!isEmpty(address)) {
@@ -167,19 +167,7 @@ function Ethi (props) {
   const handleTabChange = (event, value) => setTab(value)
 
   const handleAddETHi = () =>  {
-    if (window.ethereum) {
-      window.ethereum.request({
-        method: "wallet_watchAsset",
-        params: {
-          type: "ERC20",
-          options: {
-            address: ETHI_ADDRESS,
-            symbol: "ETHi",
-            decimals: 18,
-          },
-        },
-      })
-    }
+    addToken(ETHI_ADDRESS, "ETHi", 18)
   }
 
   const net = find(NET_WORKS, (item) => item.chainId === props.selectedChainId) || NET_WORKS[0]
@@ -264,12 +252,10 @@ function Ethi (props) {
                   ethBalance={ethBalance}
                   ethDecimals={ethDecimals}
                   userProvider={userProvider}
-                  onConnect={loadWeb3Modal}
                   VAULT_ABI={VAULT_ABI}
                   IERC20_ABI={IERC20_ABI}
                   VAULT_ADDRESS={VAULT_ADDRESS}
                   ETH_ADDRESS={ETH_ADDRESS}
-                  ETHI_MINT_GAS_LIMIT={ETHI_MINT_GAS_LIMIT}
                 />
               </TabPanel>
               <TabPanel value={tab} index={TABS.WITHDRAW}>
@@ -277,13 +263,13 @@ function Ethi (props) {
                   ethiBalance={ethiBalance}
                   ethiDecimals={ethiDecimals}
                   userProvider={userProvider}
-                  onConnect={loadWeb3Modal}
                   VAULT_ADDRESS={VAULT_ADDRESS}
                   ETH_ADDRESS={ETH_ADDRESS}
                   VAULT_ABI={VAULT_ABI}
                   IERC20_ABI={IERC20_ABI}
                   EXCHANGE_AGGREGATOR_ABI={EXCHANGE_AGGREGATOR_ABI}
                   EXCHANGE_ADAPTER_ABI={EXCHANGE_ADAPTER_ABI}
+                  PRICE_ORCALE_ABI={PRICE_ORCALE_ABI}
                 />
               </TabPanel>
             </Card>
