@@ -141,19 +141,13 @@ const config1 = {
   max_gas_limit: 2700 * 10 ** 4,
   chain_id: 1,
   vaults: [{
-    id: 'invest',
-    name: 'Vault for Stable Coins',
-    path: '#/invest',
-    abi_version: 'v4.6',
-    VAULT_ADDRESS: '0x547382C0D1b23f707918D3c83A77317B71Aa8470',
-  }, {
     id: 'mutilCoins',
     name: 'Vault for USDi',
     path: '#/mutils',
     isAudit: true,
     abi_version: 'beta-v1.5',
-    VAULT_ADDRESS: '0x9BcC604D4381C5b0Ad12Ff3Bf32bEdE063416BC7',
-    USDI_ADDRESS: '0xf090f16dEc8b6D24082Edd25B1C8D26f2bC86128',
+    VAULT_ADDRESS: '',
+    USDI_ADDRESS: '',
     isOpen: true
   }, {
     id: 'ethi',

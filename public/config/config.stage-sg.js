@@ -14,7 +14,7 @@
   blog_url: 'https://piggyfinance.github.io/docs/zh/blog/',
   licenses_url: 'https://piggyfinance.github.io/docs/zh/licenses/',
   document_url: "https://docs.bankofchain.io",
-  boc_server: 'http://service-stage-sg.bankofchain.io',
+  boc_server: 'https://service-stage-sg.bankofchain.io',
   sub_graph_url: {
     '1': 'https://api.thegraph.com/subgraphs/name/bankofchain/boc-subgraph-eth',
     '56': 'https://api.thegraph.com/subgraphs/name/bankofchain/boc-subgraph-bsc',
@@ -26,7 +26,7 @@
     '137': "https://rpc-mainnet.maticvigil.com"
   },
   multiple_of_gas: 2,
-  dashboard_url: 'http://dashboard-stage-sg.bankofchain.io',
+  dashboard_url: 'https://dashboard-stage-sg.bankofchain.io',
   oracle_additional_slippage: 20
 }
 
@@ -52,6 +52,26 @@ const config137 = {
   // 币安链一个区块2千万，使用90%的空间即可，过大会造成打块过慢
   max_gas_limit: 1800 * 10 ** 4,
   chain_id: 137,
+  vaults: [{
+    id: 'mutilCoins',
+    name: 'Vault for USDi',
+    path: '#/mutils',
+    isAudit: true,
+    abi_version: 'beta-v1.5',
+    VAULT_ADDRESS: '0x85f93384BAd10d7751Fcc3bBD8F8710db3190700',
+    USDI_ADDRESS: '0x1C9f974DF781C6EB3764F21Fe961ba38305213df',
+    isOpen: true
+  }, {
+    id: 'ethi',
+    name: 'Vault for ETHi',
+    description: '这是ethi的池子',
+    path: '#/ethi',
+    abi_version: 'ethi',
+    VAULT_ADDRESS: '',
+    ETHI_ADDRESS: '',
+    WETHI_ADDRESS: '',
+    isOpen: true
+  }]
 }
 
 const config56 = {
@@ -74,12 +94,32 @@ const config56 = {
   // 币安链一个区块8千万，使用90%的空间即可，过大会造成打块过慢
   max_gas_limit: 7200 * 10 ** 4,
   chain_id: 56,
+  vaults: [{
+    id: 'mutilCoins',
+    name: 'Vault for USDi',
+    path: '#/mutils',
+    isAudit: true,
+    abi_version: 'beta-v1.5',
+    VAULT_ADDRESS: '0x76609c83dD684F0D4c0F0c9849db0a1b5a96CAB2',
+    USDI_ADDRESS: '0xCFC6E8577a414f561D459fC4a030e3463A500d29',
+    isOpen: true
+  }, {
+    id: 'ethi',
+    name: 'Vault for ETHi',
+    description: '这是ethi的池子',
+    path: '#/ethi',
+    abi_version: 'ethi',
+    VAULT_ADDRESS: '',
+    ETHI_ADDRESS: '',
+    WETHI_ADDRESS: '',
+    isOpen: true
+  }]
 }
 
 const config1 = {
   ...configBase,
   abi_version: 'beta-v1.5',
-  apy_server: 'http://stage-sg-keeper-eth.bankofchain.io',
+  apy_server: 'https://stage-sg-keeper-eth.bankofchain.io',
   vault_address: "0x9BcC604D4381C5b0Ad12Ff3Bf32bEdE063416BC7",
   usdt_address: "0xdAC17F958D2ee523a2206206994597C13D831ec7",
   usdc_address: "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
@@ -100,12 +140,6 @@ const config1 = {
   max_gas_limit: 2700 * 10 ** 4,
   chain_id: 1,
   vaults: [{
-    id: 'invest',
-    name: 'Vault for Stable Coins',
-    path: '#/invest',
-    abi_version: 'v4.6',
-    VAULT_ADDRESS: '0x547382C0D1b23f707918D3c83A77317B71Aa8470',
-  }, {
     id: 'mutilCoins',
     name: 'Vault for USDi',
     path: '#/mutils',
@@ -129,7 +163,7 @@ const config1 = {
 
 window.config = {
   // 本地链
-  31337: config1,
+  31337: config137,
   // polygon
   137: config137,
   // bsc
