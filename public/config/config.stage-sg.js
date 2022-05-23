@@ -21,9 +21,10 @@
     '137': 'https://api.thegraph.com/subgraphs/name/bankofchain/boc-subgraph-matic'
   },
   rpc_url: {
-    '1': "http://122.248.220.253:8545",
+    '1': "https://mainnet.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161",
     '56': "https://bsc-dataseed.binance.org/",
-    '137': "https://rpc-mainnet.maticvigil.com"
+    '137': "https://rpc-mainnet.maticvigil.com",
+    '31337': "https://rpc-stage-sg.bankofchain.io",
   },
   multiple_of_gas: 2,
   dashboard_url: 'https://dashboard-stage-sg.bankofchain.io',

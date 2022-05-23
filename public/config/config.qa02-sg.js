@@ -21,9 +21,10 @@ const configBase = {
     '137': 'https://api.thegraph.com/subgraphs/name/bankofchain/boc-subgraph-matic'
   },
   rpc_url: {
-    '1': "http://54.179.161.168:8545",
+    '1': "https://mainnet.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161",
     '56': "https://bsc-dataseed.binance.org/",
-    '137': "https://rpc-mainnet.maticvigil.com"
+    '137': "https://rpc-mainnet.maticvigil.com",
+    '31337': "https://rpc-qa02-sg.bankofchain.io",
   },
   multiple_of_gas: 2,
   dashboard_url: 'http://dashboard-qa02-sg.bankofchain.io',
