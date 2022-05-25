@@ -35,6 +35,9 @@ const headerLinksStyle = (theme) => ({
       },
     },
   },
+  hidden: {
+    display: 'none'
+  },
   listItemText: {
     padding: "0 !important",
   },
