@@ -42,7 +42,8 @@
    'Quickswap': 'https://quickswap.exchange/',
    'Sushi': 'https://www.sushi.com/',
    'Synapse': 'https://synapseprotocol.com',
-   'Stargate': 'https://stargate.finance/'
+   'Stargate': 'https://stargate.finance/',
+   'DForce': 'https://dforce.network/'
  }
 
  export default STRATEGIES
