@@ -1,5 +1,6 @@
 /*eslint-disable*/
 import React, { useState } from "react"
+import classNames from "classnames";
 
 // @material-ui/core components
 import { makeStyles } from "@material-ui/core/styles"
@@ -27,7 +28,7 @@ import isEmpty from "lodash/isEmpty"
 import map from "lodash/map"
 import get from "lodash/get"
 import find from "lodash/find"
-import { isInMobileWalletApp } from "../../helpers/plugin-util"
+import { isInMobileWalletApp, isInMobileH5 } from "../../helpers/plugin-util"
 
 // === Constants === //
 import { NET_WORKS, DASHBOARD_URL, DOCUMENT_URL, CHAIN_ID, LEGACYS } from "./../../constants"
@@ -41,7 +42,7 @@ export default function HeaderLinks (props) {
   const classes = useStyles()
 
   const handleClickConnect = () => {
-    if (isInMobileWalletApp) {
+    if (isInMobileWalletApp()) {
       connect()
     } else {
       setWalletModalVisible(true)
@@ -134,7 +135,7 @@ export default function HeaderLinks (props) {
               </Button>
             </ListItem>
           ) : (
-          <ListItem className={classes.listItem}>
+          <ListItem className={classNames(classes.listItem, { [classes.hidden]: isInMobileH5() })}>
             {isEmpty(userProvider) ? (
               <Button
                 color='colorfull'
@@ -144,7 +145,7 @@ export default function HeaderLinks (props) {
               >
                 <AccountBalanceWallet className={classes.icons}></AccountBalanceWallet> Connect wallet
               </Button>
-            ) : isInMobileWalletApp
+            ) : isInMobileWalletApp()
               ? (
                 <Button color='transparent' target='_blank' className={classes.navLink} onClick={disconnect}>
                   <AccountBalanceWalletOutlined className={classes.icons} /> <Address size='short' address={address} />
