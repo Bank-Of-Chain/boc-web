@@ -36,7 +36,7 @@ export const addToken = async (tokenAddress, symbol, decimals) => {
         warmDialog({
           open: true,
           type: "warning",
-          message: "The current wallet does not support adding token",
+          message: `The current wallet does not support adding token (address: ${tokenAddress}). You can add token manually.`,
         })
       )
       return

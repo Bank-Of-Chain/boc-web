@@ -221,7 +221,7 @@ function Invest (props) {
               <div className={classes.balanceCardItem}>
                 <div className={classes.balanceCardValue}>
                   <span title={formatBalance(toBalance, usdiDecimals, { showAll: true })}>{`${formatBalance(toBalance, usdiDecimals)} USDi`}</span>
-                  {window.ethereum && userProvider && (
+                  {userProvider && (
                     <span title="Add token address to wallet">
                       <AddCircleOutlineIcon className={classes.addTokenIcon} onClick={handleAddUSDi} fontSize='small' />
                     </span>

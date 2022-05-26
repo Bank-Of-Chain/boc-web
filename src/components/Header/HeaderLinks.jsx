@@ -1,6 +1,8 @@
 /*eslint-disable*/
-import React, { useState } from "react"
+import React, { useState, useRef } from "react"
 import classNames from "classnames";
+import { useDispatch } from "react-redux"
+import { warmDialog } from "../../reducers/meta-reducer"
 
 // @material-ui/core components
 import { makeStyles } from "@material-ui/core/styles"
@@ -40,6 +42,8 @@ export default function HeaderLinks (props) {
   const { address, userProvider, connect, disconnect, walletName } = props
   const [walletModalVisible, setWalletModalVisible] = useState(false)
   const classes = useStyles()
+  const dispatch = useDispatch()
+  const connectTimer = useRef(null)
 
   const handleClickConnect = () => {
     if (isInMobileWalletApp()) {
@@ -53,8 +57,30 @@ export default function HeaderLinks (props) {
     setWalletModalVisible(false)
   }
 
-  const connectTo = async (name, chainId) => {
-    const provider = await connect(name, chainId)
+  const connectTo = async (name) => {
+    if (!connectTimer.current) {
+      connectTimer.current = setTimeout(() => {
+        dispatch(warmDialog({
+          open: true,
+          type: "warning",
+          message: "Please check you wallet info or confirm you have install the wallet",
+        }))
+        connectTimer.current = null
+      }, 5000)
+    }
+    const provider = await connect(name).catch((error) => {
+      const msg = error?.message
+      if (msg === 'No Web3 Provider found') {
+        dispatch(warmDialog({
+          open: true,
+          type: "warning",
+          message: "Please install the wallet first. If you have installed, reload page",
+        }))
+      }
+      console.error(error)
+    })
+    clearTimeout(connectTimer.current)
+    connectTimer.current = null
     if (provider) {
       handleClose()
     }

@@ -208,7 +208,7 @@ function Ethi (props) {
                   <span title={formatBalance(ethiBalance, ethiDecimals, { showAll: true })}>
                     {`${formatBalance(ethiBalance, ethiDecimals)} ETHi`}
                   </span>
-                  {window.ethereum && userProvider && (
+                  {userProvider && (
                     <span title="Add token address to wallet">
                       <AddCircleOutlineIcon className={classes.addTokenIcon} onClick={handleAddETHi} fontSize='small' />
                     </span>
