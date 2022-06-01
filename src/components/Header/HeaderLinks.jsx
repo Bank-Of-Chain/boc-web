@@ -161,7 +161,7 @@ export default function HeaderLinks (props) {
               </Button>
             </ListItem>
           ) : (
-          <ListItem className={classNames(classes.listItem, { [classes.hidden]: isInMobileH5() })}>
+          <ListItem className={classNames(classes.listItem, { [classes.hidden]: isInMobileH5() || isInMobileWalletApp() })}>
             {isEmpty(userProvider) ? (
               <Button
                 color='colorfull'
