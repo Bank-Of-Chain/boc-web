@@ -27,7 +27,7 @@
   multiple_of_gas: 1,
   dashboard_url: 'https://dashboard-v1.bankofchain.io',
   oracle_additional_slippage: 20,
-  legacys: { title: 'legacys', url: 'https://legacy-v1-web.bankofchain.io' }
+  legacys: {}
 }
 
 const config137 = {
