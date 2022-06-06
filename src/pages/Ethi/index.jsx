@@ -134,7 +134,7 @@ function Ethi (props) {
       loadBanlance()
       const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider)
       if (!isEmpty(address)) {
-        vaultContract.on("Mint", (...eventArgs) => {
+        function handleMint (...eventArgs) {
           console.log("Mint=", eventArgs)
           const block = last(eventArgs)
           block &&
@@ -142,8 +142,8 @@ function Ethi (props) {
               .getTransaction()
               .then(tx => tx.wait())
               .then(loadBanlance)
-        })
-        vaultContract.on("Burn", (...eventArgs) => {
+        }
+        function handleBurn (...eventArgs) {
           console.log("Burn=", eventArgs)
           const block = last(eventArgs)
           block &&
@@ -151,10 +151,14 @@ function Ethi (props) {
               .getTransaction()
               .then(tx => tx.wait())
               .then(loadBanlance)
-        })
+        }
+        vaultContract.on("Mint", handleMint)
+        vaultContract.on("Burn", handleBurn)
+        return () => {
+          vaultContract.off("Mint", handleMint)
+          vaultContract.off("Burn", handleBurn)
+        }
       }
-  
-      return () => vaultContract.removeAllListeners(["Mint", "Burn"])
     }
     return listener()
   }, [address, VAULT_ADDRESS, VAULT_ABI, userProvider])
@@ -204,7 +208,7 @@ function Ethi (props) {
                   <span title={formatBalance(ethiBalance, ethiDecimals, { showAll: true })}>
                     {`${formatBalance(ethiBalance, ethiDecimals)} ETHi`}
                   </span>
-                  {window.ethereum && userProvider && (
+                  {userProvider && (
                     <span title="Add token address to wallet">
                       <AddCircleOutlineIcon className={classes.addTokenIcon} onClick={handleAddETHi} fontSize='small' />
                     </span>

@@ -1,5 +1,8 @@
 /*eslint-disable*/
-import React, { useState } from "react"
+import React, { useState, useRef } from "react"
+import classNames from "classnames";
+import { useDispatch } from "react-redux"
+import { warmDialog } from "../../reducers/meta-reducer"
 
 // @material-ui/core components
 import { makeStyles } from "@material-ui/core/styles"
@@ -27,7 +30,7 @@ import isEmpty from "lodash/isEmpty"
 import map from "lodash/map"
 import get from "lodash/get"
 import find from "lodash/find"
-import { isInMobileWalletApp } from "../../helpers/plugin-util"
+import { isInMobileWalletApp, isInMobileH5 } from "../../helpers/plugin-util"
 
 // === Constants === //
 import { NET_WORKS, DASHBOARD_URL, DOCUMENT_URL, CHAIN_ID, LEGACYS } from "./../../constants"
@@ -39,9 +42,11 @@ export default function HeaderLinks (props) {
   const { address, userProvider, connect, disconnect, walletName } = props
   const [walletModalVisible, setWalletModalVisible] = useState(false)
   const classes = useStyles()
+  const dispatch = useDispatch()
+  const connectTimer = useRef(null)
 
   const handleClickConnect = () => {
-    if (isInMobileWalletApp) {
+    if (isInMobileWalletApp()) {
       connect()
     } else {
       setWalletModalVisible(true)
@@ -52,8 +57,30 @@ export default function HeaderLinks (props) {
     setWalletModalVisible(false)
   }
 
-  const connectTo = async (name, chainId) => {
-    const provider = await connect(name, chainId)
+  const connectTo = async (name) => {
+    if (!connectTimer.current) {
+      connectTimer.current = setTimeout(() => {
+        dispatch(warmDialog({
+          open: true,
+          type: "warning",
+          message: "Please check you wallet info or confirm you have install the wallet",
+        }))
+        connectTimer.current = null
+      }, 5000)
+    }
+    const provider = await connect(name).catch((error) => {
+      const msg = error?.message
+      if (msg === 'No Web3 Provider found') {
+        dispatch(warmDialog({
+          open: true,
+          type: "warning",
+          message: "Please install the wallet first. If you have installed, reload page",
+        }))
+      }
+      console.error(error)
+    })
+    clearTimeout(connectTimer.current)
+    connectTimer.current = null
     if (provider) {
       handleClose()
     }
@@ -134,7 +161,7 @@ export default function HeaderLinks (props) {
               </Button>
             </ListItem>
           ) : (
-          <ListItem className={classes.listItem}>
+          <ListItem className={classNames(classes.listItem, { [classes.hidden]: isInMobileH5() || isInMobileWalletApp() })}>
             {isEmpty(userProvider) ? (
               <Button
                 color='colorfull'
@@ -144,7 +171,7 @@ export default function HeaderLinks (props) {
               >
                 <AccountBalanceWallet className={classes.icons}></AccountBalanceWallet> Connect wallet
               </Button>
-            ) : isInMobileWalletApp
+            ) : isInMobileWalletApp()
               ? (
                 <Button color='transparent' target='_blank' className={classes.navLink} onClick={disconnect}>
                   <AccountBalanceWalletOutlined className={classes.icons} /> <Address size='short' address={address} />

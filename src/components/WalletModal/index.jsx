@@ -6,9 +6,7 @@ import { makeStyles } from "@material-ui/core/styles"
 import Modal from "@material-ui/core/Modal"
 import Paper from "@material-ui/core/Paper"
 import CloseIcon from "@material-ui/icons/Close"
-import { useDispatch } from "react-redux"
 import { WALLET_OPTIONS } from "../../constants/wallet"
-import { warmDialog } from "../../reducers/meta-reducer"
 
 import styles from "./style"
 
@@ -21,21 +19,9 @@ export default function WalletModal({
   selected
 }) {
   const classes = useStyles()
-  const dispatch = useDispatch()
 
   const handleConnect = (name) => {
-    connectTo(name).catch(error => {
-      console.error('connect wallet error', error)
-      if (name === 'injected') {
-        dispatch(
-          warmDialog({
-            open: true,
-            type: "warning",
-            message: "Please install the wallet first. If you have installed, reload the page and retry",
-          })
-        )
-      }
-    })
+    connectTo(name)
   }
 
   return (
