@@ -21,9 +21,10 @@ const configBase = {
     '137': 'https://api.thegraph.com/subgraphs/name/bankofchain/boc-subgraph-matic'
   },
   rpc_url: {
-    '1': "http://13.213.36.2:8545",
+    '1': "https://mainnet.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161",
     '56': "https://bsc-dataseed.binance.org/",
-    '137': "https://rpc-mainnet.maticvigil.com"
+    '137': "https://rpc-mainnet.maticvigil.com",
+    '31337': "https://rpc-qa03-sg.bankofchain.io",
   },
   multiple_of_gas: 2,
   dashboard_url: 'https://dashboard-qa03-sg.bankofchain.io',
@@ -141,19 +142,13 @@ const config1 = {
   max_gas_limit: 2700 * 10 ** 4,
   chain_id: 1,
   vaults: [{
-    id: 'invest',
-    name: 'Vault for Stable Coins',
-    path: '#/invest',
-    abi_version: 'v4.6',
-    VAULT_ADDRESS: '0x547382C0D1b23f707918D3c83A77317B71Aa8470',
-  }, {
     id: 'mutilCoins',
     name: 'Vault for USDi',
     path: '#/mutils',
     isAudit: true,
     abi_version: 'beta-v1.5',
-    VAULT_ADDRESS: '0x9BcC604D4381C5b0Ad12Ff3Bf32bEdE063416BC7',
-    USDI_ADDRESS: '0xf090f16dEc8b6D24082Edd25B1C8D26f2bC86128',
+    VAULT_ADDRESS: '',
+    USDI_ADDRESS: '',
     isOpen: true
   }, {
     id: 'ethi',
@@ -161,8 +156,8 @@ const config1 = {
     description: '这是ethi的池子',
     path: '#/ethi',
     abi_version: 'ethi',
-    VAULT_ADDRESS: '0xaC9fCBA56E42d5960f813B9D0387F3D3bC003338',
-    ETHI_ADDRESS: '0xf090f16dEc8b6D24082Edd25B1C8D26f2bC86128',
+    VAULT_ADDRESS: '0xd9140951d8aE6E5F625a02F5908535e16e3af964',
+    ETHI_ADDRESS: '0xe039608E695D21aB11675EBBA00261A0e750526c',
     WETHI_ADDRESS: '',
     isOpen: true
   }]

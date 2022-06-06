@@ -51,7 +51,7 @@ export default function LendingSection () {
   useEffect(() => {
     setLoading(true)
     Promise.all([
-      getAPY({ chainId: '1' }).then(data => {
+      getAPY({ chainId: '1' }).then((data = 0) => {
         return {
           title: bocTitle,
           imagePath: "/logo.png",

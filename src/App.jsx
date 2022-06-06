@@ -27,6 +27,7 @@ import isUndefined from "lodash/isUndefined"
 import map from "lodash/map"
 
 import { WALLETS } from "./constants/wallet"
+import { isInMobileWalletApp, isInMobileH5 } from "./helpers/plugin-util"
 
 // === Styles === //
 import "./App.css"
@@ -102,7 +103,7 @@ function App () {
   }, [userProvider])
 
   useEffect(() => {
-    if (web3Modal.cachedProvider) {
+    if (web3Modal.cachedProvider && !isInMobileWalletApp() && !isInMobileH5()) {
       connect()
     }
   }, [connect, web3Modal.cachedProvider])
