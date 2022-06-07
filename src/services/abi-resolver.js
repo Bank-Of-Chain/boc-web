@@ -6,7 +6,7 @@ import isEmpty from "lodash/isEmpty"
  */
 export default function resolver(abiPrefix) {
   if (isEmpty(abiPrefix)) return {}
-  let USDI_ABI, EXCHANGE_ADAPTER_ABI, VAULT_ABI, STRATEGY_ABI, IERC20_ABI, TREASURE_ABI, EXCHANGE_AGGREGATOR_ABI, ETHI_ABI, DRIPPER_ABI, HARVESTER_ABI, PRICE_ORCALE_ABI, ACCESS_CONTROL_PROXY;
+  let USDI_ABI, EXCHANGE_ADAPTER_ABI, VAULT_ABI, STRATEGY_ABI, IERC20_ABI, TREASURE_ABI, EXCHANGE_AGGREGATOR_ABI, ETHI_ABI, DRIPPER_ABI, HARVESTER_ABI, PRICE_ORCALE_ABI, ACCESS_CONTROL_PROXY, VAULT_BUFF_ABI;
 
   try {
     VAULT_ABI = require(`./../abis/${abiPrefix}/vault-abi.json`);
@@ -78,6 +78,11 @@ export default function resolver(abiPrefix) {
     ACCESS_CONTROL_PROXY = []
   }
 
+  try {
+    VAULT_BUFF_ABI = require(`./../abis/${abiPrefix}/vault-buff.json`);
+  } catch (error) {
+    VAULT_BUFF_ABI = []
+  }
 
   return {
     ETHI_ABI,
@@ -88,6 +93,7 @@ export default function resolver(abiPrefix) {
     TREASURE_ABI,
     STRATEGY_ABI,
     HARVESTER_ABI,
+    VAULT_BUFF_ABI,
     PRICE_ORCALE_ABI,
     ACCESS_CONTROL_PROXY,
     EXCHANGE_ADAPTER_ABI,
