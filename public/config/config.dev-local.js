@@ -155,8 +155,8 @@ const config1 = {
     path: '#/mutils',
     isAudit: true,
     abi_version: 'beta-v1.5',
-    VAULT_ADDRESS: '0x9BcC604D4381C5b0Ad12Ff3Bf32bEdE063416BC7',
-    USDI_ADDRESS: '0xf090f16dEc8b6D24082Edd25B1C8D26f2bC86128',
+    VAULT_ADDRESS: '0x071586BA1b380B00B793Cc336fe01106B0BFbE6D',
+    USDI_ADDRESS: '0x56fC17a65ccFEC6B7ad0aDe9BD9416CB365B9BE8',
     isOpen: true
   }, {
     id: 'ethi',

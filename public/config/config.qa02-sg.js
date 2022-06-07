@@ -152,9 +152,10 @@ const config1 = {
     name: 'Vault for USDi',
     path: '#/mutils',
     isAudit: true,
-    abi_version: 'beta-v1.5',
-    VAULT_ADDRESS: '0x9BcC604D4381C5b0Ad12Ff3Bf32bEdE063416BC7',
-    USDI_ADDRESS: '0xf090f16dEc8b6D24082Edd25B1C8D26f2bC86128',
+    abi_version: 'beta-v1.5.9',
+    VAULT_ADDRESS: '0xe6cFc17053c64838Fd7bb55BD4A2cb5b207A71ed',
+    USDI_ADDRESS: '0x965A01d39A9835d2B7e9e53bDc5C8501B962e8a3',
+    VAULT_BUFFER_ADDRESS: '0x70401A4AB04A90043BD419f56CC36B77D0587C30',
     isOpen: true
   }, {
     id: 'ethi',
@@ -171,7 +172,7 @@ const config1 = {
 
 window.config = {
   // 本地链
-  31337: config1,
+  31337: config137,
   // polygon
   137: config137,
   // bsc
