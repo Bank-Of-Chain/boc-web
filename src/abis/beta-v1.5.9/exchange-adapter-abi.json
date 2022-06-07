@@ -1,0 +1,66 @@
+[
+  {
+    "inputs": [],
+    "name": "identifier",
+    "outputs": [
+      {
+        "internalType": "string",
+        "name": "identifier_",
+        "type": "string"
+      }
+    ],
+    "stateMutability": "pure",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint8",
+        "name": "_method",
+        "type": "uint8"
+      },
+      {
+        "internalType": "bytes",
+        "name": "_encodedCallArgs",
+        "type": "bytes"
+      },
+      {
+        "components": [
+          {
+            "internalType": "uint256",
+            "name": "amount",
+            "type": "uint256"
+          },
+          {
+            "internalType": "address",
+            "name": "srcToken",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "dstToken",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "receiver",
+            "type": "address"
+          }
+        ],
+        "internalType": "struct IExchangeAdapter.SwapDescription",
+        "name": "_sd",
+        "type": "tuple"
+      }
+    ],
+    "name": "swap",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  }
+]
