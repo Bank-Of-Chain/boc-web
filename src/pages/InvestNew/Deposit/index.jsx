@@ -1,4 +1,6 @@
 import React, { useState, useEffect, useRef } from "react"
+
+// === Utils === //
 import * as ethers from "ethers"
 import BN from "bignumber.js"
 import { useDispatch } from "react-redux"
@@ -9,10 +11,21 @@ import every from "lodash/every"
 import debounce from "lodash/debounce"
 import isEmpty from "lodash/isEmpty"
 import get from "lodash/get"
+import compact from "lodash/compact"
 import { makeStyles } from "@material-ui/core/styles"
+import moment from "moment"
+
+// === Components === //
+import Step from "@material-ui/core/Step"
+import BocStepper from "../../../components/Stepper/Stepper"
+import BocStepLabel from "../../../components/Stepper/StepLabel"
+import BocStepIcon from "../../../components/Stepper/StepIcon"
+import BocStepConnector from "../../../components/Stepper/StepConnector"
+import Typography from '@material-ui/core/Typography';
 import CircularProgress from "@material-ui/core/CircularProgress"
 import Modal from "@material-ui/core/Modal"
 import Paper from "@material-ui/core/Paper"
+import MButton from '@material-ui/core/Button';
 
 import GridContainer from "../../../components/Grid/GridContainer"
 import GridItem from "../../../components/Grid/GridItem"
@@ -21,6 +34,8 @@ import Muted from "../../../components/Typography/Muted"
 import Button from "../../../components/CustomButtons/Button"
 import { warmDialog } from "./../../../reducers/meta-reducer"
 import { toFixed, formatBalance } from "../../../helpers/number-format"
+
+// === Constants === //
 import {
   USDT_ADDRESS,
   USDC_ADDRESS,
@@ -36,6 +51,8 @@ const TOKEN = {
   USDC: 'USDC',
   DAI: 'DAI',
 }
+
+const steps = ['Step1: Deposited', 'Get Shares', 'Step2: Swap USDi Automatic', 'Done']
 
 export default function Deposit({
   address,
@@ -58,6 +75,7 @@ export default function Deposit({
   const [daiValue, setDaiValue] = useState("")
   const [estimateValue, setEstimateValue] = useState("")
   const [isLoading, setIsLoading] = useState(false)
+  const [isOpenEstimateModal, setIsOpenEstimateModal] = useState(false)
   const loadingTimer = useRef()
 
   const tokenBasicState = {
@@ -190,76 +208,7 @@ export default function Deposit({
     return [nextTokens, nextAmounts]
   }
 
-  // TODO 支持多币存
   const diposit = async () => {
-    // 旧的逻辑，需要重新实现
-    // // 如果输入的数字不合法，弹出提示框
-    // if (!isValidValue(TOKEN.USDT)) {
-    //   return dispatch(
-    //     warmDialog({
-    //       open: true,
-    //       type: "warning",
-    //       message: "Please enter the correct value",
-    //     }),
-    //   )
-    // }
-    // setIsLoading(true)
-    // // 获取usdc的合约
-    // const usdtContract = new ethers.Contract(USDT_ADDRESS, IERC20_ABI, userProvider)
-    // const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider)
-    // const signer = userProvider.getSigner()
-    // const usdtContractWithUser = usdtContract.connect(signer)
-    // const nVaultWithUser = vaultContract.connect(signer)
-    // let nextValue = BigNumber.from(
-    //   BN(usdtValue)
-    //     .multipliedBy(
-    //       BigNumber.from(10)
-    //         .pow(usdtDecimals)
-    //         .toString(),
-    //     )
-    //     .toFixed(),
-    // )
-    // try {
-    //   // 获取当前允许的额度
-    //   const allowanceAmount = await usdtContractWithUser.allowance(address, VAULT_ADDRESS)
-    //   // 如果充值金额大于允许的额度，则需要重新设置额度
-    //   if (nextValue.gt(allowanceAmount)) {
-    //     // 如果允许的额度为0，则直接设置新的额度。否则，则设置为0后，再设置新的额度。
-    //     if (allowanceAmount.gt(0)) {
-    //       const firstApproveTx = await usdtContractWithUser.approve(VAULT_ADDRESS, 0)
-    //       await firstApproveTx.wait()
-    //     }
-    //     console.log("当前授权：", allowanceAmount.toString(), "准备授权：", nextValue.toString())
-    //     const secondApproveTx = await usdtContractWithUser.approve(VAULT_ADDRESS, nextValue)
-    //     await secondApproveTx.wait()
-    //   }
-    //   const depositTx = await nVaultWithUser.deposit(nextValue)
-    //   await depositTx.wait()
-    //   setUsdtValue("")
-    //   dispatch(
-    //     warmDialog({
-    //       open: true,
-    //       type: "success",
-    //       message: "Success!",
-    //     }),
-    //   )
-    // } catch (error) {
-    //   if (error && error.data) {
-    //     if (error.data.message && error.data.message.endsWith("'ES or AD'")) {
-    //       dispatch(
-    //         warmDialog({
-    //           open: true,
-    //           type: "error",
-    //           message: "Vault has been shut down, please try again later!",
-    //         }),
-    //       )
-    //     }
-    //   }
-    // }
-    // setTimeout(() => {
-    //   setIsLoading(false)
-    // }, 2000)
-
     // 取款逻辑参考：https://github.com/PiggyFinance/piggy-finance-web/issues/178
     clearTimeout(loadingTimer.current)
     // step1: 校验三个币，起码一个有值
@@ -368,6 +317,13 @@ export default function Deposit({
     }, 2000)
   }
 
+  /**
+   * 
+   */
+  const openEstimateModal = () => {
+    setIsOpenEstimateModal(true)
+  }
+
   const estimateMint = debounce(async () => {
     const isValidUsdtValue = isValidValue(TOKEN.USDT)
     const isValidUsdcValue = isValidValue(TOKEN.USDC)
@@ -435,7 +391,7 @@ export default function Deposit({
                 some(formConfig, item => isValidValue(item.name) === false) || every(formConfig, item => isValidValue(item.name) !== true)
               ))}
               color='colorfull'
-              onClick={diposit}
+              onClick={openEstimateModal}
               style={{ minWidth: 122, padding: "12px 16px", margin: "6px 0" }}
             >
               Deposit
@@ -443,6 +399,89 @@ export default function Deposit({
           </div>
         </GridItem>
       </GridContainer>
+      <Modal
+        className={classes.modal}
+        open={isOpenEstimateModal}
+        aria-labelledby='simple-modal-title'
+        aria-describedby='simple-modal-description'
+      >
+        <Paper
+          elevation={3}
+          style={{
+            padding: 20,
+            width: '50%',
+            color: "rgba(255,255,255, 0.87)",
+            border: "1px solid",
+            background: "#150752",
+          }}
+        >
+          <BocStepper
+            classes={{
+              root: classes.root,
+            }}
+            alternativeLabel
+            activeStep={4}
+            connector={<BocStepConnector />}
+          >
+            {map(steps, (i, index) => {
+              return (
+                <Step key={index}>
+                  <BocStepLabel StepIconComponent={BocStepIcon}>{i}</BocStepLabel>
+                </Step>
+              )
+            })}
+          </BocStepper>
+          <GridContainer>
+            <GridItem xs={12} sm={12} md={12} lg={12}>
+              <Typography variant="subtitle1" gutterBottom>
+                Deposit amount: {compact(map(formConfig, item => {
+                  const { name, value, image, isValid, address } = item 
+                  if (!isValid) {
+                    return
+                  }
+                  return <span key={address} className={classes.flexText}> + {value} {name} <img className={classes.ModalTokenLogo} alt='' src={image} /></span> 
+                }))}
+              </Typography>
+            </GridItem>
+            <GridItem xs={12} sm={12} md={12} lg={12}>
+              <Typography variant="subtitle1" gutterBottom>
+                Estimate Shares: 123123.123 shares
+              </Typography>
+            </GridItem>
+            <GridItem xs={12} sm={12} md={12} lg={12}>
+              <Typography variant="subtitle1" gutterBottom>
+                Deposit time: {moment().format("YYYY-MM-DD HH:mm")}
+              </Typography>
+            </GridItem>
+            <GridItem xs={12} sm={12} md={12} lg={12}>
+              <Typography variant="subtitle1" gutterBottom>
+                Swap amount(estimated): + 123123.123 USDi(-123123.123 shares)
+              </Typography>
+            </GridItem>
+            <GridItem xs={12} sm={12} md={12} lg={12}>
+              <Typography variant="subtitle1" gutterBottom>
+                Swap time: {moment().format("YYYY-MM-DD HH:mm")}
+              </Typography>
+            </GridItem>
+            <GridItem xs={12} sm={12} md={12} lg={12} style={{ textAlign: 'center' }}>
+              <Button
+                color='colorfull'
+                onClick={diposit}
+              >
+                Continue
+              </Button>
+              <MButton
+                style={{ marginLeft: 20, borderRadius: 12, padding: '12px 30px' }}
+                variant="contained"
+                color="secondary"
+                onClick={() => setIsOpenEstimateModal(false)}
+              >
+                Cancel
+              </MButton>
+            </GridItem>
+          </GridContainer>
+        </Paper>
+      </Modal>
       <Modal
         className={classes.modal}
         open={isLoading}
