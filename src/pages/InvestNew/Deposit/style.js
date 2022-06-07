@@ -39,7 +39,17 @@ const componentsStyle = (theme) => ({
   tokenName: {
     fontSize: "16px",
     color: "#fff"
-  }
+  },
+  flexText:{
+    display: 'inline-flex',
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
+  ModalTokenLogo: {
+    width: 25,
+    borderRadius: "50%",
+    margin: '0 8px'
+  },
 });
 
 export default componentsStyle;
