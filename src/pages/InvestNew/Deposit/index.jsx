@@ -14,6 +14,7 @@ import get from "lodash/get"
 import compact from "lodash/compact"
 import { makeStyles } from "@material-ui/core/styles"
 import moment from "moment"
+import parser from "cron-parser"
 
 // === Components === //
 import Step from "@material-ui/core/Step"
@@ -41,6 +42,8 @@ import {
   USDC_ADDRESS,
   DAI_ADDRESS,
 } from "../../../constants"
+import { DO_HARDWORK_CRON, DO_ALLOCATION_CRON } from "../../../constants/cron"
+
 
 import styles from "./style"
 
@@ -76,7 +79,17 @@ export default function Deposit({
   const [estimateValue, setEstimateValue] = useState("")
   const [isLoading, setIsLoading] = useState(false)
   const [isOpenEstimateModal, setIsOpenEstimateModal] = useState(false)
+  const [vaultBuffValue, setVaultBuffValue] = useState(BigNumber.from(0))
   const loadingTimer = useRef()
+
+  
+  const dohardworkCron = parser.parseExpression(DO_HARDWORK_CRON)
+  const allocationCron = parser.parseExpression(DO_ALLOCATION_CRON)
+
+  const nextDohardworkTime = dohardworkCron.next().getTime()
+  const nextAllocationTime = allocationCron.next().getTime()
+
+  const nextRebaseTime = nextDohardworkTime > nextAllocationTime ? nextAllocationTime : nextDohardworkTime;
 
   const tokenBasicState = {
     [TOKEN.USDT]: {
@@ -450,17 +463,17 @@ export default function Deposit({
             </GridItem>
             <GridItem xs={12} sm={12} md={12} lg={12}>
               <Typography variant="subtitle1" gutterBottom>
-                Deposit time: {moment().format("YYYY-MM-DD HH:mm")}
+                Deposit time: {moment().format("YYYY-MM-DD HH:mm:ss")}
               </Typography>
             </GridItem>
             <GridItem xs={12} sm={12} md={12} lg={12}>
               <Typography variant="subtitle1" gutterBottom>
-                Swap amount(estimated): + 123123.123 USDi(-123123.123 shares)
+                Swap amount(estimated): + {toFixed(vaultBuffValue.mul(997).div(1000), BigNumber.from(10).pow(usdiDecimals))} USDi (-{toFixed(vaultBuffValue, BigNumber.from(10).pow(usdiDecimals))} shares)
               </Typography>
             </GridItem>
             <GridItem xs={12} sm={12} md={12} lg={12}>
               <Typography variant="subtitle1" gutterBottom>
-                Swap time: {moment().format("YYYY-MM-DD HH:mm")}
+                Swap time: {moment(nextRebaseTime).format("YYYY-MM-DD HH:mm:ss")}
               </Typography>
             </GridItem>
             <GridItem xs={12} sm={12} md={12} lg={12} style={{ textAlign: 'center' }}>
