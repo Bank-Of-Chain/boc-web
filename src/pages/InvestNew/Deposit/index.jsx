@@ -8,10 +8,10 @@ import isUndefined from "lodash/isUndefined"
 import map from "lodash/map"
 import some from "lodash/some"
 import every from "lodash/every"
+import reduce from "lodash/reduce"
 import debounce from "lodash/debounce"
 import isEmpty from "lodash/isEmpty"
 import get from "lodash/get"
-import compact from "lodash/compact"
 import { makeStyles } from "@material-ui/core/styles"
 import moment from "moment"
 import parser from "cron-parser"
@@ -76,13 +76,10 @@ export default function Deposit({
   const [usdtValue, setUsdtValue] = useState("")
   const [usdcValue, setUsdcValue] = useState("")
   const [daiValue, setDaiValue] = useState("")
-  const [estimateValue, setEstimateValue] = useState("")
   const [isLoading, setIsLoading] = useState(false)
   const [isOpenEstimateModal, setIsOpenEstimateModal] = useState(false)
-  const [vaultBuffValue, setVaultBuffValue] = useState(BigNumber.from(0))
+  const [estimateVaultBuffValue, setEstimateVaultBuffValue] = useState(BigNumber.from(0))
   const loadingTimer = useRef()
-
-  
   const dohardworkCron = parser.parseExpression(DO_HARDWORK_CRON)
   const allocationCron = parser.parseExpression(DO_ALLOCATION_CRON)
 
@@ -344,12 +341,12 @@ export default function Deposit({
     const isFalse = (v) => v === false
     const [tokens, amounts] = getTokenAndAmonut()
     if (isFalse(isValidUsdtValue) || isFalse(isValidUsdcValue) || isFalse(isValidDaiValue) || tokens.length === 0) {
-      setEstimateValue(toFixed(0, BigNumber.from(10).pow(usdiDecimals), 6))
+      setEstimateVaultBuffValue(BigNumber.from(0))
       return
     }
     const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider)
-    const result = await vaultContract.callStatic.estimateMint(tokens, amounts)
-    setEstimateValue(toFixed(result.priceAdjustedDeposit, BigNumber.from(10).pow(usdiDecimals), 6))
+    const result = await vaultContract.estimateMint(tokens, amounts)
+    setEstimateVaultBuffValue(result)
   }, 500)
 
   useEffect(() => {
@@ -395,7 +392,7 @@ export default function Deposit({
             <Muted>
               <p style={{ fontSize: 16, wordBreak: "break-all", letterSpacing: "0.01071em" }}>
                 Estimated:
-                &nbsp;{estimateValue}
+                &nbsp;{toFixed(estimateVaultBuffValue.mul(9987).div(10000), BigNumber.from(10).pow(usdiDecimals))}
                 &nbsp;USDi
               </p>
             </Muted>
@@ -447,33 +444,46 @@ export default function Deposit({
           <GridContainer>
             <GridItem xs={12} sm={12} md={12} lg={12}>
               <Typography variant="subtitle1" gutterBottom>
-                Deposit amount: {compact(map(formConfig, item => {
+                Deposit Amounts: {reduce(map(formConfig, item => {
                   const { name, value, image, isValid, address } = item 
                   if (!isValid) {
                     return
                   }
-                  return <span key={address} className={classes.flexText}> + {value} {name} <img className={classes.ModalTokenLogo} alt='' src={image} /></span> 
-                }))}
+                  return <span key={address} className={classes.flexText}>
+                    <span style={{ color: 'chocolate', marginRight: 5 }}>{value}</span> {name} <img className={classes.ModalTokenLogo} alt='' src={image} />
+                  </span> 
+                }),(rs, i, index) => {
+                  if(isEmpty(i)) {
+                    return rs
+                  }
+                  if(!isEmpty(rs)){
+                    rs.push(<span key={index}> + </span>)
+                  }
+                  rs.push(i)
+                  return rs
+                } , [])}
               </Typography>
             </GridItem>
             <GridItem xs={12} sm={12} md={12} lg={12}>
               <Typography variant="subtitle1" gutterBottom>
-                Estimate Shares: 123123.123 shares
+                Estimate Shares: <span style={{ color: 'darkturquoise'}}> + {toFixed(estimateVaultBuffValue, BigNumber.from(10).pow(usdiDecimals))} </span> shares
               </Typography>
             </GridItem>
             <GridItem xs={12} sm={12} md={12} lg={12}>
               <Typography variant="subtitle1" gutterBottom>
-                Deposit time: {moment().format("YYYY-MM-DD HH:mm:ss")}
+                Deposit Time: {moment().format("YYYY-MM-DD HH:mm:ss")}
               </Typography>
             </GridItem>
             <GridItem xs={12} sm={12} md={12} lg={12}>
               <Typography variant="subtitle1" gutterBottom>
-                Swap amount(estimated): + {toFixed(vaultBuffValue.mul(997).div(1000), BigNumber.from(10).pow(usdiDecimals))} USDi (-{toFixed(vaultBuffValue, BigNumber.from(10).pow(usdiDecimals))} shares)
+                Swap Amount(estimated): <span style={{ color: 'darkturquoise'}}>
+                  + {toFixed(estimateVaultBuffValue.mul(9987).div(10000), BigNumber.from(10).pow(usdiDecimals))}
+                </span>   USDi (<span style={{ color: 'chocolate'}}>-{toFixed(estimateVaultBuffValue, BigNumber.from(10).pow(usdiDecimals))}</span>  shares)
               </Typography>
             </GridItem>
             <GridItem xs={12} sm={12} md={12} lg={12}>
               <Typography variant="subtitle1" gutterBottom>
-                Swap time: {moment(nextRebaseTime).format("YYYY-MM-DD HH:mm:ss")}
+                Next Swap Time: <span style={{ color: 'chocolate'}}>{moment(nextRebaseTime).format("YYYY-MM-DD HH:mm:ss")}</span>
               </Typography>
             </GridItem>
             <GridItem xs={12} sm={12} md={12} lg={12} style={{ textAlign: 'center' }}>
