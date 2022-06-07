@@ -50,6 +50,9 @@ const componentsStyle = (theme) => ({
     borderRadius: "50%",
     margin: '0 8px'
   },
+  labelToolTipIcon: {
+    fontSize: 16,
+  },
 });
 
 export default componentsStyle;

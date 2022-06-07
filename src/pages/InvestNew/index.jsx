@@ -69,7 +69,7 @@ function Invest (props) {
   const history = useHistory()
 
   const isMd = useMediaQuery('(min-width: 768px)')
-  const { address, userProvider, VAULT_ADDRESS, VAULT_ABI, USDI_ADDRESS, IERC20_ABI, EXCHANGE_AGGREGATOR_ABI, USDI_ABI, EXCHANGE_ADAPTER_ABI } = props
+  const { address, userProvider, VAULT_ADDRESS, VAULT_ABI, USDI_ADDRESS, IERC20_ABI, EXCHANGE_AGGREGATOR_ABI, USDI_ABI, EXCHANGE_ADAPTER_ABI, VAULT_BUFFER_ADDRESS, VAULT_BUFFER_ABI, abi_version } = props
   const [usdtBalance, setUsdtBalance] = useState(BigNumber.from(0))
   const [usdtDecimals, setUsdtDecimals] = useState(0)
   const [usdcBalance, setUsdcBalance] = useState(BigNumber.from(0))
@@ -82,6 +82,9 @@ function Invest (props) {
   const [beforeTotalValue, setBeforeTotalValue] = useState(BigNumber.from(0))
   const [totalValue, setTotalValue] = useState(BigNumber.from(0))
 
+  const [vaultBufferBalance, setVaultBufferBalance] = useState(BigNumber.from(0))
+  const [vaultBufferDecimals, setVaultBufferDecimals] = useState(0)
+
   const [tab, setTab] = useState(TABS.DEPOSIT)
 
   // 载入账户数据
@@ -91,6 +94,14 @@ function Invest (props) {
     const usdcContract = new ethers.Contract(USDC_ADDRESS, IERC20_ABI, userProvider)
     const daiContract = new ethers.Contract(DAI_ADDRESS, IERC20_ABI, userProvider)
     const usdiContract = new ethers.Contract(USDI_ADDRESS, USDI_ABI, userProvider)
+
+    // 如果abi版本等于beta-v1.5.9，则需要多查询vaultBuffer的账户余额
+    if (abi_version === 'beta-v1.5.9') {
+      const vaultBufferContract = new ethers.Contract(VAULT_BUFFER_ADDRESS, VAULT_BUFFER_ABI, userProvider);
+      vaultBufferContract.balanceOf(address).then(setVaultBufferBalance)
+      vaultBufferContract.decimals().then(setVaultBufferDecimals)
+    }
+
     Promise.all([
       usdtContract.balanceOf(address).then(setUsdtBalance),
       usdcContract.balanceOf(address).then(setUsdcBalance),
@@ -227,6 +238,11 @@ function Invest (props) {
                     </span>
                   )}
                 </div>
+                {
+                  abi_version === 'beta-v1.5.9' && <div className={classes.balanceCardValue} style={{ fontSize: 15 }}>
+                    <span title={formatBalance(vaultBufferBalance, vaultBufferDecimals, { showAll: true })}>{`${formatBalance(vaultBufferBalance, vaultBufferDecimals,)} USDi Ticket`}</span>
+                  </div>
+                }
                 <div className={classes.balanceCardLabel}>Balance</div>
               </div>
               <div className={classes.tokenInfo}>
@@ -277,6 +293,7 @@ function Invest (props) {
                   VAULT_ABI={VAULT_ABI}
                   IERC20_ABI={IERC20_ABI}
                   VAULT_ADDRESS={VAULT_ADDRESS}
+                  abi_version={abi_version}
                 />
               </TabPanel>
               <TabPanel value={tab} index={TABS.WITHDRAW}>

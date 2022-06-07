@@ -27,6 +27,8 @@ import CircularProgress from "@material-ui/core/CircularProgress"
 import Modal from "@material-ui/core/Modal"
 import Paper from "@material-ui/core/Paper"
 import MButton from '@material-ui/core/Button';
+import Tooltip from "@material-ui/core/Tooltip"
+import InfoIcon from "@material-ui/icons/Info"
 
 import GridContainer from "../../../components/Grid/GridContainer"
 import GridItem from "../../../components/Grid/GridItem"
@@ -55,7 +57,7 @@ const TOKEN = {
   DAI: 'DAI',
 }
 
-const steps = ['Step1: Deposited', 'Get Shares', 'Step2: Swap USDi Automatic', 'Done']
+const steps = ['Step1: Deposit', 'Get USDi Ticket', 'Step2: Allocation Action', 'Get USDi']
 
 export default function Deposit({
   address,
@@ -69,7 +71,8 @@ export default function Deposit({
   userProvider,
   VAULT_ABI,
   IERC20_ABI,
-  VAULT_ADDRESS
+  VAULT_ADDRESS,
+  abi_version
 }) {
   const classes = useStyles()
   const dispatch = useDispatch()
@@ -315,6 +318,7 @@ export default function Deposit({
 
     loadingTimer.current = setTimeout(() => {
       setIsLoading(false)
+      setIsOpenEstimateModal(false)
       if (isSuccess) {
         dispatch(
           warmDialog({
@@ -346,7 +350,11 @@ export default function Deposit({
     }
     const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider)
     const result = await vaultContract.estimateMint(tokens, amounts)
-    setEstimateVaultBuffValue(result)
+    if (abi_version === 'beta-v1.5.9') {
+      setEstimateVaultBuffValue(result)
+    } else {
+      setEstimateVaultBuffValue(result.priceAdjustedDeposit)
+    }
   }, 500)
 
   useEffect(() => {
@@ -387,27 +395,51 @@ export default function Deposit({
             </GridContainer>
           </GridItem>
         ))}
-        <GridItem xs={12} sm={12} md={12} lg={12}>
-          <div className={classes.depositComfirmArea}>
-            <Muted>
-              <p style={{ fontSize: 16, wordBreak: "break-all", letterSpacing: "0.01071em" }}>
-                Estimated:
-                &nbsp;{toFixed(estimateVaultBuffValue.mul(9987).div(10000), BigNumber.from(10).pow(usdiDecimals))}
-                &nbsp;USDi
-              </p>
-            </Muted>
-            <Button
-              disabled={!isLogin || (isLogin && (
-                some(formConfig, item => isValidValue(item.name) === false) || every(formConfig, item => isValidValue(item.name) !== true)
-              ))}
-              color='colorfull'
-              onClick={openEstimateModal}
-              style={{ minWidth: 122, padding: "12px 16px", margin: "6px 0" }}
-            >
-              Deposit
-            </Button>
-          </div>
-        </GridItem>
+        { 
+          abi_version === 'beta-v1.5.9'
+            ? <GridItem xs={12} sm={12} md={12} lg={12}>
+                <div className={classes.depositComfirmArea}>
+                  <Muted>
+                    <p style={{ fontSize: 16, wordBreak: "break-all", letterSpacing: "0.01071em" }}>
+                      Estimated:
+                      &nbsp;{toFixed(estimateVaultBuffValue, BigNumber.from(10).pow(usdiDecimals))}
+                      &nbsp;USDi Ticket
+                    </p>
+                  </Muted>
+                  <Button
+                    disabled={!isLogin || (isLogin && (
+                      some(formConfig, item => isValidValue(item.name) === false) || every(formConfig, item => isValidValue(item.name) !== true)
+                    ))}
+                    color='colorfull'
+                    onClick={openEstimateModal}
+                    style={{ minWidth: 122, padding: "12px 16px", margin: "6px 0" }}
+                  >
+                    Deposit
+                  </Button>
+                </div>
+              </GridItem>
+          : <GridItem xs={12} sm={12} md={12} lg={12}>
+            <div className={classes.depositComfirmArea}>
+              <Muted>
+                <p style={{ fontSize: 16, wordBreak: "break-all", letterSpacing: "0.01071em" }}>
+                  Estimated:
+                  &nbsp;{toFixed(estimateVaultBuffValue, BigNumber.from(10).pow(usdiDecimals))}
+                  &nbsp;USDi
+                </p>
+              </Muted>
+              <Button
+                disabled={!isLogin || (isLogin && (
+                  some(formConfig, item => isValidValue(item.name) === false) || every(formConfig, item => isValidValue(item.name) !== true)
+                ))}
+                color='colorfull'
+                onClick={diposit}
+                style={{ minWidth: 122, padding: "12px 16px", margin: "6px 0" }}
+              >
+                Deposit
+              </Button>
+            </div>
+          </GridItem>
+        }
       </GridContainer>
       <Modal
         className={classes.modal}
@@ -466,7 +498,7 @@ export default function Deposit({
             </GridItem>
             <GridItem xs={12} sm={12} md={12} lg={12}>
               <Typography variant="subtitle1" gutterBottom>
-                Estimate Shares: <span style={{ color: 'darkturquoise'}}> + {toFixed(estimateVaultBuffValue, BigNumber.from(10).pow(usdiDecimals))} </span> shares
+                Estimate: <span style={{ color: 'darkturquoise'}}> + {toFixed(estimateVaultBuffValue, BigNumber.from(10).pow(usdiDecimals))} </span> USDi Tickets
               </Typography>
             </GridItem>
             <GridItem xs={12} sm={12} md={12} lg={12}>
@@ -476,14 +508,32 @@ export default function Deposit({
             </GridItem>
             <GridItem xs={12} sm={12} md={12} lg={12}>
               <Typography variant="subtitle1" gutterBottom>
-                Swap Amount(estimated): <span style={{ color: 'darkturquoise'}}>
-                  + {toFixed(estimateVaultBuffValue.mul(9987).div(10000), BigNumber.from(10).pow(usdiDecimals))}
-                </span>   USDi (<span style={{ color: 'chocolate'}}>-{toFixed(estimateVaultBuffValue, BigNumber.from(10).pow(usdiDecimals))}</span>  shares)
+                Exchange Amount&nbsp;
+                <Tooltip
+                  classes={{
+                    tooltip: classes.tooltip
+                  }}
+                  placement='top'
+                  title='Estimated amount of USDi that can be exchanged'
+                >
+                  <InfoIcon classes={{ root: classes.labelToolTipIcon }} />
+                </Tooltip>: <span style={{ color: 'darkturquoise'}}>
+                  + {toFixed(estimateVaultBuffValue.mul(9987).div(10000), BigNumber.from(10).pow(usdiDecimals), 2)}
+                </span> USDi (<span style={{ color: 'chocolate'}}> - {toFixed(estimateVaultBuffValue, BigNumber.from(10).pow(usdiDecimals))}</span> USDi Tickets)
               </Typography>
             </GridItem>
             <GridItem xs={12} sm={12} md={12} lg={12}>
               <Typography variant="subtitle1" gutterBottom>
-                Next Swap Time: <span style={{ color: 'chocolate'}}>{moment(nextRebaseTime).format("YYYY-MM-DD HH:mm:ss")}</span>
+                Exchange Time&nbsp;
+                <Tooltip
+                  classes={{
+                    tooltip: classes.tooltip
+                  }}
+                  placement='top'
+                  title='The latest planned execution date may not be executed due to cost and other factors'
+                >
+                  <InfoIcon classes={{ root: classes.labelToolTipIcon }} />
+                </Tooltip>: <span style={{ color: 'chocolate'}}>{moment(nextRebaseTime).format("YYYY-MM-DD HH:mm:ss")}</span>
               </Typography>
             </GridItem>
             <GridItem xs={12} sm={12} md={12} lg={12} style={{ textAlign: 'center' }}>
