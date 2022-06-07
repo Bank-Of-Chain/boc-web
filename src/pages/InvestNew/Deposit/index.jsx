@@ -498,17 +498,12 @@ export default function Deposit({
             </GridItem>
             <GridItem xs={12} sm={12} md={12} lg={12}>
               <Typography variant="subtitle1" gutterBottom>
-                Estimate: <span style={{ color: 'darkturquoise'}}> + {toFixed(estimateVaultBuffValue, BigNumber.from(10).pow(usdiDecimals))} </span> USDi Tickets
+                Estimate User Get: <span style={{ color: 'darkturquoise'}}> + {toFixed(estimateVaultBuffValue, BigNumber.from(10).pow(usdiDecimals))} </span> USDi Tickets
               </Typography>
             </GridItem>
             <GridItem xs={12} sm={12} md={12} lg={12}>
               <Typography variant="subtitle1" gutterBottom>
-                Deposit Time: {moment().format("YYYY-MM-DD HH:mm:ss")}
-              </Typography>
-            </GridItem>
-            <GridItem xs={12} sm={12} md={12} lg={12}>
-              <Typography variant="subtitle1" gutterBottom>
-                Exchange Amount&nbsp;
+                Exchange&nbsp;
                 <Tooltip
                   classes={{
                     tooltip: classes.tooltip
@@ -517,9 +512,9 @@ export default function Deposit({
                   title='Estimated amount of USDi that can be exchanged'
                 >
                   <InfoIcon classes={{ root: classes.labelToolTipIcon }} />
-                </Tooltip>: <span style={{ color: 'darkturquoise'}}>
-                  + {toFixed(estimateVaultBuffValue.mul(9987).div(10000), BigNumber.from(10).pow(usdiDecimals), 2)}
-                </span> USDi (<span style={{ color: 'chocolate'}}> - {toFixed(estimateVaultBuffValue, BigNumber.from(10).pow(usdiDecimals))}</span> USDi Tickets)
+                </Tooltip>: From <span style={{ color: 'chocolate'}}>{toFixed(estimateVaultBuffValue, BigNumber.from(10).pow(usdiDecimals))}</span> USDi Tickets <span style={{ fontWeight: 'bold', color: 'dimgrey' }}>To</span> <span style={{ color: 'darkturquoise'}}>
+                  {toFixed(estimateVaultBuffValue.mul(9987).div(10000), BigNumber.from(10).pow(usdiDecimals), 2)}
+                </span> USDi
               </Typography>
             </GridItem>
             <GridItem xs={12} sm={12} md={12} lg={12}>
