@@ -183,6 +183,10 @@ function Invest (props) {
   }, [address, VAULT_ADDRESS, VAULT_ABI, userProvider])
 
   const loadTotalAssets = () => {
+    if (abi_version === 'beta-v1.5.9') {
+      const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider)
+      return vaultContract.totalAssetsIncludeVaultBuffer()
+    }
     const usdiContract = new ethers.Contract(USDI_ADDRESS, USDI_ABI, userProvider)
     return usdiContract.totalSupply()
   }
@@ -342,7 +346,7 @@ function Invest (props) {
                     <TableCell className={classNames(classes.tableCell)}>
                       <CountTo from={Number(beforeTotalValue.toBigInt())} to={Number(totalValue.toBigInt())} speed={3500}>
                         {v => {
-                          return `${toFixed(v, BigNumber.from(10).pow(usdiDecimals), 6)} USDi`
+                          return `${toFixed(v, BigNumber.from(10).pow(usdiDecimals), 6)} ${ abi_version === 'beta-v1.5.9' ? 'USD' : 'USDi' }`
                         }}
                       </CountTo>
                     </TableCell>
