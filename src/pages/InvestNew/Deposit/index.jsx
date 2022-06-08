@@ -14,7 +14,7 @@ import isEmpty from "lodash/isEmpty"
 import get from "lodash/get"
 import { makeStyles } from "@material-ui/core/styles"
 import moment from "moment"
-import parser from "cron-parser"
+import { getLastPossibleRebaseTime } from "../../../helpers/time-util"
 
 // === Components === //
 import Step from "@material-ui/core/Step"
@@ -44,9 +44,8 @@ import {
   USDC_ADDRESS,
   DAI_ADDRESS,
 } from "../../../constants"
-import { DO_HARDWORK_CRON, DO_ALLOCATION_CRON } from "../../../constants/cron"
 
-
+// === Styles === //
 import styles from "./style"
 
 const { BigNumber } = ethers
@@ -83,13 +82,8 @@ export default function Deposit({
   const [isOpenEstimateModal, setIsOpenEstimateModal] = useState(false)
   const [estimateVaultBuffValue, setEstimateVaultBuffValue] = useState(BigNumber.from(0))
   const loadingTimer = useRef()
-  const dohardworkCron = parser.parseExpression(DO_HARDWORK_CRON)
-  const allocationCron = parser.parseExpression(DO_ALLOCATION_CRON)
 
-  const nextDohardworkTime = dohardworkCron.next().getTime()
-  const nextAllocationTime = allocationCron.next().getTime()
-
-  const nextRebaseTime = nextDohardworkTime > nextAllocationTime ? nextAllocationTime : nextDohardworkTime;
+  const nextRebaseTime = getLastPossibleRebaseTime()
 
   const tokenBasicState = {
     [TOKEN.USDT]: {

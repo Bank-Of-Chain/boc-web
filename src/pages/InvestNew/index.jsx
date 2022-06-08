@@ -1,16 +1,13 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect } from "react"
-// nodejs library that concatenates classes
 import classNames from "classnames"
-// react components for routing our app without refresh
-// @material-ui/core components
 import { makeStyles } from "@material-ui/core/styles"
 import { useHistory } from "react-router-dom"
+
+// === Components === //
 import CountTo from "react-count-to"
-// core components
 import GridContainer from "../../components/Grid/GridContainer"
 import GridItem from "../../components/Grid/GridItem"
-// sections for this page
 import Table from "@material-ui/core/Table"
 import TableBody from "@material-ui/core/TableBody"
 import TableCell from "@material-ui/core/TableCell"
@@ -26,16 +23,15 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import ForwardIcon from '@material-ui/icons/Forward';
-
 import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline'
 import TabPanel from '../../components/TabPanel'
-
 import Deposit from './Deposit'
 import Withdraw from './Withdraw'
-
-import { useDispatch } from "react-redux"
+import Tooltip from "@material-ui/core/Tooltip"
+import InfoIcon from "@material-ui/icons/Info"
 
 // === Reducers === //
+import { useDispatch } from "react-redux"
 import { warmDialog } from "./../../reducers/meta-reducer"
 
 // === constants === //
@@ -43,6 +39,7 @@ import { USDT_ADDRESS, USDC_ADDRESS, DAI_ADDRESS, CHAIN_BROWSER_URL, NET_WORKS, 
 
 // === Utils === //
 import { toFixed, formatBalance } from "../../helpers/number-format"
+import moment from "moment"
 import map from "lodash/map"
 import isEmpty from "lodash/isEmpty"
 import last from "lodash/last"
@@ -52,6 +49,7 @@ import * as ethers from "ethers"
 import useVersionWapper from "../../hooks/useVersionWapper"
 import useMediaQuery from '@material-ui/core/useMediaQuery'
 import { addToken } from "../../helpers/wallet"
+import { getLastPossibleRebaseTime } from "../../helpers/time-util"
 
 // === Styles === //
 import styles from "./style"
@@ -86,6 +84,8 @@ function Invest (props) {
   const [vaultBufferDecimals, setVaultBufferDecimals] = useState(0)
 
   const [tab, setTab] = useState(TABS.DEPOSIT)
+
+  const lastRebaseTime = getLastPossibleRebaseTime()
 
   // 载入账户数据
   const loadBanlance = () => {
@@ -244,7 +244,16 @@ function Invest (props) {
                 </div>
                 {
                   abi_version === 'beta-v1.5.9' && <div className={classes.balanceCardValue} style={{ fontSize: 15 }}>
-                    <span title={formatBalance(vaultBufferBalance, vaultBufferDecimals, { showAll: true })}>{`${formatBalance(vaultBufferBalance, vaultBufferDecimals,)} USDi Ticket`}</span>
+                    <span title={formatBalance(vaultBufferBalance, vaultBufferDecimals, { showAll: true })}>{`${formatBalance(vaultBufferBalance, vaultBufferDecimals,)} USDi Ticket`}&nbsp;&nbsp;</span>
+                    <Tooltip
+                      classes={{
+                        tooltip: classes.tooltip
+                      }}
+                      placement='right'
+                      title={<span>The USDi ticket is automatically converted to USDi. And was last executed in <span style={{ color: 'red', fontWeight: 'bold' }}> {moment(lastRebaseTime).format('yyyy-MM-DD HH:mm')}</span></span>}
+                    >
+                      <InfoIcon style={{ fontSize: 15 }} />
+                    </Tooltip>
                   </div>
                 }
                 <div className={classes.balanceCardLabel}>Balance</div>
