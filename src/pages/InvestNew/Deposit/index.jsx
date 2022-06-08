@@ -445,7 +445,7 @@ export default function Deposit({
           elevation={3}
           style={{
             padding: 20,
-            width: '50%',
+            maxWidth: '600px',
             color: "rgba(255,255,255, 0.87)",
             border: "1px solid",
             background: "#150752",
@@ -525,7 +525,7 @@ export default function Deposit({
                 </Tooltip>: <span style={{ color: 'chocolate'}}>{moment(nextRebaseTime).format("YYYY-MM-DD HH:mm:ss")}</span>
               </Typography>
             </GridItem>
-            <GridItem xs={12} sm={12} md={12} lg={12} style={{ textAlign: 'center' }}>
+            <GridItem xs={12} sm={12} md={12} lg={12} style={{ textAlign: 'center', paddingTop: 30 }}>
               <Button
                 color='colorfull'
                 onClick={diposit}
