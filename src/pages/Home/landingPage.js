@@ -6,7 +6,7 @@ const landingPageStyle = {
   container: {
     zIndex: "12",
     color: "#FFFFFF",
-    marginTop: 90,
+    marginTop: 65,
     ...container,
   },
   title: {
@@ -90,12 +90,6 @@ const landingPageStyle = {
     fontSize: '1.5rem',
     fontWeight: 'bold'
   },
-  earth: {
-    // backgroundImage: 'url(./images/earth.png)',
-    // backgroundSize: '80%',
-    // backgroundRepeat: 'no-repeat',
-    // backgroundPosition: '210px'
-  }
 };
 
 export default landingPageStyle;

@@ -9,6 +9,7 @@ import ProductSection from "./Sections/ProductSection"
 import AuditedSection from "./Sections/AuditedSection"
 import AmmSection from "./Sections/AmmSection"
 import LendingSection from "./Sections/LendingSection"
+import RoadMapSection from "./Sections/RoadMapSection"
 import GridContainer from "../../components/Grid/GridContainer"
 import GridItem from "../../components/Grid/GridItem"
 import Button from "../../components/CustomButtons/Button"
@@ -29,11 +30,13 @@ export default function Home (props) {
         <GridItem xs={12} sm={12} md={12} style={{ textAlign: "left", marginBottom: 0 }}>
           <h1 className={classes.title}>The Multichain Yield Optimizer</h1>
           <h4 className={classes.text}>
-            BOC is a DeFi protocol that provides the best long-term <b><strong>risk-free</strong></b> return
+            BOC is a DeFi protocol that provides the best long-term{" "}
+            <b>
+              <strong>risk-free</strong>
+            </b>{" "}
+            return
           </h4>
-          <h2 style={{ marginBottom: 0 }}>
-            Source Of Yield:
-          </h2>
+          <h2 style={{ marginBottom: 0 }}>Source Of Yield:</h2>
           <ul className={classes.ull}>
             <li>Market-making fee</li>
             <li>Interest from over-collateralized lending</li>
@@ -55,6 +58,7 @@ export default function Home (props) {
       <LendingSection />
       <ProductSection />
       <AmmSection />
+      <RoadMapSection />
       <AuditedSection />
     </div>
   )

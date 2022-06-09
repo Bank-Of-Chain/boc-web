@@ -1,4 +1,4 @@
-import React from "react"
+import React, { Fragment } from "react"
 
 // === Components === //
 import Header from "../../components/Header/Header"
@@ -7,7 +7,7 @@ import HeaderLinks from "../../components/Header/HeaderLinks"
 
 export default function Frame (props) {
   return (
-    <div>
+    <Fragment>
       <Header
         color='transparent'
         brand='Bank Of Chain'
@@ -21,6 +21,6 @@ export default function Frame (props) {
       />
       {props.children}
       <Footer whiteFont />
-    </div>
+    </Fragment>
   )
 }
