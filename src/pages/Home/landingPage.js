@@ -9,27 +9,13 @@ const landingPageStyle = {
     marginTop: 65,
     ...container,
   },
-  title: {
-    display: "inline-block",
-    position: "relative",
-    margin: "88px 0 0 0",
-    minHeight: "32px",
-    color: "#FFFFFF",
-    textDecoration: "none",
-    fontSize: '3.3125rem',
-    lineHeight: '1.15em',
-  },
   subtitle: {
     fontSize: "1.313rem",
     maxWidth: "500px",
     margin: "10px auto 0"
   },
   text: {
-    fontWeight: 300,
-    fontSize: '1.4rem',
-    lineHeight: '1.5em',
-    marginTop: '2.6rem',
-    color: '#fff',
+    textAlign: 'center'
   },
   ull: {
     '&>li': {

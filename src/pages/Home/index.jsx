@@ -27,8 +27,8 @@ export default function Home (props) {
   return (
     <div className={classes.container}>
       <GridContainer>
-        <GridItem xs={12} sm={12} md={12} style={{ textAlign: "left", marginBottom: 0 }}>
-          <h1 className={classes.title}>The Multichain Yield Optimizer</h1>
+        <GridItem xs={12} sm={12} md={12}>
+          <h1 className={classes.text}>The Multichain Yield Optimizer</h1>
           <h4 className={classes.text}>
             BOC is a DeFi protocol that provides the best long-term{" "}
             <b>
@@ -36,23 +36,11 @@ export default function Home (props) {
             </b>{" "}
             return
           </h4>
-          <h2 style={{ marginBottom: 0 }}>Source Of Yield:</h2>
-          <ul className={classes.ull}>
-            <li>Market-making fee</li>
-            <li>Interest from over-collateralized lending</li>
-            <li>Government token rewards</li>
-          </ul>
-          <div className={classes.earth} style={{ textAlign: "right", display: "none" }}>
+          <p className={classes.text}>
             <Button className={classes.inverst} color='colorfull' size='lg' href='/#/invest'>
               inverst
             </Button>
-            <Chains
-              maskStyle={{ display: "inline-block", paddingLeft: 10 }}
-              array={NET_WORKS}
-              handleClick={changeNetwork}
-            />
-            <p>You may need to manually switch network via your wallet.</p>
-          </div>
+          </p>
         </GridItem>
       </GridContainer>
       <LendingSection />

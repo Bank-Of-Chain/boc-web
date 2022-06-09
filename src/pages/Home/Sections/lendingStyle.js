@@ -1,7 +1,5 @@
 const lendingSectionStyle = {
   section: {
-    textAlign: "center",
-    backgroundColor: 'rgba(7, 12, 53, .8)',
     padding: '3.5rem'
   },
   text: {
@@ -90,6 +88,13 @@ const lendingSectionStyle = {
     marginRight: '0.25rem',
     display: 'inline-block',
     background: 'linear-gradient(180deg,#0348da,#0b216b)',
+  },
+  chart: {
+    padding: "7.5rem 0",
+    backgroundColor: 'rgba(255,255,255, 0.1)',
+    border: '2px solid',
+    borderRadius: '1rem',
+    borderColor: 'chocolate'
   }
 };
 

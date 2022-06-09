@@ -6,7 +6,7 @@ import { makeStyles } from "@material-ui/core/styles"
 import GridContainer from "../../../components/Grid/GridContainer"
 import GridItem from "../../../components/Grid/GridItem"
 import CircularProgress from "@material-ui/core/CircularProgress"
-import useMediaQuery from '@material-ui/core/useMediaQuery'
+import useMediaQuery from "@material-ui/core/useMediaQuery"
 import Tooltip from "@material-ui/core/Tooltip"
 
 // === Utils === //
@@ -42,7 +42,7 @@ const apyType = {
 }
 
 export default function LendingSection () {
-  const isLayoutSm = useMediaQuery('(max-width: 960px)')
+  const isLayoutSm = useMediaQuery("(max-width: 960px)")
   const smClasses = useSmStyles()
   const classes = useStyles({ classes: isLayoutSm ? smClasses : {} })
   const [loading, setLoading] = useState(false)
@@ -51,7 +51,7 @@ export default function LendingSection () {
   useEffect(() => {
     setLoading(true)
     Promise.all([
-      getAPY({ chainId: '1' }).then((data = 0) => {
+      getAPY({ chainId: "1" }).then((data = 0) => {
         return {
           title: bocTitle,
           imagePath: "/logo.png",
@@ -65,7 +65,8 @@ export default function LendingSection () {
           svg: {},
         }),
       ),
-    ]).then(([obj, resp]) => {
+    ])
+      .then(([obj, resp]) => {
         const { data, svg } = resp
         return [
           obj,
@@ -95,15 +96,15 @@ export default function LendingSection () {
         <GridContainer>
           <GridItem>
             <div className={classNames(classes.box)}></div>
-            <span style={{ verticalAlign: 'top', fontSize:'0.75rem' }}>Current Rate</span>
+            <span style={{ verticalAlign: "top", fontSize: "0.75rem" }}>Current Rate</span>
           </GridItem>
           <GridItem>
             <div className={classNames(classes.box1)}></div>
-            <span style={{ verticalAlign: 'top', fontSize:'0.75rem' }}>Fixed  Rate</span>
+            <span style={{ verticalAlign: "top", fontSize: "0.75rem" }}>Fixed Rate</span>
           </GridItem>
         </GridContainer>
       </div>
-      <div style={{ padding: "4.5rem 0" }}>
+      <div className={classes.chart}>
         {loading ? (
           <GridContainer style={{ margin: "0 auto" }} justify='center'>
             <CircularProgress />
@@ -130,12 +131,14 @@ export default function LendingSection () {
                       <GridItem className={classes.header} style={i === 0 ? { borderLeft: 0 } : {}}>
                         <Tooltip title={text}>
                           <div
-                            className={classNames(classes.bar, text === 'Current Rate' && classes.fixed, title === bocTitle && classes.checked)}
+                            className={classNames(
+                              classes.bar,
+                              text === "Current Rate" && classes.fixed,
+                              title === bocTitle && classes.checked,
+                            )}
                             style={{ height: percentText }}
                           >
-                            <p>
-                              {percent}%
-                            </p>
+                            <p>{percent}%</p>
                           </div>
                         </Tooltip>
                       </GridItem>

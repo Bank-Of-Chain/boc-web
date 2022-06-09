@@ -72,24 +72,16 @@ export default function ProductSection () {
   const classes = useStyles()
   return (
     <div className={classes.section}>
-      <GridContainer style={{ margin: "0 auto" }} justify='center'>
+      <h1 className={classes.text}>Boc is Different.</h1>
+      <GridContainer justify='center' spacing={3}>
         {map(data, (item, i) => {
           const { title, descriptions = [], imagePath } = item
           return (
-            <GridItem
-              className={classNames(classes.item, classes.checked)}
-              key={`${i}`}
-              xs={12}
-              sm={12}
-              md={4}
-              style={{
-                paddingLeft: i % 3 === 0 ? 0 : 10,
-              }}
-            >
+            <GridItem className={classNames(classes.item)} key={`${i}`} xs={12} sm={12} md={2}>
               <InfoArea
                 title={title}
                 description={map(descriptions, (d, index) => (
-                  <span key={`item-${index}`} className={classes.description}>
+                  <span key={`item-${index}`}>
                     {index + 1}. {d}
                   </span>
                 ))}

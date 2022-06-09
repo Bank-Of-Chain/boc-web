@@ -1,27 +1,24 @@
 const productStyle = {
   section: {
     textAlign: "center",
-    backgroundColor: 'rgba(12, 7, 53, .8)',
-    marginTop: '3.5rem'
+    background: "#F6F6F6",
+    padding: "5rem 0",
+  },
+  text: {
+    color: "#000",
   },
   title: {
-    fontSize: '1.5rem',
-    color: '#fff',
-    margin: 0
-  },
-  description: {
-    fontSize: '0.95rem',
-    color: '#fff',
-    display: 'inline-block',
-    lineHeight: '2rem'
+    fontSize: "1.5rem",
+    color: "#fff",
+    margin: 0,
   },
   item: {
-    cursor: 'pointer',
-    padding: '0 0 10px 10px'
+    cursor: "pointer",
+    padding: "0 0 10px 10px",
+    background: "#313036",
+    borderRadius: "1rem",
+    marginLeft: "1rem",
   },
-  checked: {
-    color: '#fff'
-  }
-};
+}
 
-export default productStyle;
+export default productStyle
