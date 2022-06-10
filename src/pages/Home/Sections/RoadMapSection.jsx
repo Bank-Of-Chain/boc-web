@@ -48,6 +48,7 @@ export default function RoadMapSection () {
       <Timeline
         events={stepOne}
         topText="NEXT STEPS"
+        firstPlace="left"
         cardColorReverse
         connectorColorRevese
       />

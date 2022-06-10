@@ -18,10 +18,19 @@ export default function CustomTimeline(props) {
   const {
     events = [],
     topText = 'Now',
+    firstPlace = 'right',
     cardColorReverse = false,
     connectorColorRevese = false
   } = props
   const classes = useStyles()
+  const firstInLeft = firstPlace !== 'right'
+  const displayEvent = [...events]
+  if (firstInLeft) {
+    displayEvent.unshift({
+      date: '',
+      event: 'placeholder'
+    })
+  }
 
   return (
     <div className={classes.timelineWrapper}>
@@ -33,7 +42,7 @@ export default function CustomTimeline(props) {
           })}
         />
         <Timeline className={classes.timeline} align="alternate">
-          {events.map((item, index) => {
+          {displayEvent.map((item, index) => {
             const isOdd = index % 2 === 0
             const cardProps = {
               colorReverse: cardColorReverse
@@ -41,8 +50,9 @@ export default function CustomTimeline(props) {
             if (!isOdd) {
               cardProps.arrowDirection = "right"
             }
+            const hidden = firstInLeft && index === 0
             return (
-              <TimelineItem key={item.event} className={classes.timelineItem}>
+              <TimelineItem key={item.event} className={classNames(classes.timelineItem, { [classes.hidden]: hidden })}>
                 <TimelineOppositeContent>
                   <p className={classes.keyTime}>{item.date}</p>
                 </TimelineOppositeContent>

@@ -35,7 +35,10 @@ const style = {
     margin: 0
   },
   timelineItem: {
-    margin: "28px 0"
+    margin: "28px 0",
+  },
+  hidden: {
+    display: "none"
   },
   keyTime: {
     position: "relative",
