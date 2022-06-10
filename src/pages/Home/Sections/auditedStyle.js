@@ -1,24 +1,13 @@
 const auditedStyle = {
   section: {
-    textAlign: "center",
-    padding: '5rem 0',
-    backgroundColor: 'rgba(39, 31, 114, .8)',
-  },
-  title: {
-    fontSize: '2rem',
-    margin: 0
-  },
-  container: {
-    paddingTop: '6.125rem'
+    color: "#000",
+    padding: "5rem",
+    backgroundColor: "#f6f6f6",
   },
   text: {
-    fontSize: '1.125rem',
-    color: '#b2add1'
+    width: "50%",
+    lineHeight: 2,
   },
-  img: {
-    marginRight: '1rem',
-    verticalAlign: 'text-bottom'
-  }
-};
+}
 
-export default auditedStyle;
+export default auditedStyle

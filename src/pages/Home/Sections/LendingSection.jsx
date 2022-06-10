@@ -96,11 +96,11 @@ export default function LendingSection () {
         <GridContainer>
           <GridItem>
             <div className={classNames(classes.box)}></div>
-            <span style={{ verticalAlign: "top", fontSize: "0.75rem" }}>Current Rate</span>
+            <span style={{ fontSize: "0.75rem" }}>Current Rate</span>
           </GridItem>
           <GridItem>
             <div className={classNames(classes.box1)}></div>
-            <span style={{ verticalAlign: "top", fontSize: "0.75rem" }}>Fixed Rate</span>
+            <span style={{ fontSize: "0.75rem" }}>Fixed Rate</span>
           </GridItem>
         </GridContainer>
       </div>
