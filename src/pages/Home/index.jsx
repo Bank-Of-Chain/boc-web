@@ -8,6 +8,7 @@ import { NET_WORKS } from "./../../constants"
 import ProductSection from "./Sections/ProductSection"
 import AuditedSection from "./Sections/AuditedSection"
 import AmmSection from "./Sections/AmmSection"
+import YieldSection from "./Sections/YieldSection"
 import LendingSection from "./Sections/LendingSection"
 import RoadMapSection from "./Sections/RoadMapSection"
 import GridContainer from "../../components/Grid/GridContainer"
@@ -45,6 +46,7 @@ export default function Home (props) {
       </GridContainer>
       <LendingSection />
       <ProductSection />
+      <YieldSection />
       <AmmSection />
       <RoadMapSection />
       <AuditedSection />
