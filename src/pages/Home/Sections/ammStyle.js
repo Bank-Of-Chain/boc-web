@@ -4,16 +4,20 @@ const ammSectionStyle = {
     padding: "5rem 0",
     backgroundColor: "#313036",
   },
+  iconContainer: {
+    padding: "4rem 17% 0",
+    textAlign: "left",
+  },
   title: {
     width: "50%",
     paddingLeft: "25%",
+    fontWeight: "inherit",
   },
   item: {
     display: "inline-block",
-    width: "6rem",
-    marginLeft: "1rem",
     color: "#b2add1",
     cursor: "pointer",
+    padding: "0 1.5rem",
   },
   onlyImg: {
     width: "auto",
@@ -25,11 +29,7 @@ const ammSectionStyle = {
     backgroundColor: "#fff",
   },
   text: {
-    lineHeight: "3rem",
-    verticalAlign: "top",
-    marginLeft: "0.5rem",
-    color: "#fff",
-    fontWeight: "bold",
+    textAlign: "center",
   },
   more: {
     cursor: "pointer",

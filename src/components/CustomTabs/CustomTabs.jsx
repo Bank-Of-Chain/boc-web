@@ -1,17 +1,10 @@
-import React, { Fragment } from "react"
-// nodejs library that concatenates classes
-import classNames from "classnames"
-// nodejs library to set properties for components
-import PropTypes from "prop-types"
-
-// material-ui components
+import React, { Fragment, useEffect } from "react"
 import { makeStyles } from "@material-ui/core/styles"
+
+// === Components === //
 import Tabs from "@material-ui/core/Tabs"
 import Tab from "@material-ui/core/Tab"
 import Icon from "@material-ui/core/Icon"
-// core components
-import CardBody from "../Card/CardBody"
-import CardHeader from "../Card/CardHeader"
 
 import styles from "./customTabsStyle"
 
@@ -24,11 +17,12 @@ export default function CustomTabs (props) {
     setValue(value)
   }
   const classes = useStyles()
-  const { headerColor, plainTabs, tabs, title, rtlActive, centered } = props
-  const cardTitle = classNames({
-    [classes.cardTitle]: true,
-    [classes.cardTitleRTL]: rtlActive,
-  })
+  const { tabs, centered } = props
+
+  useEffect(() => {
+    setValue(props.value)
+  }, [props.value])
+
   return (
     <Fragment>
       <Tabs
@@ -71,5 +65,3 @@ export default function CustomTabs (props) {
     </Fragment>
   )
 }
-
-
