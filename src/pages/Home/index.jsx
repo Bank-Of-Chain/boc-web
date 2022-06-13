@@ -28,7 +28,7 @@ export default function Home (props) {
     <div className={classes.container}>
       <GridContainer>
         <GridItem xs={12} sm={12} md={12} style={{ padding: "15rem 0" }}>
-          <h1 className={classes.text}>The Multichain Yield Optimizer</h1>
+          <h1 className={classes.title}>The Multichain Yield Optimizer</h1>
           <h4 className={classes.text}>
             BOC is a DeFi protocol that provides the best long-term{" "}
             <b>
