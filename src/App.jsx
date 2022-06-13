@@ -56,7 +56,6 @@ Date.prototype.format = function (fmt) {
 }
 
 const Home = lazy(() => import("./pages/Home/index"))
-// const Invest = lazy(() => import("./pages/Invest/index"))
 const InvestNew = lazy(() => import("./pages/InvestNew/index"))
 const Ethi = lazy(() => import("./pages/Ethi/index"))
 
@@ -304,19 +303,6 @@ function App () {
               </Frame>
             </Suspense>
           </Route>
-          {/* <Route path='/invest'>
-            <Suspense
-              fallback={
-                <Backdrop className={classes.backdrop} open>
-                  <CircularProgress color='inherit' />
-                </Backdrop>
-              }
-            >
-              <Frame {...nextProps}>
-                <Invest {...nextProps} />
-              </Frame>
-            </Suspense>
-          </Route> */}
           <Route path='/mutils'>
             <Suspense
               fallback={
