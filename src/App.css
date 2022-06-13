@@ -21,6 +21,19 @@ html {
   min-height: 100vh;
 }
 
+div.swiper-button-prev,
+div.swiper-button-next {
+  width: 0.5rem;
+  height: 1rem;
+  color: #1F2023;
+}
+
+div.swiper-button-prev:after,
+div.swiper-button-next:after {
+  font-size: 1rem;
+  font-weight: bold;
+}
+
 /*---滚动条默认显示样式--*/
 
 ::-webkit-scrollbar-thumb {
