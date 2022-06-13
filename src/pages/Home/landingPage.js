@@ -13,12 +13,17 @@ const landingPageStyle = {
     margin: "10px auto 0",
   },
   title: {
-    fontSize: "6rem",
+    fontSize: "9rem",
     width: "80%",
     margin: "0 auto",
+    lineHeight: "9rem",
   },
   text: {
+    margin: 0,
     textAlign: "center",
+    fontSize: "20px",
+    lineHeight: "30px",
+    fontWeight: "normal",
   },
   ull: {
     "&>li": {
@@ -73,12 +78,16 @@ const landingPageStyle = {
     marginLeft: 10,
     cursor: "pointer",
   },
-  inverst: {
-    width: "14.875rem",
-    height: "5.25rem",
-    borderRadio: "0.25rem",
-    fontSize: "1.5rem",
-    fontWeight: "bold",
+  invest: {
+    width: "17.5rem",
+    height: "3.625rem",
+    fontSize: "1rem",
+    textTransform: "none",
+  },
+  grid: {
+    padding: "15rem 0",
+    textAlign: "center",
+    background: "#1F2023 url(/images/home/bg-line.png) no-repeat center",
   },
 }
 
