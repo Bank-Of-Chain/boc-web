@@ -129,6 +129,14 @@ const buttonStyle = {
     backgroundSize: '150% 150%',
     transition: '.5s'
   },
+  'colorfull-border': {
+    border: "2px solid transparent",
+    borderRadius: 5,
+    color: '#fff',
+    backgroundClip: "padding-box, border-box",
+    backgroundOrigin: "padding-box, border-box",
+    backgroundImage: "linear-gradient(to right, #1F2023, #1F2023), linear-gradient(219.17deg, #94E3FF 24.63%, #FE3DCE 104.13%)",
+  },
   rose: {
     backgroundColor: roseColor,
     boxShadow:
