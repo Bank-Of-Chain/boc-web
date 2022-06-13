@@ -28,10 +28,14 @@ export default function Home (props) {
     <div className={classes.container}>
       <GridContainer>
         <GridItem xs={12} sm={12} md={12} className={classes.grid}>
-          <h1 className={classes.title}>The multi-chain</h1>
-          <h1 className={classes.title}>DeFi bank.</h1>
-          <h4 className={classes.text} style={{ marginTop: 40 }}>DeFi unlocked great returns.</h4>
-          <h4 className={classes.text}>Bank of Chain made them risk-free.</h4>
+          <h1 className={classes.title}>The Multichain</h1>
+          <h1 className={classes.title}>Yield Optimizer</h1>
+          <h4 className={classes.text} style={{ marginTop: 40 }}>BOC is a DeFi protocol that</h4>
+          <h4 className={classes.text}>
+            provides the best long-term
+            <b> risk-free </b>
+            return
+          </h4>
           <p className={classes.text} style={{ marginTop: 40 }}>
             <Button className={classes.invest} color='colorfull-border' size='sm' href='/#/mutils'>
               Launch app
