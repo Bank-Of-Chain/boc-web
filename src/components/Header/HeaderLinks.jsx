@@ -1,22 +1,15 @@
 /*eslint-disable*/
 import React, { useState, useRef } from "react"
-import classNames from "classnames";
+import classNames from "classnames"
 import { useDispatch } from "react-redux"
 import { warmDialog } from "../../reducers/meta-reducer"
 
-// @material-ui/core components
 import { makeStyles } from "@material-ui/core/styles"
+
+// === Components === //
 import List from "@material-ui/core/List"
 import ListItem from "@material-ui/core/ListItem"
 
-// @material-ui/icons
-import Apps from "@material-ui/icons/Apps"
-import Transform from "@material-ui/icons/Transform"
-import InsertChartIcon from "@material-ui/icons/InsertChart"
-import LibraryBooksIcon from "@material-ui/icons/LibraryBooks"
-import ClearAllIcon from '@material-ui/icons/ClearAll';
-
-// core components
 import Button from "../CustomButtons/Button"
 import styles from "./headerLinksStyle"
 import Address from "../Address/Address"
@@ -33,7 +26,7 @@ import { isInMobileWalletApp, isInMobileH5 } from "../../helpers/plugin-util"
 // === Constants === //
 import { NET_WORKS, DASHBOARD_URL, DOCUMENT_URL, CHAIN_ID, LEGACYS } from "./../../constants"
 
-const CHAIN_SELECTOR_SHOW_ROUTER = ['#/mutils']
+const CHAIN_SELECTOR_SHOW_ROUTER = ["#/mutils"]
 
 const useStyles = makeStyles(styles)
 export default function HeaderLinks (props) {
@@ -55,25 +48,29 @@ export default function HeaderLinks (props) {
     setWalletModalVisible(false)
   }
 
-  const connectTo = async (name) => {
+  const connectTo = async name => {
     if (!connectTimer.current) {
       connectTimer.current = setTimeout(() => {
-        dispatch(warmDialog({
-          open: true,
-          type: "warning",
-          message: "Please check you wallet info or confirm you have install the wallet",
-        }))
+        dispatch(
+          warmDialog({
+            open: true,
+            type: "warning",
+            message: "Please check you wallet info or confirm you have install the wallet",
+          }),
+        )
         connectTimer.current = null
       }, 5000)
     }
-    const provider = await connect(name).catch((error) => {
+    const provider = await connect(name).catch(error => {
       const msg = error?.message
-      if (msg === 'No Web3 Provider found') {
-        dispatch(warmDialog({
-          open: true,
-          type: "warning",
-          message: "Please install the wallet first. If you have installed, reload page",
-        }))
+      if (msg === "No Web3 Provider found") {
+        dispatch(
+          warmDialog({
+            open: true,
+            type: "warning",
+            message: "Please install the wallet first. If you have installed, reload page",
+          }),
+        )
       }
       console.error(error)
     })
@@ -85,27 +82,32 @@ export default function HeaderLinks (props) {
   }
 
   const dashboardUrlRender = () => {
-    let nextChainId = CHAIN_ID || '1'
-    let nextVault = window.location.hash === '#/ethi' ? 'ethi' : 'usdi'
+    let nextChainId = CHAIN_ID || "1"
+    let nextVault = window.location.hash === "#/ethi" ? "ethi" : "usdi"
 
     // 如果是ethi模块，则必须跳转eth链
-    if(nextVault === 'ethi') {
-      nextChainId = '1'
+    if (nextVault === "ethi") {
+      nextChainId = "1"
     }
     return `${DASHBOARD_URL}/#/?chain=${nextChainId}&vault=${nextVault}`
   }
 
   return (
     <>
-      <List className={classes.list}>
-        <ListItem className={classes.listItem}>
-          <Button color='transparent' target='_blank' href={DOCUMENT_URL} className={classes.navLink}>
-            <LibraryBooksIcon className={classes.icons}></LibraryBooksIcon> DOCS
+      <List className={classes.list} classes={{ root: classes.iii }}>
+        <ListItem className={classes.listItem} selected>
+          <Button color='transparent' href={"/"} className={classes.navLink}>
+            Home
           </Button>
         </ListItem>
         <ListItem className={classes.listItem}>
           <Button color='transparent' target='_blank' href={dashboardUrlRender()} className={classes.navLink}>
-            <InsertChartIcon className={classes.icons}></InsertChartIcon> Dashboard
+            Dashboard
+          </Button>
+        </ListItem>
+        <ListItem className={classes.listItem}>
+          <Button color='transparent' target='_blank' href={DOCUMENT_URL} className={classes.navLink}>
+            Docs
           </Button>
         </ListItem>
         <ListItem className={classes.listItem}>
@@ -116,7 +118,6 @@ export default function HeaderLinks (props) {
               className: classes.navLink,
               color: "transparent",
             }}
-            buttonIcon={Transform}
             dropdownList={[
               <a target='_blank' href='https://wallet.polygon.technology/bridge' className={classes.dropdownLink}>
                 Polygon Bridge
@@ -127,8 +128,8 @@ export default function HeaderLinks (props) {
             ]}
           />
         </ListItem>
-        {
-          CHAIN_SELECTOR_SHOW_ROUTER.includes(window.location.hash) && <ListItem className={classes.listItem}>
+        {CHAIN_SELECTOR_SHOW_ROUTER.includes(window.location.hash) && (
+          <ListItem className={classes.listItem}>
             <CustomDropdown
               noLiPadding
               buttonText={get(find(NET_WORKS, { chainId: CHAIN_ID }), "name", "Networks")}
@@ -136,7 +137,6 @@ export default function HeaderLinks (props) {
                 className: classes.navLink,
                 color: "transparent",
               }}
-              buttonIcon={Apps}
               dropdownList={map(NET_WORKS, i => (
                 <a onClick={() => props.changeNetwork(i)} className={classes.dropdownLink}>
                   {i.name}
@@ -144,22 +144,24 @@ export default function HeaderLinks (props) {
               ))}
             />
           </ListItem>
-        }
-        {
-        !isEmpty(LEGACYS) && <ListItem className={classes.listItem}>
-          <Button color='transparent' target='_blank' href={LEGACYS.url} className={classes.navLink}>
-            <ClearAllIcon className={classes.icons}></ClearAllIcon> {LEGACYS.title}
-          </Button>
-        </ListItem>
-        }
+        )}
+        {!isEmpty(LEGACYS) && (
+          <ListItem className={classes.listItem}>
+            <Button color='transparent' target='_blank' href={LEGACYS.url} className={classes.navLink}>
+              {LEGACYS.title}
+            </Button>
+          </ListItem>
+        )}
         {location.hash === "#/" ? (
           <ListItem className={classes.listItem}>
             <Button className={`${classes.navLink} ${classes.colorfulLink}`} color='colorfull-border' href='/#/mutils'>
-               Launch App
+              Launch App
             </Button>
-            </ListItem>
-          ) : (
-          <ListItem className={classNames(classes.listItem, { [classes.hidden]: isInMobileH5() || isInMobileWalletApp() })}>
+          </ListItem>
+        ) : (
+          <ListItem
+            className={classNames(classes.listItem, { [classes.hidden]: isInMobileH5() || isInMobileWalletApp() })}
+          >
             {isEmpty(userProvider) ? (
               <Button
                 color='colorfull-border-2'
@@ -169,40 +171,37 @@ export default function HeaderLinks (props) {
               >
                 Connect Wallet
               </Button>
-            ) : isInMobileWalletApp()
-              ? (
-                <Button color="colorfull-border-2" target='_blank'  className={`${classes.navLink} ${classes.colorfulLink}`} onClick={disconnect}>
-                  <Address size='short' address={address} />
-                </Button>
-              )
-              : (
-                <CustomDropdown
-                  noLiPadding
-                  buttonText={() => <Address size='short' address={address} />}
-                  buttonProps={{
-                    color: "colorfull-border-2",
-                    className: `${classes.navLink} ${classes.colorfulLink}`,
-                  }}
-                  dropdownList={[
-                    <a onClick={handleClickConnect} className={classes.dropdownLink}>
-                      Change Wallet
-                    </a>,
-                    <a onClick={disconnect} className={classes.dropdownLink}>
-                      Disconnect
-                    </a>
-                  ]}
-                />
-              )
-            }
+            ) : isInMobileWalletApp() ? (
+              <Button
+                color='colorfull-border-2'
+                target='_blank'
+                className={`${classes.navLink} ${classes.colorfulLink}`}
+                onClick={disconnect}
+              >
+                <Address size='short' address={address} />
+              </Button>
+            ) : (
+              <CustomDropdown
+                noLiPadding
+                buttonText={() => <Address size='short' address={address} />}
+                buttonProps={{
+                  color: "colorfull-border-2",
+                  className: `${classes.navLink} ${classes.colorfulLink}`,
+                }}
+                dropdownList={[
+                  <a onClick={handleClickConnect} className={classes.dropdownLink}>
+                    Change Wallet
+                  </a>,
+                  <a onClick={disconnect} className={classes.dropdownLink}>
+                    Disconnect
+                  </a>,
+                ]}
+              />
+            )}
           </ListItem>
         )}
       </List>
-      <WalletModal
-        open={walletModalVisible}
-        onClose={handleClose}
-        connectTo={connectTo}
-        selected={walletName}
-      />
+      <WalletModal open={walletModalVisible} onClose={handleClose} connectTo={connectTo} selected={walletName} />
     </>
   )
 }
