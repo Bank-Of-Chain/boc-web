@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react"
 import * as ethers from "ethers"
 import BN from "bignumber.js"
-import classNames from "classnames"
 import { useDispatch } from "react-redux"
 import { makeStyles } from "@material-ui/core/styles"
 import CircularProgress from "@material-ui/core/CircularProgress"
@@ -12,33 +11,25 @@ import AddIcon from "@material-ui/icons/Add"
 import AndroidIcon from "@material-ui/icons/Android"
 import CropFreeIcon from "@material-ui/icons/CropFree"
 import CropIcon from "@material-ui/icons/Crop"
-import RadioGroup from "@material-ui/core/RadioGroup"
 import Step from "@material-ui/core/Step"
 import WarningIcon from "@material-ui/icons/Warning"
-import FormControlLabel from "@material-ui/core/FormControlLabel"
 import Tooltip from "@material-ui/core/Tooltip"
 import InfoIcon from "@material-ui/icons/Info"
+import Typography from "@material-ui/core/Typography"
 
 import CustomTextField from "../../../components/CustomTextField"
 import BocStepper from "../../../components/Stepper/Stepper"
 import BocStepLabel from "../../../components/Stepper/StepLabel"
 import BocStepIcon from "../../../components/Stepper/StepIcon"
 import BocStepConnector from "../../../components/Stepper/StepConnector"
-import CustomRadio from "./../../../components/Radio/Radio"
 import GridContainer from "../../../components/Grid/GridContainer"
 import GridItem from "../../../components/Grid/GridItem"
 import Muted from "../../../components/Typography/Muted"
 import Button from "../../../components/CustomButtons/Button"
-import CustomInput from "../../../components/CustomInput/CustomInput"
 import { warmDialog } from "./../../../reducers/meta-reducer"
 import { toFixed, formatBalance } from "../../../helpers/number-format"
 import { addToken } from "../../../helpers/wallet"
-import {
-  EXCHANGE_EXTRA_PARAMS,
-  MULTIPLE_OF_GAS,
-  MAX_GAS_LIMIT,
-  ORACLE_ADDITIONAL_SLIPPAGE,
-} from "../../../constants"
+import { EXCHANGE_EXTRA_PARAMS, MULTIPLE_OF_GAS, MAX_GAS_LIMIT, ORACLE_ADDITIONAL_SLIPPAGE } from "../../../constants"
 
 // === Hooks === //
 import useRedeemFeeBps from "../../../hooks/useRedeemFeeBps"
@@ -81,7 +72,7 @@ export default function Withdraw ({
   IERC20_ABI,
   EXCHANGE_AGGREGATOR_ABI,
   EXCHANGE_ADAPTER_ABI,
-  PRICE_ORCALE_ABI
+  PRICE_ORCALE_ABI,
 }) {
   const classes = useStyles()
   const dispatch = useDispatch()
@@ -98,13 +89,13 @@ export default function Withdraw ({
     userProvider,
     VAULT_ADDRESS,
     VAULT_ABI,
-    PRICE_ORCALE_ABI
+    PRICE_ORCALE_ABI,
   })
 
   const { value: redeemFeeBps } = useRedeemFeeBps({
     userProvider,
     VAULT_ADDRESS,
-    VAULT_ABI
+    VAULT_ABI,
   })
 
   const redeemFeeBpsPercent = redeemFeeBps.toNumber() / 100
@@ -148,7 +139,11 @@ export default function Withdraw ({
       const exchangeManager = await vaultContract.exchangeManager()
       const exchangeManagerContract = new ethers.Contract(exchangeManager, EXCHANGE_AGGREGATOR_ABI, userProvider)
       const exchangePlatformAdapters = await getExchangePlatformAdapters(exchangeManagerContract, userProvider)
-      console.log("estimate get exchange path:", tokens, map(amounts, i => i.toString()))
+      console.log(
+        "estimate get exchange path:",
+        tokens,
+        map(amounts, i => i.toString()),
+      )
       // 查询兑换路径
       let exchangeArray = await Promise.all(
         map(tokens, async (tokenItem, index) => {
@@ -159,20 +154,21 @@ export default function Withdraw ({
           const fromConstrat = new ethers.Contract(tokenItem, IERC20_ABI, userProvider)
           const priceProvider = await getPriceProvider()
           const amountsInEth = await priceProvider.valueInEth(tokenItem, exchangeAmounts)
-          if(WITHDRAW_EXCHANGE_THRESHOLD.gt(amountsInEth)) {
+          if (WITHDRAW_EXCHANGE_THRESHOLD.gt(amountsInEth)) {
             // token less then 0.01 eth, cancel exchange
             return {
               fromAmount: exchangeAmounts,
               fromToken: tokenItem,
               toToken: tokenItem,
               exchangeParam: {
-                encodeExchangeArgs: "0x0000000000000000000000000000000000000000000000000000000000000020000000000000000000000000c02aaa39b223fe8d0a0e5c4f27ead9083c756cc2000000000000000000000000eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee0000000000000000000000000000000000000000000000029c54a1016ca4e51f0000000000000000000000000000000000000000000000029a5359ddd60bd3060000000000000000000000000000000000000000000000029c54a1016ca4e51f00000000000000000000000000000000000000000000000000000000000001e00000000000000000000000000000000000000000000000000000000000000220000000000000000000000000000000000000000000000000000000000000028000000000000000000000000000000000000000000000000000000000000002e0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000050494747590100000000000000000000000000000000000000000000000000000000004000000000000000000000000000000000000000000000000000000000000000032000000000000000000000000000000000000000000000000000000000627eb8b8f583eed0d2c411ec918c2bb862191012000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001000000000000000000000000c02aaa39b223fe8d0a0e5c4f27ead9083c756cc200000000000000000000000000000000000000000000000000000000000000242e1a7d4d0000000000000000000000000000000000000000000000029c54a1016ca4e51f00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000024000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+                encodeExchangeArgs:
+                  "0x0000000000000000000000000000000000000000000000000000000000000020000000000000000000000000c02aaa39b223fe8d0a0e5c4f27ead9083c756cc2000000000000000000000000eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee0000000000000000000000000000000000000000000000029c54a1016ca4e51f0000000000000000000000000000000000000000000000029a5359ddd60bd3060000000000000000000000000000000000000000000000029c54a1016ca4e51f00000000000000000000000000000000000000000000000000000000000001e00000000000000000000000000000000000000000000000000000000000000220000000000000000000000000000000000000000000000000000000000000028000000000000000000000000000000000000000000000000000000000000002e0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000050494747590100000000000000000000000000000000000000000000000000000000004000000000000000000000000000000000000000000000000000000000000000032000000000000000000000000000000000000000000000000000000000627eb8b8f583eed0d2c411ec918c2bb862191012000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001000000000000000000000000c02aaa39b223fe8d0a0e5c4f27ead9083c756cc200000000000000000000000000000000000000000000000000000000000000242e1a7d4d0000000000000000000000000000000000000000000000029c54a1016ca4e51f00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000024000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
                 method: 0,
                 name: "paraswap",
                 oracleAdditionalSlippage: 0,
                 platform: "0x5133BBdfCCa3Eb4F739D599ee4eC45cBCD0E16c5",
                 slippage: 0,
-              }
+              },
             }
           }
           const fromToken = {
@@ -264,10 +260,7 @@ export default function Withdraw ({
         tip = "Vault is in adjustment status, please try again later!"
       } else if (errorMsg.endsWith("'RP'")) {
         tip = "Vault is in rebase status, please try again later!"
-      } else if (
-        errorMsg.indexOf("loss much") !== -1 ||
-        errorMsg.indexOf("amount lower than minimum") !== -1
-      ) {
+      } else if (errorMsg.indexOf("loss much") !== -1 || errorMsg.indexOf("amount lower than minimum") !== -1) {
         tip = "Failed to withdraw, please increase the Max Loss!"
       } else if (
         errorMsg.endsWith("'Return amount is not enough'") ||
@@ -357,7 +350,11 @@ export default function Withdraw ({
         [],
       )
 
-      console.log("tokens, amounts=", tokens, map(amounts, i => i.toString()))
+      console.log(
+        "tokens, amounts=",
+        tokens,
+        map(amounts, i => i.toString()),
+      )
       preWithdrawGetCoins = Date.now()
       setCurrentStep(2)
       const exchangeManager = await vaultContract.exchangeManager()
@@ -373,20 +370,21 @@ export default function Withdraw ({
           const fromConstrat = new ethers.Contract(tokenItem, IERC20_ABI, userProvider)
           const priceProvider = await getPriceProvider()
           const amountsInEth = await priceProvider.valueInEth(tokenItem, exchangeAmounts)
-          if(WITHDRAW_EXCHANGE_THRESHOLD.gt(amountsInEth)) {
+          if (WITHDRAW_EXCHANGE_THRESHOLD.gt(amountsInEth)) {
             // token less then 0.01 eth, cancel exchange
             return {
               fromAmount: exchangeAmounts,
               fromToken: tokenItem,
               toToken: tokenItem,
               exchangeParam: {
-                encodeExchangeArgs: "0x0000000000000000000000000000000000000000000000000000000000000020000000000000000000000000c02aaa39b223fe8d0a0e5c4f27ead9083c756cc2000000000000000000000000eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee0000000000000000000000000000000000000000000000029c54a1016ca4e51f0000000000000000000000000000000000000000000000029a5359ddd60bd3060000000000000000000000000000000000000000000000029c54a1016ca4e51f00000000000000000000000000000000000000000000000000000000000001e00000000000000000000000000000000000000000000000000000000000000220000000000000000000000000000000000000000000000000000000000000028000000000000000000000000000000000000000000000000000000000000002e0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000050494747590100000000000000000000000000000000000000000000000000000000004000000000000000000000000000000000000000000000000000000000000000032000000000000000000000000000000000000000000000000000000000627eb8b8f583eed0d2c411ec918c2bb862191012000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001000000000000000000000000c02aaa39b223fe8d0a0e5c4f27ead9083c756cc200000000000000000000000000000000000000000000000000000000000000242e1a7d4d0000000000000000000000000000000000000000000000029c54a1016ca4e51f00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000024000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+                encodeExchangeArgs:
+                  "0x0000000000000000000000000000000000000000000000000000000000000020000000000000000000000000c02aaa39b223fe8d0a0e5c4f27ead9083c756cc2000000000000000000000000eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee0000000000000000000000000000000000000000000000029c54a1016ca4e51f0000000000000000000000000000000000000000000000029a5359ddd60bd3060000000000000000000000000000000000000000000000029c54a1016ca4e51f00000000000000000000000000000000000000000000000000000000000001e00000000000000000000000000000000000000000000000000000000000000220000000000000000000000000000000000000000000000000000000000000028000000000000000000000000000000000000000000000000000000000000002e0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000050494747590100000000000000000000000000000000000000000000000000000000004000000000000000000000000000000000000000000000000000000000000000032000000000000000000000000000000000000000000000000000000000627eb8b8f583eed0d2c411ec918c2bb862191012000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001000000000000000000000000c02aaa39b223fe8d0a0e5c4f27ead9083c756cc200000000000000000000000000000000000000000000000000000000000000242e1a7d4d0000000000000000000000000000000000000000000000029c54a1016ca4e51f00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000024000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
                 method: 0,
                 name: "paraswap",
                 oracleAdditionalSlippage: 0,
                 platform: "0x5133BBdfCCa3Eb4F739D599ee4eC45cBCD0E16c5",
                 slippage: 0,
-              }
+              },
             }
           }
           const fromToken = {
@@ -486,10 +484,7 @@ export default function Withdraw ({
         tip = "Vault is in adjustment status, please try again later!"
       } else if (errorMsg.endsWith("'RP'")) {
         tip = "Vault is in rebase status, please try again later!"
-      } else if (
-        errorMsg.indexOf("loss much") !== -1 ||
-        errorMsg.indexOf('amount lower than minimum') !== -1
-      ) {
+      } else if (errorMsg.indexOf("loss much") !== -1 || errorMsg.indexOf("amount lower than minimum") !== -1) {
         tip = "Failed to withdraw, please increase the Max Loss!"
       } else if (
         errorMsg.endsWith("'Return amount is not enough'") ||
@@ -662,7 +657,9 @@ export default function Withdraw ({
             style={{ fontSize: 14, paddingBottom: 20 }}
             onClick={() => addToken(item.tokenAddress)}
           >
-            {item.tokenAddress !== ETH_ADDRESS && <AddIcon fontSize='small' style={{ position: "absolute", top: 25, left: 45 }} />}
+            {item.tokenAddress !== ETH_ADDRESS && (
+              <AddIcon fontSize='small' style={{ position: "absolute", top: 25, left: 45 }} />
+            )}
             <img
               title='Add token address to wallet'
               className={classes.img}
@@ -688,163 +685,75 @@ export default function Withdraw ({
 
   return (
     <>
-      <GridContainer classes={{ root: classes.withdrawContainer }}>
-        <GridItem xs={12} sm={12} md={12} lg={12} className={classes.withdrawItem}>
-          <Muted className={classes.withdrawItemLabel}>ETHi: </Muted>
-          <CustomTextField
-            value={toValue}
-            placeholder='amount'
-            maxEndAdornment
-            onMaxClick={() => handleMaxClick()}
-            onChange={handleAmountChange}
-            error={!isUndefined(isValidToValueFlag) && !isValidToValueFlag && toValue !== "0"}
-          />
+      <GridContainer className={classes.withdrawContainer}>
+        <GridItem xs={12} sm={12} md={12} lg={12}>
+          <p className={classes.estimateText}>From</p>
         </GridItem>
         <GridItem xs={12} sm={12} md={12} lg={12}>
-          <div className={classes.withdrawComfirmArea}>
-            <div className={classes.settingBtn} style={{ color: isOpenEstimate ? "#39d0d8" : "#da2eef" }}>
-              <SettingIcon
-                fontSize='large'
-                style={{ float: "right", cursor: "pointer" }}
-                onClick={() => setIsOpenEstimate(!isOpenEstimate)}
-              ></SettingIcon>
-              <span style={{ cursor: "pointer" }} onClick={() => setIsOpenEstimate(!isOpenEstimate)}>
-                Advanced Settings
-              </span>
+          <div className={classes.inputLabelWrapper}>
+            <div className={classes.tokenInfo}>
+              <span className={classes.tokenName}>ETHi</span>
             </div>
+            <CustomTextField
+              classes={{ root: classes.input }}
+              value={toValue}
+              placeholder='withdraw amount'
+              maxEndAdornment
+              onMaxClick={() => handleMaxClick()}
+              onChange={handleAmountChange}
+              error={!isUndefined(isValidToValueFlag) && !isValidToValueFlag && toValue !== "0"}
+            />
+          </div>
+        </GridItem>
+        <GridItem xs={12} sm={12} md={12} lg={12}>
+          <p className={classes.estimateText}>Balance: 1231232.1232</p>
+        </GridItem>
+      </GridContainer>
+      <GridContainer className={classes.outputContainer}>
+        <GridItem xs={12} sm={12} md={12} lg={12}>
+          <p className={classes.estimateText}>To</p>
+        </GridItem>
+        <GridItem xs={12} sm={12} md={12} lg={12}>
+          <div className={classes.selectorlWrapper}>
+            <p>
+              ETH
+              <span style={{ float: "right" }} className={classes.estimateText}>
+                0
+              </span>
+            </p>
+          </div>
+        </GridItem>
+        <GridItem xs={12} sm={12} md={12} lg={12}>
+          <p className={classes.estimateText}>Balance: 0</p>
+        </GridItem>
+        {isEmpty(VAULT_ADDRESS) && (
+          <GridItem xs={12} sm={12} md={12} lg={12}>
+            <p style={{ textAlign: "center", color: "red" }}>Switch to the ETH chain firstly!</p>
+          </GridItem>
+        )}
+      </GridContainer>
+      <GridContainer>
+        <GridItem xs={12} sm={12} md={12} lg={12}>
+          <div className={classes.footerContainer}>
             <Button
               disabled={!isLogin || (isLogin && (isUndefined(isValidToValueFlag) || !isValidToValueFlag))}
               color='colorfull'
               onClick={withdraw}
-              style={{ minWidth: 122, padding: "12px 16px" }}
+              style={{ width: "100%", padding: "12px 16px" }}
             >
               Withdraw
+              <Tooltip
+                classes={{
+                  tooltip: classes.tooltip,
+                }}
+                placement='top'
+                title={`${redeemFeeBpsPercent}% withdrawal fee of the principal.`}
+              >
+                <InfoIcon classes={{ root: classes.labelToolTipIcon }} style={{ right: "-5px", left: "auto" }} />
+              </Tooltip>
             </Button>
-            <Tooltip
-              classes={{
-                tooltip: classes.tooltip
-              }}
-              placement='top'
-              title={`${redeemFeeBpsPercent}% withdrawal fee of the principal.`}
-            >
-              <InfoIcon classes={{ root: classes.labelToolTipIcon }} style={{ right: '-5px', left: 'auto' }} />
-            </Tooltip>
           </div>
         </GridItem>
-        {isOpenEstimate && (
-          <GridItem xs={12} sm={12} md={12} lg={12}>
-            <GridContainer>
-              <GridItem xs={12} sm={12} md={12} lg={12} style={{ padding: "24px 0px 16px 15px" }}>
-                <span title='Withdrawal tokens and estimated amount' className={classes.settingTitle}>
-                  Withdrawal tokens and estimated amount
-                </span>
-              </GridItem>
-              <GridItem className={classes.settingItem} xs={12} sm={12} md={12} lg={12}>
-                <FormControlLabel
-                  labelPlacement='start'
-                  control={
-                    <CustomInput
-                      inputProps={{
-                        placeholder: "Allow loss percent",
-                        value: allowMaxLoss,
-                        endAdornment: (
-                          <span style={{ color: "#69c0ff" }}>
-                            %&nbsp;&nbsp;&nbsp;
-                            <span style={{ cursor: "pointer" }} onClick={() => setAllowMaxLoss(50)}>
-                              Max
-                            </span>
-                          </span>
-                        ),
-                        onChange: event => {
-                          const value = event.target.value
-                          setAllowMaxLoss(value)
-                        },
-                      }}
-                      error={!isUndefined(isValidAllowLossFlag) && !isValidAllowLossFlag}
-                      success={!isUndefined(isValidAllowLossFlag) && isValidAllowLossFlag}
-                      formControlProps={{
-                        fullWidth: true,
-                        classes: {
-                          root: classes.maxLossFormCtrl,
-                        },
-                      }}
-                    />
-                  }
-                  style={{ marginLeft: 0 }}
-                  label={
-                    <div className={classes.settingItemLabel}>
-                      <Muted>Max Loss:</Muted>
-                    </div>
-                  }
-                />
-              </GridItem>
-              <GridItem
-                className={classNames(classes.settingItem, classes.slippageItem)}
-                xs={12}
-                sm={12}
-                md={12}
-                lg={12}
-              >
-                <FormControlLabel
-                  labelPlacement='start'
-                  control={
-                    <RadioGroup row value={slipper} onChange={event => setSlipper(event.target.value)}>
-                      {map(["0.3", "0.5", "1"], value => (
-                        <FormControlLabel
-                          key={value}
-                          value={value}
-                          style={{ color: "#fff" }}
-                          control={<CustomRadio size='small' style={{ padding: 6 }} />}
-                          label={`${value}%`}
-                        />
-                      ))}
-                    </RadioGroup>
-                  }
-                  style={{ marginLeft: 0 }}
-                  label={
-                    <div className={classes.settingItemLabel}>
-                      <Muted className={classes.mutedLabel}>
-                        Slippage:
-                      </Muted>
-                    </div>
-                  }
-                />
-                <CustomInput
-                  inputProps={{
-                    placeholder: "Allow loss percent",
-                    value: slipper,
-                    endAdornment: (
-                      <span style={{ color: "#69c0ff" }}>
-                        %&nbsp;&nbsp;&nbsp;
-                        <span style={{ cursor: "pointer" }} onClick={() => setSlipper("45")}>
-                          Max
-                        </span>
-                      </span>
-                    ),
-                    onChange: event => {
-                      const value = event.target.value
-                      setSlipper(value)
-                    },
-                  }}
-                  error={!isUndefined(isValidSlipperFlag) && !isValidSlipperFlag}
-                  success={!isUndefined(isValidSlipperFlag) && isValidSlipperFlag}
-                  formControlProps={{
-                    fullWidth: true,
-                    classes: {
-                      root: classes.slippageInput,
-                    },
-                  }}
-                />
-              </GridItem>
-              {renderEstimate()}
-            </GridContainer>
-          </GridItem>
-        )}
-        {
-          isEmpty(VAULT_ADDRESS) && <GridItem xs={12} sm={12} md={12} lg={12}>
-            <p style={{ textAlign:'center', color: 'red' }}>Switch to the ETH chain firstly!</p>
-          </GridItem>
-        }
       </GridContainer>
       <Modal
         className={classes.modal}
