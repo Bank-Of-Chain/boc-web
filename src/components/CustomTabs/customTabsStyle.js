@@ -16,16 +16,22 @@ const customTabsStyle = {
   },
   tabRootButton: {
     width: "17.5rem",
-    padding: "10px 15px",
-    lineHeight: "24px",
-    border: "1px solid #A68EFE",
+    maxWidth: "17.5rem",
+    padding: "0.625rem 1rem",
+    lineHeight: "1.5rem",
+    border: "2px solid #A68EFE",
     borderRight: 0,
     fontWeight: "500",
-    fontSize: "12px",
+    fontSize: "1rem",
     color: "#A68EFE",
+    opacity: 1,
+    "&:first-child": {
+      borderRadius: "0.25rem 0 0 0.25rem",
+    },
     "&:last-child": {
-      borderRight: "1px solid #A68EFE",
+      borderRight: "2px solid #A68EFE",
       marginLeft: "0px",
+      borderRadius: "0 0.25rem 0.25rem 0",
     },
   },
   tabSelected: {
@@ -33,7 +39,7 @@ const customTabsStyle = {
     color: "#313036",
   },
   tabWrapper: {
-    fontSize: 20,
+    fontSize: "1rem",
     whiteSpace: "nowrap",
     margin: ".3125rem 1px",
     display: "inline-block",
@@ -50,6 +56,7 @@ const customTabsStyle = {
     "&,& *": {
       letterSpacing: "normal !important",
     },
+    textTransform: "none",
   },
 }
 
