@@ -10,8 +10,6 @@ import List from "@material-ui/core/List"
 import ListItem from "@material-ui/core/ListItem"
 
 // @material-ui/icons
-import AccountBalanceWallet from "@material-ui/icons/AccountBalanceWallet"
-import AccountBalanceWalletOutlined from "@material-ui/icons/AccountBalanceWalletOutlined"
 import Apps from "@material-ui/icons/Apps"
 import Transform from "@material-ui/icons/Transform"
 import InsertChartIcon from "@material-ui/icons/InsertChart"
