@@ -1,8 +1,6 @@
-import {
-  container,
-} from "../../../assets/jss/material-kit-react.js";
+import { container } from "../../../assets/jss/material-kit-react.js"
 
-const componentsStyle = (theme) => ({
+const componentsStyle = theme => ({
   container,
   modal: {
     display: "flex",
@@ -10,15 +8,45 @@ const componentsStyle = (theme) => ({
     justifyContent: "center",
   },
   modalBody: {
-    textAlign: "center"
+    textAlign: "center",
   },
   depositContainer: {
-    padding: "36px 16px 0",
+    border: "1px solid #A68EFD",
+    borderTopLeftRadius: "1rem",
+    borderTopRightRadius: "1rem",
+    padding: "2.6875rem 2.25rem",
+  },
+  estimateContainer: {
+    border: "1px solid #A68EFD",
+    marginTop: "0.5rem",
+    borderBottomLeftRadius: "1rem",
+    borderBottomRightRadius: "1rem",
+    padding: "2.0625rem 2.6875rem",
+  },
+  estimateText: {
+    color: "#A0A0A0",
+    margin: 0,
+  },
+  estimateBalanceTitle: {
+    fontSize: "1.625rem",
+  },
+  estimateBalanceNum: {
+    float: "right",
+    fontSize: "1rem",
+  },
+  footerContainer: {
+    marginTop: "2.5rem",
+  },
+  tokenInputWrapper: {
+    marginBottom: "16px",
   },
   inputLabelWrapper: {
     display: "flex",
     justifyContent: "space-between",
-    alignItems: "center"
+    alignItems: "center",
+  },
+  input: {
+    maxWidth: "12.5rem",
   },
   depositComfirmArea: {
     display: "flex",
@@ -26,38 +54,30 @@ const componentsStyle = (theme) => ({
   },
   tokenInfo: {
     display: "flex",
-    alignItems: "center"
+    alignItems: "center",
   },
   tokenLogo: {
     width: 30,
     borderRadius: "50%",
-    marginRight: 8
+    marginRight: 8,
   },
   tokenName: {
     fontSize: "16px",
-    color: "#fff"
+    color: "#fff",
   },
-  settingItemLabel: {
-    marginRight: 16,
+  flexText: {
+    display: "inline-flex",
+    justifyContent: "center",
+    alignItems: "center",
   },
-  ethBalanceWrapper: {
-    display: "flex",
-    alignItems: "center"
+  ModalTokenLogo: {
+    width: 25,
+    borderRadius: "50%",
+    margin: "0 8px",
   },
   labelToolTipIcon: {
     fontSize: 16,
-    marginRight: 2
   },
-  tooltip: {
-    fontSize: 14,
-    width: 186
-  },
-  gasPriceWrapper: {
-    display: "flex",
-    height: "32px",
-    alignItems: "center",
-    marginTop: 12
-  },
-});
+})
 
-export default componentsStyle;
+export default componentsStyle
