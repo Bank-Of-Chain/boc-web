@@ -17,7 +17,7 @@ const buttonStyle = {
     boxShadow:
       "0 2px 2px 0 rgba(153, 153, 153, 0.14), 0 3px 1px -2px rgba(153, 153, 153, 0.2), 0 1px 5px 0 rgba(153, 153, 153, 0.12)",
     border: "none",
-    borderRadius: "3px",
+    borderRadius: "5px",
     position: "relative",
     padding: "12px 30px",
     fontWeight: "400",
@@ -124,10 +124,23 @@ const buttonStyle = {
   colorfull:{
     borderRadius: 12,
     color: '#fff',
-    background: 'linear-gradient(245.22deg,#da2eef 35%,#2b6aff 65.17%,#39d0d8 92.1%)',
-    backgroundPosition: '1% 50%',
-    backgroundSize: '150% 150%',
-    transition: '.5s'
+    background: 'linear-gradient(223.3deg, #A68EFD 20.71%, #F4ACF3 103.56%)',
+  },
+  'colorfull-border': {
+    border: "2px solid transparent",
+    borderRadius: 5,
+    color: '#fff',
+    backgroundClip: "padding-box, border-box",
+    backgroundOrigin: "padding-box, border-box",
+    backgroundImage: "linear-gradient(to right, #1F2023, #1F2023), linear-gradient(219.17deg, #94E3FF 24.63%, #FE3DCE 104.13%)",
+  },
+  'colorfull-border-2': {
+    border: "2px solid transparent",
+    borderRadius: 5,
+    color: '#fff',
+    backgroundClip: "padding-box, border-box",
+    backgroundOrigin: "padding-box, border-box",
+    backgroundImage: "linear-gradient(to right, #1F2023, #1F2023), linear-gradient(223.3deg, #A68EFD 20.71%, #F4ACF3 103.56%)",
   },
   rose: {
     backgroundColor: roseColor,

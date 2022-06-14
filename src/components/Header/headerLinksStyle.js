@@ -68,10 +68,13 @@ const headerLinksStyle = (theme) => ({
     },
   },
   colorfulLink: {
-    width: "168px",
-    height: "64px",
+    fontSize: "16px",
+    padding: "7px 16px",
+    textTransform: "none",
+    margin: "14px 20px",
+    borderRadius: "5px",
     [theme.breakpoints.down("sm")]: {
-      width: "calc(100% - 30px)",
+      height: "48px"
     }
   },
   notificationNavLink: {

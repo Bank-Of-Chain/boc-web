@@ -10,8 +10,6 @@ import List from "@material-ui/core/List"
 import ListItem from "@material-ui/core/ListItem"
 
 // @material-ui/icons
-import AccountBalanceWallet from "@material-ui/icons/AccountBalanceWallet"
-import AccountBalanceWalletOutlined from "@material-ui/icons/AccountBalanceWalletOutlined"
 import Apps from "@material-ui/icons/Apps"
 import Transform from "@material-ui/icons/Transform"
 import InsertChartIcon from "@material-ui/icons/InsertChart"
@@ -156,25 +154,25 @@ export default function HeaderLinks (props) {
         }
         {location.hash === "#/" ? (
           <ListItem className={classes.listItem}>
-            <Button className={`${classes.navLink} ${classes.colorfulLink}`} color='colorfull' size='lg' href='/#/mutils'>
-              <AccountBalanceWallet className={classes.icons}></AccountBalanceWallet> Launch App
-              </Button>
+            <Button className={`${classes.navLink} ${classes.colorfulLink}`} color='colorfull-border' href='/#/mutils'>
+               Launch App
+            </Button>
             </ListItem>
           ) : (
           <ListItem className={classNames(classes.listItem, { [classes.hidden]: isInMobileH5() || isInMobileWalletApp() })}>
             {isEmpty(userProvider) ? (
               <Button
-                color='colorfull'
+                color='colorfull-border-2'
                 target='_blank'
                 className={`${classes.navLink} ${classes.colorfulLink}`}
                 onClick={handleClickConnect}
               >
-                <AccountBalanceWallet className={classes.icons}></AccountBalanceWallet> Connect wallet
+                Connect Wallet
               </Button>
             ) : isInMobileWalletApp()
               ? (
-                <Button color='transparent' target='_blank' className={classes.navLink} onClick={disconnect}>
-                  <AccountBalanceWalletOutlined className={classes.icons} /> <Address size='short' address={address} />
+                <Button color="colorfull-border-2" target='_blank'  className={`${classes.navLink} ${classes.colorfulLink}`} onClick={disconnect}>
+                  <Address size='short' address={address} />
                 </Button>
               )
               : (
@@ -182,10 +180,9 @@ export default function HeaderLinks (props) {
                   noLiPadding
                   buttonText={() => <Address size='short' address={address} />}
                   buttonProps={{
-                    className: classes.navLink,
-                    color: "transparent",
+                    color: "colorfull-border-2",
+                    className: `${classes.navLink} ${classes.colorfulLink}`,
                   }}
-                  buttonIcon={() => <AccountBalanceWalletOutlined className={classes.icons} />}
                   dropdownList={[
                     <a onClick={handleClickConnect} className={classes.dropdownLink}>
                       Change Wallet
