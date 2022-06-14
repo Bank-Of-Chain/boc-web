@@ -1,12 +1,10 @@
 const style = {
-  modal: {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-  },
   papar: {
-    padding: "36px",
+    position: "relative",
+    top: "20%",
     width: 420,
+    margin: "0 auto",
+    padding: "36px",
     borderRadius: 12,
     color: "rgba(255,255,255, 0.87)",
     background: "#292B2E",

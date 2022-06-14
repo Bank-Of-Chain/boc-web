@@ -1,30 +1,50 @@
 const style = {
   selectWrapper: {
     position: "relative",
-    height: "30px"
+    height: "51px",
+    lineHeight: "51px"
   },
   selectTrigger: {
     display: "flex",
+    justifyContent: "space-between",
     alignItems: "center",
+    width: "200px",
     height: "100%",
-    cursor: "pointer"
+    cursor: "pointer",
+    border: "1px solid #666666",
+    borderRadius: "20px",
+    paddingLeft: 16,
+    paddingRight: 24
+  },
+  triggerLabelWrapper: {
+    display: "flex",
+    alignItems: "center",
   },
   triggerLabel: {
-    color: "#fff"
+    color: "#A0A0A0",
+    fontWeight: "bold"
+  },
+  caret: {
+    color: "#A68EFE",
+    transition: "all 150ms ease-in",
+  },
+  expandLess: {
+    transform: "rotate(180deg)",
   },
   selectPop: {
     display: "none",
     position: "absolute",
-    left: 0,
+    left: "50%",
     top: "100%",
-    minWidth: "120px",
-    marginTop: "6px",
+    minWidth: "206px",
+    marginTop: "12px",
     padding: "8px 0",
     zIndex: 100,
-    background: "#fff",
-    borderRadius: "4px",
-    boxShadow: "0px 5px 5px -3px rgba(0,0,0,0.2),0px 8px 10px 1px rgba(0,0,0,0.14),0px 3px 14px 2px rgba(0,0,0,0.12)",
+    background: "#292b2e",
+    borderRadius: "12px",
     transformOrigin: "top",
+    transform: "translate(-50%, 0)",
+    boxShadow: "0 0 0px 1px rgba(161, 161, 161, 0.2)"
   },
   selectPopVisible: {
     display: "block",
@@ -32,15 +52,12 @@ const style = {
   selectItem: {
     display: "flex",
     alignItems: "center",
-    padding: "6px 16px",
+    padding: "0 24px",
     cursor: "pointer",
 
     "&:hover": {
-      backgroundColor: "rgba(0, 0, 0, 0.04)"
+      background: "#323438"
     }
-  },
-  selectActiveItem: {
-    backgroundColor: "rgba(0, 0, 0, 0.08)"
   },
   optImg: {
     width: "auto",
@@ -65,7 +82,7 @@ const style = {
     }
   },
   optLabel: {
-    color: "rgba(0, 0, 0, 0.87)",
+    color: "#A0A0A0",
   },
 }
 
