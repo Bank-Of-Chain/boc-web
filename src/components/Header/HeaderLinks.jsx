@@ -2,6 +2,7 @@
 import React, { useState, useRef } from "react"
 import classNames from "classnames";
 import { useDispatch } from "react-redux"
+import copy from "copy-to-clipboard"
 import { warmDialog } from "../../reducers/meta-reducer"
 
 // @material-ui/core components
@@ -15,6 +16,10 @@ import Transform from "@material-ui/icons/Transform"
 import InsertChartIcon from "@material-ui/icons/InsertChart"
 import LibraryBooksIcon from "@material-ui/icons/LibraryBooks"
 import ClearAllIcon from '@material-ui/icons/ClearAll';
+import AccountBalanceWalletOutlinedIcon from "@material-ui/icons/AccountBalanceWalletOutlined";
+import ExitToAppOutlinedIcon from "@material-ui/icons/ExitToAppOutlined";
+import FileCopyOutlinedIcon from "@material-ui/icons/FileCopyOutlined";
+import AccountCircleOutlinedIcon from "@material-ui/icons/AccountCircleOutlined";
 
 // core components
 import Button from "../CustomButtons/Button"
@@ -53,6 +58,15 @@ export default function HeaderLinks (props) {
 
   const handleClose = () => {
     setWalletModalVisible(false)
+  }
+
+  const handleCopyAddress = () => {
+    copy(address)
+    dispatch(warmDialog({
+      open: true,
+      type: "info",
+      message: "Copied",
+    }))
   }
 
   const connectTo = async (name) => {
@@ -181,15 +195,25 @@ export default function HeaderLinks (props) {
                   buttonText={() => <Address size='short' address={address} />}
                   buttonProps={{
                     color: "colorfull-border-2",
-                    className: `${classes.navLink} ${classes.colorfulLink}`,
+                    className: `${classes.navLink} ${classes.colorfulLink} ${classes.accountLink}`,
                   }}
                   dropdownList={[
-                    <a onClick={handleClickConnect} className={classes.dropdownLink}>
-                      Change Wallet
-                    </a>,
-                    <a onClick={disconnect} className={classes.dropdownLink}>
-                      Disconnect
-                    </a>
+                    <div className={classes.dropdownLink}>
+                      <AccountCircleOutlinedIcon className={classes.dropdownLinkIcon} />
+                      <a>My Account</a>
+                    </div>,
+                    <div onClick={handleCopyAddress} className={classes.dropdownLink}>
+                      <FileCopyOutlinedIcon className={classes.dropdownLinkIcon} />
+                      <a>Copy Address</a>
+                    </div>,
+                    <div onClick={handleClickConnect} className={classes.dropdownLink}>
+                      <AccountBalanceWalletOutlinedIcon className={classes.dropdownLinkIcon} />
+                      <a>Change Wallet</a>
+                    </div>,
+                    <div onClick={disconnect} className={classes.dropdownLink}>
+                      <ExitToAppOutlinedIcon className={classes.dropdownLinkIcon} />
+                      <a>Disconnect</a>
+                    </div>
                   ]}
                 />
               )
