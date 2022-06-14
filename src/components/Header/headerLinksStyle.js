@@ -1,10 +1,8 @@
-import {
-  defaultFont
-} from "../../assets/jss/material-kit-react.js";
+import { defaultFont } from "../../assets/jss/material-kit-react.js"
 
-import tooltip from "./tooltipsStyle.js";
+import tooltip from "./tooltipsStyle.js"
 
-const headerLinksStyle = (theme) => ({
+const headerLinksStyle = theme => ({
   list: {
     ...defaultFont,
     fontSize: "14px",
@@ -36,7 +34,7 @@ const headerLinksStyle = (theme) => ({
     },
   },
   hidden: {
-    display: 'none'
+    display: "none",
   },
   listItemText: {
     padding: "0 !important",
@@ -47,7 +45,7 @@ const headerLinksStyle = (theme) => ({
     padding: "1.275rem",
     fontWeight: "400",
     fontSize: "14px",
-    textTransform: "uppercase",
+    textTransform: "initial",
     borderRadius: "3px",
     lineHeight: "20px",
     textDecoration: "none",
@@ -71,11 +69,11 @@ const headerLinksStyle = (theme) => ({
     fontSize: "16px",
     padding: "7px 16px",
     textTransform: "none",
-    margin: "14px 20px",
+    margin: "11px 20px",
     borderRadius: "5px",
     [theme.breakpoints.down("sm")]: {
-      height: "48px"
-    }
+      height: "48px",
+    },
   },
   accountLink: {
     paddingRight: "6px"
@@ -134,6 +132,6 @@ const headerLinksStyle = (theme) => ({
   marginRight5: {
     marginRight: "5px",
   },
-});
+})
 
-export default headerLinksStyle;
+export default headerLinksStyle
