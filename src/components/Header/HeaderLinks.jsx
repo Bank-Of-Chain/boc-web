@@ -2,6 +2,7 @@
 import React, { useState, useRef } from "react"
 import classNames from "classnames"
 import { useDispatch } from "react-redux"
+import copy from "copy-to-clipboard"
 import { warmDialog } from "../../reducers/meta-reducer"
 
 import { makeStyles } from "@material-ui/core/styles"
@@ -10,6 +11,13 @@ import { makeStyles } from "@material-ui/core/styles"
 import List from "@material-ui/core/List"
 import ListItem from "@material-ui/core/ListItem"
 
+// @material-ui/icons
+import AccountBalanceWalletOutlinedIcon from "@material-ui/icons/AccountBalanceWalletOutlined";
+import ExitToAppOutlinedIcon from "@material-ui/icons/ExitToAppOutlined";
+import FileCopyOutlinedIcon from "@material-ui/icons/FileCopyOutlined";
+import AccountCircleOutlinedIcon from "@material-ui/icons/AccountCircleOutlined";
+
+// core components
 import Button from "../CustomButtons/Button"
 import styles from "./headerLinksStyle"
 import Address from "../Address/Address"
@@ -48,7 +56,16 @@ export default function HeaderLinks (props) {
     setWalletModalVisible(false)
   }
 
-  const connectTo = async name => {
+  const handleCopyAddress = () => {
+    copy(address)
+    dispatch(warmDialog({
+      open: true,
+      type: "info",
+      message: "Copied",
+    }))
+  }
+
+  const connectTo = async (name) => {
     if (!connectTimer.current) {
       connectTimer.current = setTimeout(() => {
         dispatch(
@@ -171,33 +188,41 @@ export default function HeaderLinks (props) {
               >
                 Connect Wallet
               </Button>
-            ) : isInMobileWalletApp() ? (
-              <Button
-                color='colorfull-border-2'
-                target='_blank'
-                className={`${classes.navLink} ${classes.colorfulLink}`}
-                onClick={disconnect}
-              >
-                <Address size='short' address={address} />
-              </Button>
-            ) : (
-              <CustomDropdown
-                noLiPadding
-                buttonText={() => <Address size='short' address={address} />}
-                buttonProps={{
-                  color: "colorfull-border-2",
-                  className: `${classes.navLink} ${classes.colorfulLink}`,
-                }}
-                dropdownList={[
-                  <a onClick={handleClickConnect} className={classes.dropdownLink}>
-                    Change Wallet
-                  </a>,
-                  <a onClick={disconnect} className={classes.dropdownLink}>
-                    Disconnect
-                  </a>,
-                ]}
-              />
-            )}
+            ) : isInMobileWalletApp()
+              ? (
+                <Button color="colorfull-border-2" target='_blank'  className={`${classes.navLink} ${classes.colorfulLink}`} onClick={disconnect}>
+                  <Address size='short' address={address} />
+                </Button>
+              )
+              : (
+                <CustomDropdown
+                  noLiPadding
+                  buttonText={() => <Address size='short' address={address} />}
+                  buttonProps={{
+                    color: "colorfull-border-2",
+                    className: `${classes.navLink} ${classes.colorfulLink} ${classes.accountLink}`,
+                  }}
+                  dropdownList={[
+                    <div className={classes.dropdownLink}>
+                      <AccountCircleOutlinedIcon className={classes.dropdownLinkIcon} />
+                      <a>My Account</a>
+                    </div>,
+                    <div onClick={handleCopyAddress} className={classes.dropdownLink}>
+                      <FileCopyOutlinedIcon className={classes.dropdownLinkIcon} />
+                      <a>Copy Address</a>
+                    </div>,
+                    <div onClick={handleClickConnect} className={classes.dropdownLink}>
+                      <AccountBalanceWalletOutlinedIcon className={classes.dropdownLinkIcon} />
+                      <a>Change Wallet</a>
+                    </div>,
+                    <div onClick={disconnect} className={classes.dropdownLink}>
+                      <ExitToAppOutlinedIcon className={classes.dropdownLinkIcon} />
+                      <a>Disconnect</a>
+                    </div>
+                  ]}
+                />
+              )
+            }
           </ListItem>
         )}
       </List>

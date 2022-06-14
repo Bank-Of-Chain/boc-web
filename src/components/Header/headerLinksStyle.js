@@ -75,6 +75,9 @@ const headerLinksStyle = theme => ({
       height: "48px",
     },
   },
+  accountLink: {
+    paddingRight: "6px"
+  },
   notificationNavLink: {
     color: "inherit",
     padding: "0.9375rem",
@@ -113,12 +116,17 @@ const headerLinksStyle = theme => ({
     marginRight: "4px",
   },
   dropdownLink: {
+    display: "flex",
+    alignItems: "center",
+    fontSize: "14px",
     "&,&:hover,&:focus": {
       color: "inherit",
       textDecoration: "none",
-      display: "block",
-      padding: "10px 20px",
+      padding: "10px 14px",
     },
+  },
+  dropdownLinkIcon: {
+    marginRight: "8px"
   },
   ...tooltip,
   marginRight5: {
