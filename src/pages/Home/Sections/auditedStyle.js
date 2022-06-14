@@ -1,12 +1,26 @@
 const auditedStyle = {
   section: {
-    color: "#000",
-    padding: "5rem",
-    backgroundColor: "#f6f6f6",
+    color: "#1F2023",
+    padding: "16rem 8.75rem",
+    background: "linear-gradient(180deg, #F6F6F6 30%, #E5DFF7 100%)",
+  },
+  title: {
+    margin: 0,
+    fontSize: "6.25rem",
+    lineHeight: "8.125rem",
   },
   text: {
-    width: "50%",
-    lineHeight: 2,
+    width: "34rem",
+    margin: 0,
+    lineHeight: "1.875rem",
+    fontSize: "1.25rem",
+    fontWeight: "normal",
+  },
+  divider: {
+    width: "18.75rem",
+    height: "1px",
+    margin: "1.875rem 0",
+    background: "#1F2023",
   },
 }
 
