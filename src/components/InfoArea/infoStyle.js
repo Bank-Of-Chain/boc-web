@@ -47,13 +47,13 @@ const infoStyle = {
   title: {
     ...title,
     color: "#fff",
-    fontSize: "1.5rem",
+    fontSize: "2rem",
   },
   description: {
     color: "#fff",
     overflow: "hidden",
-    marginTop: "0px",
-    fontSize: "14px",
+    margin: "0",
+    fontSize: "0.875rem",
     fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',
     lineHeight: "1.5em",
     textAlign: "left",
@@ -65,6 +65,13 @@ const infoStyle = {
     width: "61px",
     height: "61px",
   },
+  infoArea: {
+    cursor: "pointer",
+    padding: "6rem 3rem 3rem",
+    background: "#313036",
+    borderRadius: "1rem",
+    boxSizing: "border-box",
+  }
 }
 
 export default infoStyle
