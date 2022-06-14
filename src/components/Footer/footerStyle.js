@@ -1,12 +1,23 @@
 import { container, primaryColor } from "../../assets/jss/material-kit-react.js"
 
 const footerStyle = {
+  title: {
+    color: "#fff",
+    textTransform: "none",
+  },
+  text: {
+    color: "#A0A0A0",
+  },
+  item: {
+    padding: "2rem 0",
+    borderBottom: "1px solid #a0a0a0",
+  },
   block: {
-    color: "#707eac",
+    color: "#fff",
     padding: "0.9375rem",
     fontWeight: "500",
     fontSize: "12px",
-    textTransform: "uppercase",
+    textTransform: "none",
     borderRadius: "3px",
     textDecoration: "none",
     position: "relative",
@@ -22,9 +33,6 @@ const footerStyle = {
     float: "right!important",
   },
   footer: {
-    height: "160px",
-    backgroundColor: "#06001e",
-    padding: "0.9375rem 0",
     textAlign: "center",
     display: "flex",
     zIndex: "2",
