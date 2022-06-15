@@ -122,7 +122,6 @@ const buttonStyle = {
     },
   },
   colorfull:{
-    borderRadius: 12,
     color: '#fff',
     background: 'linear-gradient(223.3deg, #A68EFD 20.71%, #F4ACF3 103.56%)',
   },

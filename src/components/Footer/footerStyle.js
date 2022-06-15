@@ -10,7 +10,7 @@ const footerStyle = {
   },
   item: {
     padding: "2rem 0",
-    borderBottom: "1px solid #a0a0a0",
+    borderTop: "1px solid #a0a0a0",
   },
   block: {
     color: "#fff",

@@ -5,6 +5,9 @@ const lendingSectionStyle = {
   text: {
     color: "#1cd9ff",
   },
+  title: {
+    fontSize: "3.75rem",
+  },
   item: {
     paddingLeft: 0,
     paddingRight: 0,
@@ -68,7 +71,7 @@ const lendingSectionStyle = {
     borderRadius: "50%",
     marginRight: "0.25rem",
     display: "inline-block",
-    background: "#A68EFE",
+    background: "#FE3DCE",
   },
   box1: {
     height: "0.6rem",
@@ -76,7 +79,7 @@ const lendingSectionStyle = {
     borderRadius: "50%",
     marginRight: "0.25rem",
     display: "inline-block",
-    background: "#FE3DCE",
+    background: "#A68EFE",
   },
   chart: {
     background: "linear-gradient(199.32deg, #FE3DCE 17.59%, #5B93DF 71.04%, #94E3FF 102.04%)",

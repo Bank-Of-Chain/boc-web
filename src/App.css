@@ -1,7 +1,7 @@
 .App {
   min-height: 100%;
   margin: 0 auto;
-  width: 1200px;
+  width: 95rem;
 }
 
 html,
@@ -25,7 +25,7 @@ div.swiper-button-prev,
 div.swiper-button-next {
   width: 0.5rem;
   height: 1rem;
-  color: #1F2023;
+  color: #1f2023;
 }
 
 div.swiper-button-prev:after,

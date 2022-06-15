@@ -91,7 +91,7 @@ export default function LendingSection () {
   const displayMaxValue = 5 * Math.ceil(maxPercentItem?.percent / 5)
   return (
     <div className={classes.section}>
-      <h2 className={classes.title}>Crypto Lending Interest Rates</h2>
+      <h2 className={classes.title}>Crypto Lending Interest Rates.</h2>
       <div className={classNames(classes.label)}>
         <GridContainer>
           <GridItem>

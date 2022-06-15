@@ -23,13 +23,13 @@ const componentsStyle = theme => ({
     textAlign: "center",
   },
   withdrawContainer: {
-    padding: "1rem 2.6875rem 3rem",
+    padding: "2.6875rem 2.25rem",
     border: "1px solid #A68EFD",
     borderTopLeftRadius: "1rem",
     borderTopRightRadius: "1rem",
   },
   outputContainer: {
-    padding: "1rem 2.6875rem 3rem",
+    padding: "2.6875rem 2.25rem",
     border: "1px solid #A68EFD",
     marginTop: "0.5rem",
     borderBottomLeftRadius: "1rem",
@@ -131,8 +131,8 @@ const componentsStyle = theme => ({
   },
   setting: {
     position: "absolute",
-    right: "2rem",
-    top: "2rem",
+    right: "1.2rem",
+    top: "1.2rem",
     cursor: "pointer",
   },
   popover: {
@@ -152,6 +152,9 @@ const componentsStyle = theme => ({
     minHeight: "100px",
     color: "#A0A0A0",
     paddingTop: "35px",
+  },
+  tokenName: {
+    fontSize: "1.625rem",
   },
 })
 
