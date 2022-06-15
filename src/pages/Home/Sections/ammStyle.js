@@ -41,6 +41,9 @@ const ammSectionStyle = {
     borderRadius: "50%",
     backgroundColor: "#fff",
   },
+  transparentBg: {
+    background: "transparent"
+  },
   text: {
     textAlign: "center",
     margin: "0.625rem 0 3.75rem",
