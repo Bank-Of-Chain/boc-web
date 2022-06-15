@@ -1,6 +1,5 @@
 import React from "react"
 import { makeStyles } from "@material-ui/core/styles"
-import classNames from "classnames"
 
 // === Components === //
 import InfoArea from "../../../components/InfoArea/InfoArea"
