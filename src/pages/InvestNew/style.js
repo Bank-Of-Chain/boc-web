@@ -5,6 +5,7 @@ const componentsStyle = theme => ({
     zIndex: "12",
     color: "#FFFFFF",
     marginTop: 65,
+    marginBottom: 100,
     ...container,
   },
   center: {
@@ -18,7 +19,7 @@ const componentsStyle = theme => ({
   },
   wrapper: {
     padding: "5rem 3rem",
-    marginBottom: "5rem",
+    
     borderRadius: "1.25rem",
     background: "linear-gradient(111.68deg, rgba(87, 97, 125, 0.2) 7.59%, rgba(255, 255, 255, 0.078) 102.04%)",
   },

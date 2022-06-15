@@ -5,6 +5,7 @@ const componentsStyle = theme => ({
     zIndex: "12",
     color: "#FFFFFF",
     marginTop: 65,
+    marginBottom: 100,
     ...container,
   },
   center: {
