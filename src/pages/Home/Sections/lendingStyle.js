@@ -79,11 +79,14 @@ const lendingSectionStyle = {
     background: "#FE3DCE",
   },
   chart: {
-    padding: "7.5rem 0",
-    backgroundColor: "rgba(255,255,255, 0.1)",
-    border: "2px solid",
+    background: "linear-gradient(199.32deg, #FE3DCE 17.59%, #5B93DF 71.04%, #94E3FF 102.04%)",
     borderRadius: "1rem",
-    borderColor: "chocolate",
+    padding: "2px",
+  },
+  chartInner: {
+    padding: "7.5rem 0",
+    backgroundColor: "#070b10",
+    borderRadius: "1rem",
   },
 }
 

@@ -105,54 +105,56 @@ export default function LendingSection () {
         </GridContainer>
       </div>
       <div className={classes.chart}>
-        {loading ? (
-          <GridContainer style={{ margin: "0 auto" }} justify='center'>
-            <CircularProgress />
-          </GridContainer>
-        ) : (
-          <GridContainer style={{ margin: "0 auto" }} justify='center'>
-            {map(
-              filter(
-                sortBy(data, o => {
-                  if (o.title === bocTitle) {
-                    return -10000
-                  }
-                  return -1 * o.percent
-                }),
-                o => !isNaN(o.percent),
-              ),
-              (item, i) => {
-                const { title, imagePath, percent, text = "" } = item
-                const nextPercent = percent / displayMaxValue
-                const percentText = `${toFixed(nextPercent.toString(), 1e-2, 2)}%`
-                return (
-                  <GridItem className={classNames(classes.item)} key={`${i}`} xs={1} sm={1} md={1}>
-                    <GridContainer className={classes.body}>
-                      <GridItem className={classes.header} style={i === 0 ? { borderLeft: 0 } : {}}>
-                        <Tooltip title={text}>
-                          <div
-                            className={classNames(
-                              classes.bar,
-                              text === "Current Rate" && classes.fixed,
-                              title === bocTitle && classes.checked,
-                            )}
-                            style={{ height: percentText }}
-                          >
-                            <p>{percent}%</p>
-                          </div>
-                        </Tooltip>
-                      </GridItem>
-                      <GridItem className={classes.footer}>
-                        <img title={title} src={imagePath} alt={title} />
-                        <p>{title}</p>
-                      </GridItem>
-                    </GridContainer>
-                  </GridItem>
-                )
-              },
-            )}
-          </GridContainer>
-        )}
+        <div className={classes.chartInner}>
+          {loading ? (
+            <GridContainer style={{ margin: "0 auto" }} justify='center'>
+              <CircularProgress />
+            </GridContainer>
+          ) : (
+            <GridContainer style={{ margin: "0 auto" }} justify='center'>
+              {map(
+                filter(
+                  sortBy(data, o => {
+                    if (o.title === bocTitle) {
+                      return -10000
+                    }
+                    return -1 * o.percent
+                  }),
+                  o => !isNaN(o.percent),
+                ),
+                (item, i) => {
+                  const { title, imagePath, percent, text = "" } = item
+                  const nextPercent = percent / displayMaxValue
+                  const percentText = `${toFixed(nextPercent.toString(), 1e-2, 2)}%`
+                  return (
+                    <GridItem className={classNames(classes.item)} key={`${i}`} xs={1} sm={1} md={1}>
+                      <GridContainer className={classes.body}>
+                        <GridItem className={classes.header} style={i === 0 ? { borderLeft: 0 } : {}}>
+                          <Tooltip title={text}>
+                            <div
+                              className={classNames(
+                                classes.bar,
+                                text === "Current Rate" && classes.fixed,
+                                title === bocTitle && classes.checked,
+                              )}
+                              style={{ height: percentText }}
+                            >
+                              <p>{percent}%</p>
+                            </div>
+                          </Tooltip>
+                        </GridItem>
+                        <GridItem className={classes.footer}>
+                          <img title={title} src={imagePath} alt={title} />
+                          <p>{title}</p>
+                        </GridItem>
+                      </GridContainer>
+                    </GridItem>
+                  )
+                },
+              )}
+            </GridContainer>
+          )}
+        </div>
       </div>
     </div>
   )
