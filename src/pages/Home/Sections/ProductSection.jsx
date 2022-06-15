@@ -11,8 +11,8 @@ import map from "lodash/map"
 // === Styles === //
 import styles from "./productStyle"
 
-import { Navigation, Autoplay } from 'swiper'
-import { Swiper, SwiperSlide } from 'swiper/react/swiper-react'
+import { Navigation, Autoplay } from "swiper"
+import { Swiper, SwiperSlide } from "swiper/react/swiper-react"
 import "swiper/swiper-bundle.min.css"
 
 const useStyles = makeStyles(styles)
@@ -82,8 +82,8 @@ export default function ProductSection () {
           spaceBetween={24}
           slidesPerView={3}
           navigation={{
-            nextEl: '.swiper-button-next',
-            prevEl: '.swiper-button-prev',
+            nextEl: ".swiper-button-next",
+            prevEl: ".swiper-button-prev",
           }}
           autoplay={true}
         >
@@ -94,20 +94,20 @@ export default function ProductSection () {
                 <InfoArea
                   title={title}
                   description={map(descriptions, (d, index) => (
-                    <div key={`item-${index}`}>
+                    <span key={`item-${index}`} style={{ display: "inline-block" }}>
                       {index + 1}. {d}
-                    </div>
+                    </span>
                   ))}
                   icon={<img src={imagePath} alt='' />}
                   vertical
-                  style={{ height: '40rem' }}
+                  style={{ height: "40rem" }}
                 />
               </SwiperSlide>
             )
           })}
         </Swiper>
-        <div className="swiper-button-prev"></div>
-        <div className="swiper-button-next"></div>
+        <div className='swiper-button-prev'></div>
+        <div className='swiper-button-next'></div>
       </div>
     </div>
   )
