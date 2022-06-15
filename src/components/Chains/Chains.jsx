@@ -11,7 +11,7 @@ const styles = {
   img: {
     width: "3.5rem",
     height: "3.5rem",
-    marginRight: "10px",
+    marginRight: "24px",
     maxWidth: "100%",
     padding: 2,
     verticalAlign: "middle",

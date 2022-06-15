@@ -1,5 +1,5 @@
 /* eslint-disable no-extend-native */
-import React, { useState, useEffect, Suspense, lazy } from "react"
+import React, { useState, useEffect, useRef, Suspense, lazy } from "react"
 import { Switch, Route, Redirect, HashRouter } from "react-router-dom"
 import { useUserAddress } from "eth-hooks"
 import { useSelector, useDispatch } from "react-redux"
@@ -52,6 +52,18 @@ const useStyles = makeStyles(theme => ({
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
+    "& .MuiPaper-root": {
+      minWidth: 430,
+      minHeight: 120,
+      padding: "32px 24px",
+      fontSize: 16,
+      border: 0,
+      color: "#fff",
+      boxShadow: "0px 15px 15px rgba(0, 0, 0, 0.05)",
+      borderRadius: "20px",
+      background: "#292B2E",
+      outline: 0,
+    }
   },
 }))
 
@@ -62,24 +74,27 @@ function App () {
     userProvider,
     connect,
     disconnect,
-    getChainId,
+    chainId,
     getWalletName
   } = useWallet()
   const [isLoadingChainId, setIsLoadingChainId] = useState(false)
+  const isLoadingTimer = useRef()
 
   const alertState = useSelector(state => state.metaReducer.warmMsg)
   const dispatch = useDispatch()
   const address = useUserAddress(userProvider)
-  const selectedChainId = getChainId(userProvider)
+  const selectedChainId = chainId
   const walletName = getWalletName()
 
   useEffect(() => {
     if (userProvider) {
-      setIsLoadingChainId(true)
+      clearTimeout(isLoadingTimer.current)
+      isLoadingTimer.current = setTimeout(() => {
+        setIsLoadingChainId(true)
+      }, 500)
       userProvider._networkPromise.then(v => {
-        setTimeout(() => {
-          setIsLoadingChainId(false)
-        }, 200)
+        setIsLoadingChainId(false)
+        clearTimeout(isLoadingTimer.current)
       })
     }
   }, [userProvider])
@@ -201,17 +216,7 @@ function App () {
         aria-labelledby='simple-modal-title'
         aria-describedby='simple-modal-description'
       >
-        <Paper
-          elevation={3}
-          style={{
-            padding: 20,
-            minWidth: 430,
-            minHeight: 120,
-            color: "rgba(255,255,255, 0.87)",
-            border: "1px solid",
-            background: "#000",
-          }}
-        >
+        <Paper elevation={3}>
           {renderText}
         </Paper>
       </Modal>
@@ -245,7 +250,7 @@ function App () {
         <p key='1' style={{ textAlign: "center" }}>
           You may need to manually switch network via your wallet.
         </p>,
-        <Chains key='3' maskStyle={{ textAlign: "center" }} array={NET_WORKS} handleClick={changeNetwork} />,
+        <Chains key='3' maskStyle={{ textAlign: "center", marginTop: 24 }} array={NET_WORKS} handleClick={changeNetwork} />,
       ])
     }
   }
