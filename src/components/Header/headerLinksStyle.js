@@ -76,7 +76,20 @@ const headerLinksStyle = theme => ({
     },
   },
   accountLink: {
-    paddingRight: "6px"
+    position: "relative",
+    paddingRight: "8px",
+    paddingLeft: "36px",
+    "&:before": {
+      content: '""',
+      position: "absolute",
+      top: "50%",
+      left: "18px",
+      width: "10px",
+      height: "10px",
+      borderRadius: "50%",
+      transform: "translate(0, -50%)",
+      background: "#55E752"
+    }
   },
   notificationNavLink: {
     color: "inherit",
