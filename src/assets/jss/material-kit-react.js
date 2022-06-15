@@ -31,7 +31,6 @@ const container = {
   margin: '0 auto',
   padding: 0,
   width: "100%",
-  minHeight: "100%"
 };
 
 const boxShadow = {
