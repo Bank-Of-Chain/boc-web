@@ -1,4 +1,4 @@
-import { useEffect, useCallback } from "react"
+import { useState, useEffect, useCallback } from "react"
 import { useSelector, useDispatch } from "react-redux"
 import { getWalletName } from '../helpers/wallet'
 import { setProvider } from "../reducers/wallet-reducer"
@@ -8,6 +8,7 @@ function useWallet() {
   const web3Modal = useSelector(state => state.walletReducer.web3Modal)
   const provider = useSelector(state => state.walletReducer.provider)
   const userProvider = useSelector(state => state.walletReducer.userProvider)
+  const [chainId, setChainId] = useState()
 
   const connectTo = useCallback(async (name) => {
     const provider = await web3Modal.connectTo(name)
@@ -87,6 +88,15 @@ function useWallet() {
     }
   }, [provider, disconnectPassive, getProviderType])
 
+  useEffect(() => {
+    if (!userProvider) {
+      return
+    }
+    userProvider._networkPromise.then(v => {
+      setChainId(getChainId(userProvider))
+    })
+  }, [userProvider])
+
   return {
     web3Modal,
     provider,
@@ -96,7 +106,7 @@ function useWallet() {
     requestProvider,
     disconnect,
     disconnectPassive,
-    getChainId,
+    chainId,
     getWalletName: () => getWalletName(web3Modal, userProvider)
   }
 }

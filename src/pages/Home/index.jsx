@@ -1,9 +1,6 @@
 import React from "react"
 import { makeStyles } from "@material-ui/core/styles"
 
-// === Constants === //
-import { NET_WORKS } from "./../../constants"
-
 // === Components === //
 import ProductSection from "./Sections/ProductSection"
 import AuditedSection from "./Sections/AuditedSection"
@@ -14,7 +11,6 @@ import RoadMapSection from "./Sections/RoadMapSection"
 import GridContainer from "../../components/Grid/GridContainer"
 import GridItem from "../../components/Grid/GridItem"
 import Button from "../../components/CustomButtons/Button"
-import Chains from "../../components/Chains/Chains"
 
 // === Styles === //
 import styles from "./landingPage"
@@ -22,7 +18,6 @@ import styles from "./landingPage"
 const useStyles = makeStyles(styles)
 
 export default function Home (props) {
-  const { changeNetwork } = props
   const classes = useStyles()
 
   return (
