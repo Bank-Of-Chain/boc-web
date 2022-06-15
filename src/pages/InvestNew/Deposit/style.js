@@ -78,6 +78,23 @@ const componentsStyle = theme => ({
   labelToolTipIcon: {
     fontSize: 16,
   },
+  depositModal: {
+    padding: "1rem",
+    maxWidth: "500px",
+    color: "rgba(255, 255, 255, 0.87)",
+    border: "1px solid #A68EFE",
+    backgroundColor: "#000",
+    borderRadius: "1rem",
+  },
+  root: {
+    padding: "1.5rem 0",
+  },
+  item: {
+    paddingTop: "3rem",
+  },
+  subTitle: {
+    color: "#A68EFE",
+  },
 })
 
 export default componentsStyle

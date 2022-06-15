@@ -110,14 +110,6 @@ const componentsStyle = theme => ({
   tooltip: {
     fontSize: "14px",
   },
-  labelToolTipIcon: {
-    position: "absolute",
-    left: "-18px",
-    top: "50%",
-    color: "#fff",
-    fontSize: 16,
-    transform: "translate(0, -50%)",
-  },
   slippageItem: {
     display: "flex",
     alignItems: "center",
@@ -127,11 +119,39 @@ const componentsStyle = theme => ({
     marginLeft: 16,
   },
   widthdrawLoadingPaper: {
-    padding: 20,
-    minWidth: 650,
-    color: "rgba(255,255,255, 0.87)",
-    border: "1px solid",
-    background: "#150752",
+    padding: "1rem",
+    maxWidth: "500px",
+    color: "rgba(255, 255, 255, 0.87)",
+    border: "1px solid #A68EFE",
+    backgroundColor: "#000",
+    borderRadius: "1rem",
+  },
+  root: {
+    padding: "1.5rem 0",
+  },
+  setting: {
+    position: "absolute",
+    right: "2rem",
+    top: "2rem",
+    cursor: "pointer",
+  },
+  popover: {
+    width: "15rem",
+    background: "#292B2E",
+    border: " 1px solid #666666",
+    borderRadius: "1.25rem",
+    padding: "1rem",
+  },
+  popoverTitle: {
+    color: "#A0A0A0",
+    margin: 0,
+    padding: "0.5rem 0",
+  },
+  estimateItem: {
+    textAlign: "center",
+    minHeight: "100px",
+    color: "#A0A0A0",
+    paddingTop: "35px",
   },
 })
 

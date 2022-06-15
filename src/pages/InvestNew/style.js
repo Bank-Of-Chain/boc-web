@@ -64,7 +64,7 @@ const componentsStyle = theme => ({
   balanceCardValue: {
     display: "flex",
     alignItems: "center",
-    justifyContent: "center",
+    justifyContent: "flex-start",
     height: 30,
     lineHeight: "30px",
     fontSize: 26,

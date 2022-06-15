@@ -68,6 +68,7 @@ export default function Deposit ({
   IERC20_ABI,
   VAULT_ADDRESS,
   abi_version,
+  toBalance,
 }) {
   const classes = useStyles()
   const dispatch = useDispatch()
@@ -414,7 +415,7 @@ export default function Deposit ({
               </span>
             </p>
             <p className={classes.estimateText}>
-              Balance: <span>123.323</span>
+              Balance: <span>{formatBalance(toBalance, usdiDecimals)}</span>
             </p>
           </GridItem>
         ) : (
@@ -475,22 +476,13 @@ export default function Deposit ({
         aria-labelledby='simple-modal-title'
         aria-describedby='simple-modal-description'
       >
-        <Paper
-          elevation={3}
-          style={{
-            padding: 20,
-            maxWidth: "600px",
-            color: "rgba(255,255,255, 0.87)",
-            border: "1px solid",
-            background: "#150752",
-          }}
-        >
+        <Paper elevation={3} className={classes.depositModal}>
           <BocStepper
             classes={{
               root: classes.root,
             }}
             alternativeLabel
-            activeStep={4}
+            activeStep={1}
             connector={<BocStepConnector />}
           >
             {map(steps, (i, index) => {
@@ -502,9 +494,9 @@ export default function Deposit ({
             })}
           </BocStepper>
           <GridContainer>
-            <GridItem xs={12} sm={12} md={12} lg={12}>
-              <Typography variant='subtitle1' gutterBottom>
-                Deposit Amounts:
+            <GridItem xs={12} sm={12} md={12} lg={12} className={classes.item}>
+              <Typography variant='subtitle1' gutterBottom className={classes.subTitle}>
+                Deposit Amounts:&nbsp;
                 {reduce(
                   map(formConfig, item => {
                     const { name, value, image, isValid, address } = item
@@ -513,7 +505,7 @@ export default function Deposit ({
                     }
                     return (
                       <span key={address} className={classes.flexText}>
-                        <span style={{ color: "chocolate", marginRight: 5 }}>{value}</span> {name}{" "}
+                        <span style={{ color: "chocolate", marginRight: 5 }}>{value}</span> {name}&nbsp;
                         <img className={classes.ModalTokenLogo} alt='' src={image} />
                       </span>
                     )
@@ -532,18 +524,17 @@ export default function Deposit ({
                 )}
               </Typography>
             </GridItem>
-            <GridItem xs={12} sm={12} md={12} lg={12}>
-              <Typography variant='subtitle1' gutterBottom>
-                Estimate User Get:{" "}
+            <GridItem xs={12} sm={12} md={12} lg={12} className={classes.item}>
+              <Typography variant='subtitle1' gutterBottom className={classes.subTitle}>
+                Estimate User Get:&nbsp;
                 <span style={{ color: "darkturquoise" }}>
-                  {" "}
-                  + {toFixed(estimateVaultBuffValue, BigNumber.from(10).pow(usdiDecimals))}{" "}
-                </span>{" "}
-                USDi Tickets
+                  &nbsp; + {toFixed(estimateVaultBuffValue, BigNumber.from(10).pow(usdiDecimals))}&nbsp;
+                </span>
+                &nbsp; USDi Tickets
               </Typography>
             </GridItem>
-            <GridItem xs={12} sm={12} md={12} lg={12}>
-              <Typography variant='subtitle1' gutterBottom>
+            <GridItem xs={12} sm={12} md={12} lg={12} className={classes.item}>
+              <Typography variant='subtitle1' gutterBottom className={classes.subTitle}>
                 Exchange&nbsp;
                 <Tooltip
                   classes={{
@@ -554,19 +545,19 @@ export default function Deposit ({
                 >
                   <InfoIcon classes={{ root: classes.labelToolTipIcon }} />
                 </Tooltip>
-                : From{" "}
+                :&nbsp;From&nbsp;
                 <span style={{ color: "chocolate" }}>
                   {toFixed(estimateVaultBuffValue, BigNumber.from(10).pow(usdiDecimals))}
-                </span>{" "}
-                USDi Tickets <span style={{ fontWeight: "bold", color: "dimgrey" }}>To</span>{" "}
+                </span>
+                &nbsp; USDi Tickets <span style={{ fontWeight: "bold", color: "dimgrey" }}>To</span>&nbsp;
                 <span style={{ color: "darkturquoise" }}>
                   {toFixed(estimateVaultBuffValue.mul(9987).div(10000), BigNumber.from(10).pow(usdiDecimals), 2)}
-                </span>{" "}
-                USDi
+                </span>
+                &nbsp; USDi
               </Typography>
             </GridItem>
-            <GridItem xs={12} sm={12} md={12} lg={12}>
-              <Typography variant='subtitle1' gutterBottom>
+            <GridItem xs={12} sm={12} md={12} lg={12} className={classes.item}>
+              <Typography variant='subtitle1' gutterBottom className={classes.subTitle}>
                 Exchange Time&nbsp;
                 <Tooltip
                   classes={{
@@ -577,21 +568,21 @@ export default function Deposit ({
                 >
                   <InfoIcon classes={{ root: classes.labelToolTipIcon }} />
                 </Tooltip>
-                : <span style={{ color: "chocolate" }}>{moment(nextRebaseTime).format("YYYY-MM-DD HH:mm:ss")}</span>
+                :&nbsp;
+                <span style={{ color: "chocolate" }}>{moment(nextRebaseTime).format("YYYY-MM-DD HH:mm:ss")}</span>
               </Typography>
             </GridItem>
-            <GridItem xs={12} sm={12} md={12} lg={12} style={{ textAlign: "center", paddingTop: 30 }}>
-              <Button color='colorfull' onClick={diposit}>
+            <GridItem xs={12} sm={12} md={12} lg={12} className={classes.item} style={{ textAlign: "center" }}>
+              <Button color='colorfull' onClick={diposit} style={{ width: "50%" }}>
                 Continue
               </Button>
-              <MButton
-                style={{ marginLeft: 20, borderRadius: 12, padding: "12px 30px" }}
-                variant='contained'
-                color='secondary'
+              <Button
+                style={{ marginLeft: 20, borderRadius: 12 }}
+                color='danger'
                 onClick={() => setIsOpenEstimateModal(false)}
               >
                 Cancel
-              </MButton>
+              </Button>
             </GridItem>
           </GridContainer>
         </Paper>

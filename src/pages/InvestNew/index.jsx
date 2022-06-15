@@ -277,7 +277,7 @@ function Invest (props) {
                   <div className={classes.balanceCardValue} style={{ fontSize: "1rem" }}>
                     <span title={formatBalance(vaultBufferBalance, vaultBufferDecimals, { showAll: true })}>
                       {formatBalance(vaultBufferBalance, vaultBufferDecimals)}
-                      <span className={classes.symbol}>USDi Ticket</span>
+                      <span className={classes.symbol}>USDi Ticket&nbsp;&nbsp;</span>
                     </span>
                     <Tooltip
                       classes={{
@@ -286,14 +286,14 @@ function Invest (props) {
                       placement='right'
                       title={
                         <span>
-                          The USDi ticket is automatically converted to USDi. And was last executed in{" "}
+                          The USDi ticket is automatically converted to USDi. And was last executed in&nbsp;
                           <span style={{ color: "red", fontWeight: "bold" }}>
                             {moment(lastRebaseTime).format("yyyy-MM-DD HH:mm")}
                           </span>
                         </span>
                       }
                     >
-                      <InfoIcon style={{ fontSize: 15 }} />
+                      <InfoIcon style={{ fontSize: "1rem" }} />
                     </Tooltip>
                   </div>
                 )}
@@ -324,6 +324,7 @@ function Invest (props) {
                 IERC20_ABI={IERC20_ABI}
                 VAULT_ADDRESS={VAULT_ADDRESS}
                 abi_version={abi_version}
+                toBalance={toBalance}
               />
             </div>
           )}
