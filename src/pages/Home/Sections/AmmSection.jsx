@@ -53,19 +53,6 @@ export default function AmmSection () {
             tabName: "Stablecoins",
             tabContent: (
               <GridItem xs={12} sm={12} md={12} className={classes.iconContainer}>
-                {map(CHAINS, c => (
-                  <div key={c.id} className={classes.item} onClick={() => window.open(c.url)}>
-                    <img className={`${classes.img} ${classes.transparentBg}`} src={`/images/chains/${c.id}.png`} alt={c.name} />
-                    <p className={classes.text}>{c.name}</p>
-                  </div>
-                ))}
-              </GridItem>
-            ),
-          },
-          {
-            tabName: "Major chains",
-            tabContent: (
-              <GridItem xs={12} sm={12} md={12} className={classes.iconContainer}>
                 {map(STABLECOINS, c => (
                   <div
                     key={c.id}
@@ -80,6 +67,19 @@ export default function AmmSection () {
                   <img className={classes.img} src={`/images/oracles/chainlink.png`} alt={"Chainlink"} />
                   <p className={classes.text}>{"Chainlink"}</p>
                 </div>
+              </GridItem>
+            ),
+          },
+          {
+            tabName: "Major chains",
+            tabContent: (
+              <GridItem xs={12} sm={12} md={12} className={classes.iconContainer}>
+                {map(CHAINS, c => (
+                  <div key={c.id} className={classes.item} onClick={() => window.open(c.url)}>
+                    <img className={`${classes.img} ${classes.transparentBg}`} src={`/images/chains/${c.id}.png`} alt={c.name} />
+                    <p className={classes.text}>{c.name}</p>
+                  </div>
+                ))}
               </GridItem>
             ),
           },
