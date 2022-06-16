@@ -77,7 +77,7 @@ const headerLinksStyle = theme => ({
   },
   accountLink: {
     position: "relative",
-    paddingRight: "8px",
+    paddingRight: "9px",
     paddingLeft: "36px",
     "&:before": {
       content: '""',

@@ -15,7 +15,7 @@ import ListItem from "@material-ui/core/ListItem"
 import AccountBalanceWalletOutlinedIcon from "@material-ui/icons/AccountBalanceWalletOutlined";
 import ExitToAppOutlinedIcon from "@material-ui/icons/ExitToAppOutlined";
 import FileCopyOutlinedIcon from "@material-ui/icons/FileCopyOutlined";
-import AccountCircleOutlinedIcon from "@material-ui/icons/AccountCircleOutlined";
+import SwapHorizontalCircleOutlinedIcon from "@material-ui/icons/SwapHorizontalCircleOutlined";
 
 // core components
 import Button from "../CustomButtons/Button"
@@ -204,7 +204,7 @@ export default function HeaderLinks (props) {
                   }}
                   dropdownList={[
                     <div className={classes.dropdownLink}>
-                      <AccountCircleOutlinedIcon className={classes.dropdownLinkIcon} />
+                      <AccountBalanceWalletOutlinedIcon className={classes.dropdownLinkIcon} />
                       <a>My Account</a>
                     </div>,
                     <div onClick={handleCopyAddress} className={classes.dropdownLink}>
@@ -212,7 +212,7 @@ export default function HeaderLinks (props) {
                       <a>Copy Address</a>
                     </div>,
                     <div onClick={handleClickConnect} className={classes.dropdownLink}>
-                      <AccountBalanceWalletOutlinedIcon className={classes.dropdownLinkIcon} />
+                      <SwapHorizontalCircleOutlinedIcon className={classes.dropdownLinkIcon} />
                       <a>Change Wallet</a>
                     </div>,
                     <div onClick={disconnect} className={classes.dropdownLink}>

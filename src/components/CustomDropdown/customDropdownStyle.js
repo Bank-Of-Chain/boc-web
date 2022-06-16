@@ -126,6 +126,11 @@ const customDropdownStyle = (theme) => ({
     width: "24px !important",
     height: "24px !important",
   },
+  dropdownTrigger: {
+    "&.MuiButtonBase-root.MuiButton-root": {
+      paddingRight: "8px"
+    }
+  },
   caret: {
     transition: "all 150ms ease-in",
     display: "inline-block",
