@@ -34,7 +34,7 @@ export default function Home (props) {
           </h4>
           <p className={classes.text} style={{ marginTop: 40 }}>
             <Button className={classes.invest} color='colorfull-border' size='sm' href='/#/mutils'>
-              Launch app
+              Launch App
             </Button>
           </p>
         </GridItem>
