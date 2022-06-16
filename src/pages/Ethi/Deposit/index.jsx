@@ -33,6 +33,8 @@ export default function Deposit ({
   address,
   ethBalance,
   ethDecimals,
+  ethiBalance,
+  ethiDecimals,
   userProvider,
   VAULT_ABI,
   VAULT_ADDRESS,
@@ -261,6 +263,7 @@ export default function Deposit ({
   return (
     <>
       <GridContainer classes={{ root: classes.depositContainer }}>
+        <p className={classes.estimateText}>From</p>
         <GridItem xs={12} sm={12} md={12} lg={12} className={classes.tokenInputWrapper}>
           <GridContainer>
             <GridItem xs={12} sm={12} md={12} lg={12}>
@@ -293,9 +296,6 @@ export default function Deposit ({
         </GridItem>
       </GridContainer>
       <GridContainer classes={{ root: classes.estimateContainer }}>
-        <GridItem xs={12} sm={12} md={12} lg={12} className={classes.gasPriceWrapper}>
-          <Muted>Estimated Gas Fee: {toFixed(getGasFee(), BigNumber.from(10).pow(ethDecimals), 6)} ETH</Muted>
-        </GridItem>
         <GridItem xs={12} sm={12} md={12} lg={12}>
           <p className={classes.estimateText}>To</p>
           <p className={classes.estimateBalanceTitle}>
@@ -303,7 +303,10 @@ export default function Deposit ({
             <span className={classes.estimateBalanceNum}>{estimateValue}</span>
           </p>
           <p className={classes.estimateText}>
-            Balance: <span>123.323</span>
+            Estimated Gas Fee: {toFixed(getGasFee(), BigNumber.from(10).pow(ethDecimals), 6)} ETH
+          </p>
+          <p className={classes.estimateText}>
+            Balance: <span>{toFixed(ethiBalance, BigNumber.from(10).pow(ethiDecimals))}</span>
           </p>
         </GridItem>
         {isEmpty(VAULT_ADDRESS) && (

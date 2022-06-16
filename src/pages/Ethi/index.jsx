@@ -234,6 +234,8 @@ function Ethi (props) {
                 address={address}
                 ethBalance={ethBalance}
                 ethDecimals={ethDecimals}
+                ethiBalance={ethiBalance}
+                ethiDecimals={ethiDecimals}
                 userProvider={userProvider}
                 VAULT_ABI={VAULT_ABI}
                 IERC20_ABI={IERC20_ABI}

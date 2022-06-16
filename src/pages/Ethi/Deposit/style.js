@@ -56,14 +56,13 @@ const componentsStyle = theme => ({
     display: "flex",
     alignItems: "center",
   },
+  tokenName: {
+    fontSize: "1.625rem",
+  },
   tokenLogo: {
     width: 30,
     borderRadius: "50%",
     marginRight: 8,
-  },
-  tokenName: {
-    fontSize: "16px",
-    color: "#fff",
   },
   flexText: {
     display: "inline-flex",

@@ -23,13 +23,13 @@ const componentsStyle = theme => ({
     textAlign: "center",
   },
   withdrawContainer: {
-    padding: "1rem 2.6875rem",
+    padding: "2.6875rem 2.25rem",
     border: "1px solid #A68EFD",
     borderTopLeftRadius: "1rem",
     borderTopRightRadius: "1rem",
   },
   outputContainer: {
-    padding: "1rem 2.6875rem 3rem",
+    padding: "2.6875rem 2.25rem",
     border: "1px solid #A68EFD",
     marginTop: "0.5rem",
     borderBottomLeftRadius: "1rem",
@@ -53,6 +53,9 @@ const componentsStyle = theme => ({
   tokenInfo: {
     display: "flex",
     alignItems: "center",
+  },
+  tokenName: {
+    fontSize: "1.625rem",
   },
   receiveTokenItem: {
     marginBottom: 0,
@@ -122,6 +125,37 @@ const componentsStyle = theme => ({
     color: "rgba(255,255,255, 0.87)",
     border: "1px solid",
     background: "#150752",
+  },
+  estimateBalanceTitle: {
+    fontSize: "1.625rem",
+  },
+  estimateBalanceNum: {
+    float: "right",
+    fontSize: "1rem",
+  },
+  estimateItem: {
+    textAlign: "center",
+    minHeight: "100px",
+    color: "#A0A0A0",
+    paddingTop: "35px",
+  },
+  setting: {
+    position: "absolute",
+    right: "1.2rem",
+    top: "1.2rem",
+    cursor: "pointer",
+  },
+  popover: {
+    width: "15rem",
+    background: "#292B2E",
+    border: " 1px solid #666666",
+    borderRadius: "1.25rem",
+    padding: "1rem",
+  },
+  popoverTitle: {
+    color: "#A0A0A0",
+    margin: 0,
+    padding: "0.5rem 0",
   },
 })
 

@@ -18,7 +18,7 @@ const componentsStyle = theme => ({
     margin: 0,
   },
   wrapper: {
-    padding: "5rem 2rem",
+    padding: "5rem 3rem",
     borderRadius: "1.25rem",
     background: "linear-gradient(111.68deg, rgba(87, 97, 125, 0.2) 7.59%, rgba(255, 255, 255, 0.078) 102.04%)",
   },

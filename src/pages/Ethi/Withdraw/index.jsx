@@ -16,6 +16,9 @@ import WarningIcon from "@material-ui/icons/Warning"
 import Tooltip from "@material-ui/core/Tooltip"
 import InfoIcon from "@material-ui/icons/Info"
 import Typography from "@material-ui/core/Typography"
+import Popover from "@material-ui/core/Popover"
+import PopupState, { bindTrigger, bindPopover } from "material-ui-popup-state"
+import Box from "@material-ui/core/Box"
 
 import CustomTextField from "../../../components/CustomTextField"
 import BocStepper from "../../../components/Stepper/Stepper"
@@ -81,7 +84,6 @@ export default function Withdraw ({
   const [slipper, setSlipper] = useState("0.3")
   const [estimateWithdrawArray, setEstimateWithdrawArray] = useState([])
   const [isEstimate, setIsEstimate] = useState(false)
-  const [isOpenEstimate, setIsOpenEstimate] = useState(false)
   const [isWithdrawLoading, setIsWithdrawLoading] = useState(false)
   const [currentStep, setCurrentStep] = useState(0)
   const [withdrawError, setWithdrawError] = useState({})
@@ -199,6 +201,7 @@ export default function Withdraw ({
               exchangeParam: bestSwapInfo,
             }
           } catch (error) {
+            console.log('error=', error)
             return
           }
         }),
@@ -592,7 +595,7 @@ export default function Withdraw ({
   useEffect(() => {
     // 未打开高级选项页面，则不继续数值预估
     // 如果输入的slipper等值不正确，则不继续数值预估
-    if (isOpenEstimate && isValidAllowLoss() && isValidSlipper() && isValidToValue()) {
+    if (isValidAllowLoss() && isValidSlipper() && isValidToValue()) {
       estimateWithdraw()
     }
     if (isEmpty(toValue)) {
@@ -603,7 +606,7 @@ export default function Withdraw ({
       return estimateWithdraw.cancel()
     }
     // eslint-disable-next-line
-  }, [toValue, allowMaxLoss, slipper, isOpenEstimate])
+  }, [toValue, allowMaxLoss, slipper])
 
   const handleAmountChange = event => {
     try {
@@ -621,7 +624,7 @@ export default function Withdraw ({
     if (isEstimate) {
       return (
         <GridItem xs={12} sm={12} md={12} lg={12}>
-          <div style={{ textAlign: "center", padding: "35px 0 25px" }}>
+          <div className={classes.estimateItem}>
             <CircularProgress fontSize='large' color='primary' />
           </div>
         </GridItem>
@@ -630,7 +633,7 @@ export default function Withdraw ({
     if (isUndefined(estimateWithdrawArray)) {
       return (
         <GridItem xs={12} sm={12} md={12} lg={12}>
-          <div style={{ textAlign: "center", minHeight: "100px", color: "#fff", padding: "35px 0 25px" }}>
+          <div className={classes.estimateItem}>
             <ErrorOutlineIcon fontSize='large' />
             <p>Amount estimate failed, please try again!</p>
           </div>
@@ -640,9 +643,9 @@ export default function Withdraw ({
     if (isEmpty(estimateWithdrawArray) || isEmpty(toValue)) {
       return (
         <GridItem xs={12} sm={12} md={12} lg={12}>
-          <div style={{ textAlign: "center", minHeight: "100px", color: "#fff", padding: "35px 0 25px" }}>
+          <div className={classes.estimateItem}>
             <AndroidIcon fontSize='large' />
-            <p style={{ marginTop: 0, letterSpacing: "0.01071em" }}>No estimated value available</p>
+            <p>No estimated value available</p>
           </div>
         </GridItem>
       )
@@ -675,8 +678,6 @@ export default function Withdraw ({
     })
   }
 
-  const SettingIcon = isOpenEstimate ? CropIcon : CropFreeIcon
-
   const isValidToValueFlag = isValidToValue()
   const isValidAllowLossFlag = isValidAllowLoss()
   const isValidSlipperFlag = isValidSlipper()
@@ -685,6 +686,84 @@ export default function Withdraw ({
 
   return (
     <>
+      <div className={classes.setting}>
+        <PopupState variant='popover' popupId='setting-popover'>
+          {popupState => (
+            <div>
+              <svg
+                width='30'
+                height='30'
+                viewBox='0 0 30 30'
+                fill='none'
+                xmlns='http://www.w3.org/2000/svg'
+                {...bindTrigger(popupState)}
+              >
+                <path
+                  d='M15 20.625C18.1066 20.625 20.625 18.1066 20.625 15C20.625 11.8934 18.1066 9.375 15 9.375C11.8934 9.375 9.375 11.8934 9.375 15C9.375 18.1066 11.8934 20.625 15 20.625Z'
+                  stroke='#A0A0A0'
+                  strokeWidth='1.75'
+                  strokeLinecap='round'
+                  strokeLinejoin='round'
+                />
+                <path
+                  d='M21.5273 7.62891C21.8242 7.90234 22.1055 8.18359 22.3711 8.47266L25.5703 8.92969C26.0916 9.83497 26.4934 10.804 26.7656 11.8125L24.8203 14.4023C24.8203 14.4023 24.8555 15.1992 24.8203 15.5977L26.7656 18.1875C26.4946 19.1965 26.0928 20.1656 25.5703 21.0703L22.3711 21.5273C22.3711 21.5273 21.8203 22.1016 21.5273 22.3711L21.0703 25.5703C20.165 26.0916 19.196 26.4934 18.1875 26.7656L15.5977 24.8203C15.2 24.8555 14.8 24.8555 14.4023 24.8203L11.8125 26.7656C10.8035 26.4946 9.83438 26.0928 8.92969 25.5703L8.47266 22.3711C8.18359 22.0977 7.90234 21.8164 7.62891 21.5273L4.42969 21.0703C3.90842 20.165 3.50663 19.196 3.23438 18.1875L5.17969 15.5977C5.17969 15.5977 5.14453 14.8008 5.17969 14.4023L3.23438 11.8125C3.50537 10.8035 3.90722 9.83438 4.42969 8.92969L7.62891 8.47266C7.90234 8.18359 8.18359 7.90234 8.47266 7.62891L8.92969 4.42969C9.83497 3.90842 10.804 3.50663 11.8125 3.23438L14.4023 5.17969C14.8 5.14452 15.2 5.14452 15.5977 5.17969L18.1875 3.23438C19.1965 3.50537 20.1656 3.90722 21.0703 4.42969L21.5273 7.62891Z'
+                  stroke='#A0A0A0'
+                  strokeWidth='1.75'
+                  strokeLinecap='round'
+                  strokeLinejoin='round'
+                />
+              </svg>
+              <Popover
+                classes={{ paper: classes.popover }}
+                {...bindPopover(popupState)}
+                anchorOrigin={{
+                  vertical: "bottom",
+                  horizontal: "center",
+                }}
+                transformOrigin={{
+                  vertical: "top",
+                  horizontal: "center",
+                }}
+              >
+                <Box p={2}>
+                  <GridContainer>
+                    <GridItem xs={12} sm={12} md={12} lg={12}>
+                      <p className={classes.popoverTitle}>Max Loss</p>
+                      <CustomTextField
+                        classes={{ root: classes.input }}
+                        value={allowMaxLoss}
+                        placeholder='Allow loss percent'
+                        maxEndAdornment
+                        onMaxClick={() => setAllowMaxLoss("50")}
+                        onChange={event => {
+                          const value = event.target.value
+                          setAllowMaxLoss(value)
+                        }}
+                        error={!isUndefined(isValidAllowLossFlag) && !isValidAllowLossFlag}
+                      />
+                    </GridItem>
+                    <GridItem xs={12} sm={12} md={12} lg={12}>
+                      <p className={classes.popoverTitle}>Slippage</p>
+                      <CustomTextField
+                        classes={{ root: classes.input }}
+                        value={slipper}
+                        placeholder='Allow slipper percent'
+                        maxEndAdornment
+                        onMaxClick={() => setSlipper("45")}
+                        onChange={event => {
+                          const value = event.target.value
+                          setSlipper(value)
+                        }}
+                        error={!isUndefined(isValidSlipperFlag) && !isValidSlipperFlag}
+                      />
+                    </GridItem>
+                  </GridContainer>
+                </Box>
+              </Popover>
+            </div>
+          )}
+        </PopupState>
+      </div>
       <GridContainer className={classes.withdrawContainer}>
         <GridItem xs={12} sm={12} md={12} lg={12}>
           <p className={classes.estimateText}>From</p>
@@ -706,7 +785,7 @@ export default function Withdraw ({
           </div>
         </GridItem>
         <GridItem xs={12} sm={12} md={12} lg={12}>
-          <p className={classes.estimateText}>Balance: 1231232.1232</p>
+          <p className={classes.estimateText}>Balance: {toFixed(ethiBalance, BigNumber.from(10).pow(ethiDecimals))}</p>
         </GridItem>
       </GridContainer>
       <GridContainer className={classes.outputContainer}>
@@ -715,16 +794,16 @@ export default function Withdraw ({
         </GridItem>
         <GridItem xs={12} sm={12} md={12} lg={12}>
           <div className={classes.selectorlWrapper}>
-            <p>
+            <p className={classes.estimateBalanceTitle}>
               ETH
-              <span style={{ float: "right" }} className={classes.estimateText}>
+              <span style={{ float: "right" }} className={classes.estimateBalanceNum}>
                 0
               </span>
             </p>
           </div>
         </GridItem>
         <GridItem xs={12} sm={12} md={12} lg={12}>
-          <p className={classes.estimateText}>Balance: 0</p>
+          {renderEstimate()}
         </GridItem>
         {isEmpty(VAULT_ADDRESS) && (
           <GridItem xs={12} sm={12} md={12} lg={12}>
@@ -749,7 +828,7 @@ export default function Withdraw ({
                 placement='top'
                 title={`${redeemFeeBpsPercent}% withdrawal fee of the principal.`}
               >
-                <InfoIcon classes={{ root: classes.labelToolTipIcon }} style={{ right: "-5px", left: "auto" }} />
+                <InfoIcon style={{ marginLeft: "0.5rem" }} />
               </Tooltip>
             </Button>
           </div>
