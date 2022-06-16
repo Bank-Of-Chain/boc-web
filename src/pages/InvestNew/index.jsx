@@ -326,6 +326,8 @@ function Invest (props) {
                 VAULT_ADDRESS={VAULT_ADDRESS}
                 abi_version={abi_version}
                 toBalance={toBalance}
+                vaultBufferBalance={vaultBufferBalance}
+                vaultBufferDecimals={vaultBufferDecimals}
               />
             </div>
           )}

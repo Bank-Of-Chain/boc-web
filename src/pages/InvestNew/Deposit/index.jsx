@@ -67,7 +67,8 @@ export default function Deposit ({
   IERC20_ABI,
   VAULT_ADDRESS,
   abi_version,
-  toBalance,
+  vaultBufferBalance,
+  vaultBufferDecimals,
 }) {
   const classes = useStyles()
   const dispatch = useDispatch()
@@ -414,7 +415,7 @@ export default function Deposit ({
               </span>
             </p>
             <p className={classes.estimateText}>
-              Balance: <span>{formatBalance(toBalance, usdiDecimals)}</span>
+              Balance: <span>{formatBalance(vaultBufferBalance, vaultBufferDecimals)}</span>
             </p>
           </GridItem>
         ) : (
@@ -576,7 +577,7 @@ export default function Deposit ({
                 Continue
               </Button>
               <Button
-                style={{ marginLeft: 20, borderRadius: 12 }}
+                style={{ marginLeft: 20 }}
                 color='danger'
                 onClick={() => setIsOpenEstimateModal(false)}
               >
@@ -592,16 +593,7 @@ export default function Deposit ({
         aria-labelledby='simple-modal-title'
         aria-describedby='simple-modal-description'
       >
-        <Paper
-          elevation={3}
-          style={{
-            padding: 20,
-            minWidth: 430,
-            color: "rgba(255,255,255, 0.87)",
-            border: "1px solid",
-            background: "#150752",
-          }}
-        >
+        <Paper elevation={3} className={classes.depositModal}>
           <div className={classes.modalBody}>
             <CircularProgress color='inherit' />
             <p>On Deposit...</p>
