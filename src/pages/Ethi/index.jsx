@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useState, useEffect, Fragment } from "react"
+import React, { useState, useEffect } from "react"
 import classNames from "classnames"
 import { makeStyles } from "@material-ui/core/styles"
 import { useHistory } from "react-router-dom"
@@ -11,7 +11,6 @@ import List from "@material-ui/core/List"
 import ListItem from "@material-ui/core/ListItem"
 import ListItemIcon from "@material-ui/core/ListItemIcon"
 import ListItemText from "@material-ui/core/ListItemText"
-import ForwardIcon from "@material-ui/icons/Forward"
 import SwapHorizIcon from "@material-ui/icons/SwapHoriz"
 import AccountBalanceWalletIcon from "@material-ui/icons/AccountBalanceWallet"
 import SaveAltIcon from "@material-ui/icons/SaveAlt"
@@ -26,19 +25,17 @@ import { useDispatch } from "react-redux"
 import { warmDialog } from "./../../reducers/meta-reducer"
 
 // === constants === //
-import { CHAIN_BROWSER_URL, NET_WORKS, VAULTS } from "../../constants"
+import { NET_WORKS } from "../../constants"
 import { ETH_ADDRESS, ETH_DECIMALS } from "../../constants/token"
 
 // === Utils === //
-import { toFixed, formatBalance } from "../../helpers/number-format"
-import map from "lodash/map"
+import { formatBalance } from "../../helpers/number-format"
 import isEmpty from "lodash/isEmpty"
 import last from "lodash/last"
 import noop from "lodash/noop"
 import find from "lodash/find"
 import * as ethers from "ethers"
 import useVersionWapper from "../../hooks/useVersionWapper"
-import useMediaQuery from "@material-ui/core/useMediaQuery"
 import { addToken } from "../../helpers/wallet"
 
 // === Styles === //
@@ -51,7 +48,6 @@ function Ethi (props) {
   const classes = useStyles()
   const dispatch = useDispatch()
   const history = useHistory()
-  const isMd = useMediaQuery("(min-width: 768px)")
 
   const {
     address,

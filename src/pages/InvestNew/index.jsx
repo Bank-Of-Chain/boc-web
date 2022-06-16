@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useState, useEffect, Fragment } from "react"
+import React, { useState, useEffect } from "react"
 import classNames from "classnames"
 import { makeStyles } from "@material-ui/core/styles"
 import { useHistory } from "react-router-dom"
@@ -38,7 +38,6 @@ import noop from "lodash/noop"
 import find from "lodash/find"
 import * as ethers from "ethers"
 import useVersionWapper from "../../hooks/useVersionWapper"
-import useMediaQuery from "@material-ui/core/useMediaQuery"
 import { addToken } from "../../helpers/wallet"
 import { getLastPossibleRebaseTime } from "../../helpers/time-util"
 
@@ -53,7 +52,6 @@ function Invest (props) {
   const dispatch = useDispatch()
   const history = useHistory()
 
-  const isMd = useMediaQuery("(min-width: 768px)")
   const {
     address,
     userProvider,
