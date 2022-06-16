@@ -16,7 +16,7 @@ import ListItem from "@material-ui/core/ListItem"
 import AccountBalanceWalletOutlinedIcon from "@material-ui/icons/AccountBalanceWalletOutlined";
 import ExitToAppOutlinedIcon from "@material-ui/icons/ExitToAppOutlined";
 import FileCopyOutlinedIcon from "@material-ui/icons/FileCopyOutlined";
-import SwapHorizontalCircleOutlinedIcon from "@material-ui/icons/SwapHorizontalCircleOutlined";
+import PaymentOutlinedIcon from "@material-ui/icons/PaymentOutlined";
 
 // core components
 import Button from "../CustomButtons/Button"
@@ -218,7 +218,7 @@ export default function HeaderLinks (props) {
                       <a>Copy Address</a>
                     </div>,
                     <div onClick={handleClickConnect} className={classes.dropdownLink}>
-                      <SwapHorizontalCircleOutlinedIcon className={classes.dropdownLinkIcon} />
+                      <PaymentOutlinedIcon className={classes.dropdownLinkIcon} />
                       <a>Change Wallet</a>
                     </div>,
                     <div onClick={disconnect} className={classes.dropdownLink}>
