@@ -1,4 +1,5 @@
 import { container } from "../../assets/jss/material-kit-react.js"
+import { gradientText } from "../../assets/jss/common.js"
 
 const componentsStyle = theme => ({
   container: {
@@ -39,10 +40,15 @@ const componentsStyle = theme => ({
   symbol: {
     color: "#A68EFD",
     marginLeft: "1rem",
+    ...gradientText
   },
   footer: {},
   item: {
     color: "#fff",
+    marginBottom: 20,
+    "& .MuiListItemIcon-root": {
+      minWidth: "38px"
+    }
   },
   centerItem: {
     width: "630px",
@@ -57,7 +63,7 @@ const componentsStyle = theme => ({
     padding: "2.8125rem 2.4375rem",
     background: "linear-gradient(111.68deg, rgba(87, 97, 125, 0.2) 7.59%, rgba(255, 255, 255, 0.078) 102.04%)",
     color: "#fff",
-    borderRadius: 6,
+    borderRadius: "1.25rem",
   },
   check: {
     color: "#A68EFE",
@@ -65,10 +71,12 @@ const componentsStyle = theme => ({
   balanceCardValue: {
     display: "flex",
     alignItems: "center",
-    justifyContent: "center",
+    justifyContent: "flex-start",
     height: 30,
     lineHeight: "30px",
     fontSize: 26,
+    fontWeight: "bold",
+    fontFamily: "DM Sans",
     color: "#fff",
     marginBottom: 8,
   },
