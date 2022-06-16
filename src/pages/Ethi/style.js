@@ -59,7 +59,7 @@ const componentsStyle = theme => ({
     padding: "2.8125rem 2.4375rem",
     background: "linear-gradient(111.68deg, rgba(87, 97, 125, 0.2) 7.59%, rgba(255, 255, 255, 0.078) 102.04%)",
     color: "#fff",
-    borderRadius: 6,
+    borderRadius: "1.25rem",
   },
   check: {
     color: "#A68EFE",
@@ -67,7 +67,7 @@ const componentsStyle = theme => ({
   balanceCardValue: {
     display: "flex",
     alignItems: "center",
-    justifyContent: "center",
+    justifyContent: "flex-start",
     height: 30,
     lineHeight: "30px",
     fontSize: 26,
