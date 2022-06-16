@@ -1,4 +1,5 @@
 import { container } from "../../assets/jss/material-kit-react.js"
+import { gradientText } from "../../assets/jss/common.js"
 
 const componentsStyle = theme => ({
   container: {
@@ -32,6 +33,7 @@ const componentsStyle = theme => ({
   symbol: {
     color: "#A68EFD",
     marginLeft: "1rem",
+    ...gradientText
   },
   balance: {
     marginTop: "0.5rem",
@@ -70,6 +72,8 @@ const componentsStyle = theme => ({
     height: 30,
     lineHeight: "30px",
     fontSize: 26,
+    fontWeight: "bold",
+    fontFamily: "DM Sans",
     color: "#fff",
     marginBottom: 8,
   },
