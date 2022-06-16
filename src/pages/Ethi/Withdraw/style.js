@@ -120,11 +120,12 @@ const componentsStyle = theme => ({
     marginLeft: 16,
   },
   widthdrawLoadingPaper: {
-    padding: 20,
-    minWidth: 650,
-    color: "rgba(255,255,255, 0.87)",
-    border: "1px solid",
-    background: "#150752",
+    padding: "1rem",
+    maxWidth: "500px",
+    color: "rgba(255, 255, 255, 0.87)",
+    border: "1px solid #A68EFE",
+    backgroundColor: "#000",
+    borderRadius: "1rem",
   },
   estimateBalanceTitle: {
     fontSize: "1.625rem",
@@ -156,6 +157,9 @@ const componentsStyle = theme => ({
     color: "#A0A0A0",
     margin: 0,
     padding: "0.5rem 0",
+  },
+  root: {
+    padding: "1.5rem 0",
   },
 })
 

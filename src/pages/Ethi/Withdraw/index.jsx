@@ -197,7 +197,7 @@ export default function Withdraw ({
               exchangeParam: bestSwapInfo,
             }
           } catch (error) {
-            console.log('error=', error)
+            console.log("error=", error)
             return
           }
         }),
@@ -861,18 +861,16 @@ export default function Withdraw ({
                 <WarningIcon style={{ verticalAlign: "bottom" }}></WarningIcon>&nbsp;&nbsp;&nbsp;{withdrawError.message}
               </p>
             )}
-            <p>
-              <Button
-                color='danger'
-                onClick={() => {
-                  setIsWithdrawLoading(false)
-                  setWithdrawError({})
-                  setCurrentStep(0)
-                }}
-              >
-                Cancel
-              </Button>
-            </p>
+            <Button
+              color='danger'
+              onClick={() => {
+                setIsWithdrawLoading(false)
+                setWithdrawError({})
+                setCurrentStep(0)
+              }}
+            >
+              Cancel
+            </Button>
           </div>
         </Paper>
       </Modal>
