@@ -46,6 +46,10 @@ const componentsStyle = theme => ({
   footer: {},
   item: {
     color: "#fff",
+    marginBottom: 20,
+    "& .MuiListItemIcon-root": {
+      minWidth: "38px"
+    }
   },
   centerItem: {
     width: "630px",
