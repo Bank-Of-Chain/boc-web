@@ -20,14 +20,16 @@ import UndoIcon from "@material-ui/icons/Undo"
 import Deposit from "./Deposit"
 import Withdraw from "./Withdraw"
 
-import { useDispatch } from "react-redux"
+import { useSelector, useDispatch } from "react-redux"
 
 // === Reducers === //
 import { warmDialog } from "./../../reducers/meta-reducer"
+import { setCurrentTab } from "./../../reducers/invest-reducer"
 
 // === constants === //
 import { CHAIN_BROWSER_URL, NET_WORKS, VAULTS } from "../../constants"
 import { ETH_ADDRESS, ETH_DECIMALS } from "../../constants/token"
+import { INVEST_TAB } from "../../constants/invest"
 
 // === Utils === //
 import { toFixed, formatBalance } from "../../helpers/number-format"
@@ -73,7 +75,8 @@ function Ethi (props) {
   const [beforeTotalValue, setBeforeTotalValue] = useState(BigNumber.from(0))
   const [totalValue, setTotalValue] = useState(BigNumber.from(0))
 
-  const [current, setCurrent] = useState(2)
+  const current = useSelector(state => state.investReducer.currentTab)
+  const setCurrent = (tab) => dispatch(setCurrentTab(tab))
 
   // 载入账户数据
   const loadBanlance = () => {
@@ -163,7 +166,7 @@ function Ethi (props) {
       <GridContainer spacing={0} style={{ paddingTop: "100px" }}>
         <GridItem xs={3} sm={3} md={3} style={{ paddingLeft: "3rem" }}>
           <List>
-            <ListItem key='My Account' button className={classNames(classes.item)} onClick={() => setCurrent(0)}>
+            <ListItem key='My Account' button className={classNames(classes.item)} onClick={() => setCurrent(INVEST_TAB.account)}>
               <ListItemIcon>
                 <AccountBalanceWalletIcon style={{ color: current === 0 ? "#A68EFE" : "#fff" }} />
               </ListItemIcon>
@@ -176,14 +179,14 @@ function Ethi (props) {
               key='Deposit'
               button
               className={classNames(classes.item, current === 1 && classes.check)}
-              onClick={() => setCurrent(1)}
+              onClick={() => setCurrent(INVEST_TAB.deposit)}
             >
               <ListItemIcon>
                 <SaveAltIcon style={{ color: current === 1 ? "#A68EFE" : "#fff" }} />
               </ListItemIcon>
               <ListItemText primary={"Deposit"} className={classNames(current === 1 ? classes.check : classes.text)} />
             </ListItem>
-            <ListItem key='Withdraw' button className={classNames(classes.item)} onClick={() => setCurrent(2)}>
+            <ListItem key='Withdraw' button className={classNames(classes.item)} onClick={() => setCurrent(INVEST_TAB.withdraw)}>
               <ListItemIcon>
                 <UndoIcon style={{ color: current === 2 ? "#A68EFE" : "#fff" }} />
               </ListItemIcon>

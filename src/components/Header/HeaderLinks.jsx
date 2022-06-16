@@ -4,6 +4,7 @@ import classNames from "classnames"
 import { useDispatch } from "react-redux"
 import copy from "copy-to-clipboard"
 import { warmDialog } from "../../reducers/meta-reducer"
+import { setCurrentTab } from "../../reducers/invest-reducer"
 
 import { makeStyles } from "@material-ui/core/styles"
 
@@ -33,6 +34,7 @@ import { isInMobileWalletApp, isInMobileH5 } from "../../helpers/plugin-util"
 
 // === Constants === //
 import { NET_WORKS, DASHBOARD_URL, DOCUMENT_URL, CHAIN_ID, LEGACYS } from "./../../constants"
+import { INVEST_TAB } from "./../../constants/invest"
 
 const CHAIN_SELECTOR_SHOW_ROUTER = ["#/mutils"]
 
@@ -107,6 +109,10 @@ export default function HeaderLinks (props) {
       nextChainId = "1"
     }
     return `${DASHBOARD_URL}/#/?chain=${nextChainId}&vault=${nextVault}`
+  }
+
+  const handleGoToAccount = () => {
+    dispatch(setCurrentTab(INVEST_TAB.account))
   }
 
   return (
@@ -203,7 +209,7 @@ export default function HeaderLinks (props) {
                     className: `${classes.navLink} ${classes.colorfulLink} ${classes.accountLink}`,
                   }}
                   dropdownList={[
-                    <div className={classes.dropdownLink}>
+                    <div className={classes.dropdownLink} onClick={handleGoToAccount}>
                       <AccountBalanceWalletOutlinedIcon className={classes.dropdownLinkIcon} />
                       <a>My Account</a>
                     </div>,
