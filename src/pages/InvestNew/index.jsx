@@ -23,11 +23,13 @@ import Deposit from "./Deposit"
 import Withdraw from "./Withdraw"
 
 // === Reducers === //
-import { useDispatch } from "react-redux"
+import { useDispatch, useSelector } from "react-redux"
 import { warmDialog } from "./../../reducers/meta-reducer"
+import { setCurrentTab } from "./../../reducers/invest-reducer"
 
 // === constants === //
 import { USDT_ADDRESS, USDC_ADDRESS, DAI_ADDRESS, NET_WORKS, CHAIN_ID } from "../../constants"
+import { INVEST_TAB } from "../../constants/invest"
 
 // === Utils === //
 import { formatBalance } from "../../helpers/number-format"
@@ -81,7 +83,8 @@ function Invest (props) {
   const [vaultBufferBalance, setVaultBufferBalance] = useState(BigNumber.from(0))
   const [vaultBufferDecimals, setVaultBufferDecimals] = useState(0)
 
-  const [current, setCurrent] = useState(0)
+  const current = useSelector(state => state.investReducer.currentTab)
+  const setCurrent = (tab) => dispatch(setCurrentTab(tab))
 
   const lastRebaseTime = getLastPossibleRebaseTime()
 
@@ -212,7 +215,7 @@ function Invest (props) {
       <GridContainer spacing={0} style={{ paddingTop: "100px" }}>
         <GridItem xs={3} sm={3} md={3} style={{ padding: "0 3rem" }}>
           <List>
-            <ListItem key='My Account' button className={classNames(classes.item)} onClick={() => setCurrent(0)}>
+            <ListItem key='My Account' button className={classNames(classes.item)} onClick={() => setCurrent(INVEST_TAB.account)}>
               <ListItemIcon>
                 <AccountBalanceWalletIcon style={{ color: current === 0 ? "#A68EFE" : "#fff" }} />
               </ListItemIcon>
@@ -225,7 +228,7 @@ function Invest (props) {
               key='Deposit'
               button
               className={classNames(classes.item, current === 1 && classes.check)}
-              onClick={() => setCurrent(1)}
+              onClick={() => setCurrent(INVEST_TAB.deposit)}
             >
               <ListItemIcon>
                 <SaveAltIcon style={{ color: current === 1 ? "#A68EFE" : "#fff" }} />
@@ -236,7 +239,7 @@ function Invest (props) {
               key='Withdraw'
               button
               className={classNames(classes.item, current === 2 && classes.check)}
-              onClick={() => setCurrent(2)}
+              onClick={() => setCurrent(INVEST_TAB.withdraw)}
             >
               <ListItemIcon>
                 <UndoIcon style={{ color: current === 2 ? "#A68EFE" : "#fff" }} />
