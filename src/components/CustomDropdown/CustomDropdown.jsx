@@ -94,6 +94,7 @@ export default function CustomDropdown(props) {
           aria-owns={anchorEl ? "menu-list" : null}
           aria-haspopup="true"
           {...buttonProps}
+          className={classNames(buttonProps.className, classes.dropdownTrigger)}
         >
           {icon}
           {buttonText && isFunction(buttonText) ? buttonText() : buttonText}
