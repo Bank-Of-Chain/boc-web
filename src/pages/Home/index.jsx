@@ -1,18 +1,16 @@
 import React from "react"
 import { makeStyles } from "@material-ui/core/styles"
 
-// === Constants === //
-import { NET_WORKS } from "./../../constants"
-
 // === Components === //
 import ProductSection from "./Sections/ProductSection"
 import AuditedSection from "./Sections/AuditedSection"
 import AmmSection from "./Sections/AmmSection"
+import YieldSection from "./Sections/YieldSection"
 import LendingSection from "./Sections/LendingSection"
+import RoadMapSection from "./Sections/RoadMapSection"
 import GridContainer from "../../components/Grid/GridContainer"
 import GridItem from "../../components/Grid/GridItem"
 import Button from "../../components/CustomButtons/Button"
-import Chains from "../../components/Chains/Chains"
 
 // === Styles === //
 import styles from "./landingPage"
@@ -20,41 +18,32 @@ import styles from "./landingPage"
 const useStyles = makeStyles(styles)
 
 export default function Home (props) {
-  const { changeNetwork } = props
   const classes = useStyles()
 
   return (
     <div className={classes.container}>
       <GridContainer>
-        <GridItem xs={12} sm={12} md={12} style={{ textAlign: "left", marginBottom: 0 }}>
-          <h1 className={classes.title}>The Multichain Yield Optimizer</h1>
+        <GridItem xs={12} sm={12} md={12} className={classes.grid}>
+          <h1 className={classes.title}>The Multichain</h1>
+          <h1 className={classes.title}>Yield Optimizer</h1>
+          <h4 className={classes.text} style={{ marginTop: 40 }}>BOC is a DeFi protocol that</h4>
           <h4 className={classes.text}>
-            BOC is a DeFi protocol that provides the best long-term <b><strong>risk-free</strong></b> return
+            provides the best long-term
+            <b> risk-free </b>
+            return
           </h4>
-          <h2 style={{ marginBottom: 0 }}>
-            Source Of Yield:
-          </h2>
-          <ul className={classes.ull}>
-            <li>Market-making fee</li>
-            <li>Interest from over-collateralized lending</li>
-            <li>Government token rewards</li>
-          </ul>
-          <div className={classes.earth} style={{ textAlign: "right", display: "none" }}>
-            <Button className={classes.inverst} color='colorfull' size='lg' href='/#/invest'>
-              inverst
+          <p className={classes.text} style={{ marginTop: 40 }}>
+            <Button className={classes.invest} color='colorfull-border' size='sm' href='/#/mutils'>
+              Launch App
             </Button>
-            <Chains
-              maskStyle={{ display: "inline-block", paddingLeft: 10 }}
-              array={NET_WORKS}
-              handleClick={changeNetwork}
-            />
-            <p>You may need to manually switch network via your wallet.</p>
-          </div>
+          </p>
         </GridItem>
       </GridContainer>
       <LendingSection />
       <ProductSection />
+      <YieldSection />
       <AmmSection />
+      <RoadMapSection />
       <AuditedSection />
     </div>
   )

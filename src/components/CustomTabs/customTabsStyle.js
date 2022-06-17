@@ -15,31 +15,32 @@ const customTabsStyle = {
     minHeight: "unset !important",
   },
   tabRootButton: {
-    background: 'transparent',
-    minHeight: "unset !important",
-    minWidth: "unset !important",
-    width: "unset !important",
-    height: "unset !important",
-    maxWidth: "unset !important",
-    maxHeight: "unset !important",
-    padding: "10px 15px",
-    borderRadius: "3px",
-    lineHeight: "24px",
-    border: "0 !important",
-    color: "#fff !important",
-    marginLeft: "4px",
+    width: "17.5rem",
+    maxWidth: "17.5rem",
+    padding: "0.625rem 1rem",
+    lineHeight: "1.5rem",
+    border: "2px solid #A68EFE",
+    borderRight: 0,
     fontWeight: "500",
-    fontSize: "12px",
+    fontSize: "1rem",
+    color: "#A68EFE",
+    opacity: 1,
+    "&:first-child": {
+      borderRadius: "0.25rem 0 0 0.25rem",
+    },
     "&:last-child": {
+      borderRight: "2px solid #A68EFE",
       marginLeft: "0px",
+      borderRadius: "0 0.25rem 0.25rem 0",
     },
   },
   tabSelected: {
-    transition: "0.2s background-color 0.1s",
+    background: "#A68EFE",
+    color: "#313036",
   },
   tabWrapper: {
-    fontSize: 20,
-    whiteSpace: 'nowrap',
+    fontSize: "1rem",
+    whiteSpace: "nowrap",
     margin: ".3125rem 1px",
     display: "inline-block",
     minHeight: "unset !important",
@@ -55,7 +56,8 @@ const customTabsStyle = {
     "&,& *": {
       letterSpacing: "normal !important",
     },
+    textTransform: "none",
   },
-};
+}
 
-export default customTabsStyle;
+export default customTabsStyle

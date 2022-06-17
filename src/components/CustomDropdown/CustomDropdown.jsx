@@ -14,6 +14,7 @@ import Grow from "@material-ui/core/Grow";
 import Divider from "@material-ui/core/Divider";
 import Icon from "@material-ui/core/Icon";
 import Popper from "@material-ui/core/Popper";
+import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 
 // core components
 import Button from "../CustomButtons/Button";
@@ -87,17 +88,17 @@ export default function CustomDropdown(props) {
   }
   return (
     <div>
-      <div>
+      <div onClick={handleClick}>
         <Button
           aria-label="Notifications"
           aria-owns={anchorEl ? "menu-list" : null}
           aria-haspopup="true"
           {...buttonProps}
-          onClick={handleClick}
+          className={classNames(buttonProps.className, classes.dropdownTrigger)}
         >
           {icon}
           {buttonText && isFunction(buttonText) ? buttonText() : buttonText}
-          {caret ? <b className={caretClasses} /> : null}
+          {caret ? <ExpandMoreIcon className={caretClasses} /> : null}
         </Button>
       </div>
       <Popper

@@ -1,65 +1,52 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect } from "react"
-// nodejs library that concatenates classes
 import classNames from "classnames"
-// react components for routing our app without refresh
-// @material-ui/core components
 import { makeStyles } from "@material-ui/core/styles"
 import { useHistory } from "react-router-dom"
-import CountTo from "react-count-to"
-// core components
 import GridContainer from "../../components/Grid/GridContainer"
 import GridItem from "../../components/Grid/GridItem"
-// sections for this page
-import Table from "@material-ui/core/Table"
-import TableBody from "@material-ui/core/TableBody"
-import TableCell from "@material-ui/core/TableCell"
-import TableContainer from "@material-ui/core/TableContainer"
-import TableHead from "@material-ui/core/TableHead"
-import TableRow from "@material-ui/core/TableRow"
-import Paper from "@material-ui/core/Paper"
 import Card from "@material-ui/core/Card"
-import Tabs from "@material-ui/core/Tabs"
-import Tab from "@material-ui/core/Tab"
 import AddCircleOutlineIcon from "@material-ui/icons/AddCircleOutline"
-import TabPanel from "../../components/TabPanel"
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemText from '@material-ui/core/ListItemText';
-import ForwardIcon from '@material-ui/icons/Forward';
+import List from "@material-ui/core/List"
+import ListItem from "@material-ui/core/ListItem"
+import ListItemIcon from "@material-ui/core/ListItemIcon"
+import ListItemText from "@material-ui/core/ListItemText"
+import SwapHorizIcon from "@material-ui/icons/SwapHoriz"
+import AccountBalanceWalletIcon from "@material-ui/icons/AccountBalanceWallet"
+import SaveAltIcon from "@material-ui/icons/SaveAlt"
+import UndoIcon from "@material-ui/icons/Undo"
+import Tooltip from "@material-ui/core/Tooltip"
+import InfoIcon from "@material-ui/icons/Info"
 
 import Deposit from "./Deposit"
 import Withdraw from "./Withdraw"
 
-import { useDispatch } from "react-redux"
+import { useSelector, useDispatch } from "react-redux"
 
 // === Reducers === //
 import { warmDialog } from "./../../reducers/meta-reducer"
+import { setCurrentTab } from "./../../reducers/invest-reducer"
 
 // === constants === //
-import { CHAIN_BROWSER_URL, NET_WORKS, VAULTS } from "../../constants"
+import { NET_WORKS } from "../../constants"
 import { ETH_ADDRESS, ETH_DECIMALS } from "../../constants/token"
+import { INVEST_TAB } from "../../constants/invest"
 
 // === Utils === //
-import { toFixed, formatBalance } from "../../helpers/number-format"
-import map from "lodash/map"
+import moment from "moment"
+import { formatBalance } from "../../helpers/number-format"
 import isEmpty from "lodash/isEmpty"
 import last from "lodash/last"
 import noop from "lodash/noop"
 import find from "lodash/find"
 import * as ethers from "ethers"
 import useVersionWapper from "../../hooks/useVersionWapper"
-import useMediaQuery from '@material-ui/core/useMediaQuery'
 import { addToken } from "../../helpers/wallet"
+import { getLastPossibleRebaseTime } from "../../helpers/time-util"
 
 // === Styles === //
 import styles from "./style"
 
-const TABS = {
-  DEPOSIT: "Deposit",
-  WITHDRAW: "Withdraw",
-}
 const useStyles = makeStyles(styles)
 const { BigNumber } = ethers
 
@@ -67,9 +54,8 @@ function Ethi (props) {
   const classes = useStyles()
   const dispatch = useDispatch()
   const history = useHistory()
-  const isMd = useMediaQuery('(min-width: 768px)')
 
-  const { 
+  const {
     address,
     userProvider,
     ETHI_ADDRESS,
@@ -78,7 +64,9 @@ function Ethi (props) {
     IERC20_ABI,
     EXCHANGE_AGGREGATOR_ABI,
     EXCHANGE_ADAPTER_ABI,
-    PRICE_ORCALE_ABI
+    PRICE_ORCALE_ABI,
+    VAULT_BUFFER_ADDRESS,
+    VAULT_BUFFER_ABI,
   } = props
 
   const [ethBalance, setEthBalance] = useState(BigNumber.from(0))
@@ -89,18 +77,28 @@ function Ethi (props) {
   const [beforeTotalValue, setBeforeTotalValue] = useState(BigNumber.from(0))
   const [totalValue, setTotalValue] = useState(BigNumber.from(0))
 
-  const [tab, setTab] = useState(TABS.DEPOSIT)
+  const [vaultBufferBalance, setVaultBufferBalance] = useState(BigNumber.from(0))
+  const [vaultBufferDecimals, setVaultBufferDecimals] = useState(0)
+
+  const lastRebaseTime = getLastPossibleRebaseTime()
+
+  const current = useSelector(state => state.investReducer.currentTab)
+  const setCurrent = tab => dispatch(setCurrentTab(tab))
 
   // 载入账户数据
   const loadBanlance = () => {
     if (isEmpty(address) || isEmpty(userProvider)) {
       return
     }
+    // 如果abi版本等于beta-v1.5.9，则需要多查询vaultBuffer的账户余额
+    const vaultBufferContract = new ethers.Contract(VAULT_BUFFER_ADDRESS, VAULT_BUFFER_ABI, userProvider)
     const ethiContract = new ethers.Contract(ETHI_ADDRESS, IERC20_ABI, userProvider)
     Promise.all([
       userProvider.getBalance(address).then(setEthBalance),
       ethiContract.balanceOf(address).then(setEthiBalance),
       ethiContract.decimals().then(setEthiDecimals),
+      vaultBufferContract.balanceOf(address).then(setVaultBufferBalance),
+      vaultBufferContract.decimals().then(setVaultBufferDecimals)
     ]).catch(() => {
       dispatch(
         warmDialog({
@@ -168,163 +166,152 @@ function Ethi (props) {
     return ethiContract.totalSupply()
   }
 
-  const handleTabChange = (event, value) => setTab(value)
-
-  const handleAddETHi = () =>  {
+  const handleAddETHi = () => {
     addToken(ETHI_ADDRESS, "ETHi", 18)
   }
 
-  const net = find(NET_WORKS, (item) => item.chainId === props.selectedChainId) || NET_WORKS[0]
+  const net = find(NET_WORKS, item => item.chainId === props.selectedChainId) || NET_WORKS[0]
 
   return (
-    <div className={classNames(classes.main, classes.mainRaised)}>
-      <div className={classes.container}>
-        <GridContainer className={classNames(classes.center)}>
-          <div className={classes.slider} style={isMd ? {} : { position: 'inherit', width: '94%', marginBottom: '20px' }}>
-            <List>
-              {
-                map(VAULTS, item => {
-                  const { path } = item
-                  const isCheck = window.location.hash === path
-                  if(item.isOpen){
-                    return <ListItem key={item.id} button className={classNames( classes.item, isCheck && classes.check )} onClick={() => history.push(path.slice(1))}>
-                      <ListItemText primary={item.name} className={classNames( isCheck && classes.text )}  />
-                      { isCheck && <div className={classes.spliter}></div> }
-                      <ListItemIcon>
-                        { isCheck && <ForwardIcon color="primary" style={{ color: 'azure', marginLeft: 20 }} /> }
-                      </ListItemIcon>
-                    </ListItem>
-                  }
-                })
-              }
-            </List>
-          </div>
-          <GridItem xs={12} sm={12} md={8} className={classNames(classes.centerItem)}>
+    <div className={classes.container}>
+      <GridContainer spacing={0} style={{ paddingTop: "100px" }}>
+        <GridItem xs={3} sm={3} md={3} style={{ paddingLeft: "3rem" }}>
+          <List>
+            <ListItem
+              key='My Account'
+              button
+              className={classNames(classes.item)}
+              onClick={() => setCurrent(INVEST_TAB.account)}
+            >
+              <ListItemIcon>
+                <AccountBalanceWalletIcon style={{ color: current === 0 ? "#A68EFE" : "#fff" }} />
+              </ListItemIcon>
+              <ListItemText
+                primary={"My Account"}
+                className={classNames(current === 0 ? classes.check : classes.text)}
+              />
+            </ListItem>
+            <ListItem
+              key='Deposit'
+              button
+              className={classNames(classes.item, current === 1 && classes.check)}
+              onClick={() => setCurrent(INVEST_TAB.deposit)}
+            >
+              <ListItemIcon>
+                <SaveAltIcon style={{ color: current === 1 ? "#A68EFE" : "#fff" }} />
+              </ListItemIcon>
+              <ListItemText primary={"Deposit"} className={classNames(current === 1 ? classes.check : classes.text)} />
+            </ListItem>
+            <ListItem
+              key='Withdraw'
+              button
+              className={classNames(classes.item)}
+              onClick={() => setCurrent(INVEST_TAB.withdraw)}
+            >
+              <ListItemIcon>
+                <UndoIcon style={{ color: current === 2 ? "#A68EFE" : "#fff" }} />
+              </ListItemIcon>
+              <ListItemText primary={"Withdraw"} className={classNames(current === 2 ? classes.check : classes.text)} />
+            </ListItem>
+            <ListItem
+              key='Switch to USDi'
+              button
+              className={classNames(classes.item)}
+              onClick={() => history.push("/mutils")}
+            >
+              <ListItemIcon>
+                <SwapHorizIcon style={{ color: "#fff" }} />
+              </ListItemIcon>
+              <ListItemText primary={"Switch to USDi"} className={classNames(classes.text)} />
+            </ListItem>
+          </List>
+        </GridItem>
+        <GridItem xs={6} sm={6} md={6}>
+          {current === 0 && (
             <Card className={classes.balanceCard}>
               <div className={classes.balanceCardItem}>
-                <div
-                  className={classes.balanceCardValue}
-                >
+                <div className={classes.balanceCardValue}>
                   <span title={formatBalance(ethiBalance, ethiDecimals, { showAll: true })}>
-                    {`${formatBalance(ethiBalance, ethiDecimals)} ETHi`}
+                    {formatBalance(ethiBalance, ethiDecimals)}
                   </span>
+                  <span className={classes.symbol}>ETHi</span>
                   {userProvider && (
-                    <span title="Add token address to wallet">
+                    <span title='Add token address to wallet'>
                       <AddCircleOutlineIcon className={classes.addTokenIcon} onClick={handleAddETHi} fontSize='small' />
                     </span>
                   )}
                 </div>
-                <div className={classes.balanceCardLabel}>Balance</div>
+                <div className={classes.balanceCardValue} style={{ fontSize: "1rem" }}>
+                  <span title={formatBalance(vaultBufferBalance, vaultBufferDecimals, { showAll: true })}>
+                    {formatBalance(vaultBufferBalance, vaultBufferDecimals)}
+                    <span className={classes.symbol}>ETHi Ticket&nbsp;&nbsp;</span>
+                  </span>
+                  <Tooltip
+                    classes={{
+                      tooltip: classes.tooltip,
+                    }}
+                    placement='right'
+                    title={
+                      <span>
+                        The USDi ticket is automatically converted to ETHi. And was last executed in&nbsp;
+                        <span style={{ color: "red", fontWeight: "bold" }}>
+                          {moment(lastRebaseTime).format("yyyy-MM-DD HH:mm")}
+                        </span>
+                      </span>
+                    }
+                  >
+                    <InfoIcon style={{ fontSize: "1rem" }} />
+                  </Tooltip>
+                </div>
+                <div className={classes.balanceCardLabel}>AVAILABLE BALANCE</div>
               </div>
               <div className={classes.tokenInfo}>
                 {userProvider && (
-                  <a
-                    href={`${net.blockExplorer}/address/${ETHI_ADDRESS}`}
-                    target='_blank'
-                    rel='noopener noreferrer'
-                  >
-                    <img className={classes.scanToken} src={net.blockExplorerIcon} alt="wallet" />
+                  <a href={`${net.blockExplorer}/address/${ETHI_ADDRESS}`} target='_blank' rel='noopener noreferrer'>
+                    <img className={classes.scanToken} src={net.blockExplorerIcon} alt='wallet' />
                   </a>
                 )}
               </div>
             </Card>
-            <Card className={classes.investCard}>
-              <Tabs
-                value={tab}
-                onChange={handleTabChange}
-                classes={{
-                  root: classes.tabsRoot,
-                  indicator: classes.tabsIndicator,
-                }}
-                TabIndicatorProps={{ children: <span /> }}
-              >
-                {map(Object.keys(TABS), key => (
-                  <Tab
-                    key={key}
-                    label={TABS[key]}
-                    value={TABS[key]}
-                    classes={{
-                      root: classes.tabRoot,
-                      textColorInherit: classes.tabTextColor,
-                    }}
-                  />
-                ))}
-              </Tabs>
-              <TabPanel value={tab} index={TABS.DEPOSIT}>
-                <Deposit
-                  address={address}
-                  ethBalance={ethBalance}
-                  ethDecimals={ethDecimals}
-                  userProvider={userProvider}
-                  VAULT_ABI={VAULT_ABI}
-                  IERC20_ABI={IERC20_ABI}
-                  VAULT_ADDRESS={VAULT_ADDRESS}
-                  ETH_ADDRESS={ETH_ADDRESS}
-                />
-              </TabPanel>
-              <TabPanel value={tab} index={TABS.WITHDRAW}>
-                <Withdraw
-                  ethiBalance={ethiBalance}
-                  ethiDecimals={ethiDecimals}
-                  userProvider={userProvider}
-                  VAULT_ADDRESS={VAULT_ADDRESS}
-                  ETH_ADDRESS={ETH_ADDRESS}
-                  VAULT_ABI={VAULT_ABI}
-                  IERC20_ABI={IERC20_ABI}
-                  EXCHANGE_AGGREGATOR_ABI={EXCHANGE_AGGREGATOR_ABI}
-                  EXCHANGE_ADAPTER_ABI={EXCHANGE_ADAPTER_ABI}
-                  PRICE_ORCALE_ABI={PRICE_ORCALE_ABI}
-                />
-              </TabPanel>
-            </Card>
-          </GridItem>
-        </GridContainer>
-        <div
-          className={classNames(classes.detailWrapper, {
-            [classes.hidden]: isEmpty(userProvider),
-          })}
-        >
-          <p style={{ color: "#fff", letterSpacing: "0.01071em" }}>More Details</p>
-          <TableContainer component={Paper} style={{ borderRadius: 0 }}>
-            <Table className={classNames(classes.table)} aria-label='simple table'>
-              <TableHead>
-                <TableRow>
-                  <TableCell className={classNames(classes.tableCell)}>Vault Symbol</TableCell>
-                  <TableCell className={classNames(classes.tableCell)}>Vault Address</TableCell>
-                  <TableCell className={classNames(classes.tableCell)}>Total Supply</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                <TableRow>
-                  <TableCell className={classNames(classes.tableCell)} component='th' scope='row'>
-                    BOC_Vault
-                  </TableCell>
-                  <TableCell className={classNames(classes.tableCell)}>
-                    <a
-                      style={{ color: "rgb(105, 192, 255)" }}
-                      href={CHAIN_BROWSER_URL && `${CHAIN_BROWSER_URL}/address/${VAULT_ADDRESS}`}
-                      target='_blank'
-                      rel='noopener noreferrer'
-                    >
-                      {VAULT_ADDRESS}
-                    </a>
-                  </TableCell>
-                  <TableCell className={classNames(classes.tableCell)}>
-                    <CountTo from={Number(beforeTotalValue.toBigInt())} to={Number(totalValue.toBigInt())} speed={3500}>
-                      {v => {
-                        return `${toFixed(v, BigNumber.from(10).pow(ethiDecimals), 6)} ETHi`
-                      }}
-                    </CountTo>
-                  </TableCell>
-                </TableRow>
-              </TableBody>
-            </Table>
-          </TableContainer>
-          
-        </div>
-      </div>
+          )}
+          {current === 1 && (
+            <div className={classes.wrapper}>
+              <Deposit
+                address={address}
+                ethBalance={ethBalance}
+                ethDecimals={ethDecimals}
+                ethiBalance={ethiBalance}
+                ethiDecimals={ethiDecimals}
+                userProvider={userProvider}
+                VAULT_ABI={VAULT_ABI}
+                IERC20_ABI={IERC20_ABI}
+                VAULT_ADDRESS={VAULT_ADDRESS}
+                ETH_ADDRESS={ETH_ADDRESS}
+                vaultBufferBalance={vaultBufferBalance}
+                vaultBufferDecimals={vaultBufferDecimals}
+              />
+            </div>
+          )}
+          {current === 2 && (
+            <div className={classes.wrapper}>
+              <Withdraw
+                ethiBalance={ethiBalance}
+                ethiDecimals={ethiDecimals}
+                userProvider={userProvider}
+                VAULT_ADDRESS={VAULT_ADDRESS}
+                ETH_ADDRESS={ETH_ADDRESS}
+                VAULT_ABI={VAULT_ABI}
+                IERC20_ABI={IERC20_ABI}
+                EXCHANGE_AGGREGATOR_ABI={EXCHANGE_AGGREGATOR_ABI}
+                EXCHANGE_ADAPTER_ABI={EXCHANGE_ADAPTER_ABI}
+                PRICE_ORCALE_ABI={PRICE_ORCALE_ABI}
+              />
+            </div>
+          )}
+        </GridItem>
+      </GridContainer>
     </div>
   )
 }
 
-export default useVersionWapper(Ethi, 'ethi')
+export default useVersionWapper(Ethi, "ethi")

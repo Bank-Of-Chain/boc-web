@@ -5,59 +5,47 @@ import { makeStyles } from "@material-ui/core/styles"
 import { useHistory } from "react-router-dom"
 
 // === Components === //
-import CountTo from "react-count-to"
 import GridContainer from "../../components/Grid/GridContainer"
 import GridItem from "../../components/Grid/GridItem"
-import Table from "@material-ui/core/Table"
-import TableBody from "@material-ui/core/TableBody"
-import TableCell from "@material-ui/core/TableCell"
-import TableContainer from "@material-ui/core/TableContainer"
-import TableHead from "@material-ui/core/TableHead"
-import TableRow from "@material-ui/core/TableRow"
-import Paper from "@material-ui/core/Paper"
 import Card from "@material-ui/core/Card"
-import Tabs from '@material-ui/core/Tabs'
-import Tab from '@material-ui/core/Tab'
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemText from '@material-ui/core/ListItemText';
-import ForwardIcon from '@material-ui/icons/Forward';
-import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline'
-import TabPanel from '../../components/TabPanel'
-import Deposit from './Deposit'
-import Withdraw from './Withdraw'
+import List from "@material-ui/core/List"
+import ListItem from "@material-ui/core/ListItem"
+import ListItemIcon from "@material-ui/core/ListItemIcon"
+import ListItemText from "@material-ui/core/ListItemText"
+import AddCircleOutlineIcon from "@material-ui/icons/AddCircleOutline"
 import Tooltip from "@material-ui/core/Tooltip"
 import InfoIcon from "@material-ui/icons/Info"
+import SwapHorizIcon from "@material-ui/icons/SwapHoriz"
+import AccountBalanceWalletIcon from "@material-ui/icons/AccountBalanceWallet"
+import SaveAltIcon from "@material-ui/icons/SaveAlt"
+import UndoIcon from "@material-ui/icons/Undo"
+import Deposit from "./Deposit"
+import Withdraw from "./Withdraw"
 
 // === Reducers === //
-import { useDispatch } from "react-redux"
+import { useDispatch, useSelector } from "react-redux"
 import { warmDialog } from "./../../reducers/meta-reducer"
+import { setCurrentTab } from "./../../reducers/invest-reducer"
 
 // === constants === //
-import { USDT_ADDRESS, USDC_ADDRESS, DAI_ADDRESS, CHAIN_BROWSER_URL, NET_WORKS, VAULTS, CHAIN_ID } from "../../constants"
+import { USDT_ADDRESS, USDC_ADDRESS, DAI_ADDRESS, NET_WORKS, CHAIN_ID } from "../../constants"
+import { INVEST_TAB } from "../../constants/invest"
 
 // === Utils === //
-import { toFixed, formatBalance } from "../../helpers/number-format"
+import { formatBalance } from "../../helpers/number-format"
 import moment from "moment"
-import map from "lodash/map"
 import isEmpty from "lodash/isEmpty"
 import last from "lodash/last"
 import noop from "lodash/noop"
-import find from 'lodash/find'
+import find from "lodash/find"
 import * as ethers from "ethers"
 import useVersionWapper from "../../hooks/useVersionWapper"
-import useMediaQuery from '@material-ui/core/useMediaQuery'
 import { addToken } from "../../helpers/wallet"
 import { getLastPossibleRebaseTime } from "../../helpers/time-util"
 
 // === Styles === //
 import styles from "./style"
 
-const TABS = {
-  DEPOSIT: 'Deposit',
-  WITHDRAW: 'Withdraw'
-}
 const useStyles = makeStyles(styles)
 const { BigNumber } = ethers
 
@@ -66,8 +54,20 @@ function Invest (props) {
   const dispatch = useDispatch()
   const history = useHistory()
 
-  const isMd = useMediaQuery('(min-width: 768px)')
-  const { address, userProvider, VAULT_ADDRESS, VAULT_ABI, USDI_ADDRESS, IERC20_ABI, EXCHANGE_AGGREGATOR_ABI, USDI_ABI, EXCHANGE_ADAPTER_ABI, VAULT_BUFFER_ADDRESS, VAULT_BUFFER_ABI, abi_version } = props
+  const {
+    address,
+    userProvider,
+    VAULT_ADDRESS,
+    VAULT_ABI,
+    USDI_ADDRESS,
+    IERC20_ABI,
+    EXCHANGE_AGGREGATOR_ABI,
+    USDI_ABI,
+    EXCHANGE_ADAPTER_ABI,
+    VAULT_BUFFER_ADDRESS,
+    VAULT_BUFFER_ABI,
+    abi_version,
+  } = props
   const [usdtBalance, setUsdtBalance] = useState(BigNumber.from(0))
   const [usdtDecimals, setUsdtDecimals] = useState(0)
   const [usdcBalance, setUsdcBalance] = useState(BigNumber.from(0))
@@ -83,7 +83,8 @@ function Invest (props) {
   const [vaultBufferBalance, setVaultBufferBalance] = useState(BigNumber.from(0))
   const [vaultBufferDecimals, setVaultBufferDecimals] = useState(0)
 
-  const [tab, setTab] = useState(TABS.DEPOSIT)
+  const current = useSelector(state => state.investReducer.currentTab)
+  const setCurrent = (tab) => dispatch(setCurrentTab(tab))
 
   const lastRebaseTime = getLastPossibleRebaseTime()
 
@@ -96,8 +97,8 @@ function Invest (props) {
     const usdiContract = new ethers.Contract(USDI_ADDRESS, USDI_ABI, userProvider)
 
     // 如果abi版本等于beta-v1.5.9，则需要多查询vaultBuffer的账户余额
-    if (abi_version === 'beta-v1.5.9') {
-      const vaultBufferContract = new ethers.Contract(VAULT_BUFFER_ADDRESS, VAULT_BUFFER_ABI, userProvider);
+    if (abi_version === "beta-v1.5.9") {
+      const vaultBufferContract = new ethers.Contract(VAULT_BUFFER_ADDRESS, VAULT_BUFFER_ABI, userProvider)
       vaultBufferContract.balanceOf(address).then(setVaultBufferBalance)
       vaultBufferContract.decimals().then(setVaultBufferDecimals)
     }
@@ -106,9 +107,12 @@ function Invest (props) {
       usdtContract.balanceOf(address).then(setUsdtBalance),
       usdcContract.balanceOf(address).then(setUsdcBalance),
       daiContract.balanceOf(address).then(setDaiBalance),
-      usdiContract.balanceOf(address).then(setToBalance).catch(noop),
+      usdiContract
+        .balanceOf(address)
+        .then(setToBalance)
+        .catch(noop),
       loadTotalAssets()
-        .then((afterTotalValue) => {
+        .then(afterTotalValue => {
           setTotalValue(afterTotalValue)
         })
         .catch(noop),
@@ -135,7 +139,7 @@ function Invest (props) {
     if (isEmpty(VAULT_ADDRESS)) return
     const loadTotalAssetsFn = () =>
       loadTotalAssets()
-        .then((afterTotalValue) => {
+        .then(afterTotalValue => {
           if (!afterTotalValue.eq(beforeTotalValue)) {
             setBeforeTotalValue(totalValue)
             setTotalValue(afterTotalValue)
@@ -183,7 +187,7 @@ function Invest (props) {
   }, [address, VAULT_ADDRESS, VAULT_ABI, userProvider])
 
   const loadTotalAssets = () => {
-    if (abi_version === 'beta-v1.5.9') {
+    if (abi_version === "beta-v1.5.9") {
       const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider)
       return vaultContract.totalAssetsIncludeVaultBuffer()
     }
@@ -191,183 +195,160 @@ function Invest (props) {
     return usdiContract.totalSupply()
   }
 
-  const handleTabChange = (event, value) => setTab(value)
-
-  const handleAddUSDi = () =>  {
+  const handleAddUSDi = () => {
     addToken(USDI_ADDRESS, "USDi", usdiDecimals)
   }
 
-  const changeRouter = (path) => {
+  const changeRouter = path => {
     let promise = Promise.resolve({})
-    if(path==="#/ethi" && CHAIN_ID !== 1) {
+    if (path === "#/ethi" && CHAIN_ID !== 1) {
       promise = props.changeNetwork(NET_WORKS[0])
     }
-    promise.then(() =>{
+    promise.then(() => {
       history.push(path.slice(1))
     })
   }
-  const net = find(NET_WORKS, (item) => item.chainId === props.selectedChainId) || NET_WORKS[0]
+  const net = find(NET_WORKS, item => item.chainId === props.selectedChainId) || NET_WORKS[0]
 
   return (
-    <div className={classNames(classes.main, classes.mainRaised)}>
-      <div className={classes.container}>
-        <GridContainer className={classNames(classes.center)}>
-          <div className={classes.slider} style={isMd ? {} : { position: 'inherit', width: '94%', marginBottom: '20px' }}>
-            <List>
-              {
-                map(VAULTS, item => {
-                  const { path } = item
-                  const isCheck = window.location.hash === path
-                  if(item.isOpen){
-                    return <ListItem key={item.id} button className={classNames(classes.item, isCheck && classes.check )} onClick={() => changeRouter(path)}>
-                      <ListItemText primary={item.name} className={classNames( isCheck && classes.text )} />
-                      { isCheck && <div className={classes.spliter}></div> }
-                      <ListItemIcon>
-                        { isCheck && <ForwardIcon color="primary" style={{color: 'azure', marginLeft: 20}} /> }
-                      </ListItemIcon>
-                    </ListItem>
-                  }
-                })
-              }
-            </List>
-          </div>
-          <GridItem xs={12} sm={12} md={8} className={classNames(classes.centerItem)}>
+    <div className={classes.container}>
+      <GridContainer spacing={0} style={{ paddingTop: "100px" }}>
+        <GridItem xs={3} sm={3} md={3} style={{ padding: "0 3rem" }}>
+          <List>
+            <ListItem key='My Account' button className={classNames(classes.item)} onClick={() => setCurrent(INVEST_TAB.account)}>
+              <ListItemIcon>
+                <AccountBalanceWalletIcon style={{ color: current === 0 ? "#A68EFE" : "#fff" }} />
+              </ListItemIcon>
+              <ListItemText
+                primary={"My Account"}
+                className={classNames(current === 0 ? classes.check : classes.text)}
+              />
+            </ListItem>
+            <ListItem
+              key='Deposit'
+              button
+              className={classNames(classes.item, current === 1 && classes.check)}
+              onClick={() => setCurrent(INVEST_TAB.deposit)}
+            >
+              <ListItemIcon>
+                <SaveAltIcon style={{ color: current === 1 ? "#A68EFE" : "#fff" }} />
+              </ListItemIcon>
+              <ListItemText primary={"Deposit"} className={classNames(current === 1 ? classes.check : classes.text)} />
+            </ListItem>
+            <ListItem
+              key='Withdraw'
+              button
+              className={classNames(classes.item, current === 2 && classes.check)}
+              onClick={() => setCurrent(INVEST_TAB.withdraw)}
+            >
+              <ListItemIcon>
+                <UndoIcon style={{ color: current === 2 ? "#A68EFE" : "#fff" }} />
+              </ListItemIcon>
+              <ListItemText primary={"Withdraw"} className={classNames(current === 2 ? classes.check : classes.text)} />
+            </ListItem>
+            <ListItem
+              key='Switch to ETHi'
+              button
+              className={classNames(classes.item, classes.check)}
+              onClick={() => changeRouter("#/ethi")}
+            >
+              <ListItemIcon>
+                <SwapHorizIcon style={{ color: "#fff" }} />
+              </ListItemIcon>
+              <ListItemText primary={"Switch to ETHi"} className={classNames(classes.text)} />
+            </ListItem>
+          </List>
+        </GridItem>
+        <GridItem xs={6} sm={6} md={6}>
+          {current === 0 && (
             <Card className={classes.balanceCard}>
               <div className={classes.balanceCardItem}>
                 <div className={classes.balanceCardValue}>
-                  <span title={formatBalance(toBalance, usdiDecimals, { showAll: true })}>{`${formatBalance(toBalance, usdiDecimals)} USDi`}</span>
+                  <span title={formatBalance(toBalance, usdiDecimals, { showAll: true })}>
+                    {formatBalance(toBalance, usdiDecimals)}
+                  </span>
+                  <span className={classes.symbol}>USDi</span>
                   {userProvider && (
-                    <span title="Add token address to wallet">
+                    <span title='Add token address to wallet'>
                       <AddCircleOutlineIcon className={classes.addTokenIcon} onClick={handleAddUSDi} fontSize='small' />
                     </span>
                   )}
                 </div>
-                {
-                  abi_version === 'beta-v1.5.9' && <div className={classes.balanceCardValue} style={{ fontSize: 15 }}>
-                    <span title={formatBalance(vaultBufferBalance, vaultBufferDecimals, { showAll: true })}>{`${formatBalance(vaultBufferBalance, vaultBufferDecimals,)} USDi Ticket`}&nbsp;&nbsp;</span>
+                {abi_version === "beta-v1.5.9" && (
+                  <div className={classes.balanceCardValue} style={{ fontSize: "1rem" }}>
+                    <span title={formatBalance(vaultBufferBalance, vaultBufferDecimals, { showAll: true })}>
+                      {formatBalance(vaultBufferBalance, vaultBufferDecimals)}
+                      <span className={classes.symbol}>USDi Ticket&nbsp;&nbsp;</span>
+                    </span>
                     <Tooltip
                       classes={{
-                        tooltip: classes.tooltip
+                        tooltip: classes.tooltip,
                       }}
                       placement='right'
-                      title={<span>The USDi ticket is automatically converted to USDi. And was last executed in <span style={{ color: 'red', fontWeight: 'bold' }}> {moment(lastRebaseTime).format('yyyy-MM-DD HH:mm')}</span></span>}
+                      title={
+                        <span>
+                          The USDi ticket is automatically converted to USDi. And was last executed in&nbsp;
+                          <span style={{ color: "red", fontWeight: "bold" }}>
+                            {moment(lastRebaseTime).format("yyyy-MM-DD HH:mm")}
+                          </span>
+                        </span>
+                      }
                     >
-                      <InfoIcon style={{ fontSize: 15 }} />
+                      <InfoIcon style={{ fontSize: "1rem" }} />
                     </Tooltip>
                   </div>
-                }
-                <div className={classes.balanceCardLabel}>Balance</div>
+                )}
+                <div className={classes.balanceCardLabel}>AVAILABLE BALANCE</div>
               </div>
               <div className={classes.tokenInfo}>
                 {userProvider && (
-                  <a
-                    href={`${net.blockExplorer}/address/${USDI_ADDRESS}`}
-                    target='_blank'
-                    rel='noopener noreferrer'
-                  >
-                    <img className={classes.scanToken} src={net.blockExplorerIcon} alt="wallet" />
+                  <a href={`${net.blockExplorer}/address/${USDI_ADDRESS}`} target='_blank' rel='noopener noreferrer'>
+                    <img className={classes.scanToken} src={net.blockExplorerIcon} alt='wallet' />
                   </a>
                 )}
               </div>
             </Card>
-            <Card className={classes.investCard}>
-              <Tabs
-                value={tab}
-                onChange={handleTabChange}
-                classes={{
-                  root: classes.tabsRoot,
-                  indicator: classes.tabsIndicator
-                }}
-                TabIndicatorProps={{ children: <span /> }}
-              >
-                  {map(Object.keys(TABS), (key) => (
-                    <Tab
-                      key={key}
-                      label={TABS[key]}
-                      value={TABS[key]}
-                      classes={{
-                        root: classes.tabRoot,
-                        textColorInherit: classes.tabTextColor
-                      }}
-                    />
-                  ))}
-              </Tabs>
-              <TabPanel value={tab} index={TABS.DEPOSIT}>
-                <Deposit
-                  address={address}
-                  usdtBalance={usdtBalance}
-                  usdtDecimals={usdtDecimals}
-                  usdcBalance={usdcBalance}
-                  usdcDecimals={usdcDecimals}
-                  daiBalance={daiBalance}
-                  daiDecimals={daiDecimals}
-                  usdiDecimals={usdiDecimals}
-                  userProvider={userProvider}
-                  VAULT_ABI={VAULT_ABI}
-                  IERC20_ABI={IERC20_ABI}
-                  VAULT_ADDRESS={VAULT_ADDRESS}
-                  abi_version={abi_version}
-                />
-              </TabPanel>
-              <TabPanel value={tab} index={TABS.WITHDRAW}>
-                <Withdraw
-                  toBalance={toBalance}
-                  usdiDecimals={usdiDecimals}
-                  userProvider={userProvider}
-                  VAULT_ADDRESS={VAULT_ADDRESS}
-                  VAULT_ABI={VAULT_ABI}
-                  IERC20_ABI={IERC20_ABI}
-                  EXCHANGE_AGGREGATOR_ABI={EXCHANGE_AGGREGATOR_ABI}
-                  EXCHANGE_ADAPTER_ABI={EXCHANGE_ADAPTER_ABI}
-                />
-              </TabPanel>
-            </Card>
-          </GridItem>
-        </GridContainer>
-        <div className={classNames(classes.detailWrapper, {
-            [classes.hidden]: isEmpty(userProvider)
-          })}>
-            <p style={{ color: "#fff", letterSpacing: "0.01071em" }}>More Details</p>
-            <TableContainer component={Paper} style={{ borderRadius: 0 }}>
-              <Table className={classNames(classes.table)} aria-label='simple table'>
-                <TableHead>
-                  <TableRow>
-                    <TableCell className={classNames(classes.tableCell)}>Vault Symbol</TableCell>
-                    <TableCell className={classNames(classes.tableCell)}>Vault Address</TableCell>
-                    <TableCell className={classNames(classes.tableCell)}>Total Supply</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  <TableRow>
-                    <TableCell className={classNames(classes.tableCell)} component='th' scope='row'>
-                      BOC_Vault
-                    </TableCell>
-                    <TableCell className={classNames(classes.tableCell)}>
-                      <a
-                        style={{ color: "rgb(105, 192, 255)" }}
-                        href={CHAIN_BROWSER_URL && `${CHAIN_BROWSER_URL}/address/${VAULT_ADDRESS}`}
-                        target='_blank'
-                        rel='noopener noreferrer'
-                      >
-                        {VAULT_ADDRESS}
-                      </a>
-                    </TableCell>
-                    <TableCell className={classNames(classes.tableCell)}>
-                      <CountTo from={Number(beforeTotalValue.toBigInt())} to={Number(totalValue.toBigInt())} speed={3500}>
-                        {v => {
-                          return `${toFixed(v, BigNumber.from(10).pow(usdiDecimals), 6)} ${ abi_version === 'beta-v1.5.9' ? 'USD' : 'USDi' }`
-                        }}
-                      </CountTo>
-                    </TableCell>
-                  </TableRow>
-                </TableBody>
-              </Table>
-            </TableContainer>
-        </div>
-      </div>
+          )}
+          {current === 1 && (
+            <div className={classes.wrapper}>
+              <Deposit
+                address={address}
+                usdtBalance={usdtBalance}
+                usdtDecimals={usdtDecimals}
+                usdcBalance={usdcBalance}
+                usdcDecimals={usdcDecimals}
+                daiBalance={daiBalance}
+                daiDecimals={daiDecimals}
+                usdiDecimals={usdiDecimals}
+                userProvider={userProvider}
+                VAULT_ABI={VAULT_ABI}
+                IERC20_ABI={IERC20_ABI}
+                VAULT_ADDRESS={VAULT_ADDRESS}
+                abi_version={abi_version}
+                toBalance={toBalance}
+                vaultBufferBalance={vaultBufferBalance}
+                vaultBufferDecimals={vaultBufferDecimals}
+              />
+            </div>
+          )}
+          {current === 2 && (
+            <div className={classes.wrapper}>
+              <Withdraw
+                toBalance={toBalance}
+                usdiDecimals={usdiDecimals}
+                userProvider={userProvider}
+                VAULT_ADDRESS={VAULT_ADDRESS}
+                VAULT_ABI={VAULT_ABI}
+                IERC20_ABI={IERC20_ABI}
+                EXCHANGE_AGGREGATOR_ABI={EXCHANGE_AGGREGATOR_ABI}
+                EXCHANGE_ADAPTER_ABI={EXCHANGE_ADAPTER_ABI}
+              />
+            </div>
+          )}
+        </GridItem>
+      </GridContainer>
     </div>
   )
 }
 
-
-export default useVersionWapper(Invest, 'mutilCoins')
+export default useVersionWapper(Invest, "mutilCoins")

@@ -1,7 +1,5 @@
 import {
   defaultFont,
-  primaryColor,
-  primaryBoxShadow,
   infoColor,
   infoBoxShadow,
   successColor,
@@ -19,9 +17,8 @@ const customDropdownStyle = (theme) => ({
     pointerEvents: "none",
   },
   dropdown: {
-    borderRadius: "3px",
+    borderRadius: "12px",
     border: "0",
-    boxShadow: "0 2px 5px 0 rgba(0, 0, 0, 0.26)",
     top: "100%",
     zIndex: "1000",
     minWidth: "160px",
@@ -30,8 +27,9 @@ const customDropdownStyle = (theme) => ({
     fontSize: "14px",
     textAlign: "left",
     listStyle: "none",
-    backgroundColor: "#fff",
+    background: "#292b2e",
     backgroundClip: "padding-box",
+    boxShadow: "0 0 0px 1px rgba(161, 161, 161, 0.2)"
   },
   menuList: {
     padding: "0",
@@ -62,7 +60,7 @@ const customDropdownStyle = (theme) => ({
     clear: "both",
     fontWeight: "400",
     height: "fit-content",
-    color: "#333",
+    color: "#A0A0A0",
     whiteSpace: "nowrap",
     minHeight: "unset",
   },
@@ -76,9 +74,8 @@ const customDropdownStyle = (theme) => ({
   },
   primaryHover: {
     "&:hover": {
-      backgroundColor: primaryColor,
-      color: "#FFFFFF",
-      ...primaryBoxShadow,
+      background: "#323438",
+      color: "#A68EFE",
     },
   },
   infoHover: {
@@ -129,16 +126,16 @@ const customDropdownStyle = (theme) => ({
     width: "24px !important",
     height: "24px !important",
   },
+  dropdownTrigger: {
+    "&.MuiButtonBase-root.MuiButton-root": {
+      paddingRight: "8px"
+    }
+  },
   caret: {
     transition: "all 150ms ease-in",
     display: "inline-block",
-    width: "0",
-    height: "0",
     marginLeft: "4px",
     verticalAlign: "middle",
-    borderTop: "4px solid",
-    borderRight: "4px solid transparent",
-    borderLeft: "4px solid transparent",
   },
   caretActive: {
     transform: "rotate(180deg)",

@@ -5,8 +5,7 @@ import find from "lodash/find"
 import isArray from "lodash/isArray"
 import { makeStyles } from "@material-ui/core/styles"
 import ClickAwayListener from "@material-ui/core/ClickAwayListener"
-import ArrowDropDownIcon from "@material-ui/icons/ArrowDropDown"
-import ArrowDropUpIcon from "@material-ui/icons/ArrowDropUp"
+import ExpandMoreIcon from "@material-ui/icons/ExpandMore"
 import styles from "./style"
 
 const useStyles = makeStyles(styles)
@@ -36,19 +35,21 @@ function Select({
     <ClickAwayListener onClickAway={handleClickAway}>
       <div className={classes.selectWrapper}>
         <div className={classes.selectTrigger} onClick={handleTogglePop}>
-          {selectedOpt.img && (
-            !isArray(selectedOpt.img)
-              ? <img className={classes.optImg} src={selectedOpt.img} alt="logo" />
-              : (
-                <div className={classes.optMultiImgWrapper}>
-                  {map(selectedOpt.img, (img) => (
-                    <img key={img} className={classes.optMultiImg} src={img} alt="logo" />
-                  ))}
-                </div>
-              )
-          )}
-          <span className={classes.triggerLabel}>{selectedOpt.label}</span>
-          {popVisible ? <ArrowDropUpIcon style={{ color: "#fff" }} /> : <ArrowDropDownIcon style={{ color: "#fff" }} />}
+          <div className={classes.triggerLabelWrapper}>
+            {selectedOpt.img && (
+              !isArray(selectedOpt.img)
+                ? <img className={classes.optImg} src={selectedOpt.img} alt="logo" />
+                : (
+                  <div className={classes.optMultiImgWrapper}>
+                    {map(selectedOpt.img, (img) => (
+                      <img key={img} className={classes.optMultiImg} src={img} alt="logo" />
+                    ))}
+                  </div>
+                )
+            )}
+            <span className={classes.triggerLabel}>{selectedOpt.label}</span>
+          </div>
+          <ExpandMoreIcon className={classNames(classes.caret, { [classes.expandLess]: popVisible })} />
         </div>
         <ul className={classNames(classes.selectPop, {
           [classes.selectPopVisible]: popVisible

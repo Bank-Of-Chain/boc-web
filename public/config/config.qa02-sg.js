@@ -27,7 +27,7 @@ const configBase = {
     '31337': "https://rpc-qa02-sg.bankofchain.io",
   },
   multiple_of_gas: 2,
-  dashboard_url: 'http://dashboard-qa02-sg.bankofchain.io',
+  dashboard_url: 'https://dashboard-qa02-sg.bankofchain.io',
   oracle_additional_slippage: 20
 }
 
@@ -143,20 +143,13 @@ const config1 = {
   max_gas_limit: 2700 * 10 ** 4,
   chain_id: 1,
   vaults: [{
-    id: 'invest',
-    name: 'Vault for Stable Coins',
-    path: '#/invest',
-    abi_version: 'v4.6',
-    VAULT_ADDRESS: '0x547382C0D1b23f707918D3c83A77317B71Aa8470',
-  }, {
     id: 'mutilCoins',
     name: 'Vault for USDi',
     path: '#/mutils',
-    isAudit: true,
     abi_version: 'beta-v1.5.9',
-    VAULT_ADDRESS: '0xe6cFc17053c64838Fd7bb55BD4A2cb5b207A71ed',
-    USDI_ADDRESS: '0x965A01d39A9835d2B7e9e53bDc5C8501B962e8a3',
-    VAULT_BUFFER_ADDRESS: '0x70401A4AB04A90043BD419f56CC36B77D0587C30',
+    VAULT_ADDRESS: "0x38A70c040CA5F5439ad52d0e821063b0EC0B52b6",
+    USDI_ADDRESS: "0xe70f935c32dA4dB13e7876795f1e175465e6458e",
+    VAULT_BUFFER_ADDRESS: "0x56fC17a65ccFEC6B7ad0aDe9BD9416CB365B9BE8",
     isOpen: true
   }, {
     id: 'ethi',
@@ -164,16 +157,16 @@ const config1 = {
     description: '这是ethi的池子',
     path: '#/ethi',
     abi_version: 'ethi',
-    VAULT_ADDRESS: '0xaC9fCBA56E42d5960f813B9D0387F3D3bC003338',
-    ETHI_ADDRESS: '0xf090f16dEc8b6D24082Edd25B1C8D26f2bC86128',
-    WETHI_ADDRESS: '',
+    VAULT_ADDRESS: "0x95775fD3Afb1F4072794CA4ddA27F2444BCf8Ac3",
+    ETHI_ADDRESS: "0xCBBe2A5c3A22BE749D5DDF24e9534f98951983e2",
+    VAULT_BUFFER_ADDRESS: "0x2c8ED11fd7A058096F2e5828799c68BE88744E2F",
     isOpen: true
   }]
 }
 
 window.config = {
   // 本地链
-  31337: config137,
+  31337: config1,
   // polygon
   137: config137,
   // bsc

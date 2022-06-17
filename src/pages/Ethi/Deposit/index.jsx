@@ -10,13 +10,10 @@ import { makeStyles } from "@material-ui/core/styles"
 import CircularProgress from "@material-ui/core/CircularProgress"
 import Modal from "@material-ui/core/Modal"
 import Paper from "@material-ui/core/Paper"
-import Tooltip from "@material-ui/core/Tooltip"
-import InfoIcon from "@material-ui/icons/Info"
 
 import GridContainer from "../../../components/Grid/GridContainer"
 import GridItem from "../../../components/Grid/GridItem"
 import CustomTextField from "../../../components/CustomTextField"
-import Muted from "../../../components/Typography/Muted"
 import Button from "../../../components/CustomButtons/Button"
 import { warmDialog } from "./../../../reducers/meta-reducer"
 import { toFixed, formatBalance } from "../../../helpers/number-format"
@@ -29,14 +26,18 @@ import styles from "./style"
 const { BigNumber } = ethers
 const useStyles = makeStyles(styles)
 
-export default function Deposit({
+export default function Deposit ({
   address,
   ethBalance,
   ethDecimals,
+  ethiBalance,
+  ethiDecimals,
   userProvider,
   VAULT_ABI,
   VAULT_ADDRESS,
   ETH_ADDRESS,
+  vaultBufferBalance,
+  vaultBufferDecimals,
 }) {
   const classes = useStyles()
   const dispatch = useDispatch()
@@ -61,11 +62,11 @@ export default function Deposit({
    * 校验value是否为有效输入
    * @returns
    */
-  function isValidValue() {
+  function isValidValue () {
     const balance = ethBalance
     const decimals = ethDecimals
     const value = ethValue
-    if (value === "" || value === "-" || value === '0') return
+    if (value === "" || value === "-" || value === '0' || isEmpty(value.replace(/ /g, ''))) return
     // 如果不是一个数值
     if (isNaN(Number(value))) return false
     const nextValue = BN(value)
@@ -91,12 +92,12 @@ export default function Deposit({
     return true
   }
 
-  const handleInputChange = (event) => {
+  const handleInputChange = event => {
     setEthValue(event.target.value)
   }
 
   const handleMaxClick = () => {
-    const v = getGasFee();
+    const v = getGasFee()
     if (v.lte(0)) {
       dispatch(
         warmDialog({
@@ -105,7 +106,7 @@ export default function Deposit({
           message: "Since the latest Gasprice is not available, it is impossible to estimate the gas fee currently!",
         }),
       )
-      return 
+      return
     }
     const maxValue = ethBalance.sub(v)
     setEthValue(formatBalance(maxValue.gt(0) ? maxValue : 0, ethDecimals, { showAll: true }))
@@ -133,32 +134,33 @@ export default function Deposit({
         )
         .toFixed(),
     )
-    console.log('nextTokens=', ETH_ADDRESS, amount)
+    console.log("nextTokens=", ETH_ADDRESS, amount)
     const signer = userProvider.getSigner()
     const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider)
     const nVaultWithUser = vaultContract.connect(signer)
     let isSuccess = false
 
-    await nVaultWithUser.mint(ETH_ADDRESS, amount, {
-      from: address,
-      value: amount,
-    })
+    await nVaultWithUser
+      .mint(ETH_ADDRESS, amount, 0, {
+        from: address,
+        value: amount,
+      })
       .then(tx => tx.wait())
       .then(() => {
         isSuccess = true
       })
-      .catch((error) => {
+      .catch(error => {
         if (error && error.data) {
-          const errorMsg = get(error.data, 'message', '')
-          let tip = ''
+          const errorMsg = get(error.data, "message", "")
+          let tip = ""
           if (errorMsg.endsWith("'ES or AD'") || errorMsg.endsWith("'ES'")) {
-            tip = 'Vault has been shut down, please try again later!'
+            tip = "Vault has been shut down, please try again later!"
           }
           if (errorMsg.endsWith("'AD'")) {
-            tip = 'Vault is in adjustment status, please try again later!'
+            tip = "Vault is in adjustment status, please try again later!"
           }
           if (errorMsg.endsWith("'RP'")) {
-            tip = 'Vault is in rebase status, please try again later!'
+            tip = "Vault is in rebase status, please try again later!"
           }
           if (tip) {
             dispatch(
@@ -172,7 +174,7 @@ export default function Deposit({
         }
         setIsLoading(false)
       })
-    
+
     if (isSuccess) {
       setEthValue("")
     }
@@ -207,8 +209,15 @@ export default function Deposit({
         )
         .toFixed(),
     )
-    const result = await vaultContract.callStatic.estimateMint(ETH_ADDRESS, amount)
-    setEstimateValue(toFixed(result._ethiAmount, BigNumber.from(10).pow(ethDecimals), 6))
+    vaultContract
+      .estimateMint(ETH_ADDRESS, amount)
+      .then(result => {
+        setEstimateValue(toFixed(result, BigNumber.from(10).pow(ethDecimals), 6))
+      })
+      .catch(error => {
+        console.log(error)
+        setEstimateValue("")
+      })
   }, 500)
 
   useEffect(() => {
@@ -222,9 +231,15 @@ export default function Deposit({
     if (!userProvider) {
       return
     }
-    userProvider.send("eth_gasPrice").then(setGasPriceCurrent).catch(noop)
+    userProvider
+      .send("eth_gasPrice")
+      .then(setGasPriceCurrent)
+      .catch(noop)
     const timer = setInterval(() => {
-      userProvider.send("eth_gasPrice").then(setGasPriceCurrent).catch(noop)
+      userProvider
+        .send("eth_gasPrice")
+        .then(setGasPriceCurrent)
+        .catch(noop)
     }, 15000)
     return () => clearInterval(timer)
   }, [userProvider])
@@ -237,10 +252,13 @@ export default function Deposit({
     const signer = userProvider.getSigner()
     const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider)
     const nVaultWithUser = vaultContract.connect(signer)
-    nVaultWithUser.estimateGas.mint(ETH_ADDRESS, estimatedUsedValue, {
-      from: address,
-      value: estimatedUsedValue
-    }).then(setMintGasLimit).catch(noop)
+    nVaultWithUser.estimateGas
+      .mint(ETH_ADDRESS, estimatedUsedValue, {
+        from: address,
+        value: estimatedUsedValue,
+      })
+      .then(setMintGasLimit)
+      .catch(noop)
 
     // eslint-disable-next-line
   }, [userProvider, VAULT_ADDRESS, ethBalance, VAULT_ABI])
@@ -251,70 +269,71 @@ export default function Deposit({
   return (
     <>
       <GridContainer classes={{ root: classes.depositContainer }}>
+        <p className={classes.estimateText}>From</p>
         <GridItem xs={12} sm={12} md={12} lg={12} className={classes.tokenInputWrapper}>
           <GridContainer>
             <GridItem xs={12} sm={12} md={12} lg={12}>
               <div className={classes.inputLabelWrapper}>
                 <div className={classes.tokenInfo}>
-                  <img className={classes.tokenLogo} alt='' src={`./images/0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE.png`} />
+                  <img
+                    className={classes.tokenLogo}
+                    alt=''
+                    src={`./images/0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE.png`}
+                  />
                   <span className={classes.tokenName}>ETH</span>
-                </div> 
-                <Muted className={classes.ethBalanceWrapper}>
-                  <Tooltip
-                    classes={{
-                      tooltip: classes.tooltip
-                    }}
-                    placement='top'
-                    title="Please reserve some ETH as transaction gas fee"
-                  >
-                    <InfoIcon classes={{ root: classes.labelToolTipIcon }} />
-                  </Tooltip>
-                  <span title={formatBalance(ethBalance, ethDecimals, { showAll: true })}>
-                    {`Balance: ${formatBalance(ethBalance, ethDecimals)}`}
-                  </span>
-                </Muted>
+                </div>
+                <CustomTextField
+                  classes={{ root: classes.input }}
+                  value={ethValue}
+                  onChange={handleInputChange}
+                  placeholder='deposit amount'
+                  maxEndAdornment
+                  onMaxClick={handleMaxClick}
+                  error={!isUndefined(isValid) && !isValid}
+                />
               </div>
             </GridItem>
             <GridItem xs={12} sm={12} md={12} lg={12}>
-              <CustomTextField
-                value={ethValue}
-                onChange={handleInputChange}
-                placeholder="deposit amount"
-                maxEndAdornment
-                onMaxClick={handleMaxClick}
-                error={!isUndefined(isValid) && !isValid}
-              />
+              <p className={classes.estimateText} title={formatBalance(ethBalance, ethDecimals, { showAll: true })}>
+                {`Balance: ${formatBalance(ethBalance, ethDecimals)}`}
+              </p>
             </GridItem>
           </GridContainer>
         </GridItem>
-        <GridItem xs={12} sm={12} md={12} lg={12} className={classes.gasPriceWrapper}>
-          <Muted>Estimated Gas Fee:</Muted>
-          <Muted>&nbsp;&nbsp;{toFixed(getGasFee(), BigNumber.from(10).pow(ethDecimals), 6)} ETH</Muted>
-        </GridItem>
+      </GridContainer>
+      <GridContainer classes={{ root: classes.estimateContainer }}>
         <GridItem xs={12} sm={12} md={12} lg={12}>
-          <div className={classes.depositComfirmArea}>
-            <Muted>
-              <p style={{ fontSize: 16, wordBreak: "break-all", letterSpacing: "0.01071em" }}>
-                Estimated:
-                &nbsp;{estimateValue}
-                &nbsp;ETHi
-              </p>
-            </Muted>
+          <p className={classes.estimateText}>To</p>
+          <p className={classes.estimateBalanceTitle}>
+            ETHi:
+            <span className={classes.estimateBalanceNum}>{estimateValue}</span>
+          </p>
+          <p className={classes.estimateText}>
+            Estimated Gas Fee: {toFixed(getGasFee(), BigNumber.from(10).pow(ethDecimals), 6)} ETH
+          </p>
+          <p className={classes.estimateText}>
+            Balance: <span>{formatBalance(vaultBufferBalance, vaultBufferDecimals)}</span>
+          </p>
+        </GridItem>
+        {isEmpty(VAULT_ADDRESS) && (
+          <GridItem xs={12} sm={12} md={12} lg={12}>
+            <p style={{ textAlign: "center", color: "red" }}>Switch to the ETH chain firstly!</p>
+          </GridItem>
+        )}
+      </GridContainer>
+      <GridContainer>
+        <GridItem xs={12} sm={12} md={12} lg={12}>
+          <div className={classes.footerContainer}>
             <Button
               disabled={!isLogin || (isLogin && !isValid)}
               color='colorfull'
               onClick={diposit}
-              style={{ minWidth: 122, padding: "12px 16px", margin: "6px 0" }}
+              style={{ width: "100%" }}
             >
               Deposit
             </Button>
           </div>
         </GridItem>
-        {
-          isEmpty(VAULT_ADDRESS) && <GridItem xs={12} sm={12} md={12} lg={12}>
-            <p style={{ textAlign:'center', color: 'red' }}>Switch to the ETH chain firstly!</p>
-          </GridItem>
-        }
       </GridContainer>
       <Modal
         className={classes.modal}
@@ -322,16 +341,7 @@ export default function Deposit({
         aria-labelledby='simple-modal-title'
         aria-describedby='simple-modal-description'
       >
-        <Paper
-          elevation={3}
-          style={{
-            padding: 20,
-            minWidth: 430,
-            color: "rgba(255,255,255, 0.87)",
-            border: "1px solid",
-            background: "#150752",
-          }}
-        >
+        <Paper elevation={3} className={classes.depositModal}>
           <div className={classes.modalBody}>
             <CircularProgress color='inherit' />
             <p>On Deposit...</p>
