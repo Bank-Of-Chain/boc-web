@@ -36,6 +36,8 @@ export default function Deposit ({
   VAULT_ABI,
   VAULT_ADDRESS,
   ETH_ADDRESS,
+  vaultBufferBalance,
+  vaultBufferDecimals,
 }) {
   const classes = useStyles()
   const dispatch = useDispatch()
@@ -139,7 +141,7 @@ export default function Deposit ({
     let isSuccess = false
 
     await nVaultWithUser
-      .mint(ETH_ADDRESS, amount, {
+      .mint(ETH_ADDRESS, amount, 0, {
         from: address,
         value: amount,
       })
@@ -207,8 +209,15 @@ export default function Deposit ({
         )
         .toFixed(),
     )
-    const result = await vaultContract.callStatic.estimateMint(ETH_ADDRESS, amount)
-    setEstimateValue(toFixed(result._ethiAmount, BigNumber.from(10).pow(ethDecimals), 6))
+    vaultContract
+      .estimateMint(ETH_ADDRESS, amount)
+      .then(result => {
+        setEstimateValue(toFixed(result, BigNumber.from(10).pow(ethDecimals), 6))
+      })
+      .catch(error => {
+        console.log(error)
+        setEstimateValue("")
+      })
   }, 500)
 
   useEffect(() => {
@@ -303,7 +312,7 @@ export default function Deposit ({
             Estimated Gas Fee: {toFixed(getGasFee(), BigNumber.from(10).pow(ethDecimals), 6)} ETH
           </p>
           <p className={classes.estimateText}>
-            Balance: <span>{toFixed(ethiBalance, BigNumber.from(10).pow(ethiDecimals))}</span>
+            Balance: <span>{formatBalance(vaultBufferBalance, vaultBufferDecimals)}</span>
           </p>
         </GridItem>
         {isEmpty(VAULT_ADDRESS) && (
@@ -332,16 +341,7 @@ export default function Deposit ({
         aria-labelledby='simple-modal-title'
         aria-describedby='simple-modal-description'
       >
-        <Paper
-          elevation={3}
-          style={{
-            padding: 20,
-            minWidth: 430,
-            color: "rgba(255,255,255, 0.87)",
-            border: "1px solid",
-            background: "#150752",
-          }}
-        >
+        <Paper elevation={3} className={classes.depositModal}>
           <div className={classes.modalBody}>
             <CircularProgress color='inherit' />
             <p>On Deposit...</p>
