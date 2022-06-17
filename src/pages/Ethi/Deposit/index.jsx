@@ -66,7 +66,7 @@ export default function Deposit ({
     const balance = ethBalance
     const decimals = ethDecimals
     const value = ethValue
-    if (value === "" || value === "-" || value === "0") return
+    if (value === "" || value === "-" || value === '0' || isEmpty(value.replace(/ /g, ''))) return
     // 如果不是一个数值
     if (isNaN(Number(value))) return false
     const nextValue = BN(value)

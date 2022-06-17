@@ -133,7 +133,7 @@ export default function Deposit ({
    */
   function isValidValue (token) {
     const { value, balance, decimals } = tokenBasicState[token]
-    if (value === "" || value === "-" || value === "0") return
+    if (value === "" || value === "-" || value === '0' || isEmpty(value.replace(/ /g, ''))) return
     // 如果不是一个数值
     if (isNaN(Number(value))) return false
     const nextValue = BN(value)

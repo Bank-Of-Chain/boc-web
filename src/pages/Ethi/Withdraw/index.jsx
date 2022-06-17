@@ -547,7 +547,7 @@ export default function Withdraw ({
    * @returns
    */
   const isValidToValue = () => {
-    if (toValue === "" || toValue === "-") return
+    if (toValue === "" || toValue === "-" || isEmpty(toValue.replace(/ /g, ''))) return
     // 如果不是一个数值
     if (isNaN(Number(toValue))) return false
     const nextValue = BN(toValue)
@@ -575,14 +575,14 @@ export default function Withdraw ({
    * @returns
    */
   const isValidAllowLoss = () => {
-    if (allowMaxLoss === "") return
+    if (allowMaxLoss === "" || isEmpty(allowMaxLoss.replace(/ /g, ''))) return
     if (isNaN(allowMaxLoss)) return false
     if (allowMaxLoss < 0 || allowMaxLoss > 50) return false
     return true
   }
 
   const isValidSlipper = () => {
-    if (slipper === "") return
+    if (slipper === "" || isEmpty(slipper.replace(/ /g, ''))) return
     if (isNaN(slipper)) return false
     if (slipper < 0 || slipper > 45) return false
     return true

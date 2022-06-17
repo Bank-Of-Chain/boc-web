@@ -27,7 +27,7 @@ const configBase = {
     '31337': "https://rpc-qa02-sg.bankofchain.io",
   },
   multiple_of_gas: 2,
-  dashboard_url: 'http://dashboard-qa02-sg.bankofchain.io',
+  dashboard_url: 'https://dashboard-qa02-sg.bankofchain.io',
   oracle_additional_slippage: 20
 }
 
