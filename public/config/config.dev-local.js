@@ -144,19 +144,13 @@ const config1 = {
   max_gas_limit: 2700 * 10 ** 4,
   chain_id: 1,
   vaults: [{
-    id: 'invest',
-    name: 'Vault for Stable Coins',
-    path: '#/invest',
-    abi_version: 'v4.6',
-    VAULT_ADDRESS: '0x547382C0D1b23f707918D3c83A77317B71Aa8470',
-  }, {
     id: 'mutilCoins',
     name: 'Vault for USDi',
     path: '#/mutils',
-    isAudit: true,
-    abi_version: 'beta-v1.5',
-    VAULT_ADDRESS: '0x071586BA1b380B00B793Cc336fe01106B0BFbE6D',
-    USDI_ADDRESS: '0x56fC17a65ccFEC6B7ad0aDe9BD9416CB365B9BE8',
+    abi_version: 'beta-v1.5.9',
+    VAULT_ADDRESS: '0xaC9fCBA56E42d5960f813B9D0387F3D3bC003338',
+    USDI_ADDRESS: '0xe70f935c32dA4dB13e7876795f1e175465e6458e',
+    VAULT_BUFFER_ADDRESS: '0x56fC17a65ccFEC6B7ad0aDe9BD9416CB365B9BE8',
     isOpen: true
   }, {
     id: 'ethi',
@@ -164,8 +158,9 @@ const config1 = {
     description: '这是ethi的池子',
     path: '#/ethi',
     abi_version: 'ethi',
-    ETHI_ADDRESS: "0x8cB9Aca95D1EdebBfe6BD9Da4DC4a2024457bD32",
-    VAULT_ADDRESS: "0xDae16f755941cbC0C9D240233a6F581d1734DaA2",
+    ETHI_ADDRESS: "0x8bEe2037448F096900Fd9affc427d38aE6CC0350",
+    VAULT_ADDRESS: "0x114e375B6FCC6d6fCb68c7A1d407E652C54F25FB",
+    VAULT_BUFFER_ADDRESS: '0xe1708FA6bb2844D5384613ef0846F9Bc1e8eC55E',
     WETHI_ADDRESS: '',
     isOpen: true
   }]
@@ -173,7 +168,7 @@ const config1 = {
 
 window.config = {
   // 本地链
-  31337: config137,
+  31337: config1,
   // polygon
   137: config137,
   // bsc
