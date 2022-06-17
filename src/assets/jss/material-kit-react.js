@@ -24,27 +24,13 @@ const transition = {
   transition: "all 0.33s cubic-bezier(0.685, 0.0473, 0.346, 1)",
 };
 
-const containerFluid = {
-  paddingRight: "15px",
-  paddingLeft: "15px",
-  marginRight: "auto",
-  marginLeft: "auto",
-  width: "100%",
-};
 const container = {
-  ...containerFluid,
-  "@media (min-width: 576px)": {
-    maxWidth: "540px",
-  },
-  "@media (min-width: 768px)": {
-    maxWidth: "720px",
-  },
-  "@media (min-width: 992px)": {
-    maxWidth: "960px",
-  },
   "@media (min-width: 1200px)": {
-    maxWidth: "1140px",
+    maxWidth: '100%',
   },
+  margin: '0 auto',
+  padding: 0,
+  width: "100%",
 };
 
 const boxShadow = {
@@ -184,7 +170,6 @@ export {
   drawerWidth,
   transition,
   container,
-  containerFluid,
   boxShadow,
   card,
   defaultFont,

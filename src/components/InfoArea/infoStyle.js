@@ -7,18 +7,9 @@ import {
   roseColor,
   grayColor,
   title,
-} from "../../assets/jss/material-kit-react.js";
+} from "../../assets/jss/material-kit-react.js"
 
 const infoStyle = {
-  infoArea: {
-    maxWidth: "360px",
-    margin: "0 auto",
-    padding: "0px 20px",
-    textAlign: 'left',
-    backgroundColor: '#271f72',
-    height: '100%',
-    display: 'inline-block'
-  },
   iconWrapper: {
     float: "left",
     marginTop: "24px",
@@ -55,17 +46,17 @@ const infoStyle = {
   },
   title: {
     ...title,
-    color: '#fff',
-    fontSize: '1.5rem',
+    color: "#fff",
+    fontSize: "2rem",
   },
   description: {
-    color: '#fff',
+    color: "#fff",
     overflow: "hidden",
-    marginTop: "0px",
-    fontSize: "14px",
+    margin: "0",
+    fontSize: "0.875rem",
     fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',
-    lineHeight: '1.5em',
-    textAlign: 'left'
+    lineHeight: "1.5em",
+    textAlign: "left",
   },
   iconWrapperVertical: {
     float: "none",
@@ -74,6 +65,13 @@ const infoStyle = {
     width: "61px",
     height: "61px",
   },
-};
+  infoArea: {
+    cursor: "pointer",
+    padding: "6rem 3rem 3rem",
+    background: "#313036",
+    borderRadius: "1rem",
+    boxSizing: "border-box",
+  }
+}
 
-export default infoStyle;
+export default infoStyle

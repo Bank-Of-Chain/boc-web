@@ -17,8 +17,6 @@ const headerStyle = {
     display: "flex",
     border: "0",
     borderRadius: "3px",
-    padding: "0.625rem 0",
-    marginBottom: "20px",
     color: "#555",
     width: "100%",
     backgroundColor: "#fff",
@@ -108,7 +106,6 @@ const headerStyle = {
   transparent: {
     backgroundColor: "transparent !important",
     boxShadow: "none",
-    paddingTop: "0px",
     color: "#FFFFFF",
   },
   dark: {
@@ -119,10 +116,8 @@ const headerStyle = {
   },
   white: {
     border: "0",
-    padding: "0 0 0.625rem 0",
-    marginBottom: "20px",
     color: "#555",
-    backgroundColor: '#150752',
+    backgroundColor: '#070b10',
     boxShadow:
       "0 4px 18px 0px rgba(0, 0, 0, 0.12), 0 7px 10px -5px rgba(0, 0, 0, 0.15)",
   },

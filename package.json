@@ -45,6 +45,8 @@
     "bnc-notify": "^1.5.0",
     "burner-provider": "^1.0.38",
     "commentbox.io": "^2.0.0",
+    "copy-to-clipboard": "^3.3.1",
+    "cron-parser": "^4.4.0",
     "dotenv": "^8.2.0",
     "esri-loader": "^3.0.0",
     "eth-hooks": "^1.1.2",
@@ -64,6 +66,7 @@
     "react-scripts": "^3.4.4",
     "redux": "^4.1.2",
     "sal.js": "^0.8.3",
+    "swiper": "^8.2.3",
     "web3modal": "1.9.5"
   },
   "devDependencies": {
@@ -77,6 +80,7 @@
     "eslint-plugin-babel": "^5.3.1",
     "eslint-plugin-prettier": "^3.1.4",
     "ipfs-http-client": "^45.0.0",
+    "material-ui-popup-state": "^3.1.1",
     "prettier": "^2.0.5",
     "s3-folder-upload": "^2.3.1",
     "source-map-explorer": "^2.5.2",

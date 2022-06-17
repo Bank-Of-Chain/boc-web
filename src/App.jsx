@@ -1,5 +1,5 @@
 /* eslint-disable no-extend-native */
-import React, { useState, useEffect, Suspense, lazy } from "react"
+import React, { useState, useEffect, useRef, Suspense, lazy } from "react"
 import { Switch, Route, Redirect, HashRouter } from "react-router-dom"
 import { useUserAddress } from "eth-hooks"
 import { useSelector, useDispatch } from "react-redux"
@@ -37,26 +37,8 @@ try {
 } catch (error) {
   console.warn(`*** ${error.message} ***`)
 }
-Date.prototype.format = function (fmt) {
-  var o = {
-    "M+": this.getMonth() + 1, //月份
-    "d+": this.getDate(), //日
-    "h+": this.getHours() % 12 === 0 ? 12 : this.getHours() % 12, //小时
-    "H+": this.getHours(), //小时
-    "m+": this.getMinutes(), //分
-    "s+": this.getSeconds(), //秒
-    "q+": Math.floor((this.getMonth() + 3) / 3), //季度
-    S: this.getMilliseconds(), //毫秒
-  }
-  if (/(y+)/.test(fmt)) fmt = fmt.replace(RegExp.$1, (this.getFullYear() + "").substr(4 - RegExp.$1.length))
-  for (var k in o)
-    if (new RegExp("(" + k + ")").test(fmt))
-      fmt = fmt.replace(RegExp.$1, RegExp.$1.length === 1 ? o[k] : ("00" + o[k]).substr(("" + o[k]).length))
-  return fmt
-}
 
 const Home = lazy(() => import("./pages/Home/index"))
-// const Invest = lazy(() => import("./pages/Invest/index"))
 const InvestNew = lazy(() => import("./pages/InvestNew/index"))
 const Ethi = lazy(() => import("./pages/Ethi/index"))
 
@@ -70,6 +52,18 @@ const useStyles = makeStyles(theme => ({
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
+    "& .MuiPaper-root": {
+      minWidth: 430,
+      minHeight: 120,
+      padding: "32px 24px",
+      fontSize: 16,
+      border: 0,
+      color: "#fff",
+      boxShadow: "0px 15px 15px rgba(0, 0, 0, 0.05)",
+      borderRadius: "20px",
+      background: "#292B2E",
+      outline: 0,
+    }
   },
 }))
 
@@ -80,24 +74,27 @@ function App () {
     userProvider,
     connect,
     disconnect,
-    getChainId,
+    chainId,
     getWalletName
   } = useWallet()
   const [isLoadingChainId, setIsLoadingChainId] = useState(false)
+  const isLoadingTimer = useRef()
 
   const alertState = useSelector(state => state.metaReducer.warmMsg)
   const dispatch = useDispatch()
   const address = useUserAddress(userProvider)
-  const selectedChainId = getChainId(userProvider)
+  const selectedChainId = chainId
   const walletName = getWalletName()
 
   useEffect(() => {
     if (userProvider) {
-      setIsLoadingChainId(true)
+      clearTimeout(isLoadingTimer.current)
+      isLoadingTimer.current = setTimeout(() => {
+        setIsLoadingChainId(true)
+      }, 500)
       userProvider._networkPromise.then(v => {
-        setTimeout(() => {
-          setIsLoadingChainId(false)
-        }, 200)
+        setIsLoadingChainId(false)
+        clearTimeout(isLoadingTimer.current)
       })
     }
   }, [userProvider])
@@ -219,17 +216,7 @@ function App () {
         aria-labelledby='simple-modal-title'
         aria-describedby='simple-modal-description'
       >
-        <Paper
-          elevation={3}
-          style={{
-            padding: 20,
-            minWidth: 430,
-            minHeight: 120,
-            color: "rgba(255,255,255, 0.87)",
-            border: "1px solid",
-            background: "#000",
-          }}
-        >
+        <Paper elevation={3}>
           {renderText}
         </Paper>
       </Modal>
@@ -263,7 +250,7 @@ function App () {
         <p key='1' style={{ textAlign: "center" }}>
           You may need to manually switch network via your wallet.
         </p>,
-        <Chains key='3' maskStyle={{ textAlign: "center" }} array={NET_WORKS} handleClick={changeNetwork} />,
+        <Chains key='3' maskStyle={{ textAlign: "center", marginTop: 24 }} array={NET_WORKS} handleClick={changeNetwork} />,
       ])
     }
   }
@@ -304,19 +291,6 @@ function App () {
               </Frame>
             </Suspense>
           </Route>
-          {/* <Route path='/invest'>
-            <Suspense
-              fallback={
-                <Backdrop className={classes.backdrop} open>
-                  <CircularProgress color='inherit' />
-                </Backdrop>
-              }
-            >
-              <Frame {...nextProps}>
-                <Invest {...nextProps} />
-              </Frame>
-            </Suspense>
-          </Route> */}
           <Route path='/mutils'>
             <Suspense
               fallback={

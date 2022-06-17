@@ -14,7 +14,7 @@
   blog_url: 'https://piggyfinance.github.io/docs/zh/blog/',
   licenses_url: 'https://piggyfinance.github.io/docs/zh/licenses/',
   document_url: "https://docs.bankofchain.io",
-  boc_server: 'https://service-qa04-sg.bankofchain.io',
+  boc_server: 'https://service-v1.bankofchain.io',
   sub_graph_url: {
     '1': 'https://api.thegraph.com/subgraphs/name/bankofchain/boc-subgraph-eth',
     '56': 'https://api.thegraph.com/subgraphs/name/bankofchain/boc-subgraph-bsc',
@@ -60,9 +60,10 @@ const config137 = {
     name: 'Vault for USDi',
     path: '#/mutils',
     isAudit: true,
-    abi_version: 'beta-v1.5',
-    VAULT_ADDRESS: '0x70eE76691Bdd9696552AF8d4fd634b3cF79DD529',
-    USDI_ADDRESS: '0xcD0048A5628B37B8f743cC2FeA18817A29e97270',
+    abi_version: 'beta-v1.5.9',
+    VAULT_ADDRESS: '0xe6cFc17053c64838Fd7bb55BD4A2cb5b207A71ed',
+    USDI_ADDRESS: '0x965A01d39A9835d2B7e9e53bDc5C8501B962e8a3',
+    VAULT_BUFFER_ADDRESS: '0x70401A4AB04A90043BD419f56CC36B77D0587C30',
     isOpen: true
   }, {
     id: 'ethi',
@@ -143,19 +144,13 @@ const config1 = {
   max_gas_limit: 2700 * 10 ** 4,
   chain_id: 1,
   vaults: [{
-    id: 'invest',
-    name: 'Vault for Stable Coins',
-    path: '#/invest',
-    abi_version: 'v4.6',
-    VAULT_ADDRESS: '0x547382C0D1b23f707918D3c83A77317B71Aa8470',
-  }, {
     id: 'mutilCoins',
     name: 'Vault for USDi',
     path: '#/mutils',
-    isAudit: true,
-    abi_version: 'beta-v1.5',
-    VAULT_ADDRESS: '0x9BcC604D4381C5b0Ad12Ff3Bf32bEdE063416BC7',
-    USDI_ADDRESS: '0xf090f16dEc8b6D24082Edd25B1C8D26f2bC86128',
+    abi_version: 'beta-v1.5.9',
+    VAULT_ADDRESS: '0xaC9fCBA56E42d5960f813B9D0387F3D3bC003338',
+    USDI_ADDRESS: '0xe70f935c32dA4dB13e7876795f1e175465e6458e',
+    VAULT_BUFFER_ADDRESS: '0x56fC17a65ccFEC6B7ad0aDe9BD9416CB365B9BE8',
     isOpen: true
   }, {
     id: 'ethi',
@@ -163,8 +158,9 @@ const config1 = {
     description: '这是ethi的池子',
     path: '#/ethi',
     abi_version: 'ethi',
-    ETHI_ADDRESS: "0x8cB9Aca95D1EdebBfe6BD9Da4DC4a2024457bD32",
-    VAULT_ADDRESS: "0xDae16f755941cbC0C9D240233a6F581d1734DaA2",
+    ETHI_ADDRESS: "0x8bEe2037448F096900Fd9affc427d38aE6CC0350",
+    VAULT_ADDRESS: "0x114e375B6FCC6d6fCb68c7A1d407E652C54F25FB",
+    VAULT_BUFFER_ADDRESS: '0xe1708FA6bb2844D5384613ef0846F9Bc1e8eC55E',
     WETHI_ADDRESS: '',
     isOpen: true
   }]

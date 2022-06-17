@@ -1,10 +1,7 @@
 import React from "react"
 import { makeStyles } from "@material-ui/core/styles"
-import classNames from "classnames"
 
 // === Components === //
-import GridContainer from "../../../components/Grid/GridContainer"
-import GridItem from "../../../components/Grid/GridItem"
 import InfoArea from "../../../components/InfoArea/InfoArea"
 
 // === Utils === //
@@ -12,6 +9,10 @@ import map from "lodash/map"
 
 // === Styles === //
 import styles from "./productStyle"
+
+import { Navigation, Autoplay } from "swiper"
+import { Swiper, SwiperSlide } from "swiper/react/swiper-react"
+import "swiper/swiper-bundle.min.css"
 
 const useStyles = makeStyles(styles)
 
@@ -72,34 +73,41 @@ export default function ProductSection () {
   const classes = useStyles()
   return (
     <div className={classes.section}>
-      <GridContainer style={{ margin: "0 auto" }} justify='center'>
-        {map(data, (item, i) => {
-          const { title, descriptions = [], imagePath } = item
-          return (
-            <GridItem
-              className={classNames(classes.item, classes.checked)}
-              key={`${i}`}
-              xs={12}
-              sm={12}
-              md={4}
-              style={{
-                paddingLeft: i % 3 === 0 ? 0 : 10,
-              }}
-            >
-              <InfoArea
-                title={title}
-                description={map(descriptions, (d, index) => (
-                  <span key={`item-${index}`} className={classes.description}>
-                    {index + 1}. {d}
-                  </span>
-                ))}
-                icon={<img src={imagePath} alt='' />}
-                vertical
-              />
-            </GridItem>
-          )
-        })}
-      </GridContainer>
+      <h1 className={classes.text}>BoC is different.</h1>
+      <div className={classes.swiper}>
+        <Swiper
+          loop={true}
+          modules={[Navigation, Autoplay]}
+          spaceBetween={24}
+          slidesPerView={3}
+          navigation={{
+            nextEl: ".swiper-button-next",
+            prevEl: ".swiper-button-prev",
+          }}
+          autoplay={true}
+        >
+          {map(data, (item, i) => {
+            const { title, descriptions = [], imagePath } = item
+            return (
+              <SwiperSlide key={i}>
+                <InfoArea
+                  title={title}
+                  description={map(descriptions, (d, index) => (
+                    <span key={`item-${index}`} style={{ display: "inline-block" }}>
+                      {index + 1}. {d}
+                    </span>
+                  ))}
+                  icon={<img src={imagePath} alt='' />}
+                  vertical
+                  style={{ height: "40rem" }}
+                />
+              </SwiperSlide>
+            )
+          })}
+        </Swiper>
+        <div className='swiper-button-prev'></div>
+        <div className='swiper-button-next'></div>
+      </div>
     </div>
   )
 }

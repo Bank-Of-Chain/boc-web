@@ -1,24 +1,27 @@
 const auditedStyle = {
   section: {
-    textAlign: "center",
-    padding: '5rem 0',
-    backgroundColor: 'rgba(39, 31, 114, .8)',
+    color: "#1F2023",
+    padding: "16rem 8.75rem",
+    background: "linear-gradient(180deg, #F6F6F6 30%, #E5DFF7 100%)",
   },
   title: {
-    fontSize: '2rem',
-    margin: 0
-  },
-  container: {
-    paddingTop: '6.125rem'
+    margin: 0,
+    fontSize: "6.25rem",
+    lineHeight: "8.125rem",
   },
   text: {
-    fontSize: '1.125rem',
-    color: '#b2add1'
+    width: "34rem",
+    margin: 0,
+    lineHeight: "1.875rem",
+    fontSize: "1.25rem",
+    fontWeight: "normal",
   },
-  img: {
-    marginRight: '1rem',
-    verticalAlign: 'text-bottom'
-  }
-};
+  divider: {
+    width: "18.75rem",
+    height: "1px",
+    margin: "1.875rem 0",
+    background: "#1F2023",
+  },
+}
 
-export default auditedStyle;
+export default auditedStyle
