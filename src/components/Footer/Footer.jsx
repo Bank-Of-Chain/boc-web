@@ -13,7 +13,7 @@ import Button from "@material-ui/core/Button"
 import Divider from "@material-ui/core/Divider"
 
 // === Constants === //
-import { COMMUNITY_URL, TELEGRAM_URL } from "./../../constants"
+import { COMMUNITY_URL, DOCUMENT_URL, TELEGRAM_URL } from "./../../constants"
 
 import styles from "./footerStyle.js"
 
@@ -92,27 +92,47 @@ export default function Footer (props) {
           <GridItem xs={6} sm={6} md={6} className={classes.item}>
             <List className={classes.list}>
               <ListItem className={classes.inlineBlock}>
-                <a className={classes.block} target='_blank' rel='noopener noreferrer' href={COMMUNITY_URL}>
+                <a
+                  className={classes.block}
+                  target='_blank'
+                  rel='noopener noreferrer'
+                  href={`${DOCUMENT_URL}/docs/protocol-mechanisms/protocol-algorithm-design`}
+                >
                   BOC Protocol
                 </a>
               </ListItem>
               <ListItem className={classes.inlineBlock}>
-                <a className={classes.block} target='_blank' rel='noopener noreferrer' href={TELEGRAM_URL}>
+                <a
+                  className={classes.block}
+                  target='_blank'
+                  rel='noopener noreferrer'
+                  href={`${DOCUMENT_URL}/docs/protocol-mechanisms/governance`}
+                >
                   Governance
                 </a>
               </ListItem>
               <ListItem className={classes.inlineBlock}>
-                <a className={classes.block} target='_blank' rel='noopener noreferrer'>
+                <a className={classes.block} target='_blank' rel='noopener noreferrer' href={DOCUMENT_URL}>
                   Docs
                 </a>
               </ListItem>
               <ListItem className={classes.inlineBlock}>
-                <a className={classes.block} target='_blank' rel='noopener noreferrer'>
+                <a
+                  className={classes.block}
+                  target='_blank'
+                  rel='noopener noreferrer'
+                  href={`${DOCUMENT_URL}/docs/protocol-mechanisms/security-risk`}
+                >
                   Security
                 </a>
               </ListItem>
               <ListItem className={classes.inlineBlock}>
-                <a className={classes.block} target='_blank' rel='noopener noreferrer'>
+                <a
+                  className={classes.block}
+                  target='_blank'
+                  rel='noopener noreferrer'
+                  href={`${DOCUMENT_URL}/docs/more/faqs`}
+                >
                   FAQ
                 </a>
               </ListItem>
@@ -130,10 +150,26 @@ export default function Footer (props) {
           <Divider />
           <GridItem xs={12} sm={12} md={12} className={classes.item}>
             <List className={classes.list}>
-              <ListItem className={classes.inlineBlock}>{ICON1}</ListItem>
-              <ListItem className={classes.inlineBlock}>{ICON2}</ListItem>
-              <ListItem className={classes.inlineBlock}>{ICON3}</ListItem>
-              <ListItem className={classes.inlineBlock}>{ICON4}</ListItem>
+              <ListItem className={classes.inlineBlock}>
+                <a target='_blank' rel='noopener noreferrer' href={TELEGRAM_URL}>
+                  {ICON1}
+                </a>
+              </ListItem>
+              <ListItem className={classes.inlineBlock}>
+                <a target='_blank' rel='noopener noreferrer' href={COMMUNITY_URL}>
+                  {ICON2}
+                </a>
+              </ListItem>
+              {/* <ListItem className={classes.inlineBlock}>
+                <a target='_blank' rel='noopener noreferrer'>
+                  {ICON3}
+                </a>
+              </ListItem>
+              <ListItem className={classes.inlineBlock}>
+                <a target='_blank' rel='noopener noreferrer'>
+                  {ICON4}
+                </a>
+              </ListItem> */}
             </List>
           </GridItem>
         </GridContainer>

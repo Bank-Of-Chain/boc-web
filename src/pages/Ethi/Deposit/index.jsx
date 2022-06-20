@@ -305,13 +305,13 @@ export default function Deposit ({
         <GridItem xs={12} sm={12} md={12} lg={12}>
           <p className={classes.estimateText}>To</p>
           <p className={classes.estimateBalanceTitle}>
-            ETHi:
+            ETHi Ticket:
             <span className={classes.estimateBalanceNum}>{estimateValue}</span>
           </p>
           <p className={classes.estimateText}>
             Estimated Gas Fee: {toFixed(getGasFee(), BigNumber.from(10).pow(ethDecimals), 6)} ETH
           </p>
-          <p className={classes.estimateText}>
+          <p className={classes.estimateText} style={{ marginTop: '1rem' }}>
             Balance: <span>{formatBalance(vaultBufferBalance, vaultBufferDecimals)}</span>
           </p>
         </GridItem>
