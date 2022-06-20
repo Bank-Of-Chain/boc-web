@@ -145,9 +145,10 @@ const config1 = {
     name: 'Vault for USDi',
     path: '#/mutils',
     isAudit: true,
-    abi_version: 'beta-v1.5',
-    VAULT_ADDRESS: '0x9BcC604D4381C5b0Ad12Ff3Bf32bEdE063416BC7',
-    USDI_ADDRESS: '0xf090f16dEc8b6D24082Edd25B1C8D26f2bC86128',
+    abi_version: 'beta-v1.5.9',
+    VAULT_ADDRESS: '0x359570B3a0437805D0a71457D61AD26a28cAC9A2',
+    USDI_ADDRESS: '0x67aD6EA566BA6B0fC52e97Bc25CE46120fdAc04c',
+    VAULT_BUFFER_ADDRESS: "0x942ED2fa862887Dc698682cc6a86355324F0f01e",
     isOpen: true
   }, {
     id: 'ethi',
@@ -155,8 +156,9 @@ const config1 = {
     description: '这是ethi的池子',
     path: '#/ethi',
     abi_version: 'ethi',
-    VAULT_ADDRESS: '0xaC47e91215fb80462139756f43438402998E4A3a',
-    ETHI_ADDRESS: '0xdFdE6B33f13de2CA1A75A6F7169f50541B14f75b',
+    VAULT_ADDRESS: "0x70E5370b8981Abc6e14C91F4AcE823954EFC8eA3",
+    ETHI_ADDRESS: "0x33E45b187da34826aBCEDA1039231Be46f1b05Af",
+    VAULT_BUFFER_ADDRESS: "0x2F54D1563963fC04770E85AF819c89Dc807f6a06",
     WETHI_ADDRESS: '',
     isOpen: true
   }]
@@ -164,7 +166,7 @@ const config1 = {
 
 window.config = {
   // 本地链
-  31337: config137,
+  31337: config1,
   // polygon
   137: config137,
   // bsc

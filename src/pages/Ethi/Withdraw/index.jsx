@@ -792,9 +792,6 @@ export default function Withdraw ({
           <div className={classes.selectorlWrapper}>
             <p className={classes.estimateBalanceTitle}>
               ETH
-              <span style={{ float: "right" }} className={classes.estimateBalanceNum}>
-                0
-              </span>
             </p>
           </div>
         </GridItem>
