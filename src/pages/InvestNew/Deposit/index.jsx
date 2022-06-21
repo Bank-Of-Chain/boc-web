@@ -300,6 +300,9 @@ export default function Deposit ({
           if (errorMsg.endsWith("'RP'")) {
             tip = "Vault is in rebase status, please try again later!"
           }
+          if (errorMsg.endsWith("'is distributing'")) {
+            tip = "Vault is in distributing, please try again later!"
+          }
           if (tip) {
             dispatch(
               warmDialog({
@@ -352,12 +355,35 @@ export default function Deposit ({
       return
     }
     const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider)
-    const result = await vaultContract.estimateMint(tokens, amounts)
-    if (abi_version === "beta-v1.5.9") {
-      setEstimateVaultBuffValue(result)
-    } else {
-      setEstimateVaultBuffValue(result.priceAdjustedDeposit)
-    }
+    const result = await vaultContract.estimateMint(tokens, amounts).catch(error => {
+      if (error && error.data) {
+        const errorMsg = get(error.data, "message", "")
+        let tip = ""
+        if (errorMsg.endsWith("'ES or AD'") || errorMsg.endsWith("'ES'")) {
+          tip = "Vault has been shut down, please try again later!"
+        }
+        if (errorMsg.endsWith("'AD'")) {
+          tip = "Vault is in adjustment status, please try again later!"
+        }
+        if (errorMsg.endsWith("'RP'")) {
+          tip = "Vault is in rebase status, please try again later!"
+        }
+        if (errorMsg.endsWith("'is distributing'")) {
+          tip = "Vault is in distributing, please try again later!"
+        }
+        if (tip) {
+          dispatch(
+            warmDialog({
+              open: true,
+              type: "error",
+              message: tip,
+            }),
+          )
+        }
+        return BigNumber.from(0)
+      }
+    })
+    setEstimateVaultBuffValue(result)
   }, 500)
 
   useEffect(() => {
