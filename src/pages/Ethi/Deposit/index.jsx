@@ -6,10 +6,22 @@ import isUndefined from "lodash/isUndefined"
 import debounce from "lodash/debounce"
 import isEmpty from "lodash/isEmpty"
 import get from "lodash/get"
+import map from "lodash/map"
+import moment from "moment"
 import { makeStyles } from "@material-ui/core/styles"
+
+// === Components === //
+import Step from "@material-ui/core/Step"
+import BocStepper from "../../../components/Stepper/Stepper"
+import BocStepLabel from "../../../components/Stepper/StepLabel"
+import BocStepIcon from "../../../components/Stepper/StepIcon"
+import BocStepConnector from "../../../components/Stepper/StepConnector"
 import CircularProgress from "@material-ui/core/CircularProgress"
 import Modal from "@material-ui/core/Modal"
 import Paper from "@material-ui/core/Paper"
+import Tooltip from "@material-ui/core/Tooltip"
+import InfoIcon from "@material-ui/icons/Info"
+import Typography from "@material-ui/core/Typography"
 
 import GridContainer from "../../../components/Grid/GridContainer"
 import GridItem from "../../../components/Grid/GridItem"
@@ -20,17 +32,19 @@ import { toFixed, formatBalance } from "../../../helpers/number-format"
 
 // === Utils === //
 import noop from "lodash/noop"
+import { getLastPossibleRebaseTime } from "../../../helpers/time-util"
 
 import styles from "./style"
 
 const { BigNumber } = ethers
 const useStyles = makeStyles(styles)
 
+const steps = ["Step1: Deposit", "Get ETHi Ticket", "Step2: Allocation Action", "Get ETHi"]
+
 export default function Deposit ({
   address,
   ethBalance,
   ethDecimals,
-  ethiBalance,
   ethiDecimals,
   userProvider,
   VAULT_ABI,
@@ -44,10 +58,13 @@ export default function Deposit ({
   const [ethValue, setEthValue] = useState("")
   const [mintGasLimit, setMintGasLimit] = useState(BigNumber.from("174107"))
   const [gasPriceCurrent, setGasPriceCurrent] = useState()
-  const [estimateValue, setEstimateValue] = useState("")
   const [isLoading, setIsLoading] = useState(false)
+  const [isOpenEstimateModal, setIsOpenEstimateModal] = useState(false)
+  const [estimateVaultBuffValue, setEstimateVaultBuffValue] = useState(BigNumber.from(0))
   const loadingTimer = useRef()
 
+  const nextRebaseTime = getLastPossibleRebaseTime()
+  console.log("nextRebaseTime=", nextRebaseTime)
   const getGasFee = () => {
     if (!gasPriceCurrent) {
       return 0
@@ -66,7 +83,7 @@ export default function Deposit ({
     const balance = ethBalance
     const decimals = ethDecimals
     const value = ethValue
-    if (value === "" || value === "-" || value === '0' || isEmpty(value.replace(/ /g, ''))) return
+    if (value === "" || value === "-" || value === "0" || isEmpty(value.replace(/ /g, ""))) return
     // 如果不是一个数值
     if (isNaN(Number(value))) return false
     const nextValue = BN(value)
@@ -181,6 +198,7 @@ export default function Deposit ({
 
     loadingTimer.current = setTimeout(() => {
       setIsLoading(false)
+      setIsOpenEstimateModal(false)
       if (isSuccess) {
         dispatch(
           warmDialog({
@@ -196,7 +214,7 @@ export default function Deposit ({
   const estimateMint = debounce(async () => {
     const isValid = isValidValue()
     if (!isValid) {
-      setEstimateValue(toFixed(0, BigNumber.from(10).pow(ethDecimals), 6))
+      setEstimateVaultBuffValue(BigNumber.from(0))
       return
     }
     const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider)
@@ -212,13 +230,20 @@ export default function Deposit ({
     vaultContract
       .estimateMint(ETH_ADDRESS, amount)
       .then(result => {
-        setEstimateValue(toFixed(result, BigNumber.from(10).pow(ethDecimals), 6))
+        setEstimateVaultBuffValue(result)
       })
       .catch(error => {
         console.log(error)
-        setEstimateValue("")
+        setEstimateVaultBuffValue(BigNumber.from(0))
       })
   }, 500)
+
+  /**
+   *
+   */
+  const openEstimateModal = () => {
+    setIsOpenEstimateModal(true)
+  }
 
   useEffect(() => {
     estimateMint()
@@ -306,12 +331,14 @@ export default function Deposit ({
           <p className={classes.estimateText}>To</p>
           <p className={classes.estimateBalanceTitle}>
             ETHi Ticket:
-            <span className={classes.estimateBalanceNum}>{estimateValue}</span>
+            <span className={classes.estimateBalanceNum}>
+              {toFixed(estimateVaultBuffValue, BigNumber.from(10).pow(ethiDecimals))}
+            </span>
           </p>
           <p className={classes.estimateText}>
             Estimated Gas Fee: {toFixed(getGasFee(), BigNumber.from(10).pow(ethDecimals), 6)} ETH
           </p>
-          <p className={classes.estimateText} style={{ marginTop: '1rem' }}>
+          <p className={classes.estimateText} style={{ marginTop: "1rem" }}>
             Balance: <span>{formatBalance(vaultBufferBalance, vaultBufferDecimals)}</span>
           </p>
         </GridItem>
@@ -327,7 +354,7 @@ export default function Deposit ({
             <Button
               disabled={!isLogin || (isLogin && !isValid)}
               color='colorfull'
-              onClick={diposit}
+              onClick={openEstimateModal}
               style={{ width: "100%" }}
             >
               Deposit
@@ -335,6 +362,102 @@ export default function Deposit ({
           </div>
         </GridItem>
       </GridContainer>
+      <Modal
+        className={classes.modal}
+        open={isOpenEstimateModal}
+        aria-labelledby='simple-modal-title'
+        aria-describedby='simple-modal-description'
+      >
+        <Paper elevation={3} className={classes.depositModal}>
+          <BocStepper
+            classes={{
+              root: classes.root,
+            }}
+            alternativeLabel
+            activeStep={1}
+            connector={<BocStepConnector />}
+          >
+            {map(steps, (i, index) => {
+              return (
+                <Step key={index}>
+                  <BocStepLabel StepIconComponent={BocStepIcon}>{i}</BocStepLabel>
+                </Step>
+              )
+            })}
+          </BocStepper>
+          <GridContainer>
+            <GridItem xs={12} sm={12} md={12} lg={12} className={classes.item}>
+              <Typography variant='subtitle1' gutterBottom className={classes.subTitle}>
+                Deposit Amounts:&nbsp;
+                <span key={address} className={classes.flexText}>
+                  <span style={{ color: "chocolate", marginRight: 5 }}>{ethValue}</span> ETH&nbsp;
+                  <img
+                    className={classes.ModalTokenLogo}
+                    alt=''
+                    src={"./images/0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE.png"}
+                  />
+                </span>
+              </Typography>
+            </GridItem>
+            <GridItem xs={12} sm={12} md={12} lg={12} className={classes.item}>
+              <Typography variant='subtitle1' gutterBottom className={classes.subTitle}>
+                Estimate User Get:&nbsp;
+                <span style={{ color: "darkturquoise" }}>
+                  &nbsp; + {toFixed(estimateVaultBuffValue, BigNumber.from(10).pow(ethiDecimals))}&nbsp;
+                </span>
+                &nbsp; ETHi Tickets
+              </Typography>
+            </GridItem>
+            <GridItem xs={12} sm={12} md={12} lg={12} className={classes.item}>
+              <Typography variant='subtitle1' gutterBottom className={classes.subTitle}>
+                Exchange&nbsp;
+                <Tooltip
+                  classes={{
+                    tooltip: classes.tooltip,
+                  }}
+                  placement='top'
+                  title='Estimated amount of ETHi that can be exchanged'
+                >
+                  <InfoIcon classes={{ root: classes.labelToolTipIcon }} />
+                </Tooltip>
+                :&nbsp;From&nbsp;
+                <span style={{ color: "chocolate" }}>
+                  {toFixed(estimateVaultBuffValue, BigNumber.from(10).pow(ethiDecimals))}
+                </span>
+                &nbsp; ETHi Tickets <span style={{ fontWeight: "bold", color: "dimgrey" }}>To</span>&nbsp;
+                <span style={{ color: "darkturquoise" }}>
+                  {toFixed(estimateVaultBuffValue.mul(9987).div(10000), BigNumber.from(10).pow(ethiDecimals), 2)}
+                </span>
+                &nbsp; ETHi
+              </Typography>
+            </GridItem>
+            <GridItem xs={12} sm={12} md={12} lg={12} className={classes.item}>
+              <Typography variant='subtitle1' gutterBottom className={classes.subTitle}>
+                Exchange Time&nbsp;
+                <Tooltip
+                  classes={{
+                    tooltip: classes.tooltip,
+                  }}
+                  placement='top'
+                  title='The latest planned execution date may not be executed due to cost and other factors'
+                >
+                  <InfoIcon classes={{ root: classes.labelToolTipIcon }} />
+                </Tooltip>
+                :&nbsp;
+                <span style={{ color: "chocolate" }}>{moment(nextRebaseTime).format("YYYY-MM-DD HH:mm:ss")}</span>
+              </Typography>
+            </GridItem>
+            <GridItem xs={12} sm={12} md={12} lg={12} className={classes.item} style={{ textAlign: "center" }}>
+              <Button color='colorfull' onClick={diposit} style={{ width: "50%" }}>
+                Continue
+              </Button>
+              <Button style={{ marginLeft: 20 }} color='danger' onClick={() => setIsOpenEstimateModal(false)}>
+                Cancel
+              </Button>
+            </GridItem>
+          </GridContainer>
+        </Paper>
+      </Modal>
       <Modal
         className={classes.modal}
         open={isLoading}
