@@ -268,7 +268,8 @@ export default function Withdraw ({
         errorMsg.endsWith("'callBytes failed: Error(Received amount of tokens are less then expected)'") ||
         errorMsg.endsWith("'1inch V4 swap failed: Error(Return amount is not enough)'") ||
         errorMsg.endsWith("'Received amount of tokens are less then expected'") ||
-        errorMsg.endsWith("Error: VM Exception while processing transaction: reverted with reason string 'OL'")
+        errorMsg.endsWith("Error: VM Exception while processing transaction: reverted with reason string 'OL'") ||
+        errorMsg.endsWith("'paraswap callBytes failed: Error(UniswapV2Router: INSUFFICIENT_OUTPUT_AMOUNT)'")
       ) {
         tip = "Failed to exchange, please increase the exchange slippage"
       } else {
@@ -492,7 +493,8 @@ export default function Withdraw ({
         errorMsg.endsWith("'callBytes failed: Error(Received amount of tokens are less then expected)'") ||
         errorMsg.endsWith("'1inch V4 swap failed: Error(Return amount is not enough)'") ||
         errorMsg.endsWith("'Received amount of tokens are less then expected'") ||
-        errorMsg.endsWith("Error: VM Exception while processing transaction: reverted with reason string 'OL'")
+        errorMsg.endsWith("Error: VM Exception while processing transaction: reverted with reason string 'OL'") ||
+        errorMsg.endsWith("'paraswap callBytes failed: Error(UniswapV2Router: INSUFFICIENT_OUTPUT_AMOUNT)'")
       ) {
         tip = "Failed to exchange, please increase the exchange slippage!"
       } else {

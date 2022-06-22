@@ -94,7 +94,7 @@ export default function LendingSection () {
       <h2 className={classes.title}>Crypto Lending Interest Rates.</h2>
       <div className={classNames(classes.label)}>
         <GridContainer>
-          <GridItem>
+          <GridItem style={{ lineHeight: '2rem' }}>
             <div className={classNames(classes.box)}></div>
             <span style={{ fontSize: "0.75rem" }}>Current Rate</span>
           </GridItem>
@@ -134,7 +134,7 @@ export default function LendingSection () {
                             <div
                               className={classNames(
                                 classes.bar,
-                                text === "Current Rate" && classes.fixed,
+                                text === "Fixed Rate" && classes.fixed,
                                 title === bocTitle && classes.checked,
                               )}
                               style={{ height: percentText }}

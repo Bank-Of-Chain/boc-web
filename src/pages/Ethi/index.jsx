@@ -253,7 +253,7 @@ function Ethi (props) {
                     placement='right'
                     title={
                       <span>
-                        The USDi ticket is automatically converted to ETHi. And was last executed in&nbsp;
+                        The ETHi ticket is automatically converted to ETHi. And was last executed in&nbsp;
                         <span style={{ color: "red", fontWeight: "bold" }}>
                           {moment(lastRebaseTime).format("yyyy-MM-DD HH:mm")}
                         </span>
