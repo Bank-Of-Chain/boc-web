@@ -64,7 +64,6 @@ export default function Deposit ({
   const loadingTimer = useRef()
 
   const nextRebaseTime = getLastPossibleRebaseTime()
-  console.log("nextRebaseTime=", nextRebaseTime)
   const getGasFee = () => {
     if (!gasPriceCurrent) {
       return 0
@@ -172,12 +171,12 @@ export default function Deposit ({
           let tip = ""
           if (errorMsg.endsWith("'ES or AD'") || errorMsg.endsWith("'ES'")) {
             tip = "Vault has been shut down, please try again later!"
-          }
-          if (errorMsg.endsWith("'AD'")) {
+          } else if (errorMsg.endsWith("'AD'")) {
             tip = "Vault is in adjustment status, please try again later!"
-          }
-          if (errorMsg.endsWith("'RP'")) {
+          } else if (errorMsg.endsWith("'RP'")) {
             tip = "Vault is in rebase status, please try again later!"
+          } else if (errorMsg.endsWith("'Amount must be gt minimum Investment Amount'")) {
+            tip = "Deposit Amount must be great then minimum Investment Amount!"
           }
           if (tip) {
             dispatch(
@@ -229,11 +228,33 @@ export default function Deposit ({
     )
     vaultContract
       .estimateMint(ETH_ADDRESS, amount)
-      .then(result => {
-        setEstimateVaultBuffValue(result)
-      })
+      .then(setEstimateVaultBuffValue)
       .catch(error => {
-        console.log(error)
+        if (error && error.data) {
+          const errorMsg = get(error.data, "message", "")
+          let tip = ""
+          if (errorMsg.endsWith("'ES or AD'") || errorMsg.endsWith("'ES'")) {
+            tip = "Vault has been shut down, please try again later!"
+          } else if (errorMsg.endsWith("'AD'")) {
+            tip = "Vault is in adjustment status, please try again later!"
+          } else if (errorMsg.endsWith("'RP'")) {
+            tip = "Vault is in rebase status, please try again later!"
+          } else if (errorMsg.endsWith("'is distributing'")) {
+            tip = "Vault is in distributing, please try again later!"
+          } else if (errorMsg.endsWith("'Amount must be gt minimum Investment Amount'")) {
+            tip = "Deposit Amount must be great then minimum Investment Amount!"
+          }
+          if (tip) {
+            dispatch(
+              warmDialog({
+                open: true,
+                type: "error",
+                message: tip,
+              }),
+            )
+          }
+          return BigNumber.from(0)
+        }
         setEstimateVaultBuffValue(BigNumber.from(0))
       })
   }, 500)

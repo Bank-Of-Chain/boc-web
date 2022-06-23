@@ -293,15 +293,14 @@ export default function Deposit ({
           let tip = ""
           if (errorMsg.endsWith("'ES or AD'") || errorMsg.endsWith("'ES'")) {
             tip = "Vault has been shut down, please try again later!"
-          }
-          if (errorMsg.endsWith("'AD'")) {
+          }else if (errorMsg.endsWith("'AD'")) {
             tip = "Vault is in adjustment status, please try again later!"
-          }
-          if (errorMsg.endsWith("'RP'")) {
+          }else if (errorMsg.endsWith("'RP'")) {
             tip = "Vault is in rebase status, please try again later!"
-          }
-          if (errorMsg.endsWith("'is distributing'")) {
+          } else if (errorMsg.endsWith("'is distributing'")) {
             tip = "Vault is in distributing, please try again later!"
+          } else if (errorMsg.endsWith("'Amount must be gt minimum Investment Amount'")) {
+            tip = "Deposit Amount must be great then minimum Investment Amount!"
           }
           if (tip) {
             dispatch(
@@ -361,15 +360,14 @@ export default function Deposit ({
         let tip = ""
         if (errorMsg.endsWith("'ES or AD'") || errorMsg.endsWith("'ES'")) {
           tip = "Vault has been shut down, please try again later!"
-        }
-        if (errorMsg.endsWith("'AD'")) {
+        } else if (errorMsg.endsWith("'AD'")) {
           tip = "Vault is in adjustment status, please try again later!"
-        }
-        if (errorMsg.endsWith("'RP'")) {
+        } else if (errorMsg.endsWith("'RP'")) {
           tip = "Vault is in rebase status, please try again later!"
-        }
-        if (errorMsg.endsWith("'is distributing'")) {
+        } else if (errorMsg.endsWith("'is distributing'")) {
           tip = "Vault is in distributing, please try again later!"
+        } else if (errorMsg.endsWith("'Amount must be gt minimum Investment Amount'")) {
+          tip = "Deposit Amount must be great then minimum Investment Amount!"
         }
         if (tip) {
           dispatch(
