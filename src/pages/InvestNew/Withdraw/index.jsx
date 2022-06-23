@@ -274,7 +274,8 @@ export default function Withdraw ({
         errorMsg.endsWith("'callBytes failed: Error(Received amount of tokens are less then expected)'") ||
         errorMsg.endsWith("'1inch V4 swap failed: Error(Return amount is not enough)'") ||
         errorMsg.endsWith("'Received amount of tokens are less then expected'") ||
-        errorMsg.endsWith("Error: VM Exception while processing transaction: reverted with reason string 'OL'")
+        errorMsg.endsWith("Error: VM Exception while processing transaction: reverted with reason string 'OL'") ||
+        errorMsg.endsWith("'1inch V4 swap failed: Error(IIA)'")
       ) {
         tip = "Failed to exchange, please increase the exchange slippage or choose mixed token!"
       } else if (errorMsg.endsWith("callBytes failed: Error(Call to adapter failed)")) {
@@ -500,7 +501,8 @@ export default function Withdraw ({
         errorMsg.endsWith("'callBytes failed: Error(Received amount of tokens are less then expected)'") ||
         errorMsg.endsWith("'1inch V4 swap failed: Error(Return amount is not enough)'") ||
         errorMsg.endsWith("'Received amount of tokens are less then expected'") ||
-        errorMsg.endsWith("Error: VM Exception while processing transaction: reverted with reason string 'OL'")
+        errorMsg.endsWith("Error: VM Exception while processing transaction: reverted with reason string 'OL'") ||
+        errorMsg.endsWith("'1inch V4 swap failed: Error(IIA)'")
       ) {
         tip = "Failed to exchange, please increase the exchange slippage or choose mixed token!"
       } else if (errorMsg.endsWith("callBytes failed: Error(Call to adapter failed)")) {
@@ -561,7 +563,7 @@ export default function Withdraw ({
    * @returns
    */
   const isValidToValue = () => {
-    if (toValue === "" || toValue === "-" || isEmpty(toValue.replace(/ /g, ''))) return
+    if (toValue === "" || toValue === "-" || isEmpty(toValue.replace(/ /g, ""))) return
     // 如果不是一个数值
     if (isNaN(Number(toValue))) return false
     const nextValue = BN(toValue)
@@ -589,14 +591,14 @@ export default function Withdraw ({
    * @returns
    */
   const isValidAllowLoss = () => {
-    if (allowMaxLoss === "" || isEmpty(allowMaxLoss.replace(/ /g, ''))) return
+    if (allowMaxLoss === "" || isEmpty(allowMaxLoss.replace(/ /g, ""))) return
     if (isNaN(allowMaxLoss)) return false
     if (allowMaxLoss < 0 || allowMaxLoss > 50) return false
     return true
   }
 
   const isValidSlipper = () => {
-    if (slipper === "" || isEmpty(slipper.replace(/ /g, ''))) return
+    if (slipper === "" || isEmpty(slipper.replace(/ /g, ""))) return
     if (isNaN(slipper)) return false
     if (slipper < 0 || slipper > 45) return false
     return true
@@ -820,7 +822,9 @@ export default function Withdraw ({
           </div>
         </GridItem>
         <GridItem xs={12} sm={12} md={12} lg={12}>
-          <p className={classes.estimateText} title={formatBalance(toBalance, usdiDecimals, { showAll: true })}>Balance: {formatBalance(toBalance, usdiDecimals)}</p>
+          <p className={classes.estimateText} title={formatBalance(toBalance, usdiDecimals, { showAll: true })}>
+            Balance: {formatBalance(toBalance, usdiDecimals)}
+          </p>
         </GridItem>
       </GridContainer>
       <GridContainer className={classes.outputContainer}>
