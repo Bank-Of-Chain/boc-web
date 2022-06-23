@@ -258,9 +258,9 @@ export default function Withdraw ({
         errorMsg.endsWith("'paraswap callBytes failed: Error(UniswapV2Router: INSUFFICIENT_OUTPUT_AMOUNT)'") ||
         errorMsg.endsWith("'1inch V4 swap failed: Error(IIA)'")
       ) {
-        tip = "Failed to exchange, please increase the exchange slippage or choose mixed token!"
+        tip = "Failed to exchange, please increase the exchange slippage!"
       } else if (errorMsg.endsWith("callBytes failed: Error(Call to adapter failed)")) {
-        tip = "Failed to exchange, Please try again later or choose mixed token!"
+        tip = "Failed to exchange, Please try again later!"
       } else {
         tip = errorMsg
       }
@@ -472,9 +472,9 @@ export default function Withdraw ({
         errorMsg.endsWith("'paraswap callBytes failed: Error(UniswapV2Router: INSUFFICIENT_OUTPUT_AMOUNT)'") ||
         errorMsg.endsWith("'1inch V4 swap failed: Error(IIA)'")
       ) {
-        tip = "Failed to exchange, please increase the exchange slippage or choose mixed token!"
+        tip = "Failed to exchange, please increase the exchange slippage!"
       } else if (errorMsg.endsWith("callBytes failed: Error(Call to adapter failed)")) {
-        tip = "Failed to exchange, Please try again later or choose mixed token!"
+        tip = "Failed to exchange, Please try again later!"
       } else {
         tip = errorMsg
       }
