@@ -634,8 +634,9 @@ export default function Withdraw ({
     }
   }
 
-  const handleMaxClick = () => {
-    setToValue(formatBalance(toBalance, usdiDecimals, { showAll: true }))
+  const handleMaxClick = async () => {
+    const [nextUsdiBalance] = await reloadBalance()
+    setToValue(formatBalance(nextUsdiBalance, usdiDecimals, { showAll: true }))
   }
 
   const renderEstimate = () => {

@@ -116,14 +116,10 @@ function Invest (props) {
           setTotalValue(afterTotalValue)
         })
         .catch(noop),
-      // TODO:此处的usdtDecimals较特别为10的幂的数值，主要是因为lend方法里的usdtDecimals取幂操作
-      // 其他处的usdtDecimals都是为10**18或10**6
       usdtContract.decimals().then(setUsdtDecimals),
       usdcContract.decimals().then(setUsdcDecimals),
       daiContract.decimals().then(setDaiDecimals),
       usdiContract.decimals().then(setUsdiDecimals),
-      // vaultContract.token().then(setToken),
-      // vaultContract.getTrackedAssets().then(setTrackedAssets)
     ]).catch(() => {
       dispatch(
         warmDialog({
@@ -148,19 +144,25 @@ function Invest (props) {
     const usdiContract = new ethers.Contract(USDI_ADDRESS, USDI_ABI, userProvider)
     const vaultBufferContract = new ethers.Contract(VAULT_BUFFER_ADDRESS, VAULT_BUFFER_ABI, userProvider)
     return Promise.all([
-      usdtContract.balanceOf(address).then(setUsdtBalance),
-      usdcContract.balanceOf(address).then(setUsdcBalance),
-      daiContract.balanceOf(address).then(setDaiBalance),
-      vaultBufferContract
-        .balanceOf(address)
-        .then(setVaultBufferBalance)
-        .catch(noop),
-      usdiContract.balanceOf(address).then(setToBalance),
-    ]).finally(() => {
-      setTimeout(() => {
-        setIsBalanceLoading(false)
-      }, 1000)
-    })
+      usdiContract.balanceOf(address),
+      usdtContract.balanceOf(address),
+      usdcContract.balanceOf(address),
+      daiContract.balanceOf(address),
+      vaultBufferContract.balanceOf(address).catch(() => BigNumber.from(0)),
+    ])
+      .then(([usdiBalance, usdtBalance, usdcBalance, daiBalance, vaultBufferBalance]) => {
+        setToBalance(usdiBalance)
+        setUsdtBalance(usdtBalance)
+        setUsdcBalance(usdcBalance)
+        setDaiBalance(daiBalance)
+        setVaultBufferBalance(vaultBufferBalance)
+        return [usdiBalance, usdtBalance, usdcBalance, daiBalance, vaultBufferBalance]
+      })
+      .finally(() => {
+        setTimeout(() => {
+          setIsBalanceLoading(false)
+        }, 1000)
+      })
   }
 
   useEffect(() => {

@@ -121,14 +121,21 @@ function Ethi (props) {
     const vaultBufferContract = new ethers.Contract(VAULT_BUFFER_ADDRESS, VAULT_BUFFER_ABI, userProvider)
     const ethiContract = new ethers.Contract(ETHI_ADDRESS, IERC20_ABI, userProvider)
     return Promise.all([
-      userProvider.getBalance(address).then(setEthBalance),
-      ethiContract.balanceOf(address).then(setEthiBalance),
-      vaultBufferContract.balanceOf(address).then(setVaultBufferBalance),
-    ]).finally(() => {
-      setTimeout(() => {
-        setIsBalanceLoading(false)
-      }, 500)
-    })
+      ethiContract.balanceOf(address),
+      userProvider.getBalance(address),
+      vaultBufferContract.balanceOf(address),
+    ])
+      .then(([ethiBalance, ethBalance, vaultBufferBalance]) => {
+        setEthBalance(ethBalance)
+        setEthiBalance(ethiBalance)
+        setVaultBufferBalance(vaultBufferBalance)
+        return [ethiBalance, ethBalance, vaultBufferBalance]
+      })
+      .finally(() => {
+        setTimeout(() => {
+          setIsBalanceLoading(false)
+        }, 500)
+      })
   }
 
   useEffect(() => {

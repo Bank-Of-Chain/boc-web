@@ -597,8 +597,9 @@ export default function Withdraw ({
     }
   }
 
-  const handleMaxClick = () => {
-    setToValue(formatBalance(ethiBalance, ethiDecimals, { showAll: true }))
+  const handleMaxClick = async () => {
+    const [nextEthiBalance] = await reloadBalance()
+    setToValue(formatBalance(nextEthiBalance, ethiDecimals, { showAll: true }))
   }
 
   const renderEstimate = () => {
