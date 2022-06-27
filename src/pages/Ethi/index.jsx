@@ -17,6 +17,7 @@ import SaveAltIcon from "@material-ui/icons/SaveAlt"
 import UndoIcon from "@material-ui/icons/Undo"
 import Tooltip from "@material-ui/core/Tooltip"
 import InfoIcon from "@material-ui/icons/Info"
+import Loading from "../../components/Loading"
 
 import Deposit from "./Deposit"
 import Withdraw from "./Withdraw"
@@ -80,25 +81,27 @@ function Ethi (props) {
   const [vaultBufferBalance, setVaultBufferBalance] = useState(BigNumber.from(0))
   const [vaultBufferDecimals, setVaultBufferDecimals] = useState(0)
 
+  const [isBalanceLoading, setIsBalanceLoading] = useState(true)
+
   const lastRebaseTime = getLastPossibleRebaseTime()
 
   const current = useSelector(state => state.investReducer.currentTab)
-  const setCurrent = tab => dispatch(setCurrentTab(tab))
+  const setCurrent = tab => {
+    loadCoinsBalance()
+    dispatch(setCurrentTab(tab))
+  }
 
   // 载入账户数据
   const loadBanlance = () => {
     if (isEmpty(address) || isEmpty(userProvider)) {
       return
     }
-    // 如果abi版本等于beta-v1.5.9，则需要多查询vaultBuffer的账户余额
     const vaultBufferContract = new ethers.Contract(VAULT_BUFFER_ADDRESS, VAULT_BUFFER_ABI, userProvider)
     const ethiContract = new ethers.Contract(ETHI_ADDRESS, IERC20_ABI, userProvider)
     Promise.all([
-      userProvider.getBalance(address).then(setEthBalance),
-      ethiContract.balanceOf(address).then(setEthiBalance),
+      loadCoinsBalance(),
       ethiContract.decimals().then(setEthiDecimals),
-      vaultBufferContract.balanceOf(address).then(setVaultBufferBalance),
-      vaultBufferContract.decimals().then(setVaultBufferDecimals)
+      vaultBufferContract.decimals().then(setVaultBufferDecimals),
     ]).catch(() => {
       dispatch(
         warmDialog({
@@ -107,6 +110,24 @@ function Ethi (props) {
           message: "Please confirm wallet's network!",
         }),
       )
+    })
+  }
+
+  const loadCoinsBalance = () => {
+    if (isEmpty(address) || isEmpty(userProvider)) {
+      return
+    }
+    setIsBalanceLoading(true)
+    const vaultBufferContract = new ethers.Contract(VAULT_BUFFER_ADDRESS, VAULT_BUFFER_ABI, userProvider)
+    const ethiContract = new ethers.Contract(ETHI_ADDRESS, IERC20_ABI, userProvider)
+    return Promise.all([
+      userProvider.getBalance(address).then(setEthBalance),
+      ethiContract.balanceOf(address).then(setEthiBalance),
+      vaultBufferContract.balanceOf(address).then(setVaultBufferBalance),
+    ]).finally(() => {
+      setTimeout(() => {
+        setIsBalanceLoading(false)
+      }, 500)
     })
   }
 
@@ -232,7 +253,7 @@ function Ethi (props) {
               <div className={classes.balanceCardItem}>
                 <div className={classes.balanceCardValue}>
                   <span title={formatBalance(ethiBalance, ethiDecimals, { showAll: true })}>
-                    {formatBalance(ethiBalance, ethiDecimals)}
+                    <Loading loading={isBalanceLoading}>{formatBalance(ethiBalance, ethiDecimals)}</Loading>
                   </span>
                   <span className={classes.symbol}>ETHi</span>
                   {userProvider && (
@@ -243,9 +264,11 @@ function Ethi (props) {
                 </div>
                 <div className={classes.balanceCardValue} style={{ fontSize: "1rem" }}>
                   <span title={formatBalance(vaultBufferBalance, vaultBufferDecimals, { showAll: true })}>
-                    {formatBalance(vaultBufferBalance, vaultBufferDecimals)}
-                    <span className={classes.symbol}>ETHi Ticket&nbsp;&nbsp;</span>
+                    <Loading loading={isBalanceLoading}>
+                      {formatBalance(vaultBufferBalance, vaultBufferDecimals)}
+                    </Loading>
                   </span>
+                  <span className={classes.symbol}>ETHi Ticket&nbsp;&nbsp;</span>
                   <Tooltip
                     classes={{
                       tooltip: classes.tooltip,
@@ -289,6 +312,8 @@ function Ethi (props) {
                 ETH_ADDRESS={ETH_ADDRESS}
                 vaultBufferBalance={vaultBufferBalance}
                 vaultBufferDecimals={vaultBufferDecimals}
+                isBalanceLoading={isBalanceLoading}
+                reloadBalance={loadCoinsBalance}
               />
             </div>
           )}
@@ -305,6 +330,8 @@ function Ethi (props) {
                 EXCHANGE_AGGREGATOR_ABI={EXCHANGE_AGGREGATOR_ABI}
                 EXCHANGE_ADAPTER_ABI={EXCHANGE_ADAPTER_ABI}
                 PRICE_ORCALE_ABI={PRICE_ORCALE_ABI}
+                isBalanceLoading={isBalanceLoading}
+                reloadBalance={loadCoinsBalance}
               />
             </div>
           )}

@@ -1,12 +1,15 @@
 import BN from 'bignumber.js';
 import isEmpty from 'lodash/isEmpty';
 import padEnd from 'lodash/padEnd'
+import { isNil, isNull } from 'lodash'
 
 export const toFixed = (value, precision = 1, ...args) => {
-  if (isEmpty(value)) {
-    return 0;
+  if (isNil(value) || isNull(precision)) return undefined
+  const precisionBN = BN(precision.toString())
+  if (isEmpty(value) || precisionBN.isZero()) {
+    return 0
   }
-  const results = BN(value.toString()).div(BN(precision.toString()));
+  const results = BN(value.toString()).div(precisionBN);
   if(results.isInteger()){
     return results.toFixed()
   }

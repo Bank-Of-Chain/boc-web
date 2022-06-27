@@ -26,6 +26,7 @@ const componentsStyle = theme => ({
   estimateText: {
     color: "#A0A0A0",
     margin: 0,
+    display: "flex",
   },
   estimateBalanceTitle: {
     fontSize: "1.625rem",

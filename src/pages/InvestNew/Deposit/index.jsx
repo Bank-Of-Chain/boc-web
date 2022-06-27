@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react"
+import React, { useState, useEffect, useRef, useCallback } from "react"
 
 // === Utils === //
 import * as ethers from "ethers"
@@ -36,6 +36,7 @@ import Muted from "../../../components/Typography/Muted"
 import Button from "../../../components/CustomButtons/Button"
 import { warmDialog } from "./../../../reducers/meta-reducer"
 import { toFixed, formatBalance } from "../../../helpers/number-format"
+import Loading from "../../../components/Loading"
 
 // === Constants === //
 import { USDT_ADDRESS, USDC_ADDRESS, DAI_ADDRESS } from "../../../constants"
@@ -69,6 +70,8 @@ export default function Deposit ({
   abi_version,
   vaultBufferBalance,
   vaultBufferDecimals,
+  isBalanceLoading,
+  reloadBalance,
 }) {
   const classes = useStyles()
   const dispatch = useDispatch()
@@ -76,6 +79,7 @@ export default function Deposit ({
   const [usdcValue, setUsdcValue] = useState("")
   const [daiValue, setDaiValue] = useState("")
   const [isLoading, setIsLoading] = useState(false)
+  const [isEstimate, setIsEstimate] = useState(false)
   const [isOpenEstimateModal, setIsOpenEstimateModal] = useState(false)
   const [estimateVaultBuffValue, setEstimateVaultBuffValue] = useState(BigNumber.from(0))
   const loadingTimer = useRef()
@@ -133,7 +137,7 @@ export default function Deposit ({
    */
   function isValidValue (token) {
     const { value, balance, decimals } = tokenBasicState[token]
-    if (value === "" || value === "-" || value === '0' || isEmpty(value.replace(/ /g, ''))) return
+    if (value === "" || value === "-" || value === "0" || isEmpty(value.replace(/ /g, ""))) return
     // 如果不是一个数值
     if (isNaN(Number(value))) return false
     const nextValue = BN(value)
@@ -158,6 +162,7 @@ export default function Deposit ({
 
   const handleInputChange = (event, item) => {
     try {
+      setIsEstimate(true)
       item.setValue(event.target.value)
     } catch (error) {
       item.setValue("")
@@ -293,9 +298,9 @@ export default function Deposit ({
           let tip = ""
           if (errorMsg.endsWith("'ES or AD'") || errorMsg.endsWith("'ES'")) {
             tip = "Vault has been shut down, please try again later!"
-          }else if (errorMsg.endsWith("'AD'")) {
+          } else if (errorMsg.endsWith("'AD'")) {
             tip = "Vault is in adjustment status, please try again later!"
-          }else if (errorMsg.endsWith("'RP'")) {
+          } else if (errorMsg.endsWith("'RP'")) {
             tip = "Vault is in rebase status, please try again later!"
           } else if (errorMsg.endsWith("'is distributing'")) {
             tip = "Vault is in distributing, please try again later!"
@@ -343,46 +348,50 @@ export default function Deposit ({
     setIsOpenEstimateModal(true)
   }
 
-  const estimateMint = debounce(async () => {
-    const isValidUsdtValue = isValidValue(TOKEN.USDT)
-    const isValidUsdcValue = isValidValue(TOKEN.USDC)
-    const isValidDaiValue = isValidValue(TOKEN.DAI)
-    const isFalse = v => v === false
-    const [tokens, amounts] = getTokenAndAmonut()
-    if (isFalse(isValidUsdtValue) || isFalse(isValidUsdcValue) || isFalse(isValidDaiValue) || tokens.length === 0) {
-      setEstimateVaultBuffValue(BigNumber.from(0))
-      return
-    }
-    const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider)
-    const result = await vaultContract.estimateMint(tokens, amounts).catch(error => {
-      if (error && error.data) {
-        const errorMsg = get(error.data, "message", "")
-        let tip = ""
-        if (errorMsg.endsWith("'ES or AD'") || errorMsg.endsWith("'ES'")) {
-          tip = "Vault has been shut down, please try again later!"
-        } else if (errorMsg.endsWith("'AD'")) {
-          tip = "Vault is in adjustment status, please try again later!"
-        } else if (errorMsg.endsWith("'RP'")) {
-          tip = "Vault is in rebase status, please try again later!"
-        } else if (errorMsg.endsWith("'is distributing'")) {
-          tip = "Vault is in distributing, please try again later!"
-        } else if (errorMsg.endsWith("'Amount must be gt minimum Investment Amount'")) {
-          tip = "Deposit Amount must be great then minimum Investment Amount!"
-        }
-        if (tip) {
-          dispatch(
-            warmDialog({
-              open: true,
-              type: "error",
-              message: tip,
-            }),
-          )
-        }
-        return BigNumber.from(0)
+  const estimateMint = useCallback(
+    debounce(async () => {
+      const isValidUsdtValue = isValidValue(TOKEN.USDT)
+      const isValidUsdcValue = isValidValue(TOKEN.USDC)
+      const isValidDaiValue = isValidValue(TOKEN.DAI)
+      const isFalse = v => v === false
+      const [tokens, amounts] = getTokenAndAmonut()
+      if (isFalse(isValidUsdtValue) || isFalse(isValidUsdcValue) || isFalse(isValidDaiValue) || tokens.length === 0) {
+        setEstimateVaultBuffValue(BigNumber.from(0))
+        setIsEstimate(false)
+        return
       }
-    })
-    setEstimateVaultBuffValue(result)
-  }, 500)
+      const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider)
+      const result = await vaultContract.estimateMint(tokens, amounts).catch(error => {
+        if (error && error.data) {
+          const errorMsg = get(error.data, "message", "")
+          let tip = ""
+          if (errorMsg.endsWith("'ES or AD'") || errorMsg.endsWith("'ES'")) {
+            tip = "Vault has been shut down, please try again later!"
+          } else if (errorMsg.endsWith("'AD'")) {
+            tip = "Vault is in adjustment status, please try again later!"
+          } else if (errorMsg.endsWith("'RP'")) {
+            tip = "Vault is in rebase status, please try again later!"
+          } else if (errorMsg.endsWith("'is distributing'")) {
+            tip = "Vault is in distributing, please try again later!"
+          } else if (errorMsg.endsWith("'Amount must be gt minimum Investment Amount'")) {
+            tip = "Deposit Amount must be great then minimum Investment Amount!"
+          }
+          if (tip) {
+            dispatch(
+              warmDialog({
+                open: true,
+                type: "error",
+                message: tip,
+              }),
+            )
+          }
+          return BigNumber.from(0)
+        }
+      })
+      setEstimateVaultBuffValue(result)
+      setIsEstimate(false)
+    }, 1500),
+  )
 
   useEffect(() => {
     estimateMint()
@@ -421,7 +430,8 @@ export default function Deposit ({
                   className={classes.estimateText}
                   title={formatBalance(item.balance, item.decimals, { showAll: true })}
                 >
-                  {`Balance: ${formatBalance(item.balance, item.decimals)}`}
+                  Balance:&nbsp;&nbsp;
+                  <Loading loading={isBalanceLoading}>{formatBalance(item.balance, item.decimals)}</Loading>
                 </p>
               </GridItem>
             </GridContainer>
@@ -435,11 +445,16 @@ export default function Deposit ({
             <p className={classes.estimateBalanceTitle}>
               USDi Ticket:
               <span className={classes.estimateBalanceNum}>
-                {toFixed(estimateVaultBuffValue, BigNumber.from(10).pow(usdiDecimals))}
+                <Loading loading={isEstimate}>
+                  {toFixed(estimateVaultBuffValue, BigNumber.from(10).pow(usdiDecimals))}
+                </Loading>
               </span>
             </p>
             <p className={classes.estimateText}>
-              Balance: <span>{formatBalance(vaultBufferBalance, vaultBufferDecimals)}</span>
+              Balance:&nbsp;&nbsp;
+              <span>
+                <Loading loading={isBalanceLoading}>{formatBalance(vaultBufferBalance, vaultBufferDecimals)}</Loading>
+              </span>
             </p>
           </GridItem>
         ) : (
@@ -447,7 +462,11 @@ export default function Deposit ({
             <div className={classes.depositComfirmArea}>
               <Muted>
                 <p style={{ fontSize: 16, wordBreak: "break-all", letterSpacing: "0.01071em" }}>
-                  Estimated: &nbsp;{toFixed(estimateVaultBuffValue, BigNumber.from(10).pow(usdiDecimals))}
+                  Estimated: &nbsp;
+                  <Loading
+                    loading={isEstimate}
+                    element={toFixed(estimateVaultBuffValue, BigNumber.from(10).pow(usdiDecimals))}
+                  />
                   &nbsp;USDi
                 </p>
               </Muted>
@@ -575,7 +594,9 @@ export default function Deposit ({
                 </span>
                 &nbsp; USDi Tickets <span style={{ fontWeight: "bold", color: "dimgrey" }}>To</span>&nbsp;
                 <span style={{ color: "darkturquoise" }}>
-                  {toFixed(estimateVaultBuffValue.mul(9987).div(10000), BigNumber.from(10).pow(usdiDecimals), 2)}
+                  <Loading loading={isEstimate}>
+                    {toFixed(estimateVaultBuffValue.mul(9987).div(10000), BigNumber.from(10).pow(usdiDecimals), 2)}
+                  </Loading>
                 </span>
                 &nbsp; USDi
               </Typography>
@@ -600,11 +621,7 @@ export default function Deposit ({
               <Button color='colorfull' onClick={diposit} style={{ width: "50%" }}>
                 Continue
               </Button>
-              <Button
-                style={{ marginLeft: 20 }}
-                color='danger'
-                onClick={() => setIsOpenEstimateModal(false)}
-              >
+              <Button style={{ marginLeft: 20 }} color='danger' onClick={() => setIsOpenEstimateModal(false)}>
                 Cancel
               </Button>
             </GridItem>

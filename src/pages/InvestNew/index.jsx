@@ -19,6 +19,7 @@ import SwapHorizIcon from "@material-ui/icons/SwapHoriz"
 import AccountBalanceWalletIcon from "@material-ui/icons/AccountBalanceWallet"
 import SaveAltIcon from "@material-ui/icons/SaveAlt"
 import UndoIcon from "@material-ui/icons/Undo"
+import Loading from "../../components/Loading"
 import Deposit from "./Deposit"
 import Withdraw from "./Withdraw"
 
@@ -83,34 +84,33 @@ function Invest (props) {
   const [vaultBufferBalance, setVaultBufferBalance] = useState(BigNumber.from(0))
   const [vaultBufferDecimals, setVaultBufferDecimals] = useState(0)
 
+  const [isBalanceLoading, setIsBalanceLoading] = useState(true)
+
   const current = useSelector(state => state.investReducer.currentTab)
-  const setCurrent = (tab) => dispatch(setCurrentTab(tab))
+  const setCurrent = tab => {
+    loadCoinsBalance()
+    dispatch(setCurrentTab(tab))
+  }
 
   const lastRebaseTime = getLastPossibleRebaseTime()
 
   // 载入账户数据
   const loadBanlance = () => {
-    if (isEmpty(address)) return loadBanlance
+    if (isEmpty(address)) return
     const usdtContract = new ethers.Contract(USDT_ADDRESS, IERC20_ABI, userProvider)
     const usdcContract = new ethers.Contract(USDC_ADDRESS, IERC20_ABI, userProvider)
     const daiContract = new ethers.Contract(DAI_ADDRESS, IERC20_ABI, userProvider)
     const usdiContract = new ethers.Contract(USDI_ADDRESS, USDI_ABI, userProvider)
 
     // 如果abi版本等于beta-v1.5.9，则需要多查询vaultBuffer的账户余额
-    if (abi_version === "beta-v1.5.9") {
-      const vaultBufferContract = new ethers.Contract(VAULT_BUFFER_ADDRESS, VAULT_BUFFER_ABI, userProvider)
-      vaultBufferContract.balanceOf(address).then(setVaultBufferBalance)
-      vaultBufferContract.decimals().then(setVaultBufferDecimals)
-    }
+    const vaultBufferContract = new ethers.Contract(VAULT_BUFFER_ADDRESS, VAULT_BUFFER_ABI, userProvider)
+    vaultBufferContract
+      .decimals()
+      .then(setVaultBufferDecimals)
+      .catch(noop)
 
     Promise.all([
-      usdtContract.balanceOf(address).then(setUsdtBalance),
-      usdcContract.balanceOf(address).then(setUsdcBalance),
-      daiContract.balanceOf(address).then(setDaiBalance),
-      usdiContract
-        .balanceOf(address)
-        .then(setToBalance)
-        .catch(noop),
+      loadCoinsBalance(),
       loadTotalAssets()
         .then(afterTotalValue => {
           setTotalValue(afterTotalValue)
@@ -132,6 +132,34 @@ function Invest (props) {
           message: "Please confirm wallet's network!",
         }),
       )
+    })
+  }
+
+  /**
+   * 此方法只载入balance数据
+   * @returns
+   */
+  const loadCoinsBalance = () => {
+    if (isEmpty(address)) return
+    setIsBalanceLoading(true)
+    const usdtContract = new ethers.Contract(USDT_ADDRESS, IERC20_ABI, userProvider)
+    const usdcContract = new ethers.Contract(USDC_ADDRESS, IERC20_ABI, userProvider)
+    const daiContract = new ethers.Contract(DAI_ADDRESS, IERC20_ABI, userProvider)
+    const usdiContract = new ethers.Contract(USDI_ADDRESS, USDI_ABI, userProvider)
+    const vaultBufferContract = new ethers.Contract(VAULT_BUFFER_ADDRESS, VAULT_BUFFER_ABI, userProvider)
+    return Promise.all([
+      usdtContract.balanceOf(address).then(setUsdtBalance),
+      usdcContract.balanceOf(address).then(setUsdcBalance),
+      daiContract.balanceOf(address).then(setDaiBalance),
+      vaultBufferContract
+        .balanceOf(address)
+        .then(setVaultBufferBalance)
+        .catch(noop),
+      usdiContract.balanceOf(address).then(setToBalance),
+    ]).finally(() => {
+      setTimeout(() => {
+        setIsBalanceLoading(false)
+      }, 1000)
     })
   }
 
@@ -215,7 +243,12 @@ function Invest (props) {
       <GridContainer spacing={0} style={{ paddingTop: "100px" }}>
         <GridItem xs={3} sm={3} md={3} style={{ padding: "0 3rem" }}>
           <List>
-            <ListItem key='My Account' button className={classNames(classes.item)} onClick={() => setCurrent(INVEST_TAB.account)}>
+            <ListItem
+              key='My Account'
+              button
+              className={classNames(classes.item)}
+              onClick={() => setCurrent(INVEST_TAB.account)}
+            >
               <ListItemIcon>
                 <AccountBalanceWalletIcon style={{ color: current === 0 ? "#A68EFE" : "#fff" }} />
               </ListItemIcon>
@@ -265,7 +298,7 @@ function Invest (props) {
               <div className={classes.balanceCardItem}>
                 <div className={classes.balanceCardValue}>
                   <span title={formatBalance(toBalance, usdiDecimals, { showAll: true })}>
-                    {formatBalance(toBalance, usdiDecimals)}
+                    <Loading loading={isBalanceLoading}>{formatBalance(toBalance, usdiDecimals)}</Loading>
                   </span>
                   <span className={classes.symbol}>USDi</span>
                   {userProvider && (
@@ -277,9 +310,11 @@ function Invest (props) {
                 {abi_version === "beta-v1.5.9" && (
                   <div className={classes.balanceCardValue} style={{ fontSize: "1rem" }}>
                     <span title={formatBalance(vaultBufferBalance, vaultBufferDecimals, { showAll: true })}>
-                      {formatBalance(vaultBufferBalance, vaultBufferDecimals)}
-                      <span className={classes.symbol}>USDi Ticket&nbsp;&nbsp;</span>
+                      <Loading loading={isBalanceLoading}>
+                        {formatBalance(vaultBufferBalance, vaultBufferDecimals)}
+                      </Loading>
                     </span>
+                    <span className={classes.symbol}>USDi Ticket&nbsp;&nbsp;</span>
                     <Tooltip
                       classes={{
                         tooltip: classes.tooltip,
@@ -328,6 +363,8 @@ function Invest (props) {
                 toBalance={toBalance}
                 vaultBufferBalance={vaultBufferBalance}
                 vaultBufferDecimals={vaultBufferDecimals}
+                isBalanceLoading={isBalanceLoading}
+                reloadBalance={loadCoinsBalance}
               />
             </div>
           )}
@@ -342,6 +379,8 @@ function Invest (props) {
                 IERC20_ABI={IERC20_ABI}
                 EXCHANGE_AGGREGATOR_ABI={EXCHANGE_AGGREGATOR_ABI}
                 EXCHANGE_ADAPTER_ABI={EXCHANGE_ADAPTER_ABI}
+                isBalanceLoading={isBalanceLoading}
+                reloadBalance={loadCoinsBalance}
               />
             </div>
           )}

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react"
+import React, { useState, useEffect, useCallback } from "react"
 import * as ethers from "ethers"
 import BN from "bignumber.js"
 import { useDispatch } from "react-redux"
@@ -25,6 +25,7 @@ import BocStepConnector from "../../../components/Stepper/StepConnector"
 import GridContainer from "../../../components/Grid/GridContainer"
 import GridItem from "../../../components/Grid/GridItem"
 import Button from "../../../components/CustomButtons/Button"
+import Loading from "../../../components/Loading"
 import { warmDialog } from "./../../../reducers/meta-reducer"
 import { toFixed, formatBalance } from "../../../helpers/number-format"
 import { addToken } from "../../../helpers/wallet"
@@ -72,6 +73,8 @@ export default function Withdraw ({
   EXCHANGE_AGGREGATOR_ABI,
   EXCHANGE_ADAPTER_ABI,
   PRICE_ORCALE_ABI,
+  isBalanceLoading,
+  reloadBalance,
 }) {
   const classes = useStyles()
   const dispatch = useDispatch()
@@ -108,176 +111,178 @@ export default function Withdraw ({
     return exchangePlatformAdapters
   }
 
-  const estimateWithdraw = debounce(async () => {
-    setIsEstimate(true)
-    const nextValue = BigNumber.from(
-      BN(toValue)
-        .multipliedBy(
-          BigNumber.from(10)
-            .pow(ethiDecimals)
-            .toString(),
+  const estimateWithdraw = useCallback(
+    debounce(async () => {
+      setIsEstimate(true)
+      const nextValue = BigNumber.from(
+        BN(toValue)
+          .multipliedBy(
+            BigNumber.from(10)
+              .pow(ethiDecimals)
+              .toString(),
+          )
+          .toFixed(),
+      )
+      const allowMaxLossValue = BigNumber.from(10000 - parseInt(100 * parseFloat(allowMaxLoss)))
+        .mul(nextValue)
+        .div(BigNumber.from(1e4))
+      const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider)
+      const signer = userProvider.getSigner()
+      const vaultContractWithSigner = vaultContract.connect(signer)
+
+      try {
+        let [tokens, amounts] = await vaultContractWithSigner.callStatic.burn(
+          nextValue,
+          ETH_ADDRESS,
+          allowMaxLossValue,
+          false,
+          [],
         )
-        .toFixed(),
-    )
-    const allowMaxLossValue = BigNumber.from(10000 - parseInt(100 * parseFloat(allowMaxLoss)))
-      .mul(nextValue)
-      .div(BigNumber.from(1e4))
-    const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider)
-    const signer = userProvider.getSigner()
-    const vaultContractWithSigner = vaultContract.connect(signer)
-
-    try {
-      let [tokens, amounts] = await vaultContractWithSigner.callStatic.burn(
-        nextValue,
-        ETH_ADDRESS,
-        allowMaxLossValue,
-        false,
-        [],
-      )
-      const exchangeManager = await vaultContract.exchangeManager()
-      const exchangeManagerContract = new ethers.Contract(exchangeManager, EXCHANGE_AGGREGATOR_ABI, userProvider)
-      const exchangePlatformAdapters = await getExchangePlatformAdapters(exchangeManagerContract, userProvider)
-      console.log(
-        "estimate get exchange path:",
-        tokens,
-        map(amounts, i => i.toString()),
-      )
-      // 查询兑换路径
-      let exchangeArray = await Promise.all(
-        map(tokens, async (tokenItem, index) => {
-          const exchangeAmounts = amounts[index].toString()
-          if (tokenItem === ETH_ADDRESS || exchangeAmounts === "0") {
-            return {}
-          }
-          const fromConstrat = new ethers.Contract(tokenItem, IERC20_ABI, userProvider)
-          const priceProvider = await getPriceProvider()
-          const amountsInEth = await priceProvider.valueInEth(tokenItem, exchangeAmounts)
-          if (WITHDRAW_EXCHANGE_THRESHOLD.gt(amountsInEth)) {
-            return {}
-          }
-          const fromToken = {
-            decimals: parseInt((await fromConstrat.decimals()).toString()),
-            symbol: await fromConstrat.symbol(),
-            address: tokenItem,
-          }
-          try {
-            const bestSwapInfo = await getBestSwapInfo(
-              fromToken,
-              {
-                decimals: 18,
-                address: ETH_ADDRESS,
-              },
-              amounts[index].toString(),
-              parseInt(100 * parseFloat(slipper)) || 0,
-              ORACLE_ADDITIONAL_SLIPPAGE,
-              exchangePlatformAdapters,
-              EXCHANGE_EXTRA_PARAMS,
-            )
-            if (isEmpty(bestSwapInfo)) {
-              throw new Error("兑换路径获取失败")
+        const exchangeManager = await vaultContract.exchangeManager()
+        const exchangeManagerContract = new ethers.Contract(exchangeManager, EXCHANGE_AGGREGATOR_ABI, userProvider)
+        const exchangePlatformAdapters = await getExchangePlatformAdapters(exchangeManagerContract, userProvider)
+        console.log(
+          "estimate get exchange path:",
+          tokens,
+          map(amounts, i => i.toString()),
+        )
+        // 查询兑换路径
+        let exchangeArray = await Promise.all(
+          map(tokens, async (tokenItem, index) => {
+            const exchangeAmounts = amounts[index].toString()
+            if (tokenItem === ETH_ADDRESS || exchangeAmounts === "0") {
+              return {}
             }
-            return {
-              fromToken: tokenItem,
-              toToken: ETH_ADDRESS,
-              fromAmount: exchangeAmounts,
-              exchangeParam: bestSwapInfo,
+            const fromConstrat = new ethers.Contract(tokenItem, IERC20_ABI, userProvider)
+            const priceProvider = await getPriceProvider()
+            const amountsInEth = await priceProvider.valueInEth(tokenItem, exchangeAmounts)
+            if (WITHDRAW_EXCHANGE_THRESHOLD.gt(amountsInEth)) {
+              return {}
             }
-          } catch (error) {
-            console.log("error=", error)
-            return
-          }
-        }),
-      )
+            const fromToken = {
+              decimals: parseInt((await fromConstrat.decimals()).toString()),
+              symbol: await fromConstrat.symbol(),
+              address: tokenItem,
+            }
+            try {
+              const bestSwapInfo = await getBestSwapInfo(
+                fromToken,
+                {
+                  decimals: 18,
+                  address: ETH_ADDRESS,
+                },
+                amounts[index].toString(),
+                parseInt(100 * parseFloat(slipper)) || 0,
+                ORACLE_ADDITIONAL_SLIPPAGE,
+                exchangePlatformAdapters,
+                EXCHANGE_EXTRA_PARAMS,
+              )
+              if (isEmpty(bestSwapInfo)) {
+                throw new Error("兑换路径获取失败")
+              }
+              return {
+                fromToken: tokenItem,
+                toToken: ETH_ADDRESS,
+                fromAmount: exchangeAmounts,
+                exchangeParam: bestSwapInfo,
+              }
+            } catch (error) {
+              console.log("error=", error)
+              return
+            }
+          }),
+        )
 
-      if (some(exchangeArray, isUndefined)) {
+        if (some(exchangeArray, isUndefined)) {
+          dispatch(
+            warmDialog({
+              open: true,
+              type: "error",
+              message: "Failed to fetch the exchange path. Please try again later.",
+            }),
+          )
+          return
+        }
+        console.log("exchangeArray=", exchangeArray)
+        const nextArray = filter(exchangeArray, i => !isEmpty(i))
+        ;[tokens, amounts] = await vaultContractWithSigner.callStatic.burn(
+          nextValue,
+          ETH_ADDRESS,
+          allowMaxLossValue,
+          true,
+          nextArray,
+        )
+        console.log("estimate withdraw result:", tokens, amounts)
+        let nextEstimateWithdrawArray = compact(
+          await Promise.all(
+            map(tokens, async (token, index) => {
+              const amount = get(amounts, index, BigNumber.from(0))
+              if (amount.gt(0)) {
+                return {
+                  tokenAddress: token,
+                  decimals: ethiDecimals,
+                  amounts: amount,
+                }
+              }
+            }),
+          ),
+        )
+
+        setEstimateWithdrawArray(nextEstimateWithdrawArray)
+      } catch (error) {
+        console.log("estimate withdraw error", error)
+        console.log("withdraw original error :", error)
+        let errorMsg = error.toString()
+        if (error?.message) {
+          errorMsg = error.message
+        }
+        if (error?.data?.message) {
+          errorMsg = error.data.message
+        }
+        if (error?.error?.data?.originalError?.message) {
+          errorMsg = error.error.data.originalError.message
+        }
+        let tip = ""
+        if (errorMsg.endsWith("'ES or AD'") || errorMsg.endsWith("'ES'")) {
+          tip = "Vault has been shut down, please try again later!"
+        } else if (errorMsg.endsWith("'AD'")) {
+          tip = "Vault is in adjustment status, please try again later!"
+        } else if (errorMsg.endsWith("'RP'")) {
+          tip = "Vault is in rebase status, please try again later!"
+        } else if (errorMsg.indexOf("loss much") !== -1 || errorMsg.indexOf("amount lower than minimum") !== -1) {
+          tip = "Failed to withdraw, please increase the Max Loss!"
+        } else if (
+          errorMsg.endsWith("'Return amount is not enough'") ||
+          errorMsg.endsWith("'callBytes failed: Error(Uniswap: INSUFFICIENT_OUTPUT_AMOUNT)'") ||
+          errorMsg.endsWith("'1inch V4 swap failed: Error(Min return not reached)'") ||
+          errorMsg.endsWith("'callBytes failed: Error(Received amount of tokens are less then expected)'") ||
+          errorMsg.endsWith("'1inch V4 swap failed: Error(Return amount is not enough)'") ||
+          errorMsg.endsWith("'Received amount of tokens are less then expected'") ||
+          errorMsg.endsWith("Error: VM Exception while processing transaction: reverted with reason string 'OL'") ||
+          errorMsg.endsWith("'paraswap callBytes failed: Error(UniswapV2Router: INSUFFICIENT_OUTPUT_AMOUNT)'") ||
+          errorMsg.endsWith("'1inch V4 swap failed: Error(IIA)'")
+        ) {
+          tip = "Failed to exchange, please increase the exchange slippage!"
+        } else if (errorMsg.endsWith("callBytes failed: Error(Call to adapter failed)")) {
+          tip = "Failed to exchange, Please try again later!"
+        } else {
+          tip = errorMsg
+        }
         dispatch(
           warmDialog({
             open: true,
             type: "error",
-            message: "Failed to fetch the exchange path. Please try again later.",
+            message: tip,
           }),
         )
-        return
+        setEstimateWithdrawArray(undefined)
+      } finally {
+        setTimeout(() => {
+          setIsEstimate(false)
+        }, 500)
       }
-      console.log("exchangeArray=", exchangeArray)
-      const nextArray = filter(exchangeArray, i => !isEmpty(i))
-      ;[tokens, amounts] = await vaultContractWithSigner.callStatic.burn(
-        nextValue,
-        ETH_ADDRESS,
-        allowMaxLossValue,
-        true,
-        nextArray,
-      )
-      console.log("estimate withdraw result:", tokens, amounts)
-      let nextEstimateWithdrawArray = compact(
-        await Promise.all(
-          map(tokens, async (token, index) => {
-            const amount = get(amounts, index, BigNumber.from(0))
-            if (amount.gt(0)) {
-              return {
-                tokenAddress: token,
-                decimals: ethiDecimals,
-                amounts: amount,
-              }
-            }
-          }),
-        ),
-      )
-
-      setEstimateWithdrawArray(nextEstimateWithdrawArray)
-    } catch (error) {
-      console.log("estimate withdraw error", error)
-      console.log("withdraw original error :", error)
-      let errorMsg = error.toString()
-      if (error?.message) {
-        errorMsg = error.message
-      }
-      if (error?.data?.message) {
-        errorMsg = error.data.message
-      }
-      if (error?.error?.data?.originalError?.message) {
-        errorMsg = error.error.data.originalError.message
-      }
-      let tip = ""
-      if (errorMsg.endsWith("'ES or AD'") || errorMsg.endsWith("'ES'")) {
-        tip = "Vault has been shut down, please try again later!"
-      } else if (errorMsg.endsWith("'AD'")) {
-        tip = "Vault is in adjustment status, please try again later!"
-      } else if (errorMsg.endsWith("'RP'")) {
-        tip = "Vault is in rebase status, please try again later!"
-      } else if (errorMsg.indexOf("loss much") !== -1 || errorMsg.indexOf("amount lower than minimum") !== -1) {
-        tip = "Failed to withdraw, please increase the Max Loss!"
-      } else if (
-        errorMsg.endsWith("'Return amount is not enough'") ||
-        errorMsg.endsWith("'callBytes failed: Error(Uniswap: INSUFFICIENT_OUTPUT_AMOUNT)'") ||
-        errorMsg.endsWith("'1inch V4 swap failed: Error(Min return not reached)'") ||
-        errorMsg.endsWith("'callBytes failed: Error(Received amount of tokens are less then expected)'") ||
-        errorMsg.endsWith("'1inch V4 swap failed: Error(Return amount is not enough)'") ||
-        errorMsg.endsWith("'Received amount of tokens are less then expected'") ||
-        errorMsg.endsWith("Error: VM Exception while processing transaction: reverted with reason string 'OL'") ||
-        errorMsg.endsWith("'paraswap callBytes failed: Error(UniswapV2Router: INSUFFICIENT_OUTPUT_AMOUNT)'") ||
-        errorMsg.endsWith("'1inch V4 swap failed: Error(IIA)'")
-      ) {
-        tip = "Failed to exchange, please increase the exchange slippage!"
-      } else if (errorMsg.endsWith("callBytes failed: Error(Call to adapter failed)")) {
-        tip = "Failed to exchange, Please try again later!"
-      } else {
-        tip = errorMsg
-      }
-      dispatch(
-        warmDialog({
-          open: true,
-          type: "error",
-          message: tip,
-        }),
-      )
-      setEstimateWithdrawArray(undefined)
-    } finally {
-      setTimeout(() => {
-        setIsEstimate(false)
-      }, 1000)
-    }
-  }, 1000)
+    }, 1500),
+  )
 
   const withdraw = async () => {
     let withdrawTimeStart = Date.now(),
@@ -762,7 +767,7 @@ export default function Withdraw ({
         </GridItem>
         <GridItem xs={12} sm={12} md={12} lg={12}>
           <p className={classes.estimateText} title={formatBalance(ethiBalance, ethiDecimals, { showAll: true })}>
-            Balance: {formatBalance(ethiBalance, ethiDecimals)}
+            Balance:&nbsp;&nbsp;<Loading loading={isBalanceLoading}>{formatBalance(ethiBalance, ethiDecimals)}</Loading>
           </p>
         </GridItem>
       </GridContainer>

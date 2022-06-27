@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react"
+import React, { useState, useEffect, useRef, useCallback } from "react"
 import * as ethers from "ethers"
 import BN from "bignumber.js"
 import { useDispatch } from "react-redux"
@@ -22,6 +22,7 @@ import Paper from "@material-ui/core/Paper"
 import Tooltip from "@material-ui/core/Tooltip"
 import InfoIcon from "@material-ui/icons/Info"
 import Typography from "@material-ui/core/Typography"
+import Loading from "../../../components/Loading"
 
 import GridContainer from "../../../components/Grid/GridContainer"
 import GridItem from "../../../components/Grid/GridItem"
@@ -52,6 +53,8 @@ export default function Deposit ({
   ETH_ADDRESS,
   vaultBufferBalance,
   vaultBufferDecimals,
+  isBalanceLoading,
+  reloadBalance,
 }) {
   const classes = useStyles()
   const dispatch = useDispatch()
@@ -59,6 +62,7 @@ export default function Deposit ({
   const [mintGasLimit, setMintGasLimit] = useState(BigNumber.from("174107"))
   const [gasPriceCurrent, setGasPriceCurrent] = useState()
   const [isLoading, setIsLoading] = useState(false)
+  const [isEstimate, setIsEstimate] = useState(false)
   const [isOpenEstimateModal, setIsOpenEstimateModal] = useState(false)
   const [estimateVaultBuffValue, setEstimateVaultBuffValue] = useState(BigNumber.from(0))
   const loadingTimer = useRef()
@@ -66,7 +70,7 @@ export default function Deposit ({
   const nextRebaseTime = getLastPossibleRebaseTime()
   const getGasFee = () => {
     if (!gasPriceCurrent) {
-      return 0
+      return BigNumber.from(0)
     }
     const gasPrice = BigNumber.from(parseInt(gasPriceCurrent, 16).toString())
     // metamask gaslimit great than contract gaslimit, so add extra limit
@@ -109,6 +113,7 @@ export default function Deposit ({
   }
 
   const handleInputChange = event => {
+    setIsEstimate(true)
     setEthValue(event.target.value)
   }
 
@@ -210,26 +215,25 @@ export default function Deposit ({
     }, 2000)
   }
 
-  const estimateMint = debounce(async () => {
-    const isValid = isValidValue()
-    if (!isValid) {
-      setEstimateVaultBuffValue(BigNumber.from(0))
-      return
-    }
-    const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider)
-    const amount = BigNumber.from(
-      BN(ethValue)
-        .multipliedBy(
-          BigNumber.from(10)
-            .pow(ethDecimals)
-            .toString(),
-        )
-        .toFixed(),
-    )
-    vaultContract
-      .estimateMint(ETH_ADDRESS, amount)
-      .then(setEstimateVaultBuffValue)
-      .catch(error => {
+  const estimateMint = useCallback(
+    debounce(async () => {
+      const isValid = isValidValue()
+      if (!isValid) {
+        setIsEstimate(false)
+        setEstimateVaultBuffValue(BigNumber.from(0))
+        return
+      }
+      const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider)
+      const amount = BigNumber.from(
+        BN(ethValue)
+          .multipliedBy(
+            BigNumber.from(10)
+              .pow(ethDecimals)
+              .toString(),
+          )
+          .toFixed(),
+      )
+      const result = await vaultContract.estimateMint(ETH_ADDRESS, amount).catch(error => {
         if (error && error.data) {
           const errorMsg = get(error.data, "message", "")
           let tip = ""
@@ -253,11 +257,13 @@ export default function Deposit ({
               }),
             )
           }
-          return BigNumber.from(0)
         }
-        setEstimateVaultBuffValue(BigNumber.from(0))
+        return BigNumber.from(0)
       })
-  }, 500)
+      setEstimateVaultBuffValue(result)
+      setIsEstimate(false)
+    }, 1500),
+  )
 
   /**
    *
@@ -341,7 +347,8 @@ export default function Deposit ({
             </GridItem>
             <GridItem xs={12} sm={12} md={12} lg={12}>
               <p className={classes.estimateText} title={formatBalance(ethBalance, ethDecimals, { showAll: true })}>
-                {`Balance: ${formatBalance(ethBalance, ethDecimals)}`}
+                Balance:&nbsp;&nbsp;
+                <Loading loading={isBalanceLoading}>{formatBalance(ethBalance, ethDecimals)}</Loading>
               </p>
             </GridItem>
           </GridContainer>
@@ -353,14 +360,19 @@ export default function Deposit ({
           <p className={classes.estimateBalanceTitle}>
             ETHi Ticket:
             <span className={classes.estimateBalanceNum}>
-              {toFixed(estimateVaultBuffValue, BigNumber.from(10).pow(ethiDecimals))}
+              <Loading loading={isEstimate}>
+                {toFixed(estimateVaultBuffValue, BigNumber.from(10).pow(ethiDecimals))}
+              </Loading>
             </span>
           </p>
           <p className={classes.estimateText}>
             Estimated Gas Fee: {toFixed(getGasFee(), BigNumber.from(10).pow(ethDecimals), 6)} ETH
           </p>
           <p className={classes.estimateText} style={{ marginTop: "1rem" }}>
-            Balance: <span>{formatBalance(vaultBufferBalance, vaultBufferDecimals)}</span>
+            Balance:&nbsp;&nbsp;
+            <span>
+              <Loading loading={isBalanceLoading}>{formatBalance(vaultBufferBalance, vaultBufferDecimals)}</Loading>
+            </span>
           </p>
         </GridItem>
         {isEmpty(VAULT_ADDRESS) && (
