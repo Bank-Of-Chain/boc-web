@@ -84,7 +84,7 @@ function Invest (props) {
   const [vaultBufferBalance, setVaultBufferBalance] = useState(BigNumber.from(0))
   const [vaultBufferDecimals, setVaultBufferDecimals] = useState(0)
 
-  const [isBalanceLoading, setIsBalanceLoading] = useState(true)
+  const [isBalanceLoading, setIsBalanceLoading] = useState(false)
 
   const current = useSelector(state => state.investReducer.currentTab)
   const setCurrent = tab => {
@@ -107,7 +107,7 @@ function Invest (props) {
     vaultBufferContract
       .decimals()
       .then(setVaultBufferDecimals)
-      .catch(noop)
+      .catch(() => setVaultBufferDecimals(1))
 
     Promise.all([
       loadCoinsBalance(),
@@ -119,7 +119,10 @@ function Invest (props) {
       usdtContract.decimals().then(setUsdtDecimals),
       usdcContract.decimals().then(setUsdcDecimals),
       daiContract.decimals().then(setDaiDecimals),
-      usdiContract.decimals().then(setUsdiDecimals),
+      usdiContract
+        .decimals()
+        .then(setUsdiDecimals)
+        .catch(() => setUsdiDecimals(1)),
     ]).catch(() => {
       dispatch(
         warmDialog({
@@ -144,7 +147,7 @@ function Invest (props) {
     const usdiContract = new ethers.Contract(USDI_ADDRESS, USDI_ABI, userProvider)
     const vaultBufferContract = new ethers.Contract(VAULT_BUFFER_ADDRESS, VAULT_BUFFER_ABI, userProvider)
     return Promise.all([
-      usdiContract.balanceOf(address),
+      usdiContract.balanceOf(address).catch(() => BigNumber.from(0)),
       usdtContract.balanceOf(address),
       usdcContract.balanceOf(address),
       daiContract.balanceOf(address),
@@ -183,8 +186,9 @@ function Invest (props) {
 
   useEffect(() => {
     const listener = () => {
-      if (isEmpty(VAULT_ADDRESS) || isEmpty(VAULT_ABI) || isEmpty(userProvider)) return
+      if (isEmpty(VAULT_ABI) || isEmpty(userProvider)) return
       loadBanlance()
+      if (isEmpty(VAULT_ADDRESS)) return
       const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider)
       if (!isEmpty(address)) {
         function handleMint (...eventArgs) {

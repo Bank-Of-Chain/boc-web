@@ -81,7 +81,7 @@ function Ethi (props) {
   const [vaultBufferBalance, setVaultBufferBalance] = useState(BigNumber.from(0))
   const [vaultBufferDecimals, setVaultBufferDecimals] = useState(0)
 
-  const [isBalanceLoading, setIsBalanceLoading] = useState(true)
+  const [isBalanceLoading, setIsBalanceLoading] = useState(false)
 
   const lastRebaseTime = getLastPossibleRebaseTime()
 
@@ -100,8 +100,14 @@ function Ethi (props) {
     const ethiContract = new ethers.Contract(ETHI_ADDRESS, IERC20_ABI, userProvider)
     Promise.all([
       loadCoinsBalance(),
-      ethiContract.decimals().then(setEthiDecimals),
-      vaultBufferContract.decimals().then(setVaultBufferDecimals),
+      ethiContract
+        .decimals()
+        .then(setEthiDecimals)
+        .catch(() => setEthiDecimals(1)),
+      vaultBufferContract
+        .decimals()
+        .then(setVaultBufferDecimals)
+        .catch(() => setVaultBufferDecimals(1)),
     ]).catch(() => {
       dispatch(
         warmDialog({
@@ -121,9 +127,9 @@ function Ethi (props) {
     const vaultBufferContract = new ethers.Contract(VAULT_BUFFER_ADDRESS, VAULT_BUFFER_ABI, userProvider)
     const ethiContract = new ethers.Contract(ETHI_ADDRESS, IERC20_ABI, userProvider)
     return Promise.all([
-      ethiContract.balanceOf(address),
+      ethiContract.balanceOf(address).catch(() => BigNumber.from(0)),
       userProvider.getBalance(address),
-      vaultBufferContract.balanceOf(address),
+      vaultBufferContract.balanceOf(address).catch(() => BigNumber.from(0)),
     ])
       .then(([ethiBalance, ethBalance, vaultBufferBalance]) => {
         setEthBalance(ethBalance)
@@ -156,8 +162,9 @@ function Ethi (props) {
 
   useEffect(() => {
     const listener = () => {
-      if (isEmpty(VAULT_ADDRESS) || isEmpty(VAULT_ABI) || isEmpty(userProvider)) return
+      if (isEmpty(VAULT_ABI) || isEmpty(userProvider)) return
       loadBanlance()
+      if (isEmpty(VAULT_ADDRESS)) return
       const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider)
       if (!isEmpty(address)) {
         function handleMint (...eventArgs) {
