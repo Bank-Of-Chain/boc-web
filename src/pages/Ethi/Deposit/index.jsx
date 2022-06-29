@@ -5,7 +5,6 @@ import { useDispatch } from "react-redux"
 import isUndefined from "lodash/isUndefined"
 import debounce from "lodash/debounce"
 import isEmpty from "lodash/isEmpty"
-import get from "lodash/get"
 import map from "lodash/map"
 import moment from "moment"
 import { makeStyles } from "@material-ui/core/styles"
@@ -34,6 +33,7 @@ import { toFixed, formatBalance } from "../../../helpers/number-format"
 // === Utils === //
 import noop from "lodash/noop"
 import { getLastPossibleRebaseTime } from "../../../helpers/time-util"
+import { isAd, isEs, isRp, isDistributing, errorTextOutput, isLessThanMinValue } from "../../../helpers/error-handler"
 
 import styles from "./style"
 
@@ -172,15 +172,17 @@ export default function Deposit ({
       })
       .catch(error => {
         if (error && error.data) {
-          const errorMsg = get(error.data, "message", "")
+          const errorMsg = errorTextOutput(error)
           let tip = ""
-          if (errorMsg.endsWith("'ES or AD'") || errorMsg.endsWith("'ES'")) {
+          if (isEs(errorMsg)) {
             tip = "Vault has been shut down, please try again later!"
-          } else if (errorMsg.endsWith("'AD'")) {
+          } else if (isAd(errorMsg)) {
             tip = "Vault is in adjustment status, please try again later!"
-          } else if (errorMsg.endsWith("'RP'")) {
+          } else if (isRp(errorMsg)) {
             tip = "Vault is in rebase status, please try again later!"
-          } else if (errorMsg.endsWith("'Amount must be gt minimum Investment Amount'")) {
+          } else if (isDistributing(errorMsg)) {
+            tip = "Vault is in distributing, please try again later!"
+          } else if (isLessThanMinValue(errorMsg)) {
             tip = "Deposit Amount must be great then minimum Investment Amount!"
           }
           if (tip) {
@@ -234,29 +236,27 @@ export default function Deposit ({
           .toFixed(),
       )
       const result = await vaultContract.estimateMint(ETH_ADDRESS, amount).catch(error => {
-        if (error && error.data) {
-          const errorMsg = get(error.data, "message", "")
-          let tip = ""
-          if (errorMsg.endsWith("'ES or AD'") || errorMsg.endsWith("'ES'")) {
-            tip = "Vault has been shut down, please try again later!"
-          } else if (errorMsg.endsWith("'AD'")) {
-            tip = "Vault is in adjustment status, please try again later!"
-          } else if (errorMsg.endsWith("'RP'")) {
-            tip = "Vault is in rebase status, please try again later!"
-          } else if (errorMsg.endsWith("'is distributing'")) {
-            tip = "Vault is in distributing, please try again later!"
-          } else if (errorMsg.endsWith("'Amount must be gt minimum Investment Amount'")) {
-            tip = "Deposit Amount must be great then minimum Investment Amount!"
-          }
-          if (tip) {
-            dispatch(
-              warmDialog({
-                open: true,
-                type: "error",
-                message: tip,
-              }),
-            )
-          }
+        const errorMsg = errorTextOutput(error)
+        let tip = ""
+        if (isEs(errorMsg)) {
+          tip = "Vault has been shut down, please try again later!"
+        } else if (isAd(errorMsg)) {
+          tip = "Vault is in adjustment status, please try again later!"
+        } else if (isRp(errorMsg)) {
+          tip = "Vault is in rebase status, please try again later!"
+        } else if (isDistributing(errorMsg)) {
+          tip = "Vault is in distributing, please try again later!"
+        } else if (isLessThanMinValue(errorMsg)) {
+          tip = "Deposit Amount must be great then minimum Investment Amount!"
+        }
+        if (tip) {
+          dispatch(
+            warmDialog({
+              open: true,
+              type: "error",
+              message: tip,
+            }),
+          )
         }
         return BigNumber.from(0)
       })

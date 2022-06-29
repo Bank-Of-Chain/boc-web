@@ -46,6 +46,15 @@ import isEmpty from "lodash/isEmpty"
 import some from "lodash/some"
 import filter from "lodash/filter"
 import isNumber from "lodash/isNumber"
+import {
+  isAd,
+  isEs,
+  isRp,
+  isMaxLoss,
+  isLossMuch,
+  isExchangeFail,
+  errorTextOutput,
+} from "../../../helpers/error-handler"
 
 import styles from "./style"
 
@@ -232,38 +241,19 @@ export default function Withdraw ({
       } catch (error) {
         console.log("estimate withdraw error", error)
         console.log("withdraw original error :", error)
-        let errorMsg = error.toString()
-        if (error?.message) {
-          errorMsg = error.message
-        }
-        if (error?.data?.message) {
-          errorMsg = error.data.message
-        }
-        if (error?.error?.data?.originalError?.message) {
-          errorMsg = error.error.data.originalError.message
-        }
+        const errorMsg = errorTextOutput(error)
         let tip = ""
-        if (errorMsg.endsWith("'ES or AD'") || errorMsg.endsWith("'ES'")) {
+        if (isEs(errorMsg)) {
           tip = "Vault has been shut down, please try again later!"
-        } else if (errorMsg.endsWith("'AD'")) {
+        } else if (isAd(errorMsg)) {
           tip = "Vault is in adjustment status, please try again later!"
-        } else if (errorMsg.endsWith("'RP'")) {
+        } else if (isRp(errorMsg)) {
           tip = "Vault is in rebase status, please try again later!"
-        } else if (errorMsg.indexOf("loss much") !== -1 || errorMsg.indexOf("amount lower than minimum") !== -1) {
+        } else if (isMaxLoss(errorMsg)) {
           tip = "Failed to withdraw, please increase the Max Loss!"
-        } else if (
-          errorMsg.endsWith("'Return amount is not enough'") ||
-          errorMsg.endsWith("'callBytes failed: Error(Uniswap: INSUFFICIENT_OUTPUT_AMOUNT)'") ||
-          errorMsg.endsWith("'1inch V4 swap failed: Error(Min return not reached)'") ||
-          errorMsg.endsWith("'callBytes failed: Error(Received amount of tokens are less then expected)'") ||
-          errorMsg.endsWith("'1inch V4 swap failed: Error(Return amount is not enough)'") ||
-          errorMsg.endsWith("'Received amount of tokens are less then expected'") ||
-          errorMsg.endsWith("Error: VM Exception while processing transaction: reverted with reason string 'OL'") ||
-          errorMsg.endsWith("'paraswap callBytes failed: Error(UniswapV2Router: INSUFFICIENT_OUTPUT_AMOUNT)'") ||
-          errorMsg.endsWith("'1inch V4 swap failed: Error(IIA)'")
-        ) {
+        } else if (isLossMuch(errorMsg)) {
           tip = "Failed to exchange, please increase the exchange slippage!"
-        } else if (errorMsg.endsWith("callBytes failed: Error(Call to adapter failed)")) {
+        } else if (isExchangeFail(errorMsg)) {
           tip = "Failed to exchange, Please try again later!"
         } else {
           tip = errorMsg
@@ -447,38 +437,19 @@ export default function Withdraw ({
       )
     } catch (error) {
       console.log("withdraw original error :", error)
-      let errorMsg = error.toString()
-      if (error?.message) {
-        errorMsg = error.message
-      }
-      if (error?.data?.message) {
-        errorMsg = error.data.message
-      }
-      if (error?.error?.data?.originalError?.message) {
-        errorMsg = error.error.data.originalError.message
-      }
+      const errorMsg = errorTextOutput(error)
       let tip = ""
-      if (errorMsg.endsWith("'ES or AD'") || errorMsg.endsWith("'ES'")) {
+      if (isEs(errorMsg)) {
         tip = "Vault has been shut down, please try again later!"
-      } else if (errorMsg.endsWith("'AD'")) {
+      } else if (isAd(errorMsg)) {
         tip = "Vault is in adjustment status, please try again later!"
-      } else if (errorMsg.endsWith("'RP'")) {
+      } else if (isRp(errorMsg)) {
         tip = "Vault is in rebase status, please try again later!"
-      } else if (errorMsg.indexOf("loss much") !== -1 || errorMsg.indexOf("amount lower than minimum") !== -1) {
+      } else if (isMaxLoss(errorMsg)) {
         tip = "Failed to withdraw, please increase the Max Loss!"
-      } else if (
-        errorMsg.endsWith("'Return amount is not enough'") ||
-        errorMsg.endsWith("'callBytes failed: Error(Uniswap: INSUFFICIENT_OUTPUT_AMOUNT)'") ||
-        errorMsg.endsWith("'1inch V4 swap failed: Error(Min return not reached)'") ||
-        errorMsg.endsWith("'callBytes failed: Error(Received amount of tokens are less then expected)'") ||
-        errorMsg.endsWith("'1inch V4 swap failed: Error(Return amount is not enough)'") ||
-        errorMsg.endsWith("'Received amount of tokens are less then expected'") ||
-        errorMsg.endsWith("Error: VM Exception while processing transaction: reverted with reason string 'OL'") ||
-        errorMsg.endsWith("'paraswap callBytes failed: Error(UniswapV2Router: INSUFFICIENT_OUTPUT_AMOUNT)'") ||
-        errorMsg.endsWith("'1inch V4 swap failed: Error(IIA)'")
-      ) {
+      } else if (isLossMuch(errorMsg)) {
         tip = "Failed to exchange, please increase the exchange slippage!"
-      } else if (errorMsg.endsWith("callBytes failed: Error(Call to adapter failed)")) {
+      } else if (isExchangeFail(errorMsg)) {
         tip = "Failed to exchange, Please try again later!"
       } else {
         tip = errorMsg

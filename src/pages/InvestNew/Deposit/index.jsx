@@ -11,10 +11,10 @@ import every from "lodash/every"
 import reduce from "lodash/reduce"
 import debounce from "lodash/debounce"
 import isEmpty from "lodash/isEmpty"
-import get from "lodash/get"
 import { makeStyles } from "@material-ui/core/styles"
 import moment from "moment"
 import { getLastPossibleRebaseTime } from "../../../helpers/time-util"
+import { isAd, isEs, isRp, isDistributing, errorTextOutput, isLessThanMinValue } from "../../../helpers/error-handler"
 
 // === Components === //
 import Step from "@material-ui/core/Step"
@@ -293,29 +293,27 @@ export default function Deposit ({
         isSuccess = true
       })
       .catch(error => {
-        if (error && error.data) {
-          const errorMsg = get(error.data, "message", "")
-          let tip = ""
-          if (errorMsg.endsWith("'ES or AD'") || errorMsg.endsWith("'ES'")) {
-            tip = "Vault has been shut down, please try again later!"
-          } else if (errorMsg.endsWith("'AD'")) {
-            tip = "Vault is in adjustment status, please try again later!"
-          } else if (errorMsg.endsWith("'RP'")) {
-            tip = "Vault is in rebase status, please try again later!"
-          } else if (errorMsg.endsWith("'is distributing'")) {
-            tip = "Vault is in distributing, please try again later!"
-          } else if (errorMsg.endsWith("'Amount must be gt minimum Investment Amount'")) {
-            tip = "Deposit Amount must be great then minimum Investment Amount!"
-          }
-          if (tip) {
-            dispatch(
-              warmDialog({
-                open: true,
-                type: "error",
-                message: tip,
-              }),
-            )
-          }
+        const errorMsg = errorTextOutput(error)
+        let tip = ""
+        if (isEs(errorMsg)) {
+          tip = "Vault has been shut down, please try again later!"
+        } else if (isAd(errorMsg)) {
+          tip = "Vault is in adjustment status, please try again later!"
+        } else if (isRp(errorMsg)) {
+          tip = "Vault is in rebase status, please try again later!"
+        } else if (isDistributing(errorMsg)) {
+          tip = "Vault is in distributing, please try again later!"
+        } else if (isLessThanMinValue(errorMsg)) {
+          tip = "Deposit Amount must be great then minimum Investment Amount!"
+        }
+        if (tip) {
+          dispatch(
+            warmDialog({
+              open: true,
+              type: "error",
+              message: tip,
+            }),
+          )
         }
         setIsLoading(false)
       })
@@ -362,31 +360,29 @@ export default function Deposit ({
       }
       const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider)
       const result = await vaultContract.estimateMint(tokens, amounts).catch(error => {
-        if (error && error.data) {
-          const errorMsg = get(error.data, "message", "")
-          let tip = ""
-          if (errorMsg.endsWith("'ES or AD'") || errorMsg.endsWith("'ES'")) {
-            tip = "Vault has been shut down, please try again later!"
-          } else if (errorMsg.endsWith("'AD'")) {
-            tip = "Vault is in adjustment status, please try again later!"
-          } else if (errorMsg.endsWith("'RP'")) {
-            tip = "Vault is in rebase status, please try again later!"
-          } else if (errorMsg.endsWith("'is distributing'")) {
-            tip = "Vault is in distributing, please try again later!"
-          } else if (errorMsg.endsWith("'Amount must be gt minimum Investment Amount'")) {
-            tip = "Deposit Amount must be great then minimum Investment Amount!"
-          }
-          if (tip) {
-            dispatch(
-              warmDialog({
-                open: true,
-                type: "error",
-                message: tip,
-              }),
-            )
-          }
-          return BigNumber.from(0)
+        const errorMsg = errorTextOutput(error)
+        let tip = ""
+        if (isEs(errorMsg)) {
+          tip = "Vault has been shut down, please try again later!"
+        } else if (isAd(errorMsg)) {
+          tip = "Vault is in adjustment status, please try again later!"
+        } else if (isRp(errorMsg)) {
+          tip = "Vault is in rebase status, please try again later!"
+        } else if (isDistributing(errorMsg)) {
+          tip = "Vault is in distributing, please try again later!"
+        } else if (isLessThanMinValue(errorMsg)) {
+          tip = "Deposit Amount must be great then minimum Investment Amount!"
         }
+        if (tip) {
+          dispatch(
+            warmDialog({
+              open: true,
+              type: "error",
+              message: tip,
+            }),
+          )
+        }
+        return BigNumber.from(0)
       })
       setEstimateVaultBuffValue(result)
       setIsEstimate(false)
