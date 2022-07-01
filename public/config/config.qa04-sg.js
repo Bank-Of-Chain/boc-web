@@ -2,19 +2,19 @@
  * qa04-sg环境配置文件
  */
 
-const ETHI_FOR_ETH = "0x33E45b187da34826aBCEDA1039231Be46f1b05Af"
+const ETHI_FOR_ETH = "0x7Cf4be31f546c04787886358b9486ca3d62B9acf"
 
 const USDI_FOR_ETH = "0x67aD6EA566BA6B0fC52e97Bc25CE46120fdAc04c"
 const USDI_FOR_BSC = ""
 const USDI_FOR_MATIC = ""
 
-const ETHI_VAULT = "0x70E5370b8981Abc6e14C91F4AcE823954EFC8eA3"
+const ETHI_VAULT = "0xb868Cc77A95a65F42611724AF05Aa2d3B6Ec05F2"
 const USDI_VAULT_FOR_ETH = "0x359570B3a0437805D0a71457D61AD26a28cAC9A2"
 const USDI_VAULT_FOR_BSC = ""
 const USDI_VAULT_FOR_MATIC = ""
 
 const VAULT_BUFFER_FOR_ETHI_ETH = "0x2F54D1563963fC04770E85AF819c89Dc807f6a06"
-const VAULT_BUFFER_FOR_USDI_ETH = "0x942ED2fa862887Dc698682cc6a86355324F0f01e"
+const VAULT_BUFFER_FOR_USDI_ETH = "0x8D81A3DCd17030cD5F23Ac7370e4Efb10D2b3cA4"
 const VAULT_BUFFER_FOR_USDI_BSC = ""
 const VAULT_BUFFER_FOR_USDI_MATIC = ""
 
@@ -171,7 +171,7 @@ const config1 = {
       name: "Vault for USDi",
       path: "#/mutils",
       isAudit: true,
-      abi_version: "beta-v1.5",
+      abi_version: "beta-v1.5.9",
       VAULT_ADDRESS: USDI_VAULT_FOR_ETH,
       USDI_ADDRESS: USDI_FOR_ETH,
       VAULT_BUFFER_ADDRESS: VAULT_BUFFER_FOR_USDI_ETH,
@@ -193,7 +193,7 @@ const config1 = {
 
 window.config = {
   // 本地链
-  31337: config137,
+  31337: config1,
   // polygon
   137: config137,
   // bsc
