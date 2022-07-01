@@ -1,7 +1,7 @@
 import React from "react"
 
 const Loading = props => {
-  const { loading, children, width = 20, height = 20, background } = props
+  const { loading, children = "", width = 20, height = 20, background } = props
   const loadingElement = (
     <svg
       style={{ background: background }}
