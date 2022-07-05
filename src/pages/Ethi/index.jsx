@@ -302,13 +302,13 @@ function Ethi (props) {
                 </div>
                 <div className={classes.balanceCardLabel}>AVAILABLE BALANCE</div>
               </div>
-              <div className={classes.tokenInfo}>
+              {/* <div className={classes.tokenInfo}>
                 {userProvider && (
                   <a href={`${net.blockExplorer}/address/${ETHI_ADDRESS}`} target='_blank' rel='noopener noreferrer'>
                     <img className={classes.scanToken} src={net.blockExplorerIcon} alt='wallet' />
                   </a>
                 )}
-              </div>
+              </div> */}
             </Card>
           )}
           {current === 1 && (
