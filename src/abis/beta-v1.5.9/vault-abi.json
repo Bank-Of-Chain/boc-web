@@ -1573,6 +1573,32 @@
   },
   {
     "inputs": [],
+    "name": "minimumInvestmentAmount",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_minimumInvestmentAmount",
+        "type": "uint256"
+      }
+    ],
+    "name": "setMinimumInvestmentAmount",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
     "name": "valueOfTrackedTokens",
     "outputs": [
       {

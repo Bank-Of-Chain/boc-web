@@ -79,7 +79,7 @@ const config137 = {
       abi_version: "beta-v1.5.9",
       VAULT_ADDRESS: USDI_VAULT_FOR_MATIC,
       USDI_ADDRESS: USDI_FOR_MATIC,
-      VAULT_BUFFER_ADDRESS: VAULT_BUFFER_FOR_USDI_ETH,
+      VAULT_BUFFER_ADDRESS: VAULT_BUFFER_FOR_USDI_MATIC,
       isOpen: true,
     },
     {

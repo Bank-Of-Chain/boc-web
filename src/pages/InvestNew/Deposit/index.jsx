@@ -71,7 +71,7 @@ export default function Deposit ({
   vaultBufferBalance,
   vaultBufferDecimals,
   isBalanceLoading,
-  reloadBalance,
+  minimumInvestmentAmount
 }) {
   const classes = useStyles()
   const dispatch = useDispatch()
@@ -304,7 +304,7 @@ export default function Deposit ({
         } else if (isDistributing(errorMsg)) {
           tip = "Vault is in distributing, please try again later!"
         } else if (isLessThanMinValue(errorMsg)) {
-          tip = "Deposit Amount must be great then minimum Investment Amount!"
+          tip = `Deposit Amount must be greater than ${toFixed(minimumInvestmentAmount, BigNumber.from(10).pow(18), 2)}USD!`
         }
         if (tip) {
           dispatch(
@@ -371,7 +371,7 @@ export default function Deposit ({
         } else if (isDistributing(errorMsg)) {
           tip = "Vault is in distributing, please try again later!"
         } else if (isLessThanMinValue(errorMsg)) {
-          tip = "Deposit Amount must be great then minimum Investment Amount!"
+          tip = `Deposit Amount must be greater than ${toFixed(minimumInvestmentAmount, BigNumber.from(10).pow(18), 2)}USD!`
         }
         if (tip) {
           dispatch(
