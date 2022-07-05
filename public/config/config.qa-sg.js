@@ -6,17 +6,17 @@ const ETHI_FOR_ETH = "0x0Dd99d9f56A14E9D53b2DdC62D9f0bAbe806647A"
 
 const USDI_FOR_ETH = "0x3C1Cb427D20F15563aDa8C249E71db76d7183B6c"
 const USDI_FOR_BSC = ""
-const USDI_FOR_MATIC = ""
+const USDI_FOR_MATIC = "0x831a721007308E45e66496Ea78203d35c5AcD309"
 
 const ETHI_VAULT = "0xDae16f755941cbC0C9D240233a6F581d1734DaA2"
 const USDI_VAULT_FOR_ETH = "0xd5C7A01E49ab534e31ABcf63bA5a394fF1E5EfAC"
 const USDI_VAULT_FOR_BSC = ""
-const USDI_VAULT_FOR_MATIC = ""
+const USDI_VAULT_FOR_MATIC = "0x17B43460aAA42Dd72C26A10B5038Ac2cB2278E49"
 
 const VAULT_BUFFER_FOR_ETHI_ETH = "0xd3FFD73C53F139cEBB80b6A524bE280955b3f4db"
 const VAULT_BUFFER_FOR_USDI_ETH = "0x7C8BaafA542c57fF9B2B90612bf8aB9E86e22C09"
 const VAULT_BUFFER_FOR_USDI_BSC = ""
-const VAULT_BUFFER_FOR_USDI_MATIC = ""
+const VAULT_BUFFER_FOR_USDI_MATIC = "0xB83c5F00c01f1662dcc3A1370553f7eCD574Ed88"
 
 const configBase = {
   vault_address: "",
@@ -76,10 +76,10 @@ const config137 = {
       name: "Vault for USDi",
       path: "#/mutils",
       isAudit: true,
-      abi_version: "beta-v1.5",
+      abi_version: "beta-v1.5.9",
       VAULT_ADDRESS: USDI_VAULT_FOR_MATIC,
       USDI_ADDRESS: USDI_FOR_MATIC,
-      VAULT_BUFFER_ADDRESS: VAULT_BUFFER_FOR_USDI_ETH,
+      VAULT_BUFFER_ADDRESS: VAULT_BUFFER_FOR_USDI_MATIC,
       isOpen: true,
     },
     {
@@ -193,7 +193,7 @@ const config1 = {
 
 window.config = {
   // 本地链
-  31337: config1,
+  31337: config137,
   // polygon
   137: config137,
   // bsc
