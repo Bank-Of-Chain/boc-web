@@ -29,7 +29,6 @@ import { warmDialog } from "./../../reducers/meta-reducer"
 import { setCurrentTab } from "./../../reducers/invest-reducer"
 
 // === constants === //
-import { NET_WORKS } from "../../constants"
 import { ETH_ADDRESS, ETH_DECIMALS } from "../../constants/token"
 import { INVEST_TAB } from "../../constants/invest"
 
@@ -39,7 +38,6 @@ import { formatBalance } from "../../helpers/number-format"
 import isEmpty from "lodash/isEmpty"
 import last from "lodash/last"
 import noop from "lodash/noop"
-import find from "lodash/find"
 import * as ethers from "ethers"
 import useVersionWapper from "../../hooks/useVersionWapper"
 import { addToken } from "../../helpers/wallet"
@@ -205,11 +203,9 @@ function Ethi (props) {
     addToken(ETHI_ADDRESS, "ETHi", 18)
   }
 
-  const net = find(NET_WORKS, item => item.chainId === props.selectedChainId) || NET_WORKS[0]
-
   return (
     <div className={classes.container}>
-      <GridContainer spacing={0} style={{ paddingTop: "100px" }}>
+      <GridContainer spacing={0} style={{ paddingTop: "100px", minHeight: '50rem' }}>
         <GridItem xs={3} sm={3} md={3} style={{ paddingLeft: "3rem" }}>
           <List>
             <ListItem
@@ -302,13 +298,13 @@ function Ethi (props) {
                 </div>
                 <div className={classes.balanceCardLabel}>AVAILABLE BALANCE</div>
               </div>
-              <div className={classes.tokenInfo}>
+              {/* <div className={classes.tokenInfo}>
                 {userProvider && (
                   <a href={`${net.blockExplorer}/address/${ETHI_ADDRESS}`} target='_blank' rel='noopener noreferrer'>
                     <img className={classes.scanToken} src={net.blockExplorerIcon} alt='wallet' />
                   </a>
                 )}
-              </div>
+              </div> */}
             </Card>
           )}
           {current === 1 && (
