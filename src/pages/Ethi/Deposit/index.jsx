@@ -183,7 +183,7 @@ export default function Deposit ({
           } else if (isDistributing(errorMsg)) {
             tip = "Vault is in distributing, please try again later!"
           } else if (isLessThanMinValue(errorMsg)) {
-            tip = `Deposit Amount must be great then ${toFixed(minimumInvestmentAmount, BigNumber.from(10).pow(18), 2)}ETH!`
+            tip = `Deposit Amount must be greater than ${toFixed(minimumInvestmentAmount, BigNumber.from(10).pow(18), 2)}ETH!`
           }
           if (tip) {
             dispatch(
@@ -247,7 +247,7 @@ export default function Deposit ({
         } else if (isDistributing(errorMsg)) {
           tip = "Vault is in distributing, please try again later!"
         } else if (isLessThanMinValue(errorMsg)) {
-          tip = `Deposit Amount must be great then ${toFixed(minimumInvestmentAmount, BigNumber.from(10).pow(18), 2)}ETH!`
+          tip = `Deposit Amount must be greater than ${toFixed(minimumInvestmentAmount, BigNumber.from(10).pow(18), 2)}ETH!`
         }
         if (tip) {
           dispatch(
