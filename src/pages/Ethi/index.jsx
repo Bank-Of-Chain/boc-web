@@ -209,7 +209,7 @@ function Ethi (props) {
 
   return (
     <div className={classes.container}>
-      <GridContainer spacing={0} style={{ paddingTop: "100px" }}>
+      <GridContainer spacing={0} style={{ paddingTop: "100px", minHeight: '50rem' }}>
         <GridItem xs={3} sm={3} md={3} style={{ paddingLeft: "3rem" }}>
           <List>
             <ListItem
