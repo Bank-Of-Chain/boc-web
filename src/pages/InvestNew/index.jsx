@@ -43,6 +43,7 @@ import * as ethers from "ethers"
 import useVersionWapper from "../../hooks/useVersionWapper"
 import { addToken } from "../../helpers/wallet"
 import { getLastPossibleRebaseTime } from "../../helpers/time-util"
+import useVault from "../../hooks/useVault"
 
 // === Styles === //
 import styles from "./style"
@@ -93,6 +94,8 @@ function Invest (props) {
   }
 
   const lastRebaseTime = getLastPossibleRebaseTime()
+
+  const { minimumInvestmentAmount } = useVault(VAULT_ADDRESS, VAULT_ABI, userProvider)
 
   // 载入账户数据
   const loadBanlance = () => {
@@ -371,6 +374,7 @@ function Invest (props) {
                 vaultBufferDecimals={vaultBufferDecimals}
                 isBalanceLoading={isBalanceLoading}
                 reloadBalance={loadCoinsBalance}
+                minimumInvestmentAmount={minimumInvestmentAmount}
               />
             </div>
           )}
