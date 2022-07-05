@@ -29,7 +29,6 @@ import { warmDialog } from "./../../reducers/meta-reducer"
 import { setCurrentTab } from "./../../reducers/invest-reducer"
 
 // === constants === //
-import { NET_WORKS } from "../../constants"
 import { ETH_ADDRESS, ETH_DECIMALS } from "../../constants/token"
 import { INVEST_TAB } from "../../constants/invest"
 
@@ -39,7 +38,6 @@ import { formatBalance } from "../../helpers/number-format"
 import isEmpty from "lodash/isEmpty"
 import last from "lodash/last"
 import noop from "lodash/noop"
-import find from "lodash/find"
 import * as ethers from "ethers"
 import useVersionWapper from "../../hooks/useVersionWapper"
 import { addToken } from "../../helpers/wallet"
@@ -204,8 +202,6 @@ function Ethi (props) {
   const handleAddETHi = () => {
     addToken(ETHI_ADDRESS, "ETHi", 18)
   }
-
-  const net = find(NET_WORKS, item => item.chainId === props.selectedChainId) || NET_WORKS[0]
 
   return (
     <div className={classes.container}>

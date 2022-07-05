@@ -38,7 +38,6 @@ import moment from "moment"
 import isEmpty from "lodash/isEmpty"
 import last from "lodash/last"
 import noop from "lodash/noop"
-import find from "lodash/find"
 import * as ethers from "ethers"
 import useVersionWapper from "../../hooks/useVersionWapper"
 import { addToken } from "../../helpers/wallet"
@@ -242,8 +241,6 @@ function Invest (props) {
       history.push(path.slice(1))
     })
   }
-  const net = find(NET_WORKS, item => item.chainId === props.selectedChainId) || NET_WORKS[0]
-
   return (
     <div className={classes.container}>
       <GridContainer spacing={0} style={{ paddingTop: "100px", minHeight: '50rem' }}>
