@@ -43,7 +43,7 @@ import Muted from "../../../components/Typography/Muted";
 import Button from "../../../components/CustomButtons/Button";
 import { warmDialog } from "./../../../reducers/meta-reducer";
 import { toFixed, formatBalance } from "../../../helpers/number-format";
-import Loading from "../../../components/Loading";
+import Loading from "../../../components/LoadingComponent";
 
 // === Constants === //
 import { USDT_ADDRESS, USDC_ADDRESS, DAI_ADDRESS } from "../../../constants";

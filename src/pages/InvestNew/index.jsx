@@ -19,7 +19,7 @@ import SwapHorizIcon from "@material-ui/icons/SwapHoriz";
 import AccountBalanceWalletIcon from "@material-ui/icons/AccountBalanceWallet";
 import SaveAltIcon from "@material-ui/icons/SaveAlt";
 import UndoIcon from "@material-ui/icons/Undo";
-import Loading from "../../components/Loading";
+import Loading from "../../components/LoadingComponent";
 import Deposit from "./Deposit";
 import Withdraw from "./Withdraw";
 

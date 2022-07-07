@@ -26,7 +26,7 @@ import GridContainer from "../../../components/Grid/GridContainer";
 import GridItem from "../../../components/Grid/GridItem";
 import Button from "../../../components/CustomButtons/Button";
 import Popover from "@material-ui/core/Popover";
-import Loading from "../../../components/Loading";
+import Loading from "../../../components/LoadingComponent";
 import PopupState, { bindTrigger, bindPopover } from "material-ui-popup-state";
 
 // === Constants === //

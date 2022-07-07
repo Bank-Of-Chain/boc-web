@@ -17,7 +17,7 @@ import SaveAltIcon from "@material-ui/icons/SaveAlt";
 import UndoIcon from "@material-ui/icons/Undo";
 import Tooltip from "@material-ui/core/Tooltip";
 import InfoIcon from "@material-ui/icons/Info";
-import Loading from "../../components/Loading";
+import Loading from "../../components/LoadingComponent";
 
 import Deposit from "./Deposit";
 import Withdraw from "./Withdraw";
