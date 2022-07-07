@@ -58,7 +58,10 @@ const config137 = {
     oneInchV4: {
       useHttp: true,
       network: 137,
-      excludeProtocols: ["POLYGON_ONE_INCH_LIMIT_ORDER", "POLYGON_ONE_INCH_LIMIT_ORDER_V2"],
+      excludeProtocols: [
+        "POLYGON_ONE_INCH_LIMIT_ORDER",
+        "POLYGON_ONE_INCH_LIMIT_ORDER_V2",
+      ],
     },
     paraswap: {
       network: 137,
@@ -82,7 +85,10 @@ const config56 = {
     oneInchV4: {
       useHttp: true,
       network: 56,
-      excludeProtocols: ["BSC_ONE_INCH_LIMIT_ORDER", "BSC_ONE_INCH_LIMIT_ORDER_V2"],
+      excludeProtocols: [
+        "BSC_ONE_INCH_LIMIT_ORDER",
+        "BSC_ONE_INCH_LIMIT_ORDER_V2",
+      ],
     },
     paraswap: {
       network: 56,
@@ -123,7 +129,8 @@ const config1 = {
     },
     paraswap: {
       network: 1,
-      includeDEXS: "UniswapV2,UniswapV3,SushiSwap,mStable,DODOV2,DODOV1,Curve,CurveV2,Compound,Bancor,BalancerV2,Aave2",
+      includeDEXS:
+        "UniswapV2,UniswapV3,SushiSwap,mStable,DODOV2,DODOV1,Curve,CurveV2,Compound,Bancor,BalancerV2,Aave2",
       excludeContractMethods: ["swapOnZeroXv2", "swapOnZeroXv4"],
     },
   },

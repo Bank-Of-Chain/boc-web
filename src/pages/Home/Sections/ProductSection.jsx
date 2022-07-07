@@ -93,7 +93,10 @@ export default function ProductSection() {
                 <InfoArea
                   title={title}
                   description={map(descriptions, (d, index) => (
-                    <span key={`item-${index}`} style={{ display: "inline-block" }}>
+                    <span
+                      key={`item-${index}`}
+                      style={{ display: "inline-block" }}
+                    >
                       {index + 1}. {d}
                     </span>
                   ))}

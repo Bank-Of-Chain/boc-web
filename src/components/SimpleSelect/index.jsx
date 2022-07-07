@@ -13,7 +13,7 @@ const useStyles = makeStyles(styles);
 function Select({ value, onChange = () => {}, options = [] }) {
   const [popVisible, setPopVisible] = useState(false);
   const classes = useStyles();
-  const selectedOpt = find(options, opt => opt.value === value) || {};
+  const selectedOpt = find(options, (opt) => opt.value === value) || {};
   const handleClickAway = () => {
     setPopVisible(false);
   };
@@ -22,7 +22,7 @@ function Select({ value, onChange = () => {}, options = [] }) {
     setPopVisible(!popVisible);
   };
 
-  const handlePopSelect = value => {
+  const handlePopSelect = (value) => {
     setPopVisible(false);
     onChange(value);
   };
@@ -34,24 +34,37 @@ function Select({ value, onChange = () => {}, options = [] }) {
           <div className={classes.triggerLabelWrapper}>
             {selectedOpt.img &&
               (!isArray(selectedOpt.img) ? (
-                <img className={classes.optImg} src={selectedOpt.img} alt="logo" />
+                <img
+                  className={classes.optImg}
+                  src={selectedOpt.img}
+                  alt="logo"
+                />
               ) : (
                 <div className={classes.optMultiImgWrapper}>
-                  {map(selectedOpt.img, img => (
-                    <img key={img} className={classes.optMultiImg} src={img} alt="logo" />
+                  {map(selectedOpt.img, (img) => (
+                    <img
+                      key={img}
+                      className={classes.optMultiImg}
+                      src={img}
+                      alt="logo"
+                    />
                   ))}
                 </div>
               ))}
             <span className={classes.triggerLabel}>{selectedOpt.label}</span>
           </div>
-          <ExpandMoreIcon className={classNames(classes.caret, { [classes.expandLess]: popVisible })} />
+          <ExpandMoreIcon
+            className={classNames(classes.caret, {
+              [classes.expandLess]: popVisible,
+            })}
+          />
         </div>
         <ul
           className={classNames(classes.selectPop, {
             [classes.selectPopVisible]: popVisible,
           })}
         >
-          {map(options, opt => (
+          {map(options, (opt) => (
             <li
               key={opt.value}
               className={classNames(classes.selectItem, {
@@ -64,8 +77,13 @@ function Select({ value, onChange = () => {}, options = [] }) {
                   <img className={classes.optImg} src={opt.img} alt="logo" />
                 ) : (
                   <div className={classes.optMultiImgWrapper}>
-                    {map(opt.img, img => (
-                      <img key={img} className={classes.optMultiImg} src={img} alt="logo" />
+                    {map(opt.img, (img) => (
+                      <img
+                        key={img}
+                        className={classes.optMultiImg}
+                        src={img}
+                        alt="logo"
+                      />
                     ))}
                   </div>
                 ))}

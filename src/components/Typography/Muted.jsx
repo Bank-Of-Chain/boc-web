@@ -14,7 +14,14 @@ export default function Muted(props) {
   const classes = useStyles();
   const { children, className, title } = props;
   return (
-    <div className={classNames(classes.defaultFontStyle, classes.mutedText, className)} title={title}>
+    <div
+      className={classNames(
+        classes.defaultFontStyle,
+        classes.mutedText,
+        className
+      )}
+      title={title}
+    >
       {children}
     </div>
   );

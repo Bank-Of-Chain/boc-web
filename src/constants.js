@@ -5,7 +5,8 @@ export const INFURA_ID = "3be290dd5c1a46f894bdf28625c000ce";
 export const ETHERSCAN_KEY = "PSW8C433Q667DVEX5BCRMGNAH9FSGFZ7Q8";
 
 // EXTERNAL CONTRACTS
-export const ENV_NETWORK_TYPE = process.env.REACT_APP_NETWORK_TYPE || localStorage.REACT_APP_NETWORK_TYPE;
+export const ENV_NETWORK_TYPE =
+  process.env.REACT_APP_NETWORK_TYPE || localStorage.REACT_APP_NETWORK_TYPE;
 const config = window.config[ENV_NETWORK_TYPE] || window.config[undefined];
 console.log("env config=", ENV_NETWORK_TYPE, config);
 

@@ -3,7 +3,7 @@
  * @param {number} seconds
  * @returns
  */
-export const getTime = seconds => {
+export const getTime = (seconds) => {
   if (seconds < 0)
     return {
       hourTime: 0,

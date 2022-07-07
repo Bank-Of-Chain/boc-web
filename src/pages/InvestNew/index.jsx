@@ -29,7 +29,13 @@ import { warmDialog } from "./../../reducers/meta-reducer";
 import { setCurrentTab } from "./../../reducers/invest-reducer";
 
 // === constants === //
-import { USDT_ADDRESS, USDC_ADDRESS, DAI_ADDRESS, NET_WORKS, CHAIN_ID } from "../../constants";
+import {
+  USDT_ADDRESS,
+  USDC_ADDRESS,
+  DAI_ADDRESS,
+  NET_WORKS,
+  CHAIN_ID,
+} from "../../constants";
 import { INVEST_TAB } from "../../constants/invest";
 
 // === Utils === //
@@ -81,31 +87,57 @@ function Invest(props) {
   const [beforeTotalValue, setBeforeTotalValue] = useState(BigNumber.from(0));
   const [totalValue, setTotalValue] = useState(BigNumber.from(0));
 
-  const [vaultBufferBalance, setVaultBufferBalance] = useState(BigNumber.from(0));
+  const [vaultBufferBalance, setVaultBufferBalance] = useState(
+    BigNumber.from(0)
+  );
   const [vaultBufferDecimals, setVaultBufferDecimals] = useState(0);
 
   const [isBalanceLoading, setIsBalanceLoading] = useState(false);
 
-  const current = useSelector(state => state.investReducer.currentTab);
-  const setCurrent = tab => {
+  const current = useSelector((state) => state.investReducer.currentTab);
+  const setCurrent = (tab) => {
     loadCoinsBalance();
     dispatch(setCurrentTab(tab));
   };
 
   const lastRebaseTime = getLastPossibleRebaseTime();
 
-  const { minimumInvestmentAmount } = useVault(VAULT_ADDRESS, VAULT_ABI, userProvider);
+  const { minimumInvestmentAmount } = useVault(
+    VAULT_ADDRESS,
+    VAULT_ABI,
+    userProvider
+  );
 
   // 载入账户数据
   const loadBanlance = () => {
     if (isEmpty(address)) return;
-    const usdtContract = new ethers.Contract(USDT_ADDRESS, IERC20_ABI, userProvider);
-    const usdcContract = new ethers.Contract(USDC_ADDRESS, IERC20_ABI, userProvider);
-    const daiContract = new ethers.Contract(DAI_ADDRESS, IERC20_ABI, userProvider);
-    const usdiContract = new ethers.Contract(USDI_ADDRESS, USDI_ABI, userProvider);
+    const usdtContract = new ethers.Contract(
+      USDT_ADDRESS,
+      IERC20_ABI,
+      userProvider
+    );
+    const usdcContract = new ethers.Contract(
+      USDC_ADDRESS,
+      IERC20_ABI,
+      userProvider
+    );
+    const daiContract = new ethers.Contract(
+      DAI_ADDRESS,
+      IERC20_ABI,
+      userProvider
+    );
+    const usdiContract = new ethers.Contract(
+      USDI_ADDRESS,
+      USDI_ABI,
+      userProvider
+    );
 
     // 如果abi版本等于beta-v1.5.9，则需要多查询vaultBuffer的账户余额
-    const vaultBufferContract = new ethers.Contract(VAULT_BUFFER_ADDRESS, VAULT_BUFFER_ABI, userProvider);
+    const vaultBufferContract = new ethers.Contract(
+      VAULT_BUFFER_ADDRESS,
+      VAULT_BUFFER_ABI,
+      userProvider
+    );
     vaultBufferContract
       .decimals()
       .then(setVaultBufferDecimals)
@@ -114,7 +146,7 @@ function Invest(props) {
     Promise.all([
       loadCoinsBalance(),
       loadTotalAssets()
-        .then(afterTotalValue => {
+        .then((afterTotalValue) => {
           setTotalValue(afterTotalValue);
         })
         .catch(noop),
@@ -131,7 +163,7 @@ function Invest(props) {
           open: true,
           type: "warning",
           message: "Please confirm wallet's network!",
-        }),
+        })
       );
     });
   };
@@ -143,11 +175,31 @@ function Invest(props) {
   const loadCoinsBalance = () => {
     if (isEmpty(address)) return;
     setIsBalanceLoading(true);
-    const usdtContract = new ethers.Contract(USDT_ADDRESS, IERC20_ABI, userProvider);
-    const usdcContract = new ethers.Contract(USDC_ADDRESS, IERC20_ABI, userProvider);
-    const daiContract = new ethers.Contract(DAI_ADDRESS, IERC20_ABI, userProvider);
-    const usdiContract = new ethers.Contract(USDI_ADDRESS, USDI_ABI, userProvider);
-    const vaultBufferContract = new ethers.Contract(VAULT_BUFFER_ADDRESS, VAULT_BUFFER_ABI, userProvider);
+    const usdtContract = new ethers.Contract(
+      USDT_ADDRESS,
+      IERC20_ABI,
+      userProvider
+    );
+    const usdcContract = new ethers.Contract(
+      USDC_ADDRESS,
+      IERC20_ABI,
+      userProvider
+    );
+    const daiContract = new ethers.Contract(
+      DAI_ADDRESS,
+      IERC20_ABI,
+      userProvider
+    );
+    const usdiContract = new ethers.Contract(
+      USDI_ADDRESS,
+      USDI_ABI,
+      userProvider
+    );
+    const vaultBufferContract = new ethers.Contract(
+      VAULT_BUFFER_ADDRESS,
+      VAULT_BUFFER_ABI,
+      userProvider
+    );
     return Promise.all([
       usdiContract.balanceOf(address).catch(() => BigNumber.from(0)),
       usdtContract.balanceOf(address),
@@ -155,14 +207,28 @@ function Invest(props) {
       daiContract.balanceOf(address),
       vaultBufferContract.balanceOf(address).catch(() => BigNumber.from(0)),
     ])
-      .then(([usdiBalance, usdtBalance, usdcBalance, daiBalance, vaultBufferBalance]) => {
-        setToBalance(usdiBalance);
-        setUsdtBalance(usdtBalance);
-        setUsdcBalance(usdcBalance);
-        setDaiBalance(daiBalance);
-        setVaultBufferBalance(vaultBufferBalance);
-        return [usdiBalance, usdtBalance, usdcBalance, daiBalance, vaultBufferBalance];
-      })
+      .then(
+        ([
+          usdiBalance,
+          usdtBalance,
+          usdcBalance,
+          daiBalance,
+          vaultBufferBalance,
+        ]) => {
+          setToBalance(usdiBalance);
+          setUsdtBalance(usdtBalance);
+          setUsdcBalance(usdcBalance);
+          setDaiBalance(daiBalance);
+          setVaultBufferBalance(vaultBufferBalance);
+          return [
+            usdiBalance,
+            usdtBalance,
+            usdcBalance,
+            daiBalance,
+            vaultBufferBalance,
+          ];
+        }
+      )
       .finally(() => {
         setTimeout(() => {
           setIsBalanceLoading(false);
@@ -174,7 +240,7 @@ function Invest(props) {
     if (isEmpty(VAULT_ADDRESS)) return;
     const loadTotalAssetsFn = () =>
       loadTotalAssets()
-        .then(afterTotalValue => {
+        .then((afterTotalValue) => {
           if (!afterTotalValue.eq(beforeTotalValue)) {
             setBeforeTotalValue(totalValue);
             setTotalValue(afterTotalValue);
@@ -191,7 +257,11 @@ function Invest(props) {
       if (isEmpty(VAULT_ABI) || isEmpty(userProvider)) return;
       loadBanlance();
       if (isEmpty(VAULT_ADDRESS)) return;
-      const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider);
+      const vaultContract = new ethers.Contract(
+        VAULT_ADDRESS,
+        VAULT_ABI,
+        userProvider
+      );
       if (!isEmpty(address)) {
         function handleMint(...eventArgs) {
           console.log("Mint=", eventArgs);
@@ -199,7 +269,7 @@ function Invest(props) {
           block &&
             block
               .getTransaction()
-              .then(tx => tx.wait())
+              .then((tx) => tx.wait())
               .then(loadBanlance);
         }
         function handleBurn(...eventArgs) {
@@ -208,7 +278,7 @@ function Invest(props) {
           block &&
             block
               .getTransaction()
-              .then(tx => tx.wait())
+              .then((tx) => tx.wait())
               .then(loadBanlance);
         }
         vaultContract.on("Mint", handleMint);
@@ -224,10 +294,18 @@ function Invest(props) {
 
   const loadTotalAssets = () => {
     if (abi_version === "beta-v1.5.9") {
-      const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider);
+      const vaultContract = new ethers.Contract(
+        VAULT_ADDRESS,
+        VAULT_ABI,
+        userProvider
+      );
       return vaultContract.totalAssetsIncludeVaultBuffer();
     }
-    const usdiContract = new ethers.Contract(USDI_ADDRESS, USDI_ABI, userProvider);
+    const usdiContract = new ethers.Contract(
+      USDI_ADDRESS,
+      USDI_ABI,
+      userProvider
+    );
     return usdiContract.totalSupply();
   };
 
@@ -235,7 +313,7 @@ function Invest(props) {
     addToken(USDI_ADDRESS, "USDi", usdiDecimals);
   };
 
-  const changeRouter = path => {
+  const changeRouter = (path) => {
     let promise = Promise.resolve({});
     if (path === "#/ethi" && CHAIN_ID !== 1) {
       promise = props.changeNetwork(NET_WORKS[0]);
@@ -246,7 +324,10 @@ function Invest(props) {
   };
   return (
     <div className={classes.container}>
-      <GridContainer spacing={0} style={{ paddingTop: "100px", minHeight: "50rem" }}>
+      <GridContainer
+        spacing={0}
+        style={{ paddingTop: "100px", minHeight: "50rem" }}
+      >
         <GridItem xs={3} sm={3} md={3} style={{ padding: "0 3rem" }}>
           <List>
             <ListItem
@@ -256,34 +337,58 @@ function Invest(props) {
               onClick={() => setCurrent(INVEST_TAB.account)}
             >
               <ListItemIcon>
-                <AccountBalanceWalletIcon style={{ color: current === 0 ? "#A68EFE" : "#fff" }} />
+                <AccountBalanceWalletIcon
+                  style={{ color: current === 0 ? "#A68EFE" : "#fff" }}
+                />
               </ListItemIcon>
               <ListItemText
                 primary={"My Account"}
-                className={classNames(current === 0 ? classes.check : classes.text)}
+                className={classNames(
+                  current === 0 ? classes.check : classes.text
+                )}
               />
             </ListItem>
             <ListItem
               key="Deposit"
               button
-              className={classNames(classes.item, current === 1 && classes.check)}
+              className={classNames(
+                classes.item,
+                current === 1 && classes.check
+              )}
               onClick={() => setCurrent(INVEST_TAB.deposit)}
             >
               <ListItemIcon>
-                <SaveAltIcon style={{ color: current === 1 ? "#A68EFE" : "#fff" }} />
+                <SaveAltIcon
+                  style={{ color: current === 1 ? "#A68EFE" : "#fff" }}
+                />
               </ListItemIcon>
-              <ListItemText primary={"Deposit"} className={classNames(current === 1 ? classes.check : classes.text)} />
+              <ListItemText
+                primary={"Deposit"}
+                className={classNames(
+                  current === 1 ? classes.check : classes.text
+                )}
+              />
             </ListItem>
             <ListItem
               key="Withdraw"
               button
-              className={classNames(classes.item, current === 2 && classes.check)}
+              className={classNames(
+                classes.item,
+                current === 2 && classes.check
+              )}
               onClick={() => setCurrent(INVEST_TAB.withdraw)}
             >
               <ListItemIcon>
-                <UndoIcon style={{ color: current === 2 ? "#A68EFE" : "#fff" }} />
+                <UndoIcon
+                  style={{ color: current === 2 ? "#A68EFE" : "#fff" }}
+                />
               </ListItemIcon>
-              <ListItemText primary={"Withdraw"} className={classNames(current === 2 ? classes.check : classes.text)} />
+              <ListItemText
+                primary={"Withdraw"}
+                className={classNames(
+                  current === 2 ? classes.check : classes.text
+                )}
+              />
             </ListItem>
             <ListItem
               key="Switch to ETHi"
@@ -294,7 +399,10 @@ function Invest(props) {
               <ListItemIcon>
                 <SwapHorizIcon style={{ color: "#fff" }} />
               </ListItemIcon>
-              <ListItemText primary={"Switch to ETHi"} className={classNames(classes.text)} />
+              <ListItemText
+                primary={"Switch to ETHi"}
+                className={classNames(classes.text)}
+              />
             </ListItem>
           </List>
         </GridItem>
@@ -303,24 +411,45 @@ function Invest(props) {
             <Card className={classes.balanceCard}>
               <div className={classes.balanceCardItem}>
                 <div className={classes.balanceCardValue}>
-                  <span title={formatBalance(toBalance, usdiDecimals, { showAll: true })}>
-                    <Loading loading={isBalanceLoading}>{formatBalance(toBalance, usdiDecimals)}</Loading>
+                  <span
+                    title={formatBalance(toBalance, usdiDecimals, {
+                      showAll: true,
+                    })}
+                  >
+                    <Loading loading={isBalanceLoading}>
+                      {formatBalance(toBalance, usdiDecimals)}
+                    </Loading>
                   </span>
                   <span className={classes.symbol}>USDi</span>
                   {userProvider && (
                     <span title="Add token address to wallet">
-                      <AddCircleOutlineIcon className={classes.addTokenIcon} onClick={handleAddUSDi} fontSize="small" />
+                      <AddCircleOutlineIcon
+                        className={classes.addTokenIcon}
+                        onClick={handleAddUSDi}
+                        fontSize="small"
+                      />
                     </span>
                   )}
                 </div>
                 {abi_version === "beta-v1.5.9" && (
-                  <div className={classes.balanceCardValue} style={{ fontSize: "1rem" }}>
-                    <span title={formatBalance(vaultBufferBalance, vaultBufferDecimals, { showAll: true })}>
+                  <div
+                    className={classes.balanceCardValue}
+                    style={{ fontSize: "1rem" }}
+                  >
+                    <span
+                      title={formatBalance(
+                        vaultBufferBalance,
+                        vaultBufferDecimals,
+                        { showAll: true }
+                      )}
+                    >
                       <Loading loading={isBalanceLoading}>
                         {formatBalance(vaultBufferBalance, vaultBufferDecimals)}
                       </Loading>
                     </span>
-                    <span className={classes.symbol}>USDi Ticket&nbsp;&nbsp;</span>
+                    <span className={classes.symbol}>
+                      USDi Ticket&nbsp;&nbsp;
+                    </span>
                     <Tooltip
                       classes={{
                         tooltip: classes.tooltip,
@@ -328,7 +457,8 @@ function Invest(props) {
                       placement="right"
                       title={
                         <span>
-                          The USDi ticket is automatically converted to USDi. And was last executed in&nbsp;
+                          The USDi ticket is automatically converted to USDi.
+                          And was last executed in&nbsp;
                           <span style={{ color: "red", fontWeight: "bold" }}>
                             {moment(lastRebaseTime).format("yyyy-MM-DD HH:mm")}
                           </span>
@@ -339,7 +469,9 @@ function Invest(props) {
                     </Tooltip>
                   </div>
                 )}
-                <div className={classes.balanceCardLabel}>AVAILABLE BALANCE</div>
+                <div className={classes.balanceCardLabel}>
+                  AVAILABLE BALANCE
+                </div>
               </div>
               {/* <div className={classes.tokenInfo}>
                 {userProvider && (

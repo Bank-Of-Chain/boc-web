@@ -1,6 +1,6 @@
 import { container } from "../../../assets/jss/material-kit-react.js";
 
-const componentsStyle = theme => ({
+const componentsStyle = (theme) => ({
   container,
   switchBar: {
     backgroundColor: "#91d5ff !important",

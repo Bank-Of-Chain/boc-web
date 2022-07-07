@@ -1,4 +1,4 @@
-const componentsStyle = theme => ({
+const componentsStyle = (theme) => ({
   buttonSelectorWrapper: {
     display: "flex",
     justifyContent: " space-around",

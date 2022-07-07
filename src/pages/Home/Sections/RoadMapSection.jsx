@@ -53,7 +53,13 @@ export default function RoadMapSection() {
     <div className={classes.roadmap}>
       <h3 className={classes.title}>Roadmap.</h3>
       <Timeline events={stepOne} topText="NOW" />
-      <Timeline events={stepTwo} topText="NEXT STEPS" firstPlace="left" cardColorReverse connectorColorRevese />
+      <Timeline
+        events={stepTwo}
+        topText="NEXT STEPS"
+        firstPlace="left"
+        cardColorReverse
+        connectorColorRevese
+      />
     </div>
   );
 }

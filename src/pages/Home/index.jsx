@@ -35,7 +35,12 @@ export default function Home(props) {
             return
           </h4>
           <p className={classes.text} style={{ marginTop: 40 }}>
-            <Button className={classes.invest} color="colorfull-border" size="sm" href="/#/mutils">
+            <Button
+              className={classes.invest}
+              color="colorfull-border"
+              size="sm"
+              href="/#/mutils"
+            >
               Launch App
             </Button>
           </p>

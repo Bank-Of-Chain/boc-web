@@ -9,7 +9,7 @@ import isInteger from "lodash/isInteger";
 
 const { Contract, BigNumber } = ethers;
 
-const useRedeemFeeBps = props => {
+const useRedeemFeeBps = (props) => {
   const { userProvider, VAULT_ADDRESS, VAULT_ABI } = props;
   const [value, setValue] = useState(BigNumber.from(0));
   const [error, setError] = useState();
@@ -25,7 +25,7 @@ const useRedeemFeeBps = props => {
       .finally(() => setLoading(false));
   };
 
-  const set = nextValue => {
+  const set = (nextValue) => {
     if (nextValue < 0 || nextValue > 10000 || !isInteger(nextValue)) {
       message.warning("请输入正确的值");
       return;
@@ -36,9 +36,9 @@ const useRedeemFeeBps = props => {
     vaultContract
       .connect(signer)
       .setRedeemFeeBps(nextValue)
-      .then(tx => tx.wait())
+      .then((tx) => tx.wait())
       .then(reload)
-      .catch(error => {
+      .catch((error) => {
         if (error.code === 4001) return;
         message.error(error.data.message);
       })

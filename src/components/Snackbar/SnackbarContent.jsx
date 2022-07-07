@@ -23,7 +23,13 @@ export default function SnackbarContent(props) {
   };
   if (close !== undefined) {
     action = [
-      <IconButton className={classes.iconButton} key="close" aria-label="Close" color="inherit" onClick={closeAlert}>
+      <IconButton
+        className={classes.iconButton}
+        key="close"
+        aria-label="Close"
+        color="inherit"
+        onClick={closeAlert}
+      >
         <Close className={classes.close} />
       </IconButton>,
     ];
@@ -53,7 +59,7 @@ export default function SnackbarContent(props) {
         root: classes.root + " " + classes[color],
         message: classes.message + " " + classes.container,
       }}
-    />,
+    />
   );
   return alert;
 }

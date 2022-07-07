@@ -81,7 +81,8 @@ const lendingSectionStyle = {
     background: "#A68EFE",
   },
   chart: {
-    background: "linear-gradient(199.32deg, #FE3DCE 17.59%, #5B93DF 71.04%, #94E3FF 102.04%)",
+    background:
+      "linear-gradient(199.32deg, #FE3DCE 17.59%, #5B93DF 71.04%, #94E3FF 102.04%)",
     borderRadius: "1rem",
     padding: "2px",
   },

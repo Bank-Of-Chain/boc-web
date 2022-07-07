@@ -5,7 +5,11 @@ import styles from "./style";
 
 const useStyles = makeStyles(styles);
 
-export default function TimelineCard({ children, colorReverse = false, arrowDirection = "left" }) {
+export default function TimelineCard({
+  children,
+  colorReverse = false,
+  arrowDirection = "left",
+}) {
   const classes = useStyles();
 
   return (

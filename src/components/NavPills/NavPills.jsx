@@ -105,9 +105,16 @@ NavPills.propTypes = {
       tabButton: PropTypes.string,
       tabIcon: PropTypes.object,
       tabContent: PropTypes.node,
-    }),
+    })
   ).isRequired,
-  color: PropTypes.oneOf(["primary", "warning", "danger", "success", "info", "rose"]),
+  color: PropTypes.oneOf([
+    "primary",
+    "warning",
+    "danger",
+    "success",
+    "info",
+    "rose",
+  ]),
   horizontal: PropTypes.shape({
     tabsGrid: PropTypes.object,
     contentGrid: PropTypes.object,

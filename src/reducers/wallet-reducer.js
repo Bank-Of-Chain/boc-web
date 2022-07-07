@@ -6,7 +6,7 @@ import { WALLETS } from "../constants/wallet";
 
 export const createWeb3Modal = () => {
   let providerOptions = {};
-  keys(WALLETS).forEach(name => {
+  keys(WALLETS).forEach((name) => {
     providerOptions = {
       ...providerOptions,
       ...WALLETS[name].getProviderOption(),

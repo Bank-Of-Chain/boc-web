@@ -16,7 +16,8 @@ const USDI_VAULT_FOR_MATIC = "0x17B43460aAA42Dd72C26A10B5038Ac2cB2278E49";
 const VAULT_BUFFER_FOR_ETHI_ETH = "0xd3FFD73C53F139cEBB80b6A524bE280955b3f4db";
 const VAULT_BUFFER_FOR_USDI_ETH = "0x7C8BaafA542c57fF9B2B90612bf8aB9E86e22C09";
 const VAULT_BUFFER_FOR_USDI_BSC = "";
-const VAULT_BUFFER_FOR_USDI_MATIC = "0xB83c5F00c01f1662dcc3A1370553f7eCD574Ed88";
+const VAULT_BUFFER_FOR_USDI_MATIC =
+  "0xB83c5F00c01f1662dcc3A1370553f7eCD574Ed88";
 
 const configBase = {
   vault_address: "",
@@ -60,7 +61,10 @@ const config137 = {
     oneInchV4: {
       useHttp: true,
       network: 137,
-      excludeProtocols: ["POLYGON_ONE_INCH_LIMIT_ORDER", "POLYGON_ONE_INCH_LIMIT_ORDER_V2"],
+      excludeProtocols: [
+        "POLYGON_ONE_INCH_LIMIT_ORDER",
+        "POLYGON_ONE_INCH_LIMIT_ORDER_V2",
+      ],
     },
     paraswap: {
       network: 137,
@@ -106,7 +110,10 @@ const config56 = {
     oneInchV4: {
       useHttp: true,
       network: 56,
-      excludeProtocols: ["BSC_ONE_INCH_LIMIT_ORDER", "BSC_ONE_INCH_LIMIT_ORDER_V2"],
+      excludeProtocols: [
+        "BSC_ONE_INCH_LIMIT_ORDER",
+        "BSC_ONE_INCH_LIMIT_ORDER_V2",
+      ],
     },
     paraswap: {
       network: 56,

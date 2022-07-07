@@ -3,7 +3,7 @@
  * @param {*} error
  * @returns
  */
-export const errorTextOutput = error => {
+export const errorTextOutput = (error) => {
   let errorMsg = error.toString();
   if (error?.message) {
     errorMsg = error.message;
@@ -53,15 +53,29 @@ export const isRp = (errorMsg = "") => {
 export const isLossMuch = (errorMsg = "") => {
   return (
     errorMsg.endsWith("'Return amount is not enough'") ||
-    errorMsg.endsWith("'callBytes failed: Error(Uniswap: INSUFFICIENT_OUTPUT_AMOUNT)'") ||
-    errorMsg.endsWith("'1inch V4 swap failed: Error(Min return not reached)'") ||
-    errorMsg.endsWith("'callBytes failed: Error(Received amount of tokens are less then expected)'") ||
-    errorMsg.endsWith("'1inch V4 swap failed: Error(Return amount is not enough)'") ||
+    errorMsg.endsWith(
+      "'callBytes failed: Error(Uniswap: INSUFFICIENT_OUTPUT_AMOUNT)'"
+    ) ||
+    errorMsg.endsWith(
+      "'1inch V4 swap failed: Error(Min return not reached)'"
+    ) ||
+    errorMsg.endsWith(
+      "'callBytes failed: Error(Received amount of tokens are less then expected)'"
+    ) ||
+    errorMsg.endsWith(
+      "'1inch V4 swap failed: Error(Return amount is not enough)'"
+    ) ||
     errorMsg.endsWith("'Received amount of tokens are less then expected'") ||
-    errorMsg.endsWith("Error: VM Exception while processing transaction: reverted with reason string 'OL'") ||
-    errorMsg.endsWith("'paraswap callBytes failed: Error(UniswapV2Router: INSUFFICIENT_OUTPUT_AMOUNT)'") ||
+    errorMsg.endsWith(
+      "Error: VM Exception while processing transaction: reverted with reason string 'OL'"
+    ) ||
+    errorMsg.endsWith(
+      "'paraswap callBytes failed: Error(UniswapV2Router: INSUFFICIENT_OUTPUT_AMOUNT)'"
+    ) ||
     errorMsg.endsWith("'1inch V4 swap failed: Error(IIA)'") ||
-    errorMsg.endsWith("'paraswap callBytes failed: Error(Received amount of tokens are less then expected)'") ||
+    errorMsg.endsWith(
+      "'paraswap callBytes failed: Error(Received amount of tokens are less then expected)'"
+    ) ||
     errorMsg.endsWith("'1inch V4 swap failed: Error(UNIV3R: min return)'")
   );
 };
@@ -73,7 +87,10 @@ export const isLossMuch = (errorMsg = "") => {
  * @returns
  */
 export const isMaxLoss = (errorMsg = "") => {
-  return errorMsg.indexOf("loss much") !== -1 || errorMsg.indexOf("amount lower than minimum") !== -1;
+  return (
+    errorMsg.indexOf("loss much") !== -1 ||
+    errorMsg.indexOf("amount lower than minimum") !== -1
+  );
 };
 
 /**

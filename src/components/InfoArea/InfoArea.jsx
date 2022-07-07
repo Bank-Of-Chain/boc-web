@@ -37,6 +37,14 @@ InfoArea.propTypes = {
   icon: PropTypes.element.isRequired,
   title: PropTypes.string.isRequired,
   description: PropTypes.array.isRequired || PropTypes.string.isRequired,
-  iconColor: PropTypes.oneOf(["primary", "warning", "danger", "success", "info", "rose", "gray"]),
+  iconColor: PropTypes.oneOf([
+    "primary",
+    "warning",
+    "danger",
+    "success",
+    "info",
+    "rose",
+    "gray",
+  ]),
   vertical: PropTypes.bool,
 };

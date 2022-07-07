@@ -11,7 +11,7 @@ export default function useVersionWapper(WrappedComponent, id) {
   const item = find(VAULTS, { id }) || {};
   const abi = resolver(item.abi_version);
 
-  return props => {
+  return (props) => {
     const nextProps = {
       ...abi,
       ...item,

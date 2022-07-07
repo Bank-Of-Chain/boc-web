@@ -16,7 +16,7 @@ try {
 } catch (e) {
   console.log(e);
   console.log(
-    '☢️   Create an aws.json credentials file in packages/react-app/ like { "accessKeyId": "xxx", "secretAccessKey": "xxx", "region": "xxx" } ',
+    '☢️   Create an aws.json credentials file in packages/react-app/ like { "accessKeyId": "xxx", "secretAccessKey": "xxx", "region": "xxx" } '
   );
   process.exit(1);
 }

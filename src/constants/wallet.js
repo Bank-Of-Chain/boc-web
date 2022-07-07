@@ -30,4 +30,4 @@ export const WALLETS = {
   },
 };
 
-export const WALLET_OPTIONS = map(WALLETS, wallet => wallet.info);
+export const WALLET_OPTIONS = map(WALLETS, (wallet) => wallet.info);

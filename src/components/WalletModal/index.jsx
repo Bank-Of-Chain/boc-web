@@ -16,7 +16,7 @@ const useStyles = makeStyles(styles);
 export default function WalletModal({ open, onClose, connectTo, selected }) {
   const classes = useStyles();
 
-  const handleConnect = name => {
+  const handleConnect = (name) => {
     connectTo(name);
   };
 
@@ -34,7 +34,7 @@ export default function WalletModal({ open, onClose, connectTo, selected }) {
           <CloseIcon onClick={onClose} className={classes.cancelButton} />
         </div>
         <div className={classes.content}>
-          {map(WALLET_OPTIONS, wallet => (
+          {map(WALLET_OPTIONS, (wallet) => (
             <Button
               key={wallet.value}
               className={classNames(classes.walletItemWrapper, {
@@ -43,7 +43,11 @@ export default function WalletModal({ open, onClose, connectTo, selected }) {
               onClick={() => handleConnect(wallet.value)}
             >
               <div className={classes.walletItem}>
-                <img className={classes.walletLogo} src={wallet.logo} alt="wallet logo" />
+                <img
+                  className={classes.walletLogo}
+                  src={wallet.logo}
+                  alt="wallet logo"
+                />
                 <span className={classes.walletName}>{wallet.name}</span>
               </div>
             </Button>

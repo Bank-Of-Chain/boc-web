@@ -6,14 +6,17 @@ import styles from "./style";
 
 const useStyles = makeStyles(styles);
 
-export default function ButtonSelector({ options = [0.25, 0.5, 0.75, 1], onClick = () => {} }) {
+export default function ButtonSelector({
+  options = [0.25, 0.5, 0.75, 1],
+  onClick = () => {},
+}) {
   const classes = useStyles();
-  const handleClick = value => {
+  const handleClick = (value) => {
     onClick(value);
   };
   return (
     <div className={classes.buttonSelectorWrapper}>
-      {map(options, opt => (
+      {map(options, (opt) => (
         <Button
           key={opt}
           classes={{

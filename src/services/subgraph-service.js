@@ -26,7 +26,7 @@ query($last2WeeksTimestamp: BigInt) {
     }
 }
 `;
-const getVaultData = async client => {
+const getVaultData = async (client) => {
   if (isEmpty(client)) return;
   const { data } = await client.query({
     query: gql(VAULT_DATA_QUERY),

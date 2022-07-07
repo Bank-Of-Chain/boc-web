@@ -10,7 +10,7 @@ export default configureStore({
     investReducer,
   },
   // redux中的数据尽量都需要可序列化，建议不存结构很复杂的对象
-  middleware: getDefaultMiddleware =>
+  middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
       serializableCheck: false,
     }),

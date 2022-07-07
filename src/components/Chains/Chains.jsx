@@ -26,7 +26,7 @@ export default function Chains(props) {
   const classes = useStyles();
   return (
     <div style={maskStyle}>
-      {map(array, item => (
+      {map(array, (item) => (
         <Tooltip
           key={item.chainId}
           title={item.name}

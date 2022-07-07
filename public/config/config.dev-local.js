@@ -60,7 +60,10 @@ const config137 = {
     oneInchV4: {
       useHttp: true,
       network: 137,
-      excludeProtocols: ["POLYGON_ONE_INCH_LIMIT_ORDER", "POLYGON_ONE_INCH_LIMIT_ORDER_V2"],
+      excludeProtocols: [
+        "POLYGON_ONE_INCH_LIMIT_ORDER",
+        "POLYGON_ONE_INCH_LIMIT_ORDER_V2",
+      ],
     },
     paraswap: {
       network: 137,
@@ -106,7 +109,10 @@ const config56 = {
     oneInchV4: {
       useHttp: true,
       network: 56,
-      excludeProtocols: ["BSC_ONE_INCH_LIMIT_ORDER", "BSC_ONE_INCH_LIMIT_ORDER_V2"],
+      excludeProtocols: [
+        "BSC_ONE_INCH_LIMIT_ORDER",
+        "BSC_ONE_INCH_LIMIT_ORDER_V2",
+      ],
     },
     paraswap: {
       network: 56,

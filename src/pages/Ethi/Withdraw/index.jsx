@@ -29,7 +29,12 @@ import Loading from "../../../components/Loading";
 import { warmDialog } from "./../../../reducers/meta-reducer";
 import { toFixed, formatBalance } from "../../../helpers/number-format";
 import { addToken } from "../../../helpers/wallet";
-import { EXCHANGE_EXTRA_PARAMS, MULTIPLE_OF_GAS, MAX_GAS_LIMIT, ORACLE_ADDITIONAL_SLIPPAGE } from "../../../constants";
+import {
+  EXCHANGE_EXTRA_PARAMS,
+  MULTIPLE_OF_GAS,
+  MAX_GAS_LIMIT,
+  ORACLE_ADDITIONAL_SLIPPAGE,
+} from "../../../constants";
 
 // === Hooks === //
 import useRedeemFeeBps from "../../../hooks/useRedeemFeeBps";
@@ -110,11 +115,18 @@ export default function Withdraw({
 
   const redeemFeeBpsPercent = redeemFeeBps.toNumber() / 100;
 
-  const getExchangePlatformAdapters = async (exchangeAggregator, userProvider) => {
+  const getExchangePlatformAdapters = async (
+    exchangeAggregator,
+    userProvider
+  ) => {
     const adapters = await exchangeAggregator.getExchangeAdapters();
     const exchangePlatformAdapters = {};
     for (const address of adapters) {
-      const contract = new ethers.Contract(address, EXCHANGE_ADAPTER_ABI, userProvider);
+      const contract = new ethers.Contract(
+        address,
+        EXCHANGE_ADAPTER_ABI,
+        userProvider
+      );
       exchangePlatformAdapters[await contract.identifier()] = address;
     }
     return exchangePlatformAdapters;
@@ -124,12 +136,20 @@ export default function Withdraw({
     debounce(async () => {
       setIsEstimate(true);
       const nextValue = BigNumber.from(
-        BN(toValue).multipliedBy(BigNumber.from(10).pow(ethiDecimals).toString()).toFixed(),
+        BN(toValue)
+          .multipliedBy(BigNumber.from(10).pow(ethiDecimals).toString())
+          .toFixed()
       );
-      const allowMaxLossValue = BigNumber.from(10000 - parseInt(100 * parseFloat(allowMaxLoss)))
+      const allowMaxLossValue = BigNumber.from(
+        10000 - parseInt(100 * parseFloat(allowMaxLoss))
+      )
         .mul(nextValue)
         .div(BigNumber.from(1e4));
-      const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider);
+      const vaultContract = new ethers.Contract(
+        VAULT_ADDRESS,
+        VAULT_ABI,
+        userProvider
+      );
       const signer = userProvider.getSigner();
       const vaultContractWithSigner = vaultContract.connect(signer);
 
@@ -139,15 +159,22 @@ export default function Withdraw({
           ETH_ADDRESS,
           allowMaxLossValue,
           false,
-          [],
+          []
         );
         const exchangeManager = await vaultContract.exchangeManager();
-        const exchangeManagerContract = new ethers.Contract(exchangeManager, EXCHANGE_AGGREGATOR_ABI, userProvider);
-        const exchangePlatformAdapters = await getExchangePlatformAdapters(exchangeManagerContract, userProvider);
+        const exchangeManagerContract = new ethers.Contract(
+          exchangeManager,
+          EXCHANGE_AGGREGATOR_ABI,
+          userProvider
+        );
+        const exchangePlatformAdapters = await getExchangePlatformAdapters(
+          exchangeManagerContract,
+          userProvider
+        );
         console.log(
           "estimate get exchange path:",
           tokens,
-          map(amounts, i => i.toString()),
+          map(amounts, (i) => i.toString())
         );
         // 查询兑换路径
         let exchangeArray = await Promise.all(
@@ -156,9 +183,16 @@ export default function Withdraw({
             if (tokenItem === ETH_ADDRESS || exchangeAmounts === "0") {
               return {};
             }
-            const fromConstrat = new ethers.Contract(tokenItem, IERC20_ABI, userProvider);
+            const fromConstrat = new ethers.Contract(
+              tokenItem,
+              IERC20_ABI,
+              userProvider
+            );
             const priceProvider = await getPriceProvider();
-            const amountsInEth = await priceProvider.valueInEth(tokenItem, exchangeAmounts);
+            const amountsInEth = await priceProvider.valueInEth(
+              tokenItem,
+              exchangeAmounts
+            );
             if (WITHDRAW_EXCHANGE_THRESHOLD.gt(amountsInEth)) {
               return {};
             }
@@ -178,7 +212,7 @@ export default function Withdraw({
                 parseInt(100 * parseFloat(slipper)) || 0,
                 ORACLE_ADDITIONAL_SLIPPAGE,
                 exchangePlatformAdapters,
-                EXCHANGE_EXTRA_PARAMS,
+                EXCHANGE_EXTRA_PARAMS
               );
               if (isEmpty(bestSwapInfo)) {
                 throw new Error("兑换路径获取失败");
@@ -193,7 +227,7 @@ export default function Withdraw({
               console.log("error=", error);
               return;
             }
-          }),
+          })
         );
 
         if (some(exchangeArray, isUndefined)) {
@@ -201,19 +235,20 @@ export default function Withdraw({
             warmDialog({
               open: true,
               type: "error",
-              message: "Failed to fetch the exchange path. Please try again later.",
-            }),
+              message:
+                "Failed to fetch the exchange path. Please try again later.",
+            })
           );
           return;
         }
         console.log("exchangeArray=", exchangeArray);
-        const nextArray = filter(exchangeArray, i => !isEmpty(i));
+        const nextArray = filter(exchangeArray, (i) => !isEmpty(i));
         [tokens, amounts] = await vaultContractWithSigner.callStatic.burn(
           nextValue,
           ETH_ADDRESS,
           allowMaxLossValue,
           true,
-          nextArray,
+          nextArray
         );
         console.log("estimate withdraw result:", tokens, amounts);
         let nextEstimateWithdrawArray = compact(
@@ -227,8 +262,8 @@ export default function Withdraw({
                   amounts: amount,
                 };
               }
-            }),
-          ),
+            })
+          )
         );
 
         setEstimateWithdrawArray(nextEstimateWithdrawArray);
@@ -257,7 +292,7 @@ export default function Withdraw({
             open: true,
             type: "error",
             message: tip,
-          }),
+          })
         );
         setEstimateWithdrawArray(undefined);
       } finally {
@@ -265,7 +300,7 @@ export default function Withdraw({
           setIsEstimate(false);
         }, 500);
       }
-    }, 1500),
+    }, 1500)
   );
 
   const withdraw = async () => {
@@ -302,36 +337,55 @@ export default function Withdraw({
     setCurrentStep(1);
     const signer = userProvider.getSigner();
     const nextValue = BigNumber.from(
-      BN(toValue).multipliedBy(BigNumber.from(10).pow(ethiDecimals).toString()).toFixed(),
+      BN(toValue)
+        .multipliedBy(BigNumber.from(10).pow(ethiDecimals).toString())
+        .toFixed()
     );
-    const allowMaxLossValue = BigNumber.from(10000 - parseInt(100 * parseFloat(allowMaxLoss)))
+    const allowMaxLossValue = BigNumber.from(
+      10000 - parseInt(100 * parseFloat(allowMaxLoss))
+    )
       .mul(nextValue)
       .div(BigNumber.from(1e4));
     try {
-      const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider);
+      const vaultContract = new ethers.Contract(
+        VAULT_ADDRESS,
+        VAULT_ABI,
+        userProvider
+      );
       const vaultContractWithSigner = vaultContract.connect(signer);
       let exchangeArray = [];
       // 如果不需要兑换则按照多币返回
-      console.log("----------start callStatic withdraw----------", nextValue, allowMaxLossValue);
+      console.log(
+        "----------start callStatic withdraw----------",
+        nextValue,
+        allowMaxLossValue
+      );
 
       const [tokens, amounts] = await vaultContractWithSigner.callStatic.burn(
         nextValue,
         ETH_ADDRESS,
         allowMaxLossValue,
         false,
-        [],
+        []
       );
 
       console.log(
         "tokens, amounts=",
         tokens,
-        map(amounts, i => i.toString()),
+        map(amounts, (i) => i.toString())
       );
       preWithdrawGetCoins = Date.now();
       setCurrentStep(2);
       const exchangeManager = await vaultContract.exchangeManager();
-      const exchangeManagerContract = new ethers.Contract(exchangeManager, EXCHANGE_AGGREGATOR_ABI, userProvider);
-      const exchangePlatformAdapters = await getExchangePlatformAdapters(exchangeManagerContract, userProvider);
+      const exchangeManagerContract = new ethers.Contract(
+        exchangeManager,
+        EXCHANGE_AGGREGATOR_ABI,
+        userProvider
+      );
+      const exchangePlatformAdapters = await getExchangePlatformAdapters(
+        exchangeManagerContract,
+        userProvider
+      );
       // 查询兑换路径
       exchangeArray = await Promise.all(
         map(tokens, async (tokenItem, index) => {
@@ -339,9 +393,16 @@ export default function Withdraw({
           if (tokenItem === ETH_ADDRESS || exchangeAmounts === "0") {
             return {};
           }
-          const fromConstrat = new ethers.Contract(tokenItem, IERC20_ABI, userProvider);
+          const fromConstrat = new ethers.Contract(
+            tokenItem,
+            IERC20_ABI,
+            userProvider
+          );
           const priceProvider = await getPriceProvider();
-          const amountsInEth = await priceProvider.valueInEth(tokenItem, exchangeAmounts);
+          const amountsInEth = await priceProvider.valueInEth(
+            tokenItem,
+            exchangeAmounts
+          );
           if (WITHDRAW_EXCHANGE_THRESHOLD.gt(amountsInEth)) {
             return {};
           }
@@ -361,7 +422,7 @@ export default function Withdraw({
               parseInt(100 * parseFloat(slipper)) || 0,
               ORACLE_ADDITIONAL_SLIPPAGE,
               exchangePlatformAdapters,
-              EXCHANGE_EXTRA_PARAMS,
+              EXCHANGE_EXTRA_PARAMS
             );
             if (isEmpty(bestSwapInfo)) {
               throw new Error("兑换路径获取失败");
@@ -375,7 +436,7 @@ export default function Withdraw({
           } catch (error) {
             return;
           }
-        }),
+        })
       );
       console.log("exchangeArray=", exchangeArray);
       if (some(exchangeArray, isUndefined)) {
@@ -386,7 +447,7 @@ export default function Withdraw({
       }
       getSwapInfoFinish = Date.now();
       setCurrentStep(3);
-      const nextArray = filter(exchangeArray, i => !isEmpty(i));
+      const nextArray = filter(exchangeArray, (i) => !isEmpty(i));
       console.log("nextArray=", nextArray);
       let tx;
       // gasLimit如果需要配置倍数的话，则需要estimateGas一下
@@ -396,18 +457,31 @@ export default function Withdraw({
           ETH_ADDRESS,
           allowMaxLossValue,
           true,
-          nextArray,
+          nextArray
         );
         setCurrentStep(4);
         estimateGasFinish = Date.now();
         const gasLimit = Math.ceil(gas * MULTIPLE_OF_GAS);
         // 乘以倍数后，如果大于3千万gas，则按3千万执行
         const maxGasLimit = gasLimit < MAX_GAS_LIMIT ? gasLimit : MAX_GAS_LIMIT;
-        tx = await vaultContractWithSigner.burn(nextValue, ETH_ADDRESS, allowMaxLossValue, true, nextArray, {
-          gasLimit: maxGasLimit,
-        });
+        tx = await vaultContractWithSigner.burn(
+          nextValue,
+          ETH_ADDRESS,
+          allowMaxLossValue,
+          true,
+          nextArray,
+          {
+            gasLimit: maxGasLimit,
+          }
+        );
       } else {
-        tx = await vaultContractWithSigner.burn(nextValue, ETH_ADDRESS, allowMaxLossValue, true, nextArray);
+        tx = await vaultContractWithSigner.burn(
+          nextValue,
+          ETH_ADDRESS,
+          allowMaxLossValue,
+          true,
+          nextArray
+        );
       }
       withdrawFinish = Date.now();
 
@@ -421,7 +495,7 @@ export default function Withdraw({
           open: true,
           type: "success",
           message: "Success!",
-        }),
+        })
       );
     } catch (error) {
       console.log("withdraw original error :", error);
@@ -447,7 +521,7 @@ export default function Withdraw({
           open: true,
           type: "error",
           message: tip,
-        }),
+        })
       );
     }
     setTimeout(() => {
@@ -459,14 +533,21 @@ export default function Withdraw({
     const totalTime = withdrawTransationFinish - withdrawTimeStart;
     const szjy = withdrawValidFinish - withdrawTimeStart;
     const szjyPercents = ((100 * szjy) / totalTime).toFixed(2);
-    const ytq = preWithdrawGetCoins === 0 ? 0 : preWithdrawGetCoins - withdrawValidFinish;
+    const ytq =
+      preWithdrawGetCoins === 0 ? 0 : preWithdrawGetCoins - withdrawValidFinish;
     const ytqPercents = ((100 * ytq) / totalTime).toFixed(2);
     const hqdhlj =
-      preWithdrawGetCoins === 0 ? getSwapInfoFinish - withdrawValidFinish : getSwapInfoFinish - preWithdrawGetCoins;
+      preWithdrawGetCoins === 0
+        ? getSwapInfoFinish - withdrawValidFinish
+        : getSwapInfoFinish - preWithdrawGetCoins;
     const hqdhljPercents = ((100 * hqdhlj) / totalTime).toFixed(2);
-    const eg = estimateGasFinish === 0 ? 0 : estimateGasFinish - getSwapInfoFinish;
+    const eg =
+      estimateGasFinish === 0 ? 0 : estimateGasFinish - getSwapInfoFinish;
     const egPercents = ((100 * eg) / totalTime).toFixed(2);
-    const qk = estimateGasFinish === 0 ? withdrawFinish - getSwapInfoFinish : withdrawFinish - estimateGasFinish;
+    const qk =
+      estimateGasFinish === 0
+        ? withdrawFinish - getSwapInfoFinish
+        : withdrawFinish - estimateGasFinish;
     const qkPercents = ((100 * qk) / totalTime).toFixed(2);
     const swc = withdrawTransationFinish - withdrawFinish;
     const swcPercents = ((100 * swc) / totalTime).toFixed(2);
@@ -491,15 +572,20 @@ export default function Withdraw({
    * @returns
    */
   const isValidToValue = () => {
-    if (toValue === "" || toValue === "-" || isEmpty(toValue.replace(/ /g, ""))) return;
+    if (toValue === "" || toValue === "-" || isEmpty(toValue.replace(/ /g, "")))
+      return;
     // 如果不是一个数值
     if (isNaN(Number(toValue))) return false;
     const nextValue = BN(toValue);
-    const nextToValue = nextValue.multipliedBy(BigNumber.from(10).pow(ethiDecimals).toString());
+    const nextToValue = nextValue.multipliedBy(
+      BigNumber.from(10).pow(ethiDecimals).toString()
+    );
     // 判断值为正数
     if (nextToValue.lte(0)) return false;
     // 精度处理完之后，应该为整数
-    const nextToValueString = nextValue.multipliedBy(BigNumber.from(10).pow(ethiDecimals).toString());
+    const nextToValueString = nextValue.multipliedBy(
+      BigNumber.from(10).pow(ethiDecimals).toString()
+    );
     if (nextToValueString.toFixed().indexOf(".") !== -1) return false;
     // 数值小于最大数量
     if (ethiBalance.lt(BigNumber.from(nextToValue.toFixed()))) return false;
@@ -540,7 +626,7 @@ export default function Withdraw({
     // eslint-disable-next-line
   }, [toValue, allowMaxLoss, slipper]);
 
-  const handleAmountChange = event => {
+  const handleAmountChange = (event) => {
     try {
       setToValue(event.target.value);
     } catch (error) {
@@ -583,7 +669,7 @@ export default function Withdraw({
         </GridItem>
       );
     }
-    return map(estimateWithdrawArray, item => {
+    return map(estimateWithdrawArray, (item) => {
       return (
         <GridItem key={item.tokenAddress} xs={12} sm={12} md={6} lg={6}>
           <Button
@@ -594,7 +680,10 @@ export default function Withdraw({
             onClick={() => addToken(item.tokenAddress)}
           >
             {item.tokenAddress !== ETH_ADDRESS && (
-              <AddIcon fontSize="small" style={{ position: "absolute", top: 25, left: 45 }} />
+              <AddIcon
+                fontSize="small"
+                style={{ position: "absolute", top: 25, left: 45 }}
+              />
             )}
             <img
               title="Add token address to wallet"
@@ -604,7 +693,8 @@ export default function Withdraw({
               src={`./images/${item.tokenAddress}.png`}
               onError={imgError}
             />
-            &nbsp;&nbsp;~&nbsp;{toFixed(item.amounts, BigNumber.from(10).pow(item.decimals), 6)}
+            &nbsp;&nbsp;~&nbsp;
+            {toFixed(item.amounts, BigNumber.from(10).pow(item.decimals), 6)}
           </Button>
         </GridItem>
       );
@@ -621,7 +711,7 @@ export default function Withdraw({
     <>
       <div className={classes.setting}>
         <PopupState variant="popover" popupId="setting-popover">
-          {popupState => (
+          {(popupState) => (
             <div>
               <svg
                 width="30"
@@ -668,11 +758,14 @@ export default function Withdraw({
                         placeholder="Allow loss percent"
                         maxEndAdornment
                         onMaxClick={() => setAllowMaxLoss("50")}
-                        onChange={event => {
+                        onChange={(event) => {
                           const value = event.target.value;
                           setAllowMaxLoss(value);
                         }}
-                        error={!isUndefined(isValidAllowLossFlag) && !isValidAllowLossFlag}
+                        error={
+                          !isUndefined(isValidAllowLossFlag) &&
+                          !isValidAllowLossFlag
+                        }
                       />
                     </GridItem>
                     <GridItem xs={12} sm={12} md={12} lg={12}>
@@ -683,11 +776,14 @@ export default function Withdraw({
                         placeholder="Allow slipper percent"
                         maxEndAdornment
                         onMaxClick={() => setSlipper("45")}
-                        onChange={event => {
+                        onChange={(event) => {
                           const value = event.target.value;
                           setSlipper(value);
                         }}
-                        error={!isUndefined(isValidSlipperFlag) && !isValidSlipperFlag}
+                        error={
+                          !isUndefined(isValidSlipperFlag) &&
+                          !isValidSlipperFlag
+                        }
                       />
                     </GridItem>
                   </GridContainer>
@@ -713,13 +809,23 @@ export default function Withdraw({
               maxEndAdornment
               onMaxClick={() => handleMaxClick()}
               onChange={handleAmountChange}
-              error={!isUndefined(isValidToValueFlag) && !isValidToValueFlag && toValue !== "0"}
+              error={
+                !isUndefined(isValidToValueFlag) &&
+                !isValidToValueFlag &&
+                toValue !== "0"
+              }
             />
           </div>
         </GridItem>
         <GridItem xs={12} sm={12} md={12} lg={12}>
-          <p className={classes.estimateText} title={formatBalance(ethiBalance, ethiDecimals, { showAll: true })}>
-            Balance:&nbsp;&nbsp;<Loading loading={isBalanceLoading}>{formatBalance(ethiBalance, ethiDecimals)}</Loading>
+          <p
+            className={classes.estimateText}
+            title={formatBalance(ethiBalance, ethiDecimals, { showAll: true })}
+          >
+            Balance:&nbsp;&nbsp;
+            <Loading loading={isBalanceLoading}>
+              {formatBalance(ethiBalance, ethiDecimals)}
+            </Loading>
           </p>
         </GridItem>
       </GridContainer>
@@ -737,7 +843,9 @@ export default function Withdraw({
         </GridItem>
         {isEmpty(VAULT_ADDRESS) && (
           <GridItem xs={12} sm={12} md={12} lg={12}>
-            <p style={{ textAlign: "center", color: "red" }}>Switch to the ETH chain firstly!</p>
+            <p style={{ textAlign: "center", color: "red" }}>
+              Switch to the ETH chain firstly!
+            </p>
           </GridItem>
         )}
       </GridContainer>
@@ -745,7 +853,11 @@ export default function Withdraw({
         <GridItem xs={12} sm={12} md={12} lg={12}>
           <div className={classes.footerContainer}>
             <Button
-              disabled={!isLogin || (isLogin && (isUndefined(isValidToValueFlag) || !isValidToValueFlag))}
+              disabled={
+                !isLogin ||
+                (isLogin &&
+                  (isUndefined(isValidToValueFlag) || !isValidToValueFlag))
+              }
               color="colorfull"
               onClick={withdraw}
               style={{ width: "100%", padding: "12px 16px" }}
@@ -773,7 +885,11 @@ export default function Withdraw({
         <Paper elevation={3} className={classes.widthdrawLoadingPaper}>
           <div className={classes.modalBody}>
             {isEmpty(withdrawError) && <CircularProgress color="inherit" />}
-            {isEmpty(withdrawError) ? <p>In Withdrawing...</p> : <p>Withdraw Error !</p>}
+            {isEmpty(withdrawError) ? (
+              <p>In Withdrawing...</p>
+            ) : (
+              <p>Withdraw Error !</p>
+            )}
             <BocStepper
               classes={{
                 root: classes.root,
@@ -785,14 +901,21 @@ export default function Withdraw({
               {map(steps, (i, index) => {
                 return (
                   <Step key={index}>
-                    <BocStepLabel StepIconComponent={BocStepIcon}>{i.title}</BocStepLabel>
+                    <BocStepLabel StepIconComponent={BocStepIcon}>
+                      {i.title}
+                    </BocStepLabel>
                   </Step>
                 );
               })}
             </BocStepper>
             {!isEmpty(withdrawError) && (
-              <p style={{ color: withdrawError.type === "error" ? "red" : "yellow" }}>
-                <WarningIcon style={{ verticalAlign: "bottom" }}></WarningIcon>&nbsp;&nbsp;&nbsp;{withdrawError.message}
+              <p
+                style={{
+                  color: withdrawError.type === "error" ? "red" : "yellow",
+                }}
+              >
+                <WarningIcon style={{ verticalAlign: "bottom" }}></WarningIcon>
+                &nbsp;&nbsp;&nbsp;{withdrawError.message}
               </p>
             )}
             <Button

@@ -29,7 +29,7 @@ export default function useContainerMediaQuery() {
       condition: !isXl && !isLg && !isMd && !isSm,
     },
   ];
-  const mediaLabel = find(mediaConfig, o => o.condition)?.key;
+  const mediaLabel = find(mediaConfig, (o) => o.condition)?.key;
 
   return {
     isXl,

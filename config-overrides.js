@@ -25,12 +25,16 @@ module.exports = function override(config) {
               {
                 source: "./build",
                 destination:
-                  "./zip/web-" + moment().format("yyyyMMDDHHmmss") + "(" + process.env.REACT_APP_ENV + ").zip",
+                  "./zip/web-" +
+                  moment().format("yyyyMMDDHHmmss") +
+                  "(" +
+                  process.env.REACT_APP_ENV +
+                  ").zip",
               },
             ],
           },
         },
-      }),
+      })
     );
   }
   return config;

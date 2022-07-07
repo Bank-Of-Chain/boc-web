@@ -31,7 +31,15 @@ export const formatBalance = (balance, decimals, options = {}) => {
     return fixedValue;
   }
   // 显示的值为 0.000000 的话补 ...
-  const isLessThenDisplay = decimals > 6 && !value.eq(0) && value.lt(BN(10).pow(decimals - displayDecimals + 1));
-  const displayBalance = toFixed(value, decimalsValue, displayDecimals, MATH_FLOOR_SIGN);
+  const isLessThenDisplay =
+    decimals > 6 &&
+    !value.eq(0) &&
+    value.lt(BN(10).pow(decimals - displayDecimals + 1));
+  const displayBalance = toFixed(
+    value,
+    decimalsValue,
+    displayDecimals,
+    MATH_FLOOR_SIGN
+  );
   return isLessThenDisplay ? `${displayBalance}...` : displayBalance;
 };

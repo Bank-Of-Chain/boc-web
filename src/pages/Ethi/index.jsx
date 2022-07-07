@@ -77,27 +77,41 @@ function Ethi(props) {
   const [beforeTotalValue, setBeforeTotalValue] = useState(BigNumber.from(0));
   const [totalValue, setTotalValue] = useState(BigNumber.from(0));
 
-  const [vaultBufferBalance, setVaultBufferBalance] = useState(BigNumber.from(0));
+  const [vaultBufferBalance, setVaultBufferBalance] = useState(
+    BigNumber.from(0)
+  );
   const [vaultBufferDecimals, setVaultBufferDecimals] = useState(0);
 
   const [isBalanceLoading, setIsBalanceLoading] = useState(false);
 
   const lastRebaseTime = getLastPossibleRebaseTime();
 
-  const current = useSelector(state => state.investReducer.currentTab);
-  const setCurrent = tab => {
+  const current = useSelector((state) => state.investReducer.currentTab);
+  const setCurrent = (tab) => {
     loadCoinsBalance();
     dispatch(setCurrentTab(tab));
   };
-  const { minimumInvestmentAmount } = useVault(VAULT_ADDRESS, VAULT_ABI, userProvider);
+  const { minimumInvestmentAmount } = useVault(
+    VAULT_ADDRESS,
+    VAULT_ABI,
+    userProvider
+  );
 
   // 载入账户数据
   const loadBanlance = () => {
     if (isEmpty(address) || isEmpty(userProvider)) {
       return;
     }
-    const vaultBufferContract = new ethers.Contract(VAULT_BUFFER_ADDRESS, VAULT_BUFFER_ABI, userProvider);
-    const ethiContract = new ethers.Contract(ETHI_ADDRESS, IERC20_ABI, userProvider);
+    const vaultBufferContract = new ethers.Contract(
+      VAULT_BUFFER_ADDRESS,
+      VAULT_BUFFER_ABI,
+      userProvider
+    );
+    const ethiContract = new ethers.Contract(
+      ETHI_ADDRESS,
+      IERC20_ABI,
+      userProvider
+    );
     Promise.all([
       loadCoinsBalance(),
       ethiContract
@@ -114,7 +128,7 @@ function Ethi(props) {
           open: true,
           type: "warning",
           message: "Please confirm wallet's network!",
-        }),
+        })
       );
     });
   };
@@ -124,8 +138,16 @@ function Ethi(props) {
       return;
     }
     setIsBalanceLoading(true);
-    const vaultBufferContract = new ethers.Contract(VAULT_BUFFER_ADDRESS, VAULT_BUFFER_ABI, userProvider);
-    const ethiContract = new ethers.Contract(ETHI_ADDRESS, IERC20_ABI, userProvider);
+    const vaultBufferContract = new ethers.Contract(
+      VAULT_BUFFER_ADDRESS,
+      VAULT_BUFFER_ABI,
+      userProvider
+    );
+    const ethiContract = new ethers.Contract(
+      ETHI_ADDRESS,
+      IERC20_ABI,
+      userProvider
+    );
     return Promise.all([
       ethiContract.balanceOf(address).catch(() => BigNumber.from(0)),
       userProvider.getBalance(address),
@@ -148,7 +170,7 @@ function Ethi(props) {
     if (isEmpty(VAULT_ADDRESS)) return;
     const loadTotalAssetsFn = () =>
       loadTotalAssets()
-        .then(afterTotalValue => {
+        .then((afterTotalValue) => {
           if (!afterTotalValue.eq(beforeTotalValue)) {
             setBeforeTotalValue(totalValue);
             setTotalValue(afterTotalValue);
@@ -165,7 +187,11 @@ function Ethi(props) {
       if (isEmpty(VAULT_ABI) || isEmpty(userProvider)) return;
       loadBanlance();
       if (isEmpty(VAULT_ADDRESS)) return;
-      const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider);
+      const vaultContract = new ethers.Contract(
+        VAULT_ADDRESS,
+        VAULT_ABI,
+        userProvider
+      );
       if (!isEmpty(address)) {
         function handleMint(...eventArgs) {
           console.log("Mint=", eventArgs);
@@ -173,7 +199,7 @@ function Ethi(props) {
           block &&
             block
               .getTransaction()
-              .then(tx => tx.wait())
+              .then((tx) => tx.wait())
               .then(loadBanlance);
         }
         function handleBurn(...eventArgs) {
@@ -182,7 +208,7 @@ function Ethi(props) {
           block &&
             block
               .getTransaction()
-              .then(tx => tx.wait())
+              .then((tx) => tx.wait())
               .then(loadBanlance);
         }
         vaultContract.on("Mint", handleMint);
@@ -197,7 +223,11 @@ function Ethi(props) {
   }, [address, VAULT_ADDRESS, VAULT_ABI, userProvider]);
 
   const loadTotalAssets = () => {
-    const ethiContract = new ethers.Contract(ETHI_ADDRESS, IERC20_ABI, userProvider);
+    const ethiContract = new ethers.Contract(
+      ETHI_ADDRESS,
+      IERC20_ABI,
+      userProvider
+    );
     return ethiContract.totalSupply();
   };
 
@@ -207,7 +237,10 @@ function Ethi(props) {
 
   return (
     <div className={classes.container}>
-      <GridContainer spacing={0} style={{ paddingTop: "100px", minHeight: "50rem" }}>
+      <GridContainer
+        spacing={0}
+        style={{ paddingTop: "100px", minHeight: "50rem" }}
+      >
         <GridItem xs={3} sm={3} md={3} style={{ paddingLeft: "3rem" }}>
           <List>
             <ListItem
@@ -217,23 +250,37 @@ function Ethi(props) {
               onClick={() => setCurrent(INVEST_TAB.account)}
             >
               <ListItemIcon>
-                <AccountBalanceWalletIcon style={{ color: current === 0 ? "#A68EFE" : "#fff" }} />
+                <AccountBalanceWalletIcon
+                  style={{ color: current === 0 ? "#A68EFE" : "#fff" }}
+                />
               </ListItemIcon>
               <ListItemText
                 primary={"My Account"}
-                className={classNames(current === 0 ? classes.check : classes.text)}
+                className={classNames(
+                  current === 0 ? classes.check : classes.text
+                )}
               />
             </ListItem>
             <ListItem
               key="Deposit"
               button
-              className={classNames(classes.item, current === 1 && classes.check)}
+              className={classNames(
+                classes.item,
+                current === 1 && classes.check
+              )}
               onClick={() => setCurrent(INVEST_TAB.deposit)}
             >
               <ListItemIcon>
-                <SaveAltIcon style={{ color: current === 1 ? "#A68EFE" : "#fff" }} />
+                <SaveAltIcon
+                  style={{ color: current === 1 ? "#A68EFE" : "#fff" }}
+                />
               </ListItemIcon>
-              <ListItemText primary={"Deposit"} className={classNames(current === 1 ? classes.check : classes.text)} />
+              <ListItemText
+                primary={"Deposit"}
+                className={classNames(
+                  current === 1 ? classes.check : classes.text
+                )}
+              />
             </ListItem>
             <ListItem
               key="Withdraw"
@@ -242,9 +289,16 @@ function Ethi(props) {
               onClick={() => setCurrent(INVEST_TAB.withdraw)}
             >
               <ListItemIcon>
-                <UndoIcon style={{ color: current === 2 ? "#A68EFE" : "#fff" }} />
+                <UndoIcon
+                  style={{ color: current === 2 ? "#A68EFE" : "#fff" }}
+                />
               </ListItemIcon>
-              <ListItemText primary={"Withdraw"} className={classNames(current === 2 ? classes.check : classes.text)} />
+              <ListItemText
+                primary={"Withdraw"}
+                className={classNames(
+                  current === 2 ? classes.check : classes.text
+                )}
+              />
             </ListItem>
             <ListItem
               key="Switch to USDi"
@@ -255,7 +309,10 @@ function Ethi(props) {
               <ListItemIcon>
                 <SwapHorizIcon style={{ color: "#fff" }} />
               </ListItemIcon>
-              <ListItemText primary={"Switch to USDi"} className={classNames(classes.text)} />
+              <ListItemText
+                primary={"Switch to USDi"}
+                className={classNames(classes.text)}
+              />
             </ListItem>
           </List>
         </GridItem>
@@ -264,23 +321,44 @@ function Ethi(props) {
             <Card className={classes.balanceCard}>
               <div className={classes.balanceCardItem}>
                 <div className={classes.balanceCardValue}>
-                  <span title={formatBalance(ethiBalance, ethiDecimals, { showAll: true })}>
-                    <Loading loading={isBalanceLoading}>{formatBalance(ethiBalance, ethiDecimals)}</Loading>
+                  <span
+                    title={formatBalance(ethiBalance, ethiDecimals, {
+                      showAll: true,
+                    })}
+                  >
+                    <Loading loading={isBalanceLoading}>
+                      {formatBalance(ethiBalance, ethiDecimals)}
+                    </Loading>
                   </span>
                   <span className={classes.symbol}>ETHi</span>
                   {userProvider && (
                     <span title="Add token address to wallet">
-                      <AddCircleOutlineIcon className={classes.addTokenIcon} onClick={handleAddETHi} fontSize="small" />
+                      <AddCircleOutlineIcon
+                        className={classes.addTokenIcon}
+                        onClick={handleAddETHi}
+                        fontSize="small"
+                      />
                     </span>
                   )}
                 </div>
-                <div className={classes.balanceCardValue} style={{ fontSize: "1rem" }}>
-                  <span title={formatBalance(vaultBufferBalance, vaultBufferDecimals, { showAll: true })}>
+                <div
+                  className={classes.balanceCardValue}
+                  style={{ fontSize: "1rem" }}
+                >
+                  <span
+                    title={formatBalance(
+                      vaultBufferBalance,
+                      vaultBufferDecimals,
+                      { showAll: true }
+                    )}
+                  >
                     <Loading loading={isBalanceLoading}>
                       {formatBalance(vaultBufferBalance, vaultBufferDecimals)}
                     </Loading>
                   </span>
-                  <span className={classes.symbol}>ETHi Ticket&nbsp;&nbsp;</span>
+                  <span className={classes.symbol}>
+                    ETHi Ticket&nbsp;&nbsp;
+                  </span>
                   <Tooltip
                     classes={{
                       tooltip: classes.tooltip,
@@ -288,7 +366,8 @@ function Ethi(props) {
                     placement="right"
                     title={
                       <span>
-                        The ETHi ticket is automatically converted to ETHi. And was last executed in&nbsp;
+                        The ETHi ticket is automatically converted to ETHi. And
+                        was last executed in&nbsp;
                         <span style={{ color: "red", fontWeight: "bold" }}>
                           {moment(lastRebaseTime).format("yyyy-MM-DD HH:mm")}
                         </span>
@@ -298,7 +377,9 @@ function Ethi(props) {
                     <InfoIcon style={{ fontSize: "1rem" }} />
                   </Tooltip>
                 </div>
-                <div className={classes.balanceCardLabel}>AVAILABLE BALANCE</div>
+                <div className={classes.balanceCardLabel}>
+                  AVAILABLE BALANCE
+                </div>
               </div>
               {/* <div className={classes.tokenInfo}>
                 {userProvider && (

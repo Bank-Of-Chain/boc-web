@@ -37,11 +37,15 @@ export const addToken = async (tokenAddress, symbol, decimals) => {
           open: true,
           type: "warning",
           message: `The current wallet does not support adding token (address: ${tokenAddress}). You can add token manually.`,
-        }),
+        })
       );
       return;
     }
-    const tokenContract = new ethers.Contract(tokenAddress, IERC20_ABI, userProvider);
+    const tokenContract = new ethers.Contract(
+      tokenAddress,
+      IERC20_ABI,
+      userProvider
+    );
     window.ethereum.request({
       method: "wallet_watchAsset",
       params: {

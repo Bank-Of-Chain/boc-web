@@ -9,7 +9,8 @@ const style = {
     background: "linear-gradient(219.17deg, #94E3FF 24.63%, #FE3DCE 104.13%)",
   },
   colorReverse: {
-    background: "linear-gradient(220.48deg, #FE3DCE 6.75%, #5B93E0 99.99%, #94E3FF 100%)",
+    background:
+      "linear-gradient(220.48deg, #FE3DCE 6.75%, #5B93E0 99.99%, #94E3FF 100%)",
     "& $arrow": {
       borderColor: "#7087dd",
     },

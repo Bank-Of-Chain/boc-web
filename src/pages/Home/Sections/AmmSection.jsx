@@ -38,8 +38,9 @@ export default function AmmSection() {
     <div className={classes.section}>
       <h2>Major integrations</h2>
       <h4 className={classes.title}>
-        Bank of Chain is integrated with the 3 major chains for DeFi, the world’s top 7 stablecoins, and is optimized
-        among 58 AMM and lending pools
+        Bank of Chain is integrated with the 3 major chains for DeFi, the
+        world’s top 7 stablecoins, and is optimized among 58 AMM and lending
+        pools
       </h4>
       <Tabs
         centered
@@ -52,19 +53,38 @@ export default function AmmSection() {
           {
             tabName: "Stablecoins",
             tabContent: (
-              <GridItem xs={12} sm={12} md={12} className={classes.iconContainer}>
-                {map(STABLECOINS, c => (
+              <GridItem
+                xs={12}
+                sm={12}
+                md={12}
+                className={classes.iconContainer}
+              >
+                {map(STABLECOINS, (c) => (
                   <div
                     key={c.id}
                     className={`${classes.item}`}
-                    onClick={() => window.open(`https://etherscan.io/address/${c.address}`)}
+                    onClick={() =>
+                      window.open(`https://etherscan.io/address/${c.address}`)
+                    }
                   >
-                    <img className={classes.img} src={`/images/${c.address}.png`} alt={c.symbol} />
+                    <img
+                      className={classes.img}
+                      src={`/images/${c.address}.png`}
+                      alt={c.symbol}
+                    />
                     <p className={classes.text}>{c.symbol}</p>
                   </div>
                 ))}
-                <div key={"chainlink"} className={classes.item} onClick={() => window.open("https://chain.link")}>
-                  <img className={classes.img} src={`/images/oracles/chainlink.png`} alt={"Chainlink"} />
+                <div
+                  key={"chainlink"}
+                  className={classes.item}
+                  onClick={() => window.open("https://chain.link")}
+                >
+                  <img
+                    className={classes.img}
+                    src={`/images/oracles/chainlink.png`}
+                    alt={"Chainlink"}
+                  />
                   <p className={classes.text}>{"Chainlink"}</p>
                 </div>
               </GridItem>
@@ -73,9 +93,18 @@ export default function AmmSection() {
           {
             tabName: "Major chains",
             tabContent: (
-              <GridItem xs={12} sm={12} md={12} className={classes.iconContainer}>
-                {map(CHAINS, c => (
-                  <div key={c.id} className={classes.item} onClick={() => window.open(c.url)}>
+              <GridItem
+                xs={12}
+                sm={12}
+                md={12}
+                className={classes.iconContainer}
+              >
+                {map(CHAINS, (c) => (
+                  <div
+                    key={c.id}
+                    className={classes.item}
+                    onClick={() => window.open(c.url)}
+                  >
                     <img
                       className={`${classes.img} ${classes.transparentBg}`}
                       src={`/images/chains/${c.id}.png`}
@@ -90,7 +119,12 @@ export default function AmmSection() {
           {
             tabName: "Protocols",
             tabContent: (
-              <GridItem xs={12} sm={12} md={12} className={classes.iconContainer}>
+              <GridItem
+                xs={12}
+                sm={12}
+                md={12}
+                className={classes.iconContainer}
+              >
                 {map(
                   map(AMMS, (item, i) => {
                     return {
@@ -99,12 +133,21 @@ export default function AmmSection() {
                       url: PLATFORM_HOME_URL[item],
                     };
                   }),
-                  a => (
-                    <div key={a.name} className={classes.item} onClick={() => !isEmpty(a.url) && window.open(a.url)}>
-                      <img className={classes.img} src={`/images/amms/${a.name}.png`} alt={a.name} onError={imgError} />
+                  (a) => (
+                    <div
+                      key={a.name}
+                      className={classes.item}
+                      onClick={() => !isEmpty(a.url) && window.open(a.url)}
+                    >
+                      <img
+                        className={classes.img}
+                        src={`/images/amms/${a.name}.png`}
+                        alt={a.name}
+                        onError={imgError}
+                      />
                       <p className={classes.text}>{a.name}</p>
                     </div>
-                  ),
+                  )
                 )}
               </GridItem>
             ),

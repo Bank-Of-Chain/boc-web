@@ -52,7 +52,12 @@ export default function CustomTimeline(props) {
             }
             const hidden = firstInLeft && index === 0;
             return (
-              <TimelineItem key={item.event} className={classNames(classes.timelineItem, { [classes.hidden]: hidden })}>
+              <TimelineItem
+                key={item.event}
+                className={classNames(classes.timelineItem, {
+                  [classes.hidden]: hidden,
+                })}
+              >
                 <TimelineOppositeContent>
                   <p className={classes.keyTime}>{item.date}</p>
                 </TimelineOppositeContent>

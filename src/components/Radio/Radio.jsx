@@ -10,7 +10,7 @@ const CustomRadio = withStyles({
     },
   },
   checked: {},
-})(props => {
+})((props) => {
   return <Radio color="default" {...props} />;
 });
 

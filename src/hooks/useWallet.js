@@ -5,18 +5,18 @@ import { setProvider } from "../reducers/wallet-reducer";
 
 function useWallet() {
   const dispatch = useDispatch();
-  const web3Modal = useSelector(state => state.walletReducer.web3Modal);
-  const provider = useSelector(state => state.walletReducer.provider);
-  const userProvider = useSelector(state => state.walletReducer.userProvider);
+  const web3Modal = useSelector((state) => state.walletReducer.web3Modal);
+  const provider = useSelector((state) => state.walletReducer.provider);
+  const userProvider = useSelector((state) => state.walletReducer.userProvider);
   const [chainId, setChainId] = useState();
 
   const connectTo = useCallback(
-    async name => {
+    async (name) => {
       const provider = await web3Modal.connectTo(name);
       dispatch(setProvider(provider));
       return provider;
     },
-    [web3Modal, dispatch],
+    [web3Modal, dispatch]
   );
 
   const requestProvider = useCallback(async () => {
@@ -26,10 +26,10 @@ function useWallet() {
   }, [web3Modal, dispatch]);
 
   const connect = useCallback(
-    async name => {
+    async (name) => {
       return name ? connectTo(name) : requestProvider();
     },
-    [connectTo, requestProvider],
+    [connectTo, requestProvider]
   );
 
   const disconnectPassive = useCallback(async () => {
@@ -48,28 +48,30 @@ function useWallet() {
     await disconnectPassive();
   }, [provider, disconnectPassive]);
 
-  const getChainId = userProvider => {
-    return userProvider && userProvider._network && userProvider._network.chainId;
+  const getChainId = (userProvider) => {
+    return (
+      userProvider && userProvider._network && userProvider._network.chainId
+    );
   };
 
   const getProviderType = useCallback(() => {
     const providers = web3Modal?.providerController?.providers;
     const id = web3Modal?.providerController?.cachedProvider;
-    return providers.find(item => item.id === id)?.type;
+    return providers.find((item) => item.id === id)?.type;
   }, [web3Modal]);
 
   useEffect(() => {
     if (!provider) {
       return;
     }
-    const chainChanged = chainId => {
+    const chainChanged = (chainId) => {
       console.log(`chain changed to ${chainId}! updating providers`);
       localStorage.REACT_APP_NETWORK_TYPE = parseInt(chainId);
       setTimeout(() => {
         window.location.reload();
       }, 1);
     };
-    const accountsChanged = accounts => {
+    const accountsChanged = (accounts) => {
       console.log(`account changed!`, accounts);
       setTimeout(() => {
         window.location.reload();
@@ -98,7 +100,7 @@ function useWallet() {
     if (!userProvider) {
       return;
     }
-    userProvider._networkPromise.then(v => {
+    userProvider._networkPromise.then((v) => {
       setChainId(getChainId(userProvider));
     });
   }, [userProvider]);

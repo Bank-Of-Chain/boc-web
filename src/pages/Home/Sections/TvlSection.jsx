@@ -2,7 +2,11 @@ import React, { useEffect, useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 
 // === Services === //
-import { getETHVaultData, getBSCVaultData, getMaticVaultData } from "./../../../services/subgraph-service";
+import {
+  getETHVaultData,
+  getBSCVaultData,
+  getMaticVaultData,
+} from "./../../../services/subgraph-service";
 import { toFixed } from "../../../helpers/number-format";
 
 // === Components === //
@@ -28,18 +32,31 @@ export default function TvlSection() {
   useEffect(() => {
     Promise.all([getETHVaultData(), getBSCVaultData(), getMaticVaultData()])
       .then(compact)
-      .then(array => {
-        const nextTotalTvl = sumBy(array, i => parseFloat(toFixed(i.tvl, 10 ** i.decimals, 2))).toFixed(2);
-        const nextEarn = sumBy(array, i => {
-          const total = sumBy(map(i.weeksData, o => parseFloat(toFixed(o.totalProfit, 10 ** i.decimals, 2))));
+      .then((array) => {
+        const nextTotalTvl = sumBy(array, (i) =>
+          parseFloat(toFixed(i.tvl, 10 ** i.decimals, 2))
+        ).toFixed(2);
+        const nextEarn = sumBy(array, (i) => {
+          const total = sumBy(
+            map(i.weeksData, (o) =>
+              parseFloat(toFixed(o.totalProfit, 10 ** i.decimals, 2))
+            )
+          );
           return total;
         }).toFixed(2);
-        const nextTotalEarn = sumBy(array, i => parseFloat(toFixed(i.totalProfit, 10 ** i.decimals, 2))).toFixed(2);
-        const nextHoldCount = sumBy(array, i => parseInt(i.holderCount));
-        return { totalTvl: nextTotalTvl, earn: nextEarn, totalEarn: nextTotalEarn, holders: nextHoldCount };
+        const nextTotalEarn = sumBy(array, (i) =>
+          parseFloat(toFixed(i.totalProfit, 10 ** i.decimals, 2))
+        ).toFixed(2);
+        const nextHoldCount = sumBy(array, (i) => parseInt(i.holderCount));
+        return {
+          totalTvl: nextTotalTvl,
+          earn: nextEarn,
+          totalEarn: nextTotalEarn,
+          holders: nextHoldCount,
+        };
       })
       .then(setObj)
-      .catch(error => {
+      .catch((error) => {
         console.log("error", error);
       });
   }, []);

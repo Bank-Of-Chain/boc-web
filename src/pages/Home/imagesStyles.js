@@ -10,7 +10,8 @@ const imagesStyles = {
     borderRadius: "50% !important",
   },
   imgRaised: {
-    boxShadow: "0 5px 15px -8px rgba(0, 0, 0, 0.24), 0 8px 10px -5px rgba(0, 0, 0, 0.2)",
+    boxShadow:
+      "0 5px 15px -8px rgba(0, 0, 0, 0.24), 0 8px 10px -5px rgba(0, 0, 0, 0.2)",
   },
   imgGallery: {
     width: "100%",

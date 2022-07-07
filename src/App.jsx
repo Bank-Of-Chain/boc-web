@@ -42,7 +42,7 @@ const Home = lazy(() => import("./pages/Home/index"));
 const InvestNew = lazy(() => import("./pages/InvestNew/index"));
 const Ethi = lazy(() => import("./pages/Ethi/index"));
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   backdrop: {
     zIndex: theme.zIndex.drawer + 1,
     color: "#BBB",
@@ -69,11 +69,18 @@ const useStyles = makeStyles(theme => ({
 
 function App() {
   const classes = useStyles();
-  const { web3Modal, userProvider, connect, disconnect, chainId, getWalletName } = useWallet();
+  const {
+    web3Modal,
+    userProvider,
+    connect,
+    disconnect,
+    chainId,
+    getWalletName,
+  } = useWallet();
   const [isLoadingChainId, setIsLoadingChainId] = useState(false);
   const isLoadingTimer = useRef();
 
-  const alertState = useSelector(state => state.metaReducer.warmMsg);
+  const alertState = useSelector((state) => state.metaReducer.warmMsg);
   const dispatch = useDispatch();
   const address = useUserAddress(userProvider);
   const selectedChainId = chainId;
@@ -85,7 +92,7 @@ function App() {
       isLoadingTimer.current = setTimeout(() => {
         setIsLoadingChainId(true);
       }, 500);
-      userProvider._networkPromise.then(v => {
+      userProvider._networkPromise.then((v) => {
         setIsLoadingChainId(false);
         clearTimeout(isLoadingTimer.current);
       });
@@ -99,7 +106,9 @@ function App() {
   }, [connect, web3Modal.cachedProvider]);
 
   useEffect(() => {
-    const isBrowserPluginWallet = [WALLETS.MetaMask.info.symbol].includes(walletName);
+    const isBrowserPluginWallet = [WALLETS.MetaMask.info.symbol].includes(
+      walletName
+    );
     if (!window.ethereum || !isBrowserPluginWallet) {
       return;
     }
@@ -133,7 +142,7 @@ function App() {
     }
   }, [selectedChainId]);
 
-  const changeNetwork = targetNetwork => {
+  const changeNetwork = (targetNetwork) => {
     return new Promise(async (resolver, reject) => {
       if (isEmpty(targetNetwork)) return;
       // 如果metamask已经使用的是targetNetwork的话，则修改localStorage.REACT_APP_NETWORK_TYPE之后，进行页面刷新。
@@ -156,7 +165,7 @@ function App() {
             open: true,
             type: "warning",
             message: "Switch networks in your wallet, then reconnect",
-          }),
+          })
         );
         reject();
         return;
@@ -224,7 +233,7 @@ function App() {
       warmDialog({
         ...alertState,
         open: false,
-      }),
+      })
     );
   };
 
@@ -235,10 +244,18 @@ function App() {
           <CircularProgress color="inherit" />
           <p>loading...</p>
         </div>,
-        <Chains key="2" maskStyle={{ textAlign: "center" }} array={NET_WORKS} handleClick={changeNetwork} />,
+        <Chains
+          key="2"
+          maskStyle={{ textAlign: "center" }}
+          array={NET_WORKS}
+          handleClick={changeNetwork}
+        />,
       ]);
     }
-    if (!isUndefined(selectedChainId) && !map(NET_WORKS, "chainId").includes(selectedChainId)) {
+    if (
+      !isUndefined(selectedChainId) &&
+      !map(NET_WORKS, "chainId").includes(selectedChainId)
+    ) {
       if (selectedChainId === LOCAL_CHAIN_ID) return;
       return modalJsx(true, [
         <p key="1" style={{ textAlign: "center" }}>

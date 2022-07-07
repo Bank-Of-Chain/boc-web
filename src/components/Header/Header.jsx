@@ -37,11 +37,19 @@ export default function Header(props) {
     const { color, changeColorOnScroll } = props;
     const windowsScrollTop = window.pageYOffset;
     if (windowsScrollTop > changeColorOnScroll.height) {
-      document.body.getElementsByTagName("header")[0].classList.remove(classes[color]);
-      document.body.getElementsByTagName("header")[0].classList.add(classes[changeColorOnScroll.color]);
+      document.body
+        .getElementsByTagName("header")[0]
+        .classList.remove(classes[color]);
+      document.body
+        .getElementsByTagName("header")[0]
+        .classList.add(classes[changeColorOnScroll.color]);
     } else {
-      document.body.getElementsByTagName("header")[0].classList.add(classes[color]);
-      document.body.getElementsByTagName("header")[0].classList.remove(classes[changeColorOnScroll.color]);
+      document.body
+        .getElementsByTagName("header")[0]
+        .classList.add(classes[color]);
+      document.body
+        .getElementsByTagName("header")[0]
+        .classList.remove(classes[changeColorOnScroll.color]);
     }
   };
   const { color, rightLinks, leftLinks, brand, fixed, absolute } = props;
@@ -75,7 +83,11 @@ export default function Header(props) {
           {rightLinks}
         </Hidden>
         <Hidden mdUp>
-          <IconButton style={{ color: "#fff" }} aria-label="open drawer" onClick={handleDrawerToggle}>
+          <IconButton
+            style={{ color: "#fff" }}
+            aria-label="open drawer"
+            onClick={handleDrawerToggle}
+          >
             <Menu />
           </IconButton>
         </Hidden>
@@ -105,7 +117,17 @@ Header.defaultProp = {
 };
 
 Header.propTypes = {
-  color: PropTypes.oneOf(["primary", "info", "success", "warning", "danger", "transparent", "white", "rose", "dark"]),
+  color: PropTypes.oneOf([
+    "primary",
+    "info",
+    "success",
+    "warning",
+    "danger",
+    "transparent",
+    "white",
+    "rose",
+    "dark",
+  ]),
   rightLinks: PropTypes.node,
   leftLinks: PropTypes.node,
   brand: PropTypes.string,
@@ -119,7 +141,16 @@ Header.propTypes = {
   // props.color (see above)
   changeColorOnScroll: PropTypes.shape({
     height: PropTypes.number.isRequired,
-    color: PropTypes.oneOf(["primary", "info", "success", "warning", "danger", "transparent", "white", "rose", "dark"])
-      .isRequired,
+    color: PropTypes.oneOf([
+      "primary",
+      "info",
+      "success",
+      "warning",
+      "danger",
+      "transparent",
+      "white",
+      "rose",
+      "dark",
+    ]).isRequired,
   }),
 };

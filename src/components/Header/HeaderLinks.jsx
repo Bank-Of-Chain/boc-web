@@ -33,7 +33,13 @@ import find from "lodash/find";
 import { isInMobileWalletApp, isInMobileH5 } from "../../helpers/plugin-util";
 
 // === Constants === //
-import { NET_WORKS, DASHBOARD_URL, DOCUMENT_URL, CHAIN_ID, LEGACYS } from "./../../constants";
+import {
+  NET_WORKS,
+  DASHBOARD_URL,
+  DOCUMENT_URL,
+  CHAIN_ID,
+  LEGACYS,
+} from "./../../constants";
 import { INVEST_TAB } from "./../../constants/invest";
 
 const CHAIN_SELECTOR_SHOW_ROUTER = ["#/mutils"];
@@ -65,32 +71,34 @@ export default function HeaderLinks(props) {
         open: true,
         type: "info",
         message: "Copied",
-      }),
+      })
     );
   };
 
-  const connectTo = async name => {
+  const connectTo = async (name) => {
     if (!connectTimer.current) {
       connectTimer.current = setTimeout(() => {
         dispatch(
           warmDialog({
             open: true,
             type: "warning",
-            message: "Please check you wallet info or confirm you have install the wallet",
-          }),
+            message:
+              "Please check you wallet info or confirm you have install the wallet",
+          })
         );
         connectTimer.current = null;
       }, 5000);
     }
-    const provider = await connect(name).catch(error => {
+    const provider = await connect(name).catch((error) => {
       const msg = error?.message;
       if (msg === "No Web3 Provider found") {
         dispatch(
           warmDialog({
             open: true,
             type: "warning",
-            message: "Please install the wallet first. If you have installed, reload page",
-          }),
+            message:
+              "Please install the wallet first. If you have installed, reload page",
+          })
         );
       }
       console.error(error);
@@ -126,12 +134,22 @@ export default function HeaderLinks(props) {
           </Button>
         </ListItem>
         <ListItem className={classes.listItem}>
-          <Button color="transparent" target="_blank" href={dashboardUrlRender()} className={classes.navLink}>
+          <Button
+            color="transparent"
+            target="_blank"
+            href={dashboardUrlRender()}
+            className={classes.navLink}
+          >
             Dashboard
           </Button>
         </ListItem>
         <ListItem className={classes.listItem}>
-          <Button color="transparent" target="_blank" href={DOCUMENT_URL} className={classes.navLink}>
+          <Button
+            color="transparent"
+            target="_blank"
+            href={DOCUMENT_URL}
+            className={classes.navLink}
+          >
             Docs
           </Button>
         </ListItem>
@@ -144,10 +162,18 @@ export default function HeaderLinks(props) {
               color: "transparent",
             }}
             dropdownList={[
-              <a target="_blank" href="https://wallet.polygon.technology/bridge" className={classes.dropdownLink}>
+              <a
+                target="_blank"
+                href="https://wallet.polygon.technology/bridge"
+                className={classes.dropdownLink}
+              >
                 Polygon Bridge
               </a>,
-              <a target="_blank" href="https://www.binance.org/en/bridge" className={classes.dropdownLink}>
+              <a
+                target="_blank"
+                href="https://www.binance.org/en/bridge"
+                className={classes.dropdownLink}
+              >
                 BNB Bridge
               </a>,
             ]}
@@ -157,13 +183,20 @@ export default function HeaderLinks(props) {
           <ListItem className={classes.listItem}>
             <CustomDropdown
               noLiPadding
-              buttonText={get(find(NET_WORKS, { chainId: CHAIN_ID }), "name", "Networks")}
+              buttonText={get(
+                find(NET_WORKS, { chainId: CHAIN_ID }),
+                "name",
+                "Networks"
+              )}
               buttonProps={{
                 className: classes.navLink,
                 color: "transparent",
               }}
-              dropdownList={map(NET_WORKS, i => (
-                <a onClick={() => props.changeNetwork(i)} className={classes.dropdownLink}>
+              dropdownList={map(NET_WORKS, (i) => (
+                <a
+                  onClick={() => props.changeNetwork(i)}
+                  className={classes.dropdownLink}
+                >
                   {i.name}
                 </a>
               ))}
@@ -172,20 +205,31 @@ export default function HeaderLinks(props) {
         )}
         {!isEmpty(LEGACYS) && (
           <ListItem className={classes.listItem}>
-            <Button color="transparent" target="_blank" href={LEGACYS.url} className={classes.navLink}>
+            <Button
+              color="transparent"
+              target="_blank"
+              href={LEGACYS.url}
+              className={classes.navLink}
+            >
               {LEGACYS.title}
             </Button>
           </ListItem>
         )}
         {location.hash === "#/" ? (
           <ListItem className={classes.listItem}>
-            <Button className={`${classes.navLink} ${classes.colorfulLink}`} color="colorfull-border" href="/#/mutils">
+            <Button
+              className={`${classes.navLink} ${classes.colorfulLink}`}
+              color="colorfull-border"
+              href="/#/mutils"
+            >
               Launch App
             </Button>
           </ListItem>
         ) : (
           <ListItem
-            className={classNames(classes.listItem, { [classes.hidden]: isInMobileH5() || isInMobileWalletApp() })}
+            className={classNames(classes.listItem, {
+              [classes.hidden]: isInMobileH5() || isInMobileWalletApp(),
+            })}
           >
             {isEmpty(userProvider) ? (
               <Button
@@ -214,20 +258,35 @@ export default function HeaderLinks(props) {
                   className: `${classes.navLink} ${classes.colorfulLink} ${classes.accountLink}`,
                 }}
                 dropdownList={[
-                  <div className={classes.dropdownLink} onClick={handleGoToAccount}>
-                    <AccountBalanceWalletOutlinedIcon className={classes.dropdownLinkIcon} />
+                  <div
+                    className={classes.dropdownLink}
+                    onClick={handleGoToAccount}
+                  >
+                    <AccountBalanceWalletOutlinedIcon
+                      className={classes.dropdownLinkIcon}
+                    />
                     <a>My Account</a>
                   </div>,
-                  <div onClick={handleCopyAddress} className={classes.dropdownLink}>
-                    <FileCopyOutlinedIcon className={classes.dropdownLinkIcon} />
+                  <div
+                    onClick={handleCopyAddress}
+                    className={classes.dropdownLink}
+                  >
+                    <FileCopyOutlinedIcon
+                      className={classes.dropdownLinkIcon}
+                    />
                     <a>Copy Address</a>
                   </div>,
-                  <div onClick={handleClickConnect} className={classes.dropdownLink}>
+                  <div
+                    onClick={handleClickConnect}
+                    className={classes.dropdownLink}
+                  >
                     <PaymentOutlinedIcon className={classes.dropdownLinkIcon} />
                     <a>Change Wallet</a>
                   </div>,
                   <div onClick={disconnect} className={classes.dropdownLink}>
-                    <ExitToAppOutlinedIcon className={classes.dropdownLinkIcon} />
+                    <ExitToAppOutlinedIcon
+                      className={classes.dropdownLinkIcon}
+                    />
                     <a>Disconnect</a>
                   </div>,
                 ]}
@@ -236,7 +295,12 @@ export default function HeaderLinks(props) {
           </ListItem>
         )}
       </List>
-      <WalletModal open={walletModalVisible} onClose={handleClose} connectTo={connectTo} selected={walletName} />
+      <WalletModal
+        open={walletModalVisible}
+        onClose={handleClose}
+        connectTo={connectTo}
+        selected={walletName}
+      />
     </>
   );
 }

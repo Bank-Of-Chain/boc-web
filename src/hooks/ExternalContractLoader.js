@@ -21,7 +21,12 @@ import { useState, useEffect } from "react";
   - Specify mainnetProvider
   - Specify DAI_ADDRESS and DAI_ABI, you can load/write them using constants.js
 */
-export default function useExternalContractLoader(provider, address, ABI, optionalBytecode) {
+export default function useExternalContractLoader(
+  provider,
+  address,
+  ABI,
+  optionalBytecode
+) {
   const [contract, setContract] = useState();
   useEffect(() => {
     async function loadContract() {
@@ -41,7 +46,12 @@ export default function useExternalContractLoader(provider, address, ABI, option
 
           setContract(customContract);
         } catch (e) {
-          console.log("ERROR LOADING EXTERNAL CONTRACT AT " + address + " (check provider, address, and ABI)!!", e);
+          console.log(
+            "ERROR LOADING EXTERNAL CONTRACT AT " +
+              address +
+              " (check provider, address, and ABI)!!",
+            e
+          );
         }
       }
     }
