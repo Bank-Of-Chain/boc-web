@@ -1,14 +1,14 @@
-const componentsStyle = (theme) => ({
+const componentsStyle = theme => ({
   buttonSelectorWrapper: {
-    display: 'flex',
-    justifyContent:' space-around'
+    display: "flex",
+    justifyContent: " space-around",
   },
   buttonRoot: {
-    color: '#fff'
+    color: "#fff",
   },
   buttonOutlined: {
-    borderColor: '#fff'
-  }
-})
+    borderColor: "#fff",
+  },
+});
 
-export default componentsStyle
+export default componentsStyle;

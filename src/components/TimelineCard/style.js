@@ -11,11 +11,11 @@ const style = {
   colorReverse: {
     background: "linear-gradient(220.48deg, #FE3DCE 6.75%, #5B93E0 99.99%, #94E3FF 100%)",
     "& $arrow": {
-      borderColor: "#7087dd"
+      borderColor: "#7087dd",
     },
     "& $arrowRight": {
-      borderColor: "#da50d2"
-    }
+      borderColor: "#da50d2",
+    },
   },
   content: {
     position: "relative",
@@ -32,7 +32,7 @@ const style = {
     fontWeight: 700,
     lineHeight: "26px",
     boxSizing: "border-box",
-    zIndex: 1
+    zIndex: 1,
   },
   arrow: {
     position: "absolute",
@@ -43,32 +43,32 @@ const style = {
     transform: "rotate(45deg)",
     zIndex: 0,
     backgroundColor: "#313036",
-    border: "1px solid #d779e0"
+    border: "1px solid #d779e0",
   },
   arrowLeft: {
-    left: "-7px"
+    left: "-7px",
   },
   arrowRight: {
     right: "-7px",
-    borderColor: "#9ed4fb"
+    borderColor: "#9ed4fb",
   },
-  '@media (max-width: 992px)': {
+  "@media (max-width: 992px)": {
     timelineCard: {
-      width: "260px"
+      width: "260px",
     },
   },
-  '@media (max-width: 768px)': {
+  "@media (max-width: 768px)": {
     timelineCard: {
       width: "172px",
     },
     content: {
-      padding: "24px 8px"
+      padding: "24px 8px",
     },
     separator: {
       marginLeft: "8px",
       marginRight: "8px",
-    }
+    },
   },
-}
+};
 
-export default style
+export default style;

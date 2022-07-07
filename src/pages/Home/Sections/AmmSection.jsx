@@ -1,37 +1,37 @@
-import React from "react"
+import React from "react";
 // @material-ui/core components
-import { makeStyles } from "@material-ui/core/styles"
+import { makeStyles } from "@material-ui/core/styles";
 
 // === Components === //
-import Tabs from "../../../components/CustomTabs/CustomTabs"
-import GridItem from "../../../components/Grid/GridItem"
+import Tabs from "../../../components/CustomTabs/CustomTabs";
+import GridItem from "../../../components/Grid/GridItem";
 
 // === Constants === //
-import AMMS, { PLATFORM_HOME_URL } from "../../../constants/amms"
-import CHAINS from "../../../constants/chains"
-import STABLECOINS from "../../../constants/stableCoins"
+import AMMS, { PLATFORM_HOME_URL } from "../../../constants/amms";
+import CHAINS from "../../../constants/chains";
+import STABLECOINS from "../../../constants/stableCoins";
 
 // === Utils === //
-import map from "lodash/map"
-import isEmpty from "lodash/isEmpty"
+import map from "lodash/map";
+import isEmpty from "lodash/isEmpty";
 
 // === Styles === //
-import styles from "./ammStyle"
+import styles from "./ammStyle";
 
-const useStyles = makeStyles(styles)
+const useStyles = makeStyles(styles);
 
-export default function AmmSection () {
-  const classes = useStyles()
-  const [value, setValue] = React.useState(0)
+export default function AmmSection() {
+  const classes = useStyles();
+  const [value, setValue] = React.useState(0);
 
   const handleChange = (event, newValue) => {
-    setValue(newValue)
-  }
+    setValue(newValue);
+  };
 
-  function imgError (e) {
-    const evn = e
-    const img = evn.srcElement ? evn.srcElement : evn.target
-    img.src = "/default.png"
+  function imgError(e) {
+    const evn = e;
+    const img = evn.srcElement ? evn.srcElement : evn.target;
+    img.src = "/default.png";
   }
 
   return (
@@ -44,10 +44,10 @@ export default function AmmSection () {
       <Tabs
         centered
         value={value}
-        indicatorColor='primary'
-        textColor='primary'
+        indicatorColor="primary"
+        textColor="primary"
         onChange={handleChange}
-        aria-label='disabled tabs example'
+        aria-label="disabled tabs example"
         tabs={[
           {
             tabName: "Stablecoins",
@@ -76,7 +76,11 @@ export default function AmmSection () {
               <GridItem xs={12} sm={12} md={12} className={classes.iconContainer}>
                 {map(CHAINS, c => (
                   <div key={c.id} className={classes.item} onClick={() => window.open(c.url)}>
-                    <img className={`${classes.img} ${classes.transparentBg}`} src={`/images/chains/${c.id}.png`} alt={c.name} />
+                    <img
+                      className={`${classes.img} ${classes.transparentBg}`}
+                      src={`/images/chains/${c.id}.png`}
+                      alt={c.name}
+                    />
                     <p className={classes.text}>{c.name}</p>
                   </div>
                 ))}
@@ -93,7 +97,7 @@ export default function AmmSection () {
                       name: item,
                       index: i,
                       url: PLATFORM_HOME_URL[item],
-                    }
+                    };
                   }),
                   a => (
                     <div key={a.name} className={classes.item} onClick={() => !isEmpty(a.url) && window.open(a.url)}>
@@ -108,5 +112,5 @@ export default function AmmSection () {
         ]}
       />
     </div>
-  )
+  );
 }

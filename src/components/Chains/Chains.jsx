@@ -1,11 +1,11 @@
-import React from "react"
+import React from "react";
 
 // mterial-ui components
-import { makeStyles } from "@material-ui/core/styles"
-import Tooltip from "@material-ui/core/Tooltip"
+import { makeStyles } from "@material-ui/core/styles";
+import Tooltip from "@material-ui/core/Tooltip";
 
 // === Utils === //
-import map from "lodash/map"
+import map from "lodash/map";
 
 const styles = {
   img: {
@@ -17,13 +17,13 @@ const styles = {
     verticalAlign: "middle",
     cursor: "pointer",
   },
-}
+};
 
-const useStyles = makeStyles(styles)
+const useStyles = makeStyles(styles);
 
-export default function Chains (props) {
-  const { array, handleClick, maskStyle } = props
-  const classes = useStyles()
+export default function Chains(props) {
+  const { array, handleClick, maskStyle } = props;
+  const classes = useStyles();
   return (
     <div style={maskStyle}>
       {map(array, item => (
@@ -37,12 +37,12 @@ export default function Chains (props) {
             onClick={() => handleClick(item)}
             className={classes.img}
             src={`/images/chains/${item.chainId}.png`}
-            alt=''
+            alt=""
           />
         </Tooltip>
       ))}
     </div>
-  )
+  );
 }
 
-Chains.propTypes = {}
+Chains.propTypes = {};

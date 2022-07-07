@@ -2,21 +2,21 @@
  * 预生产环境配置文件
  */
 
-const ETHI_FOR_ETH = "0x9385556B571ab92bf6dC9a0DbD75429Dd4d56F91"
+const ETHI_FOR_ETH = "0x9385556B571ab92bf6dC9a0DbD75429Dd4d56F91";
 
-const USDI_FOR_ETH = "0x8fC8CFB7f7362E44E472c690A6e025B80E406458"
-const USDI_FOR_BSC = ""
-const USDI_FOR_MATIC = ""
+const USDI_FOR_ETH = "0x8fC8CFB7f7362E44E472c690A6e025B80E406458";
+const USDI_FOR_BSC = "";
+const USDI_FOR_MATIC = "";
 
-const ETHI_VAULT = "0xDae16f755941cbC0C9D240233a6F581d1734DaA2"
-const USDI_VAULT_FOR_ETH = "0xd5C7A01E49ab534e31ABcf63bA5a394fF1E5EfAC"
-const USDI_VAULT_FOR_BSC = ""
-const USDI_VAULT_FOR_MATIC = ""
+const ETHI_VAULT = "0xDae16f755941cbC0C9D240233a6F581d1734DaA2";
+const USDI_VAULT_FOR_ETH = "0xd5C7A01E49ab534e31ABcf63bA5a394fF1E5EfAC";
+const USDI_VAULT_FOR_BSC = "";
+const USDI_VAULT_FOR_MATIC = "";
 
-const VAULT_BUFFER_FOR_ETHI_ETH = "0xcD0048A5628B37B8f743cC2FeA18817A29e97270"
-const VAULT_BUFFER_FOR_USDI_ETH = "0xDde063eBe8E85D666AD99f731B4Dbf8C98F29708"
-const VAULT_BUFFER_FOR_USDI_BSC = ""
-const VAULT_BUFFER_FOR_USDI_MATIC = ""
+const VAULT_BUFFER_FOR_ETHI_ETH = "0xcD0048A5628B37B8f743cC2FeA18817A29e97270";
+const VAULT_BUFFER_FOR_USDI_ETH = "0xDde063eBe8E85D666AD99f731B4Dbf8C98F29708";
+const VAULT_BUFFER_FOR_USDI_BSC = "";
+const VAULT_BUFFER_FOR_USDI_MATIC = "";
 
 const configBase = {
   vault_address: "",
@@ -33,20 +33,20 @@ const configBase = {
   document_url: "https://docs.bankofchain.io",
   boc_server: "https://service-stage-sg.bankofchain.io",
   sub_graph_url: {
-    "1": "https://api.thegraph.com/subgraphs/name/bankofchain/boc-subgraph-eth",
-    "56": "https://api.thegraph.com/subgraphs/name/bankofchain/boc-subgraph-bsc",
-    "137": "https://api.thegraph.com/subgraphs/name/bankofchain/boc-subgraph-matic",
+    1: "https://api.thegraph.com/subgraphs/name/bankofchain/boc-subgraph-eth",
+    56: "https://api.thegraph.com/subgraphs/name/bankofchain/boc-subgraph-bsc",
+    137: "https://api.thegraph.com/subgraphs/name/bankofchain/boc-subgraph-matic",
   },
   rpc_url: {
-    "1": "https://mainnet.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161",
-    "56": "https://bsc-dataseed.binance.org/",
-    "137": "https://rpc-mainnet.maticvigil.com",
-    "31337": "https://rpc-stage-sg.bankofchain.io",
+    1: "https://mainnet.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161",
+    56: "https://bsc-dataseed.binance.org/",
+    137: "https://rpc-mainnet.maticvigil.com",
+    31337: "https://rpc-stage-sg.bankofchain.io",
   },
   multiple_of_gas: 2,
   dashboard_url: "https://dashboard-stage-sg.bankofchain.io",
   oracle_additional_slippage: 20,
-}
+};
 
 const config137 = {
   ...configBase,
@@ -93,7 +93,7 @@ const config137 = {
       isOpen: true,
     },
   ],
-}
+};
 
 const config56 = {
   ...configBase,
@@ -138,7 +138,7 @@ const config56 = {
       isOpen: true,
     },
   ],
-}
+};
 
 const config1 = {
   ...configBase,
@@ -201,7 +201,7 @@ const config1 = {
       isOpen: true,
     },
   ],
-}
+};
 
 window.config = {
   // 本地链
@@ -214,4 +214,4 @@ window.config = {
   1: config1,
   // 无链信息时的加载
   [undefined]: configBase,
-}
+};

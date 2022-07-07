@@ -1,12 +1,12 @@
-import React from "react"
-import { makeStyles } from "@material-ui/core/styles"
+import React from "react";
+import { makeStyles } from "@material-ui/core/styles";
 
-import styles from "./auditedStyle"
+import styles from "./auditedStyle";
 
-const useStyles = makeStyles(styles)
+const useStyles = makeStyles(styles);
 
-export default function TeamSection () {
-  const classes = useStyles()
+export default function TeamSection() {
+  const classes = useStyles();
   return (
     <div className={classes.section}>
       <h1 className={classes.title}>Your assets,</h1>
@@ -17,5 +17,5 @@ export default function TeamSection () {
         by reputable security firms including XXXXXXXXXX, YYYYYYYYYYY and ZZZZZZZZZZZZZZZ.
       </h4>
     </div>
-  )
+  );
 }

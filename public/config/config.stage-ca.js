@@ -2,21 +2,21 @@
  * 预生产环境配置文件
  */
 
-const ETHI_FOR_ETH = "0x33E45b187da34826aBCEDA1039231Be46f1b05Af"
+const ETHI_FOR_ETH = "0x33E45b187da34826aBCEDA1039231Be46f1b05Af";
 
-const USDI_FOR_ETH = "0x67aD6EA566BA6B0fC52e97Bc25CE46120fdAc04c"
-const USDI_FOR_BSC = ""
-const USDI_FOR_MATIC = ""
+const USDI_FOR_ETH = "0x67aD6EA566BA6B0fC52e97Bc25CE46120fdAc04c";
+const USDI_FOR_BSC = "";
+const USDI_FOR_MATIC = "";
 
-const ETHI_VAULT = "0x70E5370b8981Abc6e14C91F4AcE823954EFC8eA3"
-const USDI_VAULT_FOR_ETH = "0x359570B3a0437805D0a71457D61AD26a28cAC9A2"
-const USDI_VAULT_FOR_BSC = ""
-const USDI_VAULT_FOR_MATIC = ""
+const ETHI_VAULT = "0x70E5370b8981Abc6e14C91F4AcE823954EFC8eA3";
+const USDI_VAULT_FOR_ETH = "0x359570B3a0437805D0a71457D61AD26a28cAC9A2";
+const USDI_VAULT_FOR_BSC = "";
+const USDI_VAULT_FOR_MATIC = "";
 
-const VAULT_BUFFER_FOR_ETHI_ETH = "0x2F54D1563963fC04770E85AF819c89Dc807f6a06"
-const VAULT_BUFFER_FOR_USDI_ETH = "0x942ED2fa862887Dc698682cc6a86355324F0f01e"
-const VAULT_BUFFER_FOR_USDI_BSC = ""
-const VAULT_BUFFER_FOR_USDI_MATIC = ""
+const VAULT_BUFFER_FOR_ETHI_ETH = "0x2F54D1563963fC04770E85AF819c89Dc807f6a06";
+const VAULT_BUFFER_FOR_USDI_ETH = "0x942ED2fa862887Dc698682cc6a86355324F0f01e";
+const VAULT_BUFFER_FOR_USDI_BSC = "";
+const VAULT_BUFFER_FOR_USDI_MATIC = "";
 
 const configBase = {
   vault_address: "",
@@ -33,19 +33,19 @@ const configBase = {
   document_url: "https://docs.bankofchain.io",
   boc_server: "http://192.168.60.12/server",
   sub_graph_url: {
-    "1": "https://api.thegraph.com/subgraphs/name/bankofchain/boc-subgraph-eth",
-    "56": "https://api.thegraph.com/subgraphs/name/bankofchain/boc-subgraph-bsc",
-    "137": "https://api.thegraph.com/subgraphs/name/bankofchain/boc-subgraph-matic",
+    1: "https://api.thegraph.com/subgraphs/name/bankofchain/boc-subgraph-eth",
+    56: "https://api.thegraph.com/subgraphs/name/bankofchain/boc-subgraph-bsc",
+    137: "https://api.thegraph.com/subgraphs/name/bankofchain/boc-subgraph-matic",
   },
   rpc_url: {
-    "1": "https://rpc.ankr.com/eth",
-    "56": "https://bsc-dataseed.binance.org/",
-    "137": "https://rpc-mainnet.maticvigil.com",
+    1: "https://rpc.ankr.com/eth",
+    56: "https://bsc-dataseed.binance.org/",
+    137: "https://rpc-mainnet.maticvigil.com",
   },
   multiple_of_gas: 2,
   dashboard_url: "http://192.168.60.12/dashboard",
   oracle_additional_slippage: 20,
-}
+};
 
 const config137 = {
   ...configBase,
@@ -68,7 +68,7 @@ const config137 = {
   // 币安链一个区块2千万，使用90%的空间即可，过大会造成打块过慢
   max_gas_limit: 1800 * 10 ** 4,
   chain_id: 137,
-}
+};
 
 const config56 = {
   ...configBase,
@@ -89,7 +89,7 @@ const config56 = {
   // 币安链一个区块8千万，使用90%的空间即可，过大会造成打块过慢
   max_gas_limit: 7200 * 10 ** 4,
   chain_id: 56,
-}
+};
 
 const config1 = {
   ...configBase,
@@ -126,7 +126,7 @@ const config1 = {
   // ETH链一个区块3千万，使用90%的空间即可，过大会造成打块过慢
   max_gas_limit: 2700 * 10 ** 4,
   chain_id: 1,
-}
+};
 
 window.config = {
   // 本地链
@@ -139,4 +139,4 @@ window.config = {
   1: config1,
   // 无链信息时的加载
   [undefined]: configBase,
-}
+};

@@ -1,4 +1,4 @@
-import { container } from "../../assets/jss/material-kit-react.js"
+import { container } from "../../assets/jss/material-kit-react.js";
 
 const landingPageStyle = {
   container: {
@@ -89,6 +89,6 @@ const landingPageStyle = {
     textAlign: "center",
     background: "#1F2023 url(/images/home/bg-line.png) no-repeat center",
   },
-}
+};
 
-export default landingPageStyle
+export default landingPageStyle;

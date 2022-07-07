@@ -14,8 +14,7 @@ const parallaxStyle = {
     alignItems: "center",
   },
   filter: {
-    "&:before": {
-    },
+    "&:before": {},
     "&:after,&:before": {
       position: "absolute",
       zIndex: "1",

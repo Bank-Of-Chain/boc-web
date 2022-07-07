@@ -5,12 +5,12 @@ export const INFURA_ID = "3be290dd5c1a46f894bdf28625c000ce";
 export const ETHERSCAN_KEY = "PSW8C433Q667DVEX5BCRMGNAH9FSGFZ7Q8";
 
 // EXTERNAL CONTRACTS
-export const ENV_NETWORK_TYPE = process.env.REACT_APP_NETWORK_TYPE || localStorage.REACT_APP_NETWORK_TYPE
-const config = window.config[ENV_NETWORK_TYPE] || window.config[undefined]
-console.log('env config=', ENV_NETWORK_TYPE, config);
+export const ENV_NETWORK_TYPE = process.env.REACT_APP_NETWORK_TYPE || localStorage.REACT_APP_NETWORK_TYPE;
+const config = window.config[ENV_NETWORK_TYPE] || window.config[undefined];
+console.log("env config=", ENV_NETWORK_TYPE, config);
 
 if (!config) {
-  throw new Error('配置未正确加载');
+  throw new Error("配置未正确加载");
 }
 
 // === configs === //
@@ -32,12 +32,11 @@ export const MAX_GAS_LIMIT = config.max_gas_limit;
 export const BOC_SERVER = config.boc_server;
 export const MULTIPLE_OF_GAS = config.multiple_of_gas;
 export const DASHBOARD_URL = config.dashboard_url;
-export const ORACLE_ADDITIONAL_SLIPPAGE = config.oracle_additional_slippage
+export const ORACLE_ADDITIONAL_SLIPPAGE = config.oracle_additional_slippage;
 export const VAULTS = config.vaults;
 export const CHAIN_ID = config.chain_id;
 export const LEGACYS = config.legacys;
 export const RPC_URL = config.rpc_url;
-
 
 export const NET_WORKS = [
   {
@@ -68,7 +67,7 @@ export const NET_WORKS = [
     faucet: "https://faucet.matic.network/",
     blockExplorer: "https://explorer-mainnet.maticvigil.com",
     blockExplorerIcon: "/images/chains/logo-polygoncan.png",
-  }
-]
+  },
+];
 
-export const LOCAL_CHAIN_ID = 31337
+export const LOCAL_CHAIN_ID = 31337;

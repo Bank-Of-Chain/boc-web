@@ -26,7 +26,7 @@ const productStyle = {
     width: "1176px",
     padding: "0 70px",
     margin: "0 auto",
-  }
-}
+  },
+};
 
-export default productStyle
+export default productStyle;

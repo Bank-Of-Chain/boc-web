@@ -90,7 +90,7 @@ const lendingSectionStyle = {
     backgroundColor: "#070b10",
     borderRadius: "1rem",
   },
-}
+};
 
 export const smStyle = {
   section: {
@@ -116,6 +116,6 @@ export const smStyle = {
       textAlign: "left",
     },
   },
-}
+};
 
-export default lendingSectionStyle
+export default lendingSectionStyle;

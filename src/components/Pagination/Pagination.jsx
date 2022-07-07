@@ -30,10 +30,7 @@ export default function Pagination(props) {
                 {prop.text}
               </Button>
             ) : (
-              <Button
-                onClick={() => alert("you've clicked " + prop.text)}
-                className={paginationLink}
-              >
+              <Button onClick={() => alert("you've clicked " + prop.text)} className={paginationLink}>
                 {prop.text}
               </Button>
             )}
@@ -53,12 +50,9 @@ Pagination.propTypes = {
     PropTypes.shape({
       active: PropTypes.bool,
       disabled: PropTypes.bool,
-      text: PropTypes.oneOfType([
-        PropTypes.number,
-        PropTypes.oneOf(["PREV", "NEXT", "..."]),
-      ]).isRequired,
+      text: PropTypes.oneOfType([PropTypes.number, PropTypes.oneOf(["PREV", "NEXT", "..."])]).isRequired,
       onClick: PropTypes.func,
-    })
+    }),
   ).isRequired,
   color: PropTypes.oneOf(["primary", "info", "success", "warning", "danger"]),
 };

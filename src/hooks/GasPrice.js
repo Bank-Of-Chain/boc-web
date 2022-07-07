@@ -1,9 +1,5 @@
-import {
-  useState
-} from "react";
-import {
-  usePoller
-} from "eth-hooks";
+import { useState } from "react";
+import { usePoller } from "eth-hooks";
 import axios from "axios";
 
 export default function useGasPrice(targetNetwork = {}, speed) {

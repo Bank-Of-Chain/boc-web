@@ -7,7 +7,7 @@ import {
   dangerColor,
 } from "../../assets/jss/material-kit-react.js";
 
-const navPillsStyle = (theme) => ({
+const navPillsStyle = theme => ({
   root: {
     marginTop: "20px",
     paddingLeft: "0",
@@ -77,16 +77,14 @@ const navPillsStyle = (theme) => ({
     "&,&:hover": {
       color: "#FFFFFF",
       backgroundColor: primaryColor,
-      boxShadow:
-        "0 4px 20px 0px rgba(0, 0, 0, 0.14), 0 7px 10px -5px rgba(156, 39, 176, 0.4)",
+      boxShadow: "0 4px 20px 0px rgba(0, 0, 0, 0.14), 0 7px 10px -5px rgba(156, 39, 176, 0.4)",
     },
   },
   info: {
     "&,&:hover": {
       color: "#FFFFFF",
       backgroundColor: infoColor,
-      boxShadow:
-        "0 4px 20px 0px rgba(0, 0, 0, 0.14), 0 7px 10px -5px rgba(76, 175, 80, 0.4)",
+      boxShadow: "0 4px 20px 0px rgba(0, 0, 0, 0.14), 0 7px 10px -5px rgba(76, 175, 80, 0.4)",
     },
   },
   success: {
@@ -101,24 +99,21 @@ const navPillsStyle = (theme) => ({
     "&,&:hover": {
       color: "#FFFFFF",
       backgroundColor: warningColor,
-      boxShadow:
-        "0 4px 20px 0px rgba(0, 0, 0, 0.14), 0 7px 10px -5px rgba(255, 152, 0, 0.4)",
+      boxShadow: "0 4px 20px 0px rgba(0, 0, 0, 0.14), 0 7px 10px -5px rgba(255, 152, 0, 0.4)",
     },
   },
   danger: {
     "&,&:hover": {
       color: "#FFFFFF",
       backgroundColor: dangerColor,
-      boxShadow:
-        "0 4px 20px 0px rgba(0, 0, 0, 0.14), 0 7px 10px -5px rgba(255, 152, 0, 0.4)",
+      boxShadow: "0 4px 20px 0px rgba(0, 0, 0, 0.14), 0 7px 10px -5px rgba(255, 152, 0, 0.4)",
     },
   },
   rose: {
     "&,&:hover": {
       color: "#FFFFFF",
       backgroundColor: roseColor,
-      boxShadow:
-        "0 4px 20px 0px rgba(0, 0, 0, 0.14), 0 7px 10px -5px rgba(233, 30, 99, 0.4)",
+      boxShadow: "0 4px 20px 0px rgba(0, 0, 0, 0.14), 0 7px 10px -5px rgba(233, 30, 99, 0.4)",
     },
   },
   alignCenter: {

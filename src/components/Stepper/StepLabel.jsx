@@ -1,5 +1,5 @@
-import { withStyles } from "@material-ui/core/styles"
-import StepLabel from "@material-ui/core/StepLabel"
+import { withStyles } from "@material-ui/core/styles";
+import StepLabel from "@material-ui/core/StepLabel";
 
 const BocStepLabel = withStyles({
   label: {
@@ -11,6 +11,6 @@ const BocStepLabel = withStyles({
   completed: {
     color: "rgba(255, 255, 255, 0.87) !important",
   },
-})(StepLabel)
+})(StepLabel);
 
-export default BocStepLabel
+export default BocStepLabel;

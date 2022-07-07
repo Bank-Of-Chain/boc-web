@@ -2,7 +2,7 @@ const style = {
   selectWrapper: {
     position: "relative",
     height: "51px",
-    lineHeight: "51px"
+    lineHeight: "51px",
   },
   selectTrigger: {
     display: "flex",
@@ -14,7 +14,7 @@ const style = {
     border: "1px solid #666666",
     borderRadius: "20px",
     paddingLeft: 16,
-    paddingRight: 24
+    paddingRight: 24,
   },
   triggerLabelWrapper: {
     display: "flex",
@@ -22,7 +22,7 @@ const style = {
   },
   triggerLabel: {
     color: "#A0A0A0",
-    fontWeight: "bold"
+    fontWeight: "bold",
   },
   caret: {
     color: "#A68EFE",
@@ -44,7 +44,7 @@ const style = {
     borderRadius: "12px",
     transformOrigin: "top",
     transform: "translate(-50%, 0)",
-    boxShadow: "0 0 0px 1px rgba(161, 161, 161, 0.2)"
+    boxShadow: "0 0 0px 1px rgba(161, 161, 161, 0.2)",
   },
   selectPopVisible: {
     display: "block",
@@ -56,8 +56,8 @@ const style = {
     cursor: "pointer",
 
     "&:hover": {
-      background: "#323438"
-    }
+      background: "#323438",
+    },
   },
   optImg: {
     width: "auto",
@@ -67,23 +67,23 @@ const style = {
   },
   optMultiImgWrapper: {
     height: "30px",
-    whiteSpace: 'nowrap'
-  }, 
+    whiteSpace: "nowrap",
+  },
   optMultiImg: {
     width: "auto",
     height: "30px",
     borderRadius: "50%",
     marginLeft: "-12px",
     "&:first-child": {
-      marginLeft: 0
+      marginLeft: 0,
     },
     "&:last-child": {
-      marginRight: "8px"
-    }
+      marginRight: "8px",
+    },
   },
   optLabel: {
     color: "#A0A0A0",
   },
-}
+};
 
-export default style
+export default style;

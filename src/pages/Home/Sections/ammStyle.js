@@ -7,7 +7,7 @@ const ammSectionStyle = {
       margin: "0",
       fontSize: "3.75rem",
       lineHeight: "4.375rem",
-    }
+    },
   },
   iconContainer: {
     width: "52.5rem",
@@ -42,7 +42,7 @@ const ammSectionStyle = {
     backgroundColor: "#fff",
   },
   transparentBg: {
-    background: "transparent"
+    background: "transparent",
   },
   text: {
     textAlign: "center",
@@ -52,6 +52,6 @@ const ammSectionStyle = {
   more: {
     cursor: "pointer",
   },
-}
+};
 
-export default ammSectionStyle
+export default ammSectionStyle;

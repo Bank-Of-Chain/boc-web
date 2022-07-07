@@ -1,7 +1,7 @@
 const componentsStyle = {
   main: {
-    flex: "1"
-  }
+    flex: "1",
+  },
 };
 
 export default componentsStyle;

@@ -1,4 +1,4 @@
-import { dangerColor } from "../../assets/jss/material-kit-react.js"
+import { dangerColor } from "../../assets/jss/material-kit-react.js";
 
 const style = {
   root: {
@@ -37,6 +37,6 @@ const style = {
     color: "#A68EFE",
     fontWeight: "bold",
   },
-}
+};
 
-export default style
+export default style;

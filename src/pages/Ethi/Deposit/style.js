@@ -1,4 +1,4 @@
-import { container } from "../../../assets/jss/material-kit-react.js"
+import { container } from "../../../assets/jss/material-kit-react.js";
 
 const componentsStyle = theme => ({
   container,
@@ -95,6 +95,6 @@ const componentsStyle = theme => ({
   subTitle: {
     color: "#A68EFE",
   },
-})
+});
 
-export default componentsStyle
+export default componentsStyle;

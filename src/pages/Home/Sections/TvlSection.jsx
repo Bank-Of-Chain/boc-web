@@ -1,51 +1,51 @@
-import React, { useEffect, useState } from "react"
-import { makeStyles } from "@material-ui/core/styles"
+import React, { useEffect, useState } from "react";
+import { makeStyles } from "@material-ui/core/styles";
 
 // === Services === //
-import { getETHVaultData, getBSCVaultData, getMaticVaultData } from "./../../../services/subgraph-service"
-import { toFixed } from "../../../helpers/number-format"
+import { getETHVaultData, getBSCVaultData, getMaticVaultData } from "./../../../services/subgraph-service";
+import { toFixed } from "../../../helpers/number-format";
 
 // === Components === //
-import GridContainer from "../../../components/Grid/GridContainer"
-import GridItem from "../../../components/Grid/GridItem"
+import GridContainer from "../../../components/Grid/GridContainer";
+import GridItem from "../../../components/Grid/GridItem";
 
 // === Utils === //
-import sumBy from "lodash/sumBy"
-import map from "lodash/map"
-import compact from 'lodash/compact'
+import sumBy from "lodash/sumBy";
+import map from "lodash/map";
+import compact from "lodash/compact";
 
-import styles from "./tvlStyle"
+import styles from "./tvlStyle";
 
-const useStyles = makeStyles(styles)
+const useStyles = makeStyles(styles);
 
-export default function TvlSection () {
+export default function TvlSection() {
   const [obj, setObj] = useState({
     totalTvl: 0,
     earn: 0,
     totalEarn: 0,
     holders: 0,
-  })
+  });
   useEffect(() => {
     Promise.all([getETHVaultData(), getBSCVaultData(), getMaticVaultData()])
       .then(compact)
       .then(array => {
-        const nextTotalTvl = sumBy(array, i => parseFloat(toFixed(i.tvl, 10 ** i.decimals, 2))).toFixed(2)
+        const nextTotalTvl = sumBy(array, i => parseFloat(toFixed(i.tvl, 10 ** i.decimals, 2))).toFixed(2);
         const nextEarn = sumBy(array, i => {
-          const total = sumBy(map(i.weeksData, o => parseFloat(toFixed(o.totalProfit, 10 ** i.decimals, 2))))
-          return total
-        }).toFixed(2)
-        const nextTotalEarn = sumBy(array, i => parseFloat(toFixed(i.totalProfit, 10 ** i.decimals, 2))).toFixed(2)
-        const nextHoldCount = sumBy(array, i => parseInt(i.holderCount))
-        return { totalTvl: nextTotalTvl, earn: nextEarn, totalEarn: nextTotalEarn, holders: nextHoldCount }
+          const total = sumBy(map(i.weeksData, o => parseFloat(toFixed(o.totalProfit, 10 ** i.decimals, 2))));
+          return total;
+        }).toFixed(2);
+        const nextTotalEarn = sumBy(array, i => parseFloat(toFixed(i.totalProfit, 10 ** i.decimals, 2))).toFixed(2);
+        const nextHoldCount = sumBy(array, i => parseInt(i.holderCount));
+        return { totalTvl: nextTotalTvl, earn: nextEarn, totalEarn: nextTotalEarn, holders: nextHoldCount };
       })
       .then(setObj)
       .catch(error => {
-        console.log("error", error)
-      })
-  }, [])
+        console.log("error", error);
+      });
+  }, []);
 
-  const { totalTvl, earn, totalEarn, holders } = obj
-  const classes = useStyles()
+  const { totalTvl, earn, totalEarn, holders } = obj;
+  const classes = useStyles();
   return (
     <div className={classes.section}>
       <GridContainer>
@@ -73,5 +73,5 @@ export default function TvlSection () {
         </GridItem>
       </GridContainer>
     </div>
-  )
+  );
 }

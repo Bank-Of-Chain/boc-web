@@ -1,59 +1,59 @@
-import * as ethers from "ethers"
-import store from "../store"
-import { warmDialog } from "../reducers/meta-reducer"
-import { WALLETS } from "../constants/wallet"
-import { ETH_ADDRESS } from "../constants/token"
-import IERC20_ABI from "../abis/beta-v1.5/ierc20-abi.json"
+import * as ethers from "ethers";
+import store from "../store";
+import { warmDialog } from "../reducers/meta-reducer";
+import { WALLETS } from "../constants/wallet";
+import { ETH_ADDRESS } from "../constants/token";
+import IERC20_ABI from "../abis/beta-v1.5/ierc20-abi.json";
 
 export const getWalletName = (web3Modal, userProvider) => {
   if (!userProvider) {
-    return ''
+    return "";
   }
-  const cacheProvider = web3Modal?.providerController?.cachedProvider
+  const cacheProvider = web3Modal?.providerController?.cachedProvider;
   if (!cacheProvider) {
-    return ''
+    return "";
   }
-  if (cacheProvider === 'injected') {
-    return web3Modal?.providerController?.injectedProvider?.name?.toLowerCase()
+  if (cacheProvider === "injected") {
+    return web3Modal?.providerController?.injectedProvider?.name?.toLowerCase();
   }
-  return cacheProvider.toLowerCase()
-}
+  return cacheProvider.toLowerCase();
+};
 
 export const addToken = async (tokenAddress, symbol, decimals) => {
   if (tokenAddress === ETH_ADDRESS) {
-    return
+    return;
   }
-  const { web3Modal, userProvider } = store.getState().walletReducer
-  if (!web3Modal ||  !userProvider) {
-    console.log('wallet does not connect')
-    return
+  const { web3Modal, userProvider } = store.getState().walletReducer;
+  if (!web3Modal || !userProvider) {
+    console.log("wallet does not connect");
+    return;
   }
-  const walletName = getWalletName(web3Modal, userProvider)
+  const walletName = getWalletName(web3Modal, userProvider);
   try {
-    const supportAdd = [WALLETS.MetaMask.info.symbol]
+    const supportAdd = [WALLETS.MetaMask.info.symbol];
     if (!supportAdd.includes(walletName)) {
       store.dispatch(
         warmDialog({
           open: true,
           type: "warning",
           message: `The current wallet does not support adding token (address: ${tokenAddress}). You can add token manually.`,
-        })
-      )
-      return
+        }),
+      );
+      return;
     }
-    const tokenContract = new ethers.Contract(tokenAddress, IERC20_ABI, userProvider)
+    const tokenContract = new ethers.Contract(tokenAddress, IERC20_ABI, userProvider);
     window.ethereum.request({
       method: "wallet_watchAsset",
       params: {
         type: "ERC20",
         options: {
           address: tokenAddress,
-          symbol: symbol || await tokenContract.symbol(),
-          decimals: decimals || await tokenContract.decimals(),
+          symbol: symbol || (await tokenContract.symbol()),
+          decimals: decimals || (await tokenContract.decimals()),
         },
       },
-    })
+    });
   } catch (error) {
-    console.log(error)
+    console.log(error);
   }
-}
+};

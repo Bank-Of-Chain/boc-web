@@ -1,4 +1,4 @@
-import { container } from "../../../assets/jss/material-kit-react.js"
+import { container } from "../../../assets/jss/material-kit-react.js";
 
 const componentsStyle = theme => ({
   container,
@@ -162,6 +162,6 @@ const componentsStyle = theme => ({
   root: {
     padding: "1.5rem 0",
   },
-})
+});
 
-export default componentsStyle
+export default componentsStyle;

@@ -1,5 +1,5 @@
-import { container } from "../../assets/jss/material-kit-react.js"
-import { gradientText } from "../../assets/jss/common.js"
+import { container } from "../../assets/jss/material-kit-react.js";
+import { gradientText } from "../../assets/jss/common.js";
 
 const componentsStyle = theme => ({
   container: {
@@ -20,7 +20,7 @@ const componentsStyle = theme => ({
   },
   wrapper: {
     padding: "5rem 3rem",
-    
+
     borderRadius: "1.25rem",
     background: "linear-gradient(111.68deg, rgba(87, 97, 125, 0.2) 7.59%, rgba(255, 255, 255, 0.078) 102.04%)",
   },
@@ -33,7 +33,7 @@ const componentsStyle = theme => ({
   symbol: {
     color: "#A68EFD",
     marginLeft: "1rem",
-    ...gradientText
+    ...gradientText,
   },
   balance: {
     marginTop: "0.5rem",
@@ -48,8 +48,8 @@ const componentsStyle = theme => ({
     color: "#fff",
     marginBottom: 20,
     "& .MuiListItemIcon-root": {
-      minWidth: "38px"
-    }
+      minWidth: "38px",
+    },
   },
   centerItem: {
     width: "630px",
@@ -242,6 +242,6 @@ const componentsStyle = theme => ({
     width: "54%",
     backgroundColor: "#fff",
   },
-})
+});
 
-export default componentsStyle
+export default componentsStyle;

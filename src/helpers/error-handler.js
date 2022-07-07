@@ -4,18 +4,18 @@
  * @returns
  */
 export const errorTextOutput = error => {
-  let errorMsg = error.toString()
+  let errorMsg = error.toString();
   if (error?.message) {
-    errorMsg = error.message
+    errorMsg = error.message;
   }
   if (error?.data?.message) {
-    errorMsg = error.data.message
+    errorMsg = error.data.message;
   }
   if (error?.error?.data?.originalError?.message) {
-    errorMsg = error.error.data.originalError.message
+    errorMsg = error.error.data.originalError.message;
   }
-  return errorMsg
-}
+  return errorMsg;
+};
 
 /**
  * 正在adjustment状态
@@ -23,8 +23,8 @@ export const errorTextOutput = error => {
  * @returns
  */
 export const isAd = (errorMsg = "") => {
-  return errorMsg.endsWith("'AD'")
-}
+  return errorMsg.endsWith("'AD'");
+};
 
 /**
  * 正在ermery shutdown状态
@@ -32,8 +32,8 @@ export const isAd = (errorMsg = "") => {
  * @returns
  */
 export const isEs = (errorMsg = "") => {
-  return errorMsg.endsWith("'ES or AD'") || errorMsg.endsWith("'ES'")
-}
+  return errorMsg.endsWith("'ES or AD'") || errorMsg.endsWith("'ES'");
+};
 
 /**
  *
@@ -41,8 +41,8 @@ export const isEs = (errorMsg = "") => {
  * @returns
  */
 export const isRp = (errorMsg = "") => {
-  return errorMsg.endsWith("'RP'")
-}
+  return errorMsg.endsWith("'RP'");
+};
 
 /**
  * 兑换异常
@@ -63,8 +63,8 @@ export const isLossMuch = (errorMsg = "") => {
     errorMsg.endsWith("'1inch V4 swap failed: Error(IIA)'") ||
     errorMsg.endsWith("'paraswap callBytes failed: Error(Received amount of tokens are less then expected)'") ||
     errorMsg.endsWith("'1inch V4 swap failed: Error(UNIV3R: min return)'")
-  )
-}
+  );
+};
 
 /**
  * 取款异常
@@ -73,8 +73,8 @@ export const isLossMuch = (errorMsg = "") => {
  * @returns
  */
 export const isMaxLoss = (errorMsg = "") => {
-  return errorMsg.indexOf("loss much") !== -1 || errorMsg.indexOf("amount lower than minimum") !== -1
-}
+  return errorMsg.indexOf("loss much") !== -1 || errorMsg.indexOf("amount lower than minimum") !== -1;
+};
 
 /**
  * 兑换异常
@@ -83,8 +83,8 @@ export const isMaxLoss = (errorMsg = "") => {
  * @returns
  */
 export const isExchangeFail = (errorMsg = "") => {
-  return errorMsg.endsWith("callBytes failed: Error(Call to adapter failed)")
-}
+  return errorMsg.endsWith("callBytes failed: Error(Call to adapter failed)");
+};
 
 /**
  * 正在distributing状态
@@ -92,8 +92,8 @@ export const isExchangeFail = (errorMsg = "") => {
  * @returns
  */
 export const isDistributing = (errorMsg = "") => {
-  return errorMsg.endsWith("'is distributing'")
-}
+  return errorMsg.endsWith("'is distributing'");
+};
 
 /**
  * 小于最小投资额
@@ -101,5 +101,5 @@ export const isDistributing = (errorMsg = "") => {
  * @returns
  */
 export const isLessThanMinValue = (errorMsg = "") => {
-  return errorMsg.endsWith("'Amount must be gt minimum Investment Amount'")
-}
+  return errorMsg.endsWith("'Amount must be gt minimum Investment Amount'");
+};

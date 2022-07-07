@@ -12,7 +12,7 @@ import {
   roseBoxShadow,
 } from "../../assets/jss/material-kit-react.js";
 
-const customDropdownStyle = (theme) => ({
+const customDropdownStyle = theme => ({
   popperClose: {
     pointerEvents: "none",
   },
@@ -29,7 +29,7 @@ const customDropdownStyle = (theme) => ({
     listStyle: "none",
     background: "#292b2e",
     backgroundClip: "padding-box",
-    boxShadow: "0 0 0px 1px rgba(161, 161, 161, 0.2)"
+    boxShadow: "0 0 0px 1px rgba(161, 161, 161, 0.2)",
   },
   menuList: {
     padding: "0",
@@ -66,8 +66,7 @@ const customDropdownStyle = (theme) => ({
   },
   blackHover: {
     "&:hover": {
-      boxShadow:
-        "0 4px 20px 0px rgba(0, 0, 0, 0.14), 0 7px 10px -5px rgba(33, 33, 33, 0.4)",
+      boxShadow: "0 4px 20px 0px rgba(0, 0, 0, 0.14), 0 7px 10px -5px rgba(33, 33, 33, 0.4)",
       backgroundColor: "#212121",
       color: "#fff",
     },
@@ -128,8 +127,8 @@ const customDropdownStyle = (theme) => ({
   },
   dropdownTrigger: {
     "&.MuiButtonBase-root.MuiButton-root": {
-      paddingRight: "8px"
-    }
+      paddingRight: "8px",
+    },
   },
   caret: {
     transition: "all 150ms ease-in",

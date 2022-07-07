@@ -1,9 +1,4 @@
-import {
-  primaryColor,
-  dangerColor,
-  successColor,
-  defaultFont,
-} from "../../assets/jss/material-kit-react.js";
+import { primaryColor, dangerColor, successColor, defaultFont } from "../../assets/jss/material-kit-react.js";
 
 const customInputStyle = {
   disabled: {
@@ -45,7 +40,7 @@ const customInputStyle = {
     fontSize: "18px",
     top: "10px",
     whiteSpace: "nowrap",
-    letterSpacing: '0.01071em', 
+    letterSpacing: "0.01071em",
     "& + $underline": {
       // marginTop: "0px",
     },
@@ -66,7 +61,7 @@ const customInputStyle = {
   },
   labelTextEmpty: {
     paddingTop: 0,
-    margin: 0
+    margin: 0,
   },
   input: {
     color: "#fff",
@@ -78,7 +73,7 @@ const customInputStyle = {
       opacity: "1",
     },
     "&::placeholder": {
-      color: "#bbb"
+      color: "#bbb",
     },
   },
   whiteInput: {
