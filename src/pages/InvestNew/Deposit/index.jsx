@@ -46,7 +46,12 @@ import { toFixed, formatBalance } from "../../../helpers/number-format";
 import Loading from "../../../components/LoadingComponent";
 
 // === Constants === //
-import { USDT_ADDRESS, USDC_ADDRESS, DAI_ADDRESS } from "../../../constants";
+import {
+  USDT_ADDRESS,
+  USDC_ADDRESS,
+  DAI_ADDRESS,
+  IERC20_ABI,
+} from "../../../constants";
 
 // === Styles === //
 import styles from "./style";
@@ -77,7 +82,6 @@ export default function Deposit({
   usdiDecimals,
   userProvider,
   VAULT_ABI,
-  IERC20_ABI,
   VAULT_ADDRESS,
   abi_version,
   vaultBufferBalance,

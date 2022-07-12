@@ -35,6 +35,7 @@ import {
   DAI_ADDRESS,
   NET_WORKS,
   CHAIN_ID,
+  IERC20_ABI,
 } from "../../constants";
 import { INVEST_TAB } from "../../constants/invest";
 
@@ -67,9 +68,7 @@ function Invest(props) {
     VAULT_ADDRESS,
     VAULT_ABI,
     USDI_ADDRESS,
-    IERC20_ABI,
     EXCHANGE_AGGREGATOR_ABI,
-    USDI_ABI,
     EXCHANGE_ADAPTER_ABI,
     VAULT_BUFFER_ADDRESS,
     VAULT_BUFFER_ABI,
@@ -128,7 +127,7 @@ function Invest(props) {
     );
     const usdiContract = new ethers.Contract(
       USDI_ADDRESS,
-      USDI_ABI,
+      IERC20_ABI,
       userProvider
     );
 
@@ -192,7 +191,7 @@ function Invest(props) {
     );
     const usdiContract = new ethers.Contract(
       USDI_ADDRESS,
-      USDI_ABI,
+      IERC20_ABI,
       userProvider
     );
     const vaultBufferContract = new ethers.Contract(
@@ -303,7 +302,7 @@ function Invest(props) {
     }
     const usdiContract = new ethers.Contract(
       USDI_ADDRESS,
-      USDI_ABI,
+      IERC20_ABI,
       userProvider
     );
     return usdiContract.totalSupply();

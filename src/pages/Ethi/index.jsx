@@ -31,6 +31,7 @@ import { setCurrentTab } from "./../../reducers/invest-reducer";
 // === constants === //
 import { ETH_ADDRESS, ETH_DECIMALS } from "../../constants/token";
 import { INVEST_TAB } from "../../constants/invest";
+import { IERC20_ABI } from "../../constants";
 
 // === Utils === //
 import moment from "moment";
@@ -61,7 +62,6 @@ function Ethi(props) {
     ETHI_ADDRESS,
     VAULT_ADDRESS,
     VAULT_ABI,
-    IERC20_ABI,
     EXCHANGE_AGGREGATOR_ABI,
     EXCHANGE_ADAPTER_ABI,
     PRICE_ORCALE_ABI,
