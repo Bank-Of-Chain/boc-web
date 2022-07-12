@@ -3,7 +3,7 @@ import store from "../store";
 import { warmDialog } from "../reducers/meta-reducer";
 import { WALLETS } from "../constants/wallet";
 import { ETH_ADDRESS } from "../constants/token";
-import IERC20_ABI from "../abis/beta-v1.5/ierc20-abi.json";
+import { IERC20_ABI } from "../constants";
 
 export const getWalletName = (web3Modal, userProvider) => {
   if (!userProvider) {

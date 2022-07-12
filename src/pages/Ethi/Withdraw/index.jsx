@@ -61,6 +61,10 @@ import {
   errorTextOutput,
 } from "../../../helpers/error-handler";
 
+// === Constants === //
+import { IERC20_ABI } from "../../../constants";
+
+// === Styles === //
 import styles from "./style";
 
 const { BigNumber } = ethers;
@@ -83,7 +87,6 @@ export default function Withdraw({
   ETH_ADDRESS,
   VAULT_ADDRESS,
   VAULT_ABI,
-  IERC20_ABI,
   EXCHANGE_AGGREGATOR_ABI,
   EXCHANGE_ADAPTER_ABI,
   PRICE_ORCALE_ABI,
