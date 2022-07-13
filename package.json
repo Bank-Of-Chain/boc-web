@@ -44,9 +44,6 @@
     "web3modal": "1.9.5"
   },
   "devDependencies": {
-    "react-scripts": "^3.4.4",
-    "filemanager-webpack-plugin": "^7.0.0",
-    "react-app-rewired": "^2.2.1",
     "@testing-library/dom": "^6.12.2",
     "@types/react": "^16.9.19",
     "chalk": "^4.1.0",
@@ -56,9 +53,13 @@
     "eslint-config-prettier": "^6.11.0",
     "eslint-plugin-babel": "^5.3.1",
     "eslint-plugin-prettier": "^3.1.4",
+    "filemanager-webpack-plugin": "^7.0.0",
+    "html-webpack-externals-plugin": "^3.8.0",
     "ipfs-http-client": "^45.0.0",
     "material-ui-popup-state": "^3.1.1",
     "prettier": "^2.0.5",
+    "react-app-rewired": "^2.2.1",
+    "react-scripts": "^3.4.4",
     "s3-folder-upload": "^2.3.1",
     "source-map-explorer": "^2.5.2",
     "surge": "^0.21.5"
