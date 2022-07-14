@@ -17,6 +17,11 @@ module.exports = function override(config) {
     "@constants": resolve("src/constants"),
     "@hooks": resolve("src/hooks"),
   };
+  config.externals = {
+    'react': 'React',
+    'react-dom': 'ReactDOM',
+    'lodash': '_'
+  }
   // config.optimization.splitChunks.maxSize = 512000;
   if (NODE_ENV === "production") {
     config.plugins.push(
