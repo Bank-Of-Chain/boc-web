@@ -1,7 +1,7 @@
 /* eslint-disable no-extend-native */
 import React, { useState, useEffect, useRef, Suspense, lazy } from "react";
 import { Switch, Route, Redirect, HashRouter } from "react-router-dom";
-import { useUserAddress } from "eth-hooks";
+import { useSignerAddress } from "eth-hooks";
 import { useSelector, useDispatch } from "react-redux";
 import useWallet from "./hooks/useWallet";
 
@@ -82,7 +82,7 @@ function App() {
 
   const alertState = useSelector((state) => state.metaReducer.warmMsg);
   const dispatch = useDispatch();
-  const address = useUserAddress(userProvider);
+  const address = useSignerAddress(userProvider.getSigner());
   const selectedChainId = chainId;
   const walletName = getWalletName();
 

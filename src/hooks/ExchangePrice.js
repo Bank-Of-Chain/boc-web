@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { Token, WETH, Fetcher, Route } from "@uniswap/sdk";
-import { usePoller } from "eth-hooks";
 
 export default function useExchangePrice(
   targetNetwork,
@@ -30,7 +29,6 @@ export default function useExchangePrice(
     }
     getPrice();
   };
-  usePoller(pollPrice, pollTime || 9777);
 
   return price;
 }

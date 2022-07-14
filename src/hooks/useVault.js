@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import { useState, useEffect } from "react";
 
 // === Utils === //
@@ -6,7 +5,7 @@ import * as ethers from "ethers";
 import isEmpty from "lodash/isEmpty";
 
 // === Hooks === //
-import { useUserAddress } from "eth-hooks";
+import { useSignerAddress } from "eth-hooks";
 
 const { Contract } = ethers;
 
@@ -25,7 +24,7 @@ const useVault = (VAULT_ADDRESS, VAULT_ABI, userProvider) => {
     ethers.BigNumber.from(0)
   );
 
-  const address = useUserAddress(userProvider);
+  const address = useSignerAddress(userProvider.getSigner());
 
   const valid = () => {
     if (isEmpty(VAULT_ADDRESS)) return new Error("VAULT_ADDRESS is need!");

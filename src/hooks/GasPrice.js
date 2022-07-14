@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { usePoller } from "eth-hooks";
 import axios from "axios";
 
 export default function useGasPrice(targetNetwork = {}, speed) {
@@ -20,6 +19,5 @@ export default function useGasPrice(targetNetwork = {}, speed) {
     }
   };
 
-  usePoller(loadGasPrice, 39999);
   return gasPrice;
 }

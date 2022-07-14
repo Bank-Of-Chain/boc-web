@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useRef } from "react";
 
 // helper hook to call a function regularly in time intervals

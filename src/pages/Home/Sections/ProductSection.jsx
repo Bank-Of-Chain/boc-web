@@ -11,8 +11,8 @@ import map from "lodash/map";
 import styles from "./productStyle";
 
 import { Navigation, Autoplay } from "swiper";
-import { Swiper, SwiperSlide } from "swiper/react/swiper-react";
-import "swiper/swiper-bundle.min.css";
+import { Swiper, SwiperSlide } from "swiper/react";
+import "swiper/css/bundle";
 
 const useStyles = makeStyles(styles);
 

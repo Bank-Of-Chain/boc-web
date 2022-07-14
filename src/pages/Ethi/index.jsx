@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect } from "react";
 import classNames from "classnames";
 import { makeStyles } from "@material-ui/core/styles";
