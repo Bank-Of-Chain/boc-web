@@ -76,7 +76,8 @@ export const isLossMuch = (errorMsg = "") => {
     errorMsg.endsWith(
       "'paraswap callBytes failed: Error(Received amount of tokens are less then expected)'"
     ) ||
-    errorMsg.endsWith("'1inch V4 swap failed: Error(UNIV3R: min return)'")
+    errorMsg.endsWith("'1inch V4 swap failed: Error(UNIV3R: min return)'") ||
+    errorMsg.endsWith("'1inch V4 swap failed: Error(LOP: bad signature)'")
   );
 };
 

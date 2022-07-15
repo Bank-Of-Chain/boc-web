@@ -39,7 +39,7 @@ const useVault = (VAULT_ADDRESS, VAULT_ABI, userProvider) => {
    */
   const queryBaseInfo = () => {
     const error = valid();
-    if (!isEmpty(error)) return setError(error);
+    if (error) return setError(error);
     setLoading(true);
     const vaultContract = new ethers.Contract(
       VAULT_ADDRESS,
@@ -73,7 +73,7 @@ const useVault = (VAULT_ADDRESS, VAULT_ABI, userProvider) => {
 
   const updateRebaseThreshold = (value) => {
     const error = valid();
-    if (!isEmpty(error)) return setError(error);
+    if (error) return setError(error);
     setLoading(true);
     const vaultContract = new ethers.Contract(
       VAULT_ADDRESS,
@@ -90,7 +90,7 @@ const useVault = (VAULT_ADDRESS, VAULT_ABI, userProvider) => {
 
   const updateMinimumInvestmentAmount = (value) => {
     const error = valid();
-    if (!isEmpty(error)) return setError(error);
+    if (error) return setError(error);
     setLoading(true);
     const vaultContract = new ethers.Contract(
       VAULT_ADDRESS,
@@ -117,7 +117,7 @@ const useVault = (VAULT_ADDRESS, VAULT_ABI, userProvider) => {
 
   useEffect(() => {
     const error = valid();
-    if (!isEmpty(error)) {
+    if (error) {
       setLoading(false);
       setError();
       return;
