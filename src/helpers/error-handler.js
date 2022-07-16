@@ -14,6 +14,9 @@ export const errorTextOutput = (error) => {
   if (error?.error?.data?.originalError?.message) {
     errorMsg = error.error.data.originalError.message;
   }
+  if (error?.error?.data?.message) {
+    errorMsg = error.error.data.message;
+  }
   return errorMsg;
 };
 

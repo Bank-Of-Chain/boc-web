@@ -17,11 +17,11 @@ module.exports = function override(config) {
     "@constants": resolve("src/constants"),
     "@hooks": resolve("src/hooks"),
   };
-  config.externals = {
-    'react': 'React',
-    'react-dom': 'ReactDOM',
-    'lodash': '_'
-  }
+  // config.externals = {
+  //   'react': 'React',
+  //   'react-dom': 'ReactDOM',
+  //   'lodash': '_'
+  // }
   // config.optimization.splitChunks.maxSize = 512000;
   if (NODE_ENV === "production") {
     config.plugins.push(
@@ -43,34 +43,34 @@ module.exports = function override(config) {
         },
       })
     );
-    config.plugins.push(
-      new HtmlWebpackExternalsPlugin({
-        externals: [
-          {
-            module: "react",
-            entry:
-              "https://unpkg.com/react@16.14.0/umd/react.production.min.js",
-            global: "React",
-          },
-          {
-            module: "react-dom",
-            entry:
-              "https://unpkg.com/react-dom@16.14.0/umd/react-dom.production.min.js",
-            global: "ReactDOM",
-          },
-          {
-            module: "swiper",
-            entry: "https://unpkg.com/swiper@8.3.0/swiper-bundle.min.js",
-            global: "Swiper",
-          },
-          {
-            module: "ethers",
-            entry: "https://cdn.ethers.io/lib/ethers-5.2.esm.min.js",
-            global: "Ethers",
-          },
-        ],
-      })
-    );
+    // config.plugins.push(
+    //   new HtmlWebpackExternalsPlugin({
+    //     externals: [
+    //       {
+    //         module: "react",
+    //         entry:
+    //           "https://unpkg.com/react@16.14.0/umd/react.production.min.js",
+    //         global: "React",
+    //       },
+    //       {
+    //         module: "react-dom",
+    //         entry:
+    //           "https://unpkg.com/react-dom@16.14.0/umd/react-dom.production.min.js",
+    //         global: "ReactDOM",
+    //       },
+    //       {
+    //         module: "swiper",
+    //         entry: "https://unpkg.com/swiper@8.3.0/swiper-bundle.min.js",
+    //         global: "Swiper",
+    //       },
+    //       {
+    //         module: "ethers",
+    //         entry: "https://cdn.ethers.io/lib/ethers-5.2.esm.min.js",
+    //         global: "Ethers",
+    //       },
+    //     ],
+    //   })
+    // );
   }
   return config;
 };
