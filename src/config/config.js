@@ -1,22 +1,23 @@
 /**
- * qa02-sg环境配置文件
+ * stage-sg环境配置文件
  */
 
-const ETHI_FOR_ETH = "22";
+const ETHI_FOR_ETH = "0x0c626FC4A447b01554518550e30600136864640B";
 
-const USDI_FOR_ETH = "10";
-const USDI_FOR_BSC = "0xd19D3AC573Cb92D8A043724144f7F0080eA9650a";
-const USDI_FOR_MATIC = "0x3A81ced09917adE002F269bD96014716bACC1BE2";
+const USDI_FOR_ETH = "0xa722bdA6968F50778B973Ae2701e90200C564B49";
+const USDI_FOR_BSC = "0xc7C037221Cb8Af497A2963e553263aE38e01dA62";
+const USDI_FOR_MATIC = "0x04Cd8B3e384e7bBB01109bc8b6708fCAeD5e9eB0";
 
-const ETHI_VAULT = "19";
-const USDI_VAULT_FOR_ETH = "711";
-const USDI_VAULT_FOR_BSC = "0x76609c83dD684F0D4c0F0c9849db0a1b5a96CAB2";
-const USDI_VAULT_FOR_MATIC = "0xd3feAe6c4fdfDE73Bd2fE99c8fE6944904DAA68A";
+const ETHI_VAULT = "0x9c65f85425c619A6cB6D29fF8d57ef696323d188";
+const USDI_VAULT_FOR_ETH = "0xcD0048A5628B37B8f743cC2FeA18817A29e97270";
+const USDI_VAULT_FOR_BSC = "0x2f64734C74e72661C9857059928Ed398593da173";
+const USDI_VAULT_FOR_MATIC = "0x12087c013f6269A90F113F8935f51C713a09b173";
 
-const VAULT_BUFFER_FOR_ETHI_ETH = "20";
-const VAULT_BUFFER_FOR_USDI_ETH = "8";
-const VAULT_BUFFER_FOR_USDI_BSC = "0xAB4F5f1Ee46Af26A9201c2C28af9C570727c582d";
-const VAULT_BUFFER_FOR_USDI_MATIC = "0xFdc146E92D892F326CB9a1A480f58fc30a766c98";
+const VAULT_BUFFER_FOR_ETHI_ETH = "0xF342E904702b1D021F03f519D6D9614916b03f37";
+const VAULT_BUFFER_FOR_USDI_ETH = "0x871ACbEabBaf8Bed65c22ba7132beCFaBf8c27B5";
+const VAULT_BUFFER_FOR_USDI_BSC = "0x13398e151530AbDF387d8A1Fa4C3a75EC355Cc4d";
+const VAULT_BUFFER_FOR_USDI_MATIC =
+  "0xfDFB68F5195DF817824Ee881CF63E94402eEc46A";
 
 const configBase = {
   usdt_address: "0xdAC17F958D2ee523a2206206994597C13D831ec7",
@@ -30,26 +31,21 @@ const configBase = {
   blog_url: "https://piggyfinance.github.io/docs/zh/blog/",
   licenses_url: "https://piggyfinance.github.io/docs/zh/licenses/",
   document_url: "https://docs.bankofchain.io",
-  boc_server: "https://service-qa02-sg.bankofchain.io",
-  sub_graph_url: {
-    1: "https://api.thegraph.com/subgraphs/name/bankofchain/boc-subgraph-eth",
-    56: "https://api.thegraph.com/subgraphs/name/bankofchain/boc-subgraph-bsc",
-    137: "https://api.thegraph.com/subgraphs/name/bankofchain/boc-subgraph-matic",
-  },
+  boc_server: "https://service-stage-sg.bankofchain.io",
   rpc_url: {
-    1: "https://mainnet.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161",
-    56: "https://bsc-dataseed.binance.org/",
-    137: "https://rpc-mainnet.maticvigil.com",
-    31337: "https://rpc-qa02-sg.bankofchain.io",
+    1: "https://rpc-stage-sg.bankofchain.io",
+    56: "https://rpc-stage-sg.bankofchain.io",
+    137: "https://rpc-stage-sg.bankofchain.io",
+    31337: "https://rpc-stage-sg.bankofchain.io",
   },
   multiple_of_gas: 2,
-  dashboard_url: "https://dashboard-qa02-sg.bankofchain.io",
+  dashboard_url: "https://dashboard-stage-sg.bankofchain.io",
   oracle_additional_slippage: 20,
 };
 
 const config137 = {
   ...configBase,
-  apy_server: "https://qa02-sg-keeper-polygon.bankofchain.io",
+  apy_server: "https://stage-sg-keeper-polygon.bankofchain.io",
   usdt_address: "0xc2132D05D31c914a87C6611C10748AEb04B58e8F",
   usdc_address: "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174",
   dai_address: "0x8f3Cf7ad23Cd3CaDbD9735AFf958023239c6A063",
@@ -96,7 +92,7 @@ const config137 = {
 
 const config56 = {
   ...configBase,
-  apy_server: "https://qa02-sg-keeper-bsc.bankofchain.io",
+  apy_server: "https://stage-sg-keeper-bsc.bankofchain.io",
   usdt_address: "0x55d398326f99059fF775485246999027B3197955",
   usdc_address: "0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d",
   dai_address: "0x1AF3F329e8BE154074D8769D1FFa4eE058B1DBc3",
@@ -143,7 +139,8 @@ const config56 = {
 
 const config1 = {
   ...configBase,
-  apy_server: "https://qa02-sg-keeper-eth.bankofchain.io",
+  apy_server: "https://stage-sg-keeper-eth.bankofchain.io",
+  ethi_keeper_server: "https://stage-sg-keeper-ethi.bankofchain.io",
   usdt_address: "0xdAC17F958D2ee523a2206206994597C13D831ec7",
   usdc_address: "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
   dai_address: "0x6B175474E89094C44Da98b954EedeAC495271d0F",
@@ -190,7 +187,7 @@ const config1 = {
 
 export default {
   // 本地链
-  31337: config56,
+  31337: config1,
   // polygon
   137: config137,
   // bsc
