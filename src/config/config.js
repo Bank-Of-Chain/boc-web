@@ -1,22 +1,22 @@
 /**
- * {{env}}环境配置文件
+ * qa02-sg环境配置文件
  */
 
-const ETHI_FOR_ETH = "{{ETHI_FOR_ETH}}";
+const ETHI_FOR_ETH = "22";
 
-const USDI_FOR_ETH = "{{USDI_FOR_ETH}}";
-const USDI_FOR_BSC = "{{USDI_FOR_BSC}}";
-const USDI_FOR_MATIC = "{{USDI_FOR_MATIC}}";
+const USDI_FOR_ETH = "10";
+const USDI_FOR_BSC = "0xd19D3AC573Cb92D8A043724144f7F0080eA9650a";
+const USDI_FOR_MATIC = "0x3A81ced09917adE002F269bD96014716bACC1BE2";
 
-const ETHI_VAULT = "{{ETHI_VAULT}}";
-const USDI_VAULT_FOR_ETH = "{{USDI_VAULT_FOR_ETH}}";
-const USDI_VAULT_FOR_BSC = "{{USDI_VAULT_FOR_BSC}}";
-const USDI_VAULT_FOR_MATIC = "{{USDI_VAULT_FOR_MATIC}}";
+const ETHI_VAULT = "19";
+const USDI_VAULT_FOR_ETH = "711";
+const USDI_VAULT_FOR_BSC = "0x76609c83dD684F0D4c0F0c9849db0a1b5a96CAB2";
+const USDI_VAULT_FOR_MATIC = "0xd3feAe6c4fdfDE73Bd2fE99c8fE6944904DAA68A";
 
-const VAULT_BUFFER_FOR_ETHI_ETH = "{{VAULT_BUFFER_FOR_ETHI_ETH}}";
-const VAULT_BUFFER_FOR_USDI_ETH = "{{VAULT_BUFFER_FOR_USDI_ETH}}";
-const VAULT_BUFFER_FOR_USDI_BSC = "{{VAULT_BUFFER_FOR_USDI_BSC}}";
-const VAULT_BUFFER_FOR_USDI_MATIC = "{{VAULT_BUFFER_FOR_USDI_MATIC}}";
+const VAULT_BUFFER_FOR_ETHI_ETH = "20";
+const VAULT_BUFFER_FOR_USDI_ETH = "8";
+const VAULT_BUFFER_FOR_USDI_BSC = "0xAB4F5f1Ee46Af26A9201c2C28af9C570727c582d";
+const VAULT_BUFFER_FOR_USDI_MATIC = "0xFdc146E92D892F326CB9a1A480f58fc30a766c98";
 
 const configBase = {
   usdt_address: "0xdAC17F958D2ee523a2206206994597C13D831ec7",
@@ -30,7 +30,7 @@ const configBase = {
   blog_url: "https://piggyfinance.github.io/docs/zh/blog/",
   licenses_url: "https://piggyfinance.github.io/docs/zh/licenses/",
   document_url: "https://docs.bankofchain.io",
-  boc_server: "https://service-{{env}}.bankofchain.io",
+  boc_server: "https://service-qa02-sg.bankofchain.io",
   sub_graph_url: {
     1: "https://api.thegraph.com/subgraphs/name/bankofchain/boc-subgraph-eth",
     56: "https://api.thegraph.com/subgraphs/name/bankofchain/boc-subgraph-bsc",
@@ -40,16 +40,16 @@ const configBase = {
     1: "https://mainnet.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161",
     56: "https://bsc-dataseed.binance.org/",
     137: "https://rpc-mainnet.maticvigil.com",
-    31337: "https://rpc-{{env}}.bankofchain.io",
+    31337: "https://rpc-qa02-sg.bankofchain.io",
   },
   multiple_of_gas: 2,
-  dashboard_url: "https://dashboard-{{env}}.bankofchain.io",
+  dashboard_url: "https://dashboard-qa02-sg.bankofchain.io",
   oracle_additional_slippage: 20,
 };
 
 const config137 = {
   ...configBase,
-  apy_server: "https://{{env}}-keeper-polygon.bankofchain.io",
+  apy_server: "https://qa02-sg-keeper-polygon.bankofchain.io",
   usdt_address: "0xc2132D05D31c914a87C6611C10748AEb04B58e8F",
   usdc_address: "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174",
   dai_address: "0x8f3Cf7ad23Cd3CaDbD9735AFf958023239c6A063",
@@ -96,7 +96,7 @@ const config137 = {
 
 const config56 = {
   ...configBase,
-  apy_server: "https://{{env}}-keeper-bsc.bankofchain.io",
+  apy_server: "https://qa02-sg-keeper-bsc.bankofchain.io",
   usdt_address: "0x55d398326f99059fF775485246999027B3197955",
   usdc_address: "0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d",
   dai_address: "0x1AF3F329e8BE154074D8769D1FFa4eE058B1DBc3",
@@ -143,7 +143,7 @@ const config56 = {
 
 const config1 = {
   ...configBase,
-  apy_server: "https://{{env}}-keeper-eth.bankofchain.io",
+  apy_server: "https://qa02-sg-keeper-eth.bankofchain.io",
   usdt_address: "0xdAC17F958D2ee523a2206206994597C13D831ec7",
   usdc_address: "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
   dai_address: "0x6B175474E89094C44Da98b954EedeAC495271d0F",
