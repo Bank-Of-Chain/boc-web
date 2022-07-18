@@ -30,26 +30,21 @@ const configBase = {
   blog_url: "https://piggyfinance.github.io/docs/zh/blog/",
   licenses_url: "https://piggyfinance.github.io/docs/zh/licenses/",
   document_url: "https://docs.bankofchain.io",
-  boc_server: "https://service-{{env}}.bankofchain.io",
-  sub_graph_url: {
-    1: "https://api.thegraph.com/subgraphs/name/bankofchain/boc-subgraph-eth",
-    56: "https://api.thegraph.com/subgraphs/name/bankofchain/boc-subgraph-bsc",
-    137: "https://api.thegraph.com/subgraphs/name/bankofchain/boc-subgraph-matic",
-  },
+  boc_server: "{{{API_SERVER}}}",
   rpc_url: {
-    1: "https://mainnet.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161",
-    56: "https://bsc-dataseed.binance.org/",
-    137: "https://rpc-mainnet.maticvigil.com",
-    31337: "https://rpc-{{env}}.bankofchain.io",
+    1: "{{{RPC_FOR_1}}}",
+    56: "{{{RPC_FOR_56}}}",
+    137: "{{{RPC_FOR_137}}}",
+    31337: "{{{RPC_FOR_31337}}}",
   },
   multiple_of_gas: 2,
-  dashboard_url: "https://dashboard-{{env}}.bankofchain.io",
+  dashboard_url: "{{{DASHBOARD_ROOT}}}",
   oracle_additional_slippage: 20,
 };
 
 const config137 = {
   ...configBase,
-  apy_server: "https://{{env}}-keeper-polygon.bankofchain.io",
+  apy_server: "{{{KEEPER_FOR_MATIC_USDI}}}",
   usdt_address: "0xc2132D05D31c914a87C6611C10748AEb04B58e8F",
   usdc_address: "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174",
   dai_address: "0x8f3Cf7ad23Cd3CaDbD9735AFf958023239c6A063",
@@ -96,7 +91,7 @@ const config137 = {
 
 const config56 = {
   ...configBase,
-  apy_server: "https://{{env}}-keeper-bsc.bankofchain.io",
+  apy_server: "{{{KEEPER_FOR_BSC_USDI}}}",
   usdt_address: "0x55d398326f99059fF775485246999027B3197955",
   usdc_address: "0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d",
   dai_address: "0x1AF3F329e8BE154074D8769D1FFa4eE058B1DBc3",
@@ -143,7 +138,8 @@ const config56 = {
 
 const config1 = {
   ...configBase,
-  apy_server: "https://{{env}}-keeper-eth.bankofchain.io",
+  apy_server: "{{{KEEPER_FOR_ETH_USDI}}}",
+  ethi_keeper_server: "{{{KEEPER_FOR_ETH_ETHI}}}",
   usdt_address: "0xdAC17F958D2ee523a2206206994597C13D831ec7",
   usdc_address: "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
   dai_address: "0x6B175474E89094C44Da98b954EedeAC495271d0F",

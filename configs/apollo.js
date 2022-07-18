@@ -43,6 +43,16 @@ const start = async () => {
       VAULT_BUFFER_FOR_USDI_ETH,
       VAULT_BUFFER_FOR_USDI_BSC,
       VAULT_BUFFER_FOR_USDI_MATIC,
+      API_SERVER: getApiServer(),
+      DASHBOARD_ROOT: getDashboardRoot(),
+      RPC_FOR_1: getRpcFor1(),
+      RPC_FOR_56: getRpcFor56(),
+      RPC_FOR_137: getRpcFor137(),
+      RPC_FOR_31337: getRpcFor31337(),
+      KEEPER_FOR_ETH_ETHI: getKeeperForEthEthi(),
+      KEEPER_FOR_ETH_USDI: getKeeperForEthUsdi(),
+      KEEPER_FOR_BSC_USDI: getKeeperForBscUsdi(),
+      KEEPER_FOR_MATIC_USDI: getKeeperForMaticUsdi(),
     };
     fs.writeFileSync(
       `./configs/address.json`,
@@ -50,6 +60,57 @@ const start = async () => {
     );
     console.log("write json success");
   }
+};
+
+const isPrSg = () => {
+  return env === "pr-sg";
+};
+
+const getApiServer = () => {
+  if (isPrSg()) return "https://service.bankofchain.io";
+  return `https://service-${env}.bankofchain.io`;
+};
+
+const getDashboardRoot = () => {
+  if (isPrSg()) return "https://dashboard.bankofchain.io";
+  return `https://dashboard-${env}.bankofchain.io`;
+};
+
+const getRpcFor1 = () => {
+  if (isPrSg()) return "https://rpc.ankr.com/eth";
+  return `https://rpc-${env}.bankofchain.io`;
+};
+const getRpcFor56 = () => {
+  if (isPrSg()) return "https://bsc-dataseed.binance.org";
+  return `https://rpc-${env}.bankofchain.io`;
+};
+const getRpcFor137 = () => {
+  if (isPrSg()) return "https://rpc-mainnet.maticvigil.com";
+  return `https://rpc-${env}.bankofchain.io`;
+};
+const getRpcFor31337 = () => {
+  if (isPrSg()) return "";
+  return `https://rpc-${env}.bankofchain.io`;
+};
+
+const getKeeperForEthUsdi = () => {
+  if (isPrSg()) return "https://v1-keeper-eth.bankofchain.io";
+  return `https://${env}-keeper-eth.bankofchain.io`;
+};
+
+const getKeeperForBscUsdi = () => {
+  if (isPrSg()) return "https://v1-keeper-bsc.bankofchain.io";
+  return `https://${env}-keeper-bsc.bankofchain.io`;
+};
+
+const getKeeperForMaticUsdi = () => {
+  if (isPrSg()) return "https://v1-keeper-polygon.bankofchain.io";
+  return `https://${env}-keeper-polygon.bankofchain.io`;
+};
+
+const getKeeperForEthEthi = () => {
+  if (isPrSg()) return "https://v1-keeper-ethi.bankofchain.io";
+  return `https://${env}-keeper-ethi.bankofchain.io`;
 };
 
 try {
