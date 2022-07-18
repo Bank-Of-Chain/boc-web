@@ -1,0 +1,15 @@
+{
+    "env": "qa03-sg",
+    "ETHI_FOR_ETH": "22",
+    "USDI_FOR_ETH": "10",
+    "USDI_FOR_BSC": "4",
+    "USDI_FOR_MATIC": "16",
+    "ETHI_VAULT": "19",
+    "USDI_VAULT_FOR_ETH": "711",
+    "USDI_VAULT_FOR_BSC": "111",
+    "USDI_VAULT_FOR_MATIC": "13",
+    "VAULT_BUFFER_FOR_ETHI_ETH": "20",
+    "VAULT_BUFFER_FOR_USDI_ETH": "8",
+    "VAULT_BUFFER_FOR_USDI_BSC": "2",
+    "VAULT_BUFFER_FOR_USDI_MATIC": "14"
+}
