@@ -91,7 +91,7 @@
     "apollo:qa03-sg": "node configs/apollo.js --env=qa03-sg",
     "apollo:qa04-sg": "node configs/apollo.js --env=qa04-sg",
     "apollo:stage-sg": "node configs/apollo.js --env=stage-sg",
-    "apollo:pr-sg": "node configs/apollo.js --env=pr-sg",
+    "apollo:pr-sg": "node configs/apollo.js --env=pr-sg --chain=configBase",
     "deploy:qa-sg": "yarn apollo:qa-sg && yarn mustache && yarn build",
     "deploy:qa02-sg": "yarn apollo:qa02-sg && yarn mustache && yarn build",
     "deploy:qa03-sg": "yarn apollo:qa03-sg && yarn mustache && yarn build",
