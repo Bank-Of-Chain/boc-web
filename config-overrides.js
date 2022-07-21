@@ -1,5 +1,6 @@
 const path = require("path");
 const moment = require("moment");
+const { env } = require("./configs/address.json");
 
 const FileManagerPlugin = require("filemanager-webpack-plugin");
 const HtmlWebpackExternalsPlugin = require("html-webpack-externals-plugin");
@@ -35,7 +36,7 @@ module.exports = function override(config) {
                   "./zip/web-" +
                   moment().format("yyyyMMDDHHmmss") +
                   "(" +
-                  process.env.REACT_APP_ENV +
+                  env +
                   ").zip",
               },
             ],

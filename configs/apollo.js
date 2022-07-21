@@ -5,21 +5,23 @@ const inquirer = require("inquirer");
 const { isEmpty } = require("lodash");
 
 const { env, chain } = argv;
+let nextEnv = env;
+let nextChain = chain;
 
 const start = async () => {
-  let nextEnv = env;
-  if (isEmpty(env)) {
+  if (isEmpty(nextEnv)) {
     nextEnv = await chooseEnv();
   }
-  let nextChain = chain;
   if (isEmpty(nextChain)) {
     nextChain = await chooseLocalChainConfig();
   }
 
   const host = "http://54.179.161.168";
   const url = `${host}:8088/configfiles/json/boc-subgraph/${nextEnv}/boc1.application`;
-  console.log(`url: ${url}`);
-  const { status, data } = await axios.get(url);
+  const { status, data } = await axios.get(url).catch((error) => {
+    console.error(`${nextEnv}配置加载失败，url=${url}`);
+    return { status: 400 };
+  });
   if (status === 200) {
     const USDI_VAULT_FOR_ETH = data[`boc.networks.eth.vaultAddress`];
     const USDI_FOR_ETH = data[`boc.networks.eth.pegTokenAddress`];
@@ -76,54 +78,54 @@ const start = async () => {
 };
 
 const isPrSg = () => {
-  return env === "pr-sg";
+  return nextEnv === "pr-sg";
 };
 
 const getApiServer = () => {
   if (isPrSg()) return "https://service.bankofchain.io";
-  return `https://service-${env}.bankofchain.io`;
+  return `https://service-${nextEnv}.bankofchain.io`;
 };
 
 const getDashboardRoot = () => {
   if (isPrSg()) return "https://dashboard.bankofchain.io";
-  return `https://dashboard-${env}.bankofchain.io`;
+  return `https://dashboard-${nextEnv}.bankofchain.io`;
 };
 
 const getRpcFor1 = () => {
   if (isPrSg()) return "https://rpc.ankr.com/eth";
-  return `https://rpc-${env}.bankofchain.io`;
+  return `https://rpc-${nextEnv}.bankofchain.io`;
 };
 const getRpcFor56 = () => {
   if (isPrSg()) return "https://bsc-dataseed.binance.org";
-  return `https://rpc-${env}.bankofchain.io`;
+  return `https://rpc-${nextEnv}.bankofchain.io`;
 };
 const getRpcFor137 = () => {
   if (isPrSg()) return "https://rpc-mainnet.maticvigil.com";
-  return `https://rpc-${env}.bankofchain.io`;
+  return `https://rpc-${nextEnv}.bankofchain.io`;
 };
 const getRpcFor31337 = () => {
   if (isPrSg()) return "";
-  return `https://rpc-${env}.bankofchain.io`;
+  return `https://rpc-${nextEnv}.bankofchain.io`;
 };
 
 const getKeeperForEthUsdi = () => {
   if (isPrSg()) return "https://v1-keeper-eth.bankofchain.io";
-  return `https://${env}-keeper-eth.bankofchain.io`;
+  return `https://${nextEnv}-keeper-eth.bankofchain.io`;
 };
 
 const getKeeperForBscUsdi = () => {
   if (isPrSg()) return "https://v1-keeper-bsc.bankofchain.io";
-  return `https://${env}-keeper-bsc.bankofchain.io`;
+  return `https://${nextEnv}-keeper-bsc.bankofchain.io`;
 };
 
 const getKeeperForMaticUsdi = () => {
   if (isPrSg()) return "https://v1-keeper-polygon.bankofchain.io";
-  return `https://${env}-keeper-polygon.bankofchain.io`;
+  return `https://${nextEnv}-keeper-polygon.bankofchain.io`;
 };
 
 const getKeeperForEthEthi = () => {
   if (isPrSg()) return "https://v1-keeper-ethi.bankofchain.io";
-  return `https://${env}-keeper-ethi.bankofchain.io`;
+  return `https://${nextEnv}-keeper-ethi.bankofchain.io`;
 };
 
 const chooseEnv = () => {

@@ -192,7 +192,7 @@ const glo = {
 };
 export default {
   // 本地链
-  31337: glo["config1"],
+  31337: glo["config137"],
   // polygon
   137: config137,
   // bsc
