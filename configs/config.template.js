@@ -184,9 +184,15 @@ const config1 = {
   ],
 };
 
+const glo = {
+  configBase,
+  config137,
+  config56,
+  config1,
+};
 export default {
   // 本地链
-  31337: config56,
+  31337: glo["{{LOCAL_CHAIN_CONFIG}}"],
   // polygon
   137: config137,
   // bsc

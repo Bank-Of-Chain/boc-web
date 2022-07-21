@@ -1,12 +1,23 @@
 const fs = require("fs");
 const argv = require("minimist")(process.argv.slice(2));
 const axios = require("axios");
+const inquirer = require("inquirer");
+const { isEmpty } = require("lodash");
 
-const { env } = argv;
+const { env, chain } = argv;
 
 const start = async () => {
+  let nextEnv = env;
+  if (isEmpty(env)) {
+    nextEnv = await chooseEnv();
+  }
+  let nextChain = chain;
+  if (isEmpty(nextChain)) {
+    nextChain = await chooseLocalChainConfig();
+  }
+
   const host = "http://54.179.161.168";
-  const url = `${host}:8088/configfiles/json/boc-subgraph/${env}/boc1.application`;
+  const url = `${host}:8088/configfiles/json/boc-subgraph/${nextEnv}/boc1.application`;
   console.log(`url: ${url}`);
   const { status, data } = await axios.get(url);
   if (status === 200) {
@@ -30,7 +41,8 @@ const start = async () => {
     const VAULT_BUFFER_FOR_ETHI_ETH =
       data[`boc.networks.ethi.vaultBufferAddress`];
     let config = {
-      env,
+      env: nextEnv,
+      LOCAL_CHAIN_CONFIG: nextChain,
       ETHI_FOR_ETH,
       USDI_FOR_ETH,
       USDI_FOR_BSC,
@@ -54,9 +66,10 @@ const start = async () => {
       KEEPER_FOR_BSC_USDI: getKeeperForBscUsdi(),
       KEEPER_FOR_MATIC_USDI: getKeeperForMaticUsdi(),
     };
+
     fs.writeFileSync(
       `./configs/address.json`,
-      JSON.stringify(config, undefined, 4)
+      JSON.stringify(config, undefined, 2)
     );
     console.log("write json success");
   }
@@ -111,6 +124,82 @@ const getKeeperForMaticUsdi = () => {
 const getKeeperForEthEthi = () => {
   if (isPrSg()) return "https://v1-keeper-ethi.bankofchain.io";
   return `https://${env}-keeper-ethi.bankofchain.io`;
+};
+
+const chooseEnv = () => {
+  const questions = [
+    {
+      type: "list",
+      name: "confirm",
+      message: "请选择需要发布的环境：",
+      choices: [
+        {
+          key: "qa-sg",
+          name: "qa-sg",
+          value: "qa-sg",
+        },
+        {
+          key: "qa02-sg",
+          name: "qa02-sg",
+          value: "qa02-sg",
+        },
+        {
+          key: "qa03-sg",
+          name: "qa03-sg",
+          value: "qa03-sg",
+        },
+        {
+          key: "qa04-sg",
+          name: "qa04-sg",
+          value: "qa04-sg",
+        },
+        {
+          key: "stage-sg",
+          name: "stage-sg",
+          value: "stage-sg",
+        },
+        {
+          key: "pr-sg",
+          name: "pr-sg(生产)",
+          value: "pr-sg",
+        },
+      ],
+    },
+  ];
+  return inquirer.prompt(questions).then((rs) => rs.confirm);
+};
+
+const chooseLocalChainConfig = () => {
+  const questions = [
+    {
+      type: "list",
+      name: "confirm",
+      message: "请选择要发布的链：",
+      choices: [
+        {
+          key: "config1",
+          name: "以太链",
+          value: "config1",
+        },
+        {
+          key: "config56",
+          name: "币安链",
+          value: "config56",
+        },
+        {
+          key: "config137",
+          name: "Matic链",
+          value: "config137",
+        },
+        {
+          key: "configBase",
+          name: "跳过",
+          value: "configBase",
+        },
+      ],
+    },
+  ];
+  return inquirer.prompt(questions).then((rs) => rs.confirm);
 };
 
 try {
