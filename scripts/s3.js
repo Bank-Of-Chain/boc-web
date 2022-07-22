@@ -18,12 +18,11 @@ try {
 console.log("credentials", credentials);
 
 if (!credentials.bucket) {
+  if (!BUCKETNAME) {
+    console.log("☢️   Enter a bucket name in /scripts/s3.js ");
+    process.exit(1);
+  }
   credentials.bucket = BUCKETNAME;
-}
-
-if (!credentials.bucket) {
-  console.log("☢️   Enter a bucket name in /scripts/s3.js ");
-  process.exit(1);
 }
 
 // optional options to be passed as parameter to the method
@@ -33,9 +32,4 @@ const options = {
 };
 
 // optional cloudfront invalidation rule
-// const invalidation = {
-//  awsDistributionId: "<Your CloudFront Distribution Id>",
-//  awsInvalidationPath: "/*"
-// }
-
-s3FolderUpload(directoryName, credentials, options /* , invalidation */);
+s3FolderUpload(directoryName, credentials, options);
