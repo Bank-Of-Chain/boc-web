@@ -98,7 +98,7 @@
     "apollo:pr-sg": "node configs/apollo.js --env=pr-sg",
     "deploy": "yarn apollo && yarn mustache && yarn build && yarn s3",
     "deploy:qa-sg": "yarn apollo:qa-sg --chain=configBase && yarn mustache && yarn build && yarn s3",
-    "deploy:qa02-sg": "yarn apollo:qa02-sg --chain=configBase && yarn mustache && yarn build && yarn s3",
+    "deploy:qa02-sg": "yarn apollo:qa02-sg --chain=configBase && yarn mustache && yarn build",
     "deploy:qa03-sg": "yarn apollo:qa03-sg --chain=configBase && yarn mustache && yarn build && yarn s3",
     "deploy:qa04-sg": "yarn apollo:qa04-sg --chain=configBase && yarn mustache && yarn build && yarn s3",
     "deploy:stage-sg": "yarn apollo:stage-sg --chain=configBase && yarn mustache && yarn build && yarn s3",
