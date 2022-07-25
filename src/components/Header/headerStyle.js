@@ -46,9 +46,9 @@ const headerStyle = {
     display: "flex",
     flexWrap: "nowrap",
   },
-  '@media (max-width: 991px) and (min-width: 960px)': {
+  "@media (max-width: 991px) and (min-width: 960px)": {
     toolbar: {
-      maxWidth: "820px"
+      maxWidth: "820px",
     },
   },
   flex: {
@@ -62,7 +62,7 @@ const headerStyle = {
     textTransform: "none",
     color: "#fff",
     padding: "8px 16px",
-    letterSpacing: "unset"
+    letterSpacing: "unset",
   },
   appResponsive: {
     margin: "20px 10px",
@@ -117,12 +117,12 @@ const headerStyle = {
   white: {
     border: "0",
     color: "#555",
-    backgroundColor: '#070b10',
+    backgroundColor: "#070b10",
     boxShadow:
       "0 4px 18px 0px rgba(0, 0, 0, 0.12), 0 7px 10px -5px rgba(0, 0, 0, 0.15)",
   },
   drawerPaper: {
-    backgroundColor: 'rgb(19, 24, 35)',
+    backgroundColor: "rgb(19, 24, 35)",
     border: "none",
     bottom: "0",
     transitionProperty: "top, bottom, width",

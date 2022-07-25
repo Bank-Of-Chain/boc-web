@@ -26,9 +26,9 @@ const transition = {
 
 const container = {
   "@media (min-width: 1200px)": {
-    maxWidth: '100%',
+    maxWidth: "100%",
   },
-  margin: '0 auto',
+  margin: "0 auto",
   padding: 0,
   width: "100%",
 };

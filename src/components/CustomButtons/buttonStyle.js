@@ -121,25 +121,27 @@ const buttonStyle = {
         "0 14px 26px -12px rgba(244, 67, 54, 0.42), 0 4px 23px 0px rgba(0, 0, 0, 0.12), 0 8px 10px -5px rgba(244, 67, 54, 0.2)",
     },
   },
-  colorfull:{
-    color: '#fff',
-    background: 'linear-gradient(223.3deg, #A68EFD 20.71%, #F4ACF3 103.56%)',
+  colorfull: {
+    color: "#fff",
+    background: "linear-gradient(223.3deg, #A68EFD 20.71%, #F4ACF3 103.56%)",
   },
-  'colorfull-border': {
+  "colorfull-border": {
     border: "2px solid transparent",
     borderRadius: 5,
-    color: '#fff',
+    color: "#fff",
     backgroundClip: "padding-box, border-box",
     backgroundOrigin: "padding-box, border-box",
-    backgroundImage: "linear-gradient(to right, #1F2023, #1F2023), linear-gradient(219.17deg, #94E3FF 24.63%, #FE3DCE 104.13%)",
+    backgroundImage:
+      "linear-gradient(to right, #1F2023, #1F2023), linear-gradient(219.17deg, #94E3FF 24.63%, #FE3DCE 104.13%)",
   },
-  'colorfull-border-2': {
+  "colorfull-border-2": {
     border: "2px solid transparent",
     borderRadius: 5,
-    color: '#fff',
+    color: "#fff",
     backgroundClip: "padding-box, border-box",
     backgroundOrigin: "padding-box, border-box",
-    backgroundImage: "linear-gradient(to right, #1F2023, #1F2023), linear-gradient(223.3deg, #A68EFD 20.71%, #F4ACF3 103.56%)",
+    backgroundImage:
+      "linear-gradient(to right, #1F2023, #1F2023), linear-gradient(223.3deg, #A68EFD 20.71%, #F4ACF3 103.56%)",
   },
   rose: {
     backgroundColor: roseColor,

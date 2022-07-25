@@ -1,18 +1,20 @@
 /**
  * 输入秒数，折算成时分秒
- * @param {number} seconds 
- * @returns 
+ * @param {number} seconds
+ * @returns
  */
 export const getTime = (seconds) => {
-  if (seconds < 0) return {
-    hourTime: 0,
-    minuteTime: 0,
-    secondTime: 0
-  }
+  if (seconds < 0)
+    return {
+      hourTime: 0,
+      minuteTime: 0,
+      secondTime: 0,
+    };
   var secondTime = parseInt(seconds); // 秒
   var minuteTime = 0; // 分
   var hourTime = 0; // 小时
-  if (secondTime > 60) { //如果秒数大于60，将秒数转换成整数
+  if (secondTime > 60) {
+    //如果秒数大于60，将秒数转换成整数
     //获取分钟，除以60取整数，得到整数分钟
     minuteTime = parseInt(secondTime / 60);
     //获取秒数，秒数取佘，得到整数秒数
@@ -28,6 +30,6 @@ export const getTime = (seconds) => {
   return {
     hourTime,
     minuteTime,
-    secondTime
-  }
-}
+    secondTime,
+  };
+};

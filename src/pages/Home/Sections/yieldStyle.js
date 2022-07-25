@@ -3,15 +3,15 @@ const yieldStyle = {
     width: "80%",
     maxWidth: "1127px",
     margin: "0 auto",
-    padding: "172px 0 198px"
+    padding: "172px 0 198px",
   },
   title: {
     fontSize: "100px",
     fontWeight: "bold",
-    margin: 0
+    margin: 0,
   },
   svg: {
-    verticalAlign: "middle"
+    verticalAlign: "middle",
   },
   colorful: {
     fill: "url(#colorfulSvg)",
@@ -21,17 +21,17 @@ const yieldStyle = {
   subTitle: {
     fontSize: "26px",
     lineHeight: "36px",
-    margin: "16px 0 32px"
+    margin: "16px 0 32px",
   },
   description: {
     fontSize: "20px",
     margin: 0,
-    lineHeight: "30px"
+    lineHeight: "30px",
   },
   sourceList: {
-    listStyle: 'none',
+    listStyle: "none",
     padding: 0,
-    marginTop: "36px"
+    marginTop: "36px",
   },
   sourceItem: {
     display: "flex",
@@ -42,14 +42,14 @@ const yieldStyle = {
     borderTop: "1px solid #fff",
     "&:last-child": {
       borderBottom: "1px solid #fff",
-    }
+    },
   },
   checkIcon: {
     fontSize: "28px",
     color: "#A68EFE",
     marginLeft: 36,
-    marginRight: 72
+    marginRight: 72,
   },
-}
+};
 
-export default yieldStyle
+export default yieldStyle;

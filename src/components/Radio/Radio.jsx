@@ -1,6 +1,6 @@
-import React from "react"
-import { withStyles } from "@material-ui/core/styles"
-import Radio from "@material-ui/core/Radio"
+import React from "react";
+import { withStyles } from "@material-ui/core/styles";
+import Radio from "@material-ui/core/Radio";
 
 const CustomRadio = withStyles({
   root: {
@@ -10,8 +10,8 @@ const CustomRadio = withStyles({
     },
   },
   checked: {},
-})(props => {
-  return <Radio color='default' {...props} />
-})
+})((props) => {
+  return <Radio color="default" {...props} />;
+});
 
-export default CustomRadio
+export default CustomRadio;

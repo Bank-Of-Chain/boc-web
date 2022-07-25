@@ -58,6 +58,6 @@ const customTabsStyle = {
     },
     textTransform: "none",
   },
-}
+};
 
-export default customTabsStyle
+export default customTabsStyle;

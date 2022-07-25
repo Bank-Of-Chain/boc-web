@@ -1,7 +1,7 @@
-import { container } from "../../assets/jss/material-kit-react.js"
-import { gradientText } from "../../assets/jss/common.js"
+import { container } from "../../assets/jss/material-kit-react.js";
+import { gradientText } from "../../assets/jss/common.js";
 
-const componentsStyle = theme => ({
+const componentsStyle = (theme) => ({
   container: {
     zIndex: "12",
     color: "#FFFFFF",
@@ -21,7 +21,8 @@ const componentsStyle = theme => ({
   wrapper: {
     padding: "5rem 3rem",
     borderRadius: "1.25rem",
-    background: "linear-gradient(111.68deg, rgba(87, 97, 125, 0.2) 7.59%, rgba(255, 255, 255, 0.078) 102.04%)",
+    background:
+      "linear-gradient(111.68deg, rgba(87, 97, 125, 0.2) 7.59%, rgba(255, 255, 255, 0.078) 102.04%)",
   },
   deposit: {
     padding: "1rem",
@@ -40,15 +41,15 @@ const componentsStyle = theme => ({
   symbol: {
     color: "#A68EFD",
     marginLeft: "1rem",
-    ...gradientText
+    ...gradientText,
   },
   footer: {},
   item: {
     color: "#fff",
     marginBottom: 20,
     "& .MuiListItemIcon-root": {
-      minWidth: "38px"
-    }
+      minWidth: "38px",
+    },
   },
   centerItem: {
     width: "630px",
@@ -61,7 +62,8 @@ const componentsStyle = theme => ({
     marginTop: "0.5rem",
     textAlign: "left",
     padding: "2.8125rem 2.4375rem",
-    background: "linear-gradient(111.68deg, rgba(87, 97, 125, 0.2) 7.59%, rgba(255, 255, 255, 0.078) 102.04%)",
+    background:
+      "linear-gradient(111.68deg, rgba(87, 97, 125, 0.2) 7.59%, rgba(255, 255, 255, 0.078) 102.04%)",
     color: "#fff",
     borderRadius: "1.25rem",
   },
@@ -241,6 +243,6 @@ const componentsStyle = theme => ({
     width: "54%",
     backgroundColor: "#fff",
   },
-})
+});
 
-export default componentsStyle
+export default componentsStyle;

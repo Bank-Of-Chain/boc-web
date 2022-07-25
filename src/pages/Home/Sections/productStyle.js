@@ -1,7 +1,8 @@
 const productStyle = {
   section: {
     textAlign: "center",
-    background: "#F6F6F6 linear-gradient(219.17deg, #e3f8ff 24.63%, #ffc7f1 104.13%)",
+    background:
+      "#F6F6F6 linear-gradient(219.17deg, #e3f8ff 24.63%, #ffc7f1 104.13%)",
     padding: "13rem 0 10rem",
   },
   text: {
@@ -26,7 +27,7 @@ const productStyle = {
     width: "1176px",
     padding: "0 70px",
     margin: "0 auto",
-  }
-}
+  },
+};
 
-export default productStyle
+export default productStyle;

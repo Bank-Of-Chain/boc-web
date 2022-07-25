@@ -1,6 +1,4 @@
-import {
-  useMemo
-} from "react";
+import { useMemo } from "react";
 
 /*
   ~ What it does? ~
@@ -28,7 +26,7 @@ const useUserProvider = (injectedProvider, localProvider) =>
     }
     if (localProvider) {
       console.log("🦊 Using local provider");
-      return localProvider
+      return localProvider;
     }
   }, [injectedProvider, localProvider]);
 

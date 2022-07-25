@@ -1,27 +1,27 @@
-import React, { Fragment, useEffect } from "react"
-import { makeStyles } from "@material-ui/core/styles"
+import React, { Fragment, useEffect } from "react";
+import { makeStyles } from "@material-ui/core/styles";
 
 // === Components === //
-import Tabs from "@material-ui/core/Tabs"
-import Tab from "@material-ui/core/Tab"
-import Icon from "@material-ui/core/Icon"
+import Tabs from "@material-ui/core/Tabs";
+import Tab from "@material-ui/core/Tab";
+import Icon from "@material-ui/core/Icon";
 
-import styles from "./customTabsStyle"
+import styles from "./customTabsStyle";
 
-const useStyles = makeStyles(styles)
+const useStyles = makeStyles(styles);
 
-export default function CustomTabs (props) {
-  const [value, setValue] = React.useState(0)
+export default function CustomTabs(props) {
+  const [value, setValue] = React.useState(0);
 
   const handleChange = (event, value) => {
-    setValue(value)
-  }
-  const classes = useStyles()
-  const { tabs, centered } = props
+    setValue(value);
+  };
+  const classes = useStyles();
+  const { tabs, centered } = props;
 
   useEffect(() => {
-    setValue(props.value)
-  }, [props.value])
+    setValue(props.value);
+  }, [props.value]);
 
   return (
     <Fragment>
@@ -35,11 +35,16 @@ export default function CustomTabs (props) {
         }}
       >
         {tabs.map((prop, key) => {
-          var icon = {}
+          var icon = {};
           if (prop.tabIcon) {
             icon = {
-              icon: typeof prop.tabIcon === "string" ? <Icon>{prop.tabIcon}</Icon> : <prop.tabIcon />,
-            }
+              icon:
+                typeof prop.tabIcon === "string" ? (
+                  <Icon>{prop.tabIcon}</Icon>
+                ) : (
+                  <prop.tabIcon />
+                ),
+            };
           }
           return (
             <Tab
@@ -53,15 +58,15 @@ export default function CustomTabs (props) {
               label={prop.tabName}
               {...icon}
             />
-          )
+          );
         })}
       </Tabs>
       {tabs.map((prop, key) => {
         if (key === value) {
-          return <div key={key}>{prop.tabContent}</div>
+          return <div key={key}>{prop.tabContent}</div>;
         }
-        return null
+        return null;
       })}
     </Fragment>
-  )
+  );
 }

@@ -1,4 +1,7 @@
-import { container, primaryColor } from "../../assets/jss/material-kit-react.js"
+import {
+  container,
+  primaryColor,
+} from "../../assets/jss/material-kit-react.js";
 
 const footerStyle = {
   title: {
@@ -71,5 +74,5 @@ const footerStyle = {
     fontSize: "14px",
     padding: "15px",
   },
-}
-export default footerStyle
+};
+export default footerStyle;

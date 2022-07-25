@@ -7,7 +7,7 @@ import {
   roseColor,
   grayColor,
   title,
-} from "../../assets/jss/material-kit-react.js"
+} from "../../assets/jss/material-kit-react.js";
 
 const infoStyle = {
   iconWrapper: {
@@ -71,7 +71,7 @@ const infoStyle = {
     background: "#313036",
     borderRadius: "1rem",
     boxSizing: "border-box",
-  }
-}
+  },
+};
 
-export default infoStyle
+export default infoStyle;

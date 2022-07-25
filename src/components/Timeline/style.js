@@ -13,7 +13,7 @@ const style = {
     borderRadius: "4px",
     fontSize: "24px",
     fontWeight: 700,
-    color: "#A68EFE"
+    color: "#A68EFE",
   },
   events: {
     position: "relative",
@@ -28,17 +28,17 @@ const style = {
     background: "linear-gradient(0, rgba(32, 32, 35, 0) 0%, #BEBEBE 100%)",
   },
   connectorColorRevese: {
-    background: "linear-gradient(180deg, rgba(32, 32, 35, 0) 0%, #BEBEBE 100%)"
+    background: "linear-gradient(180deg, rgba(32, 32, 35, 0) 0%, #BEBEBE 100%)",
   },
   timeline: {
     padding: "46px 16px",
-    margin: 0
+    margin: 0,
   },
   timelineItem: {
     margin: "28px 0",
   },
   hidden: {
-    display: "none"
+    display: "none",
   },
   keyTime: {
     position: "relative",
@@ -47,7 +47,7 @@ const style = {
     color: "#A0A0A0",
     fontSize: "20px",
     lineHeight: "30px",
-    transform: "translate(0, -50%)"
+    transform: "translate(0, -50%)",
   },
   separator: {
     margin: "0 24px",
@@ -59,14 +59,14 @@ const style = {
     height: "6px",
     margin: 0,
     background: "#A0A0A0",
-    transform: "translate(0, -50%)"
+    transform: "translate(0, -50%)",
   },
-  '@media (max-width: 768px)': {
+  "@media (max-width: 768px)": {
     separator: {
       marginLeft: "8px",
       marginRight: "8px",
-    }
+    },
   },
-}
+};
 
-export default style
+export default style;

@@ -46,7 +46,7 @@ export default function CustomInput(props) {
   });
   const formControlClasses = classNames(classes.formControl, {
     [formControlProps?.className]: formControlProps !== undefined,
-    [classes.labelTextEmpty]: labelText === undefined
+    [classes.labelTextEmpty]: labelText === undefined,
   });
   return (
     <FormControl {...formControlProps} className={formControlClasses}>

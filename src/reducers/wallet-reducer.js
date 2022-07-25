@@ -1,29 +1,26 @@
-import {
-  createSlice
-} from '@reduxjs/toolkit'
-import keys from 'lodash/keys'
-import { SafeAppWeb3Modal } from "@gnosis.pm/safe-apps-web3modal"
-import { Web3Provider } from "@ethersproject/providers"
-import { WALLETS } from "../constants/wallet"
+import { createSlice } from "@reduxjs/toolkit";
+import keys from "lodash/keys";
+import { SafeAppWeb3Modal } from "@gnosis.pm/safe-apps-web3modal";
+import { Web3Provider } from "@ethersproject/providers";
+import { WALLETS } from "../constants/wallet";
 
 export const createWeb3Modal = () => {
-  let providerOptions = {}
+  let providerOptions = {};
   keys(WALLETS).forEach((name) => {
     providerOptions = {
       ...providerOptions,
-      ...WALLETS[name].getProviderOption()
-    }
-  })
+      ...WALLETS[name].getProviderOption(),
+    };
+  });
   return new SafeAppWeb3Modal({
     // network: "mainnet", // optional
     cacheProvider: true, // optional
-    providerOptions
-  })
-}
-
+    providerOptions,
+  });
+};
 
 export const metaStore = createSlice({
-  name: 'walletStore',
+  name: "walletStore",
   initialState: {
     web3Modal: createWeb3Modal(),
     provider: undefined,
@@ -31,25 +28,18 @@ export const metaStore = createSlice({
   },
   reducers: {
     setProvider: (state, action) => {
-      const {
-        payload
-      } = action
-      state.provider = payload
-      state.userProvider = payload ? new Web3Provider(payload) : undefined
+      const { payload } = action;
+      state.provider = payload;
+      state.userProvider = payload ? new Web3Provider(payload) : undefined;
     },
     setWeb3Modal: (state, action) => {
-      const {
-        payload
-      } = action
-      state.web3Modal = payload
-    }
-  }
-})
+      const { payload } = action;
+      state.web3Modal = payload;
+    },
+  },
+});
 
 // Action creators are generated for each case reducer function
-export const {
-  setProvider,
-  setWeb3Modal
-} = metaStore.actions
+export const { setProvider, setWeb3Modal } = metaStore.actions;
 
-export default metaStore.reducer
+export default metaStore.reducer;

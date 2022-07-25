@@ -23,7 +23,11 @@ import { useState, useEffect } from "react";
   - Specify the customAddress of your contract
 */
 
-export default function useCustomContractLoader(provider, contractName, address) {
+export default function useCustomContractLoader(
+  provider,
+  contractName,
+  address
+) {
   const [contract, setContract] = useState();
   useEffect(() => {
     async function loadContract() {
@@ -38,7 +42,11 @@ export default function useCustomContractLoader(provider, contractName, address)
             signer = provider;
           }
 
-          const customContract = new Contract(address, require(`../contracts/${contractName}.abi.js`), signer);
+          const customContract = new Contract(
+            address,
+            require(`../contracts/${contractName}.abi.js`),
+            signer
+          );
           try {
             customContract.bytecode = require(`../contracts/${contractName}.bytecode.js`);
           } catch (e) {

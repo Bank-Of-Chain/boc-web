@@ -11,7 +11,7 @@ import Notify from "bnc-notify";
 export default function Transactor(provider, gasPrice, etherscan) {
   if (typeof provider !== "undefined") {
     // eslint-disable-next-line consistent-return
-    return async tx => {
+    return async (tx) => {
       const signer = provider.getSigner();
       const network = await provider.getNetwork();
       console.log("network", network);
@@ -20,7 +20,7 @@ export default function Transactor(provider, gasPrice, etherscan) {
         system: "ethereum",
         networkId: network.chainId,
         // darkMode: Boolean, // (default: false)
-        transactionHandler: txInformation => {
+        transactionHandler: (txInformation) => {
           console.log("HANDLE TX", txInformation);
         },
       };
@@ -57,9 +57,10 @@ export default function Transactor(provider, gasPrice, etherscan) {
         // if it is a valid Notify.js network, use that, if not, just send a default notification
         if ([1, 3, 4, 5, 42, 100].indexOf(network.chainId) >= 0) {
           const { emitter } = notify.hash(result.hash);
-          emitter.on("all", transaction => {
+          emitter.on("all", (transaction) => {
             return {
-              onclick: () => window.open((etherscan || etherscanTxUrl) + transaction.hash),
+              onclick: () =>
+                window.open((etherscan || etherscanTxUrl) + transaction.hash),
             };
           });
         } else {

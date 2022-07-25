@@ -8,10 +8,10 @@ const style = {
     borderRadius: 12,
     color: "rgba(255,255,255, 0.87)",
     background: "#292B2E",
-    boxShadow: '0px 15px 15px rgba(0, 0, 0, 0.05)',
+    boxShadow: "0px 15px 15px rgba(0, 0, 0, 0.05)",
   },
   titleWrapper: {
-    position: "relative"
+    position: "relative",
   },
   title: {
     fontSize: 20,
@@ -25,11 +25,11 @@ const style = {
     top: "50%",
     right: 0,
     transform: "translate(0, -50%)",
-    cursor: "pointer"
+    cursor: "pointer",
   },
   content: {
     display: "flex",
-    flexWrap: "wrap"
+    flexWrap: "wrap",
   },
   walletItemWrapper: {
     position: "relative",
@@ -52,38 +52,38 @@ const style = {
       boxShadow: "none",
     },
     "&:last-child": {
-      marginBottom: 0
+      marginBottom: 0,
     },
     "&:after": {
       display: "none",
       content: "''",
-      position: "absolute", 
+      position: "absolute",
       top: "50%",
       right: 24,
       width: 8,
       height: 8,
       borderRadius: "50%",
       backgroundColor: "#55E752",
-      transform: "translate(0, -50%)"
-    }
+      transform: "translate(0, -50%)",
+    },
   },
   walletItem: {
     cursor: "pointer",
   },
   walletItemWrapperSelected: {
     "&:after": {
-      display: "block"
-    }
+      display: "block",
+    },
   },
   walletLogo: {
     width: 24,
     marginRight: 12,
-    verticalAlign: "middle"
+    verticalAlign: "middle",
   },
   walletName: {
     verticalAlign: "middle",
-    lineHeight: "24px"
-  }
-}
+    lineHeight: "24px",
+  },
+};
 
-export default style
+export default style;

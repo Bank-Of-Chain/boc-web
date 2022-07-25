@@ -1,5 +1,5 @@
-import { withStyles } from "@material-ui/core/styles"
-import StepConnector from "@material-ui/core/StepConnector"
+import { withStyles } from "@material-ui/core/styles";
+import StepConnector from "@material-ui/core/StepConnector";
 
 const BocStepConnector = withStyles({
   alternativeLabel: {
@@ -22,6 +22,6 @@ const BocStepConnector = withStyles({
     borderTopWidth: 3,
     borderRadius: 1,
   },
-})(StepConnector)
+})(StepConnector);
 
-export default BocStepConnector
+export default BocStepConnector;

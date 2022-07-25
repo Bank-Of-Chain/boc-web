@@ -1,6 +1,6 @@
-import { container } from "../../../assets/jss/material-kit-react.js"
+import { container } from "../../../assets/jss/material-kit-react.js";
 
-const componentsStyle = theme => ({
+const componentsStyle = (theme) => ({
   container,
   switchBar: {
     backgroundColor: "#91d5ff !important",
@@ -38,6 +38,7 @@ const componentsStyle = theme => ({
   estimateText: {
     color: "#A0A0A0",
     margin: 0,
+    display: "flex",
   },
   input: {
     maxWidth: "12.5rem",
@@ -161,6 +162,6 @@ const componentsStyle = theme => ({
   root: {
     padding: "1.5rem 0",
   },
-})
+});
 
-export default componentsStyle
+export default componentsStyle;

@@ -1,8 +1,8 @@
-import { defaultFont } from "../../assets/jss/material-kit-react.js"
+import { defaultFont } from "../../assets/jss/material-kit-react.js";
 
-import tooltip from "./tooltipsStyle.js"
+import tooltip from "./tooltipsStyle.js";
 
-const headerLinksStyle = theme => ({
+const headerLinksStyle = (theme) => ({
   list: {
     ...defaultFont,
     fontSize: "14px",
@@ -88,8 +88,8 @@ const headerLinksStyle = theme => ({
       height: "10px",
       borderRadius: "50%",
       transform: "translate(0, -50%)",
-      background: "#55E752"
-    }
+      background: "#55E752",
+    },
   },
   notificationNavLink: {
     color: "inherit",
@@ -139,12 +139,12 @@ const headerLinksStyle = theme => ({
     },
   },
   dropdownLinkIcon: {
-    marginRight: "8px"
+    marginRight: "8px",
   },
   ...tooltip,
   marginRight5: {
     marginRight: "5px",
   },
-})
+});
 
-export default headerLinksStyle
+export default headerLinksStyle;

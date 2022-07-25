@@ -1,9 +1,5 @@
-import {
-  useState
-} from "react";
-import {
-  usePoller
-} from "eth-hooks";
+import { useState } from "react";
+import { usePoller } from "eth-hooks";
 import axios from "axios";
 
 export default function useGasPrice(targetNetwork = {}, speed) {
@@ -14,13 +10,13 @@ export default function useGasPrice(targetNetwork = {}, speed) {
     } else {
       axios
         .get("https://ethgasstation.info/json/ethgasAPI.json")
-        .then(response => {
+        .then((response) => {
           const newGasPrice = response.data[speed || "fast"] * 100000000;
           if (newGasPrice !== gasPrice) {
             setGasPrice(newGasPrice);
           }
         })
-        .catch(error => console.log(error));
+        .catch((error) => console.log(error));
     }
   };
 

@@ -1,20 +1,20 @@
-import React from "react"
-import { makeStyles } from "@material-ui/core/styles"
+import React from "react";
+import { makeStyles } from "@material-ui/core/styles";
 
 // === Components === //
-import InfoArea from "../../../components/InfoArea/InfoArea"
+import InfoArea from "../../../components/InfoArea/InfoArea";
 
 // === Utils === //
-import map from "lodash/map"
+import map from "lodash/map";
 
 // === Styles === //
-import styles from "./productStyle"
+import styles from "./productStyle";
 
-import { Navigation, Autoplay } from "swiper"
-import { Swiper, SwiperSlide } from "swiper/react/swiper-react"
-import "swiper/swiper-bundle.min.css"
+import { Navigation, Autoplay } from "swiper";
+import { Swiper, SwiperSlide } from "swiper/react/swiper-react";
+import "swiper/swiper-bundle.min.css";
 
-const useStyles = makeStyles(styles)
+const useStyles = makeStyles(styles);
 
 const data = [
   {
@@ -67,10 +67,10 @@ const data = [
     ],
     imagePath: require("./../images/point-4.png"),
   },
-]
+];
 
-export default function ProductSection () {
-  const classes = useStyles()
+export default function ProductSection() {
+  const classes = useStyles();
   return (
     <div className={classes.section}>
       <h1 className={classes.text}>BoC is different.</h1>
@@ -87,27 +87,30 @@ export default function ProductSection () {
           autoplay={true}
         >
           {map(data, (item, i) => {
-            const { title, descriptions = [], imagePath } = item
+            const { title, descriptions = [], imagePath } = item;
             return (
               <SwiperSlide key={i}>
                 <InfoArea
                   title={title}
                   description={map(descriptions, (d, index) => (
-                    <span key={`item-${index}`} style={{ display: "inline-block" }}>
+                    <span
+                      key={`item-${index}`}
+                      style={{ display: "inline-block" }}
+                    >
                       {index + 1}. {d}
                     </span>
                   ))}
-                  icon={<img src={imagePath} alt='' />}
+                  icon={<img src={imagePath} alt="" />}
                   vertical
                   style={{ height: "40rem" }}
                 />
               </SwiperSlide>
-            )
+            );
           })}
         </Swiper>
-        <div className='swiper-button-prev'></div>
-        <div className='swiper-button-next'></div>
+        <div className="swiper-button-prev"></div>
+        <div className="swiper-button-next"></div>
       </div>
     </div>
-  )
+  );
 }

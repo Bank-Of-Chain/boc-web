@@ -1,6 +1,6 @@
-import { container } from "../../../assets/jss/material-kit-react.js"
+import { container } from "../../../assets/jss/material-kit-react.js";
 
-const componentsStyle = theme => ({
+const componentsStyle = (theme) => ({
   container,
   modal: {
     display: "flex",
@@ -26,6 +26,7 @@ const componentsStyle = theme => ({
   estimateText: {
     color: "#A0A0A0",
     margin: 0,
+    display: "flex",
   },
   estimateBalanceTitle: {
     fontSize: "1.625rem",
@@ -85,6 +86,15 @@ const componentsStyle = theme => ({
     backgroundColor: "#000",
     borderRadius: "1rem",
   },
-})
+  root: {
+    padding: "1.5rem 0",
+  },
+  item: {
+    paddingTop: "3rem",
+  },
+  subTitle: {
+    color: "#A68EFE",
+  },
+});
 
-export default componentsStyle
+export default componentsStyle;

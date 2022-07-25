@@ -21,8 +21,6 @@ const lendingSectionStyle = {
     height: "18.75rem",
     paddingLeft: 0,
     paddingRight: 0,
-    borderBottom: "1px solid rgba(255, 255, 255, .1)",
-    borderLeft: "1px solid rgba(255, 255, 255, .1)",
   },
   bar: {
     width: "3rem",
@@ -33,6 +31,7 @@ const lendingSectionStyle = {
     left: 0,
     bottom: 0,
     right: 0,
+    borderRadius: "0.3rem",
     "&>p": {
       position: "absolute",
       top: "-3rem",
@@ -69,7 +68,7 @@ const lendingSectionStyle = {
     height: "0.6rem",
     width: "0.6rem",
     borderRadius: "50%",
-    marginRight: "0.25rem",
+    marginRight: "1rem",
     display: "inline-block",
     background: "#FE3DCE",
   },
@@ -77,12 +76,13 @@ const lendingSectionStyle = {
     height: "0.6rem",
     width: "0.6rem",
     borderRadius: "50%",
-    marginRight: "0.25rem",
+    marginRight: "1rem",
     display: "inline-block",
     background: "#A68EFE",
   },
   chart: {
-    background: "linear-gradient(199.32deg, #FE3DCE 17.59%, #5B93DF 71.04%, #94E3FF 102.04%)",
+    background:
+      "linear-gradient(199.32deg, #FE3DCE 17.59%, #5B93DF 71.04%, #94E3FF 102.04%)",
     borderRadius: "1rem",
     padding: "2px",
   },
@@ -91,7 +91,7 @@ const lendingSectionStyle = {
     backgroundColor: "#070b10",
     borderRadius: "1rem",
   },
-}
+};
 
 export const smStyle = {
   section: {
@@ -117,6 +117,6 @@ export const smStyle = {
       textAlign: "left",
     },
   },
-}
+};
 
-export default lendingSectionStyle
+export default lendingSectionStyle;

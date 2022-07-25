@@ -1,7 +1,7 @@
-import React from "react"
-import { makeStyles } from "@material-ui/core/styles"
-import Check from "@material-ui/icons/Check"
-import clsx from "clsx"
+import React from "react";
+import { makeStyles } from "@material-ui/core/styles";
+import Check from "@material-ui/icons/Check";
+import clsx from "clsx";
 
 const useQontoStepIconStyles = makeStyles({
   root: {
@@ -24,11 +24,11 @@ const useQontoStepIconStyles = makeStyles({
     zIndex: 1,
     fontSize: 18,
   },
-})
+});
 
-function BocStepIcon (props) {
-  const classes = useQontoStepIconStyles()
-  const { active, completed } = props
+function BocStepIcon(props) {
+  const classes = useQontoStepIconStyles();
+  const { active, completed } = props;
 
   return (
     <div
@@ -36,9 +36,13 @@ function BocStepIcon (props) {
         [classes.active]: active,
       })}
     >
-      {completed ? <Check className={classes.completed} /> : <div className={classes.circle} />}
+      {completed ? (
+        <Check className={classes.completed} />
+      ) : (
+        <div className={classes.circle} />
+      )}
     </div>
-  )
+  );
 }
 
-export default BocStepIcon
+export default BocStepIcon;

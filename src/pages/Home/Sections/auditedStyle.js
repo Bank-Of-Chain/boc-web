@@ -22,6 +22,6 @@ const auditedStyle = {
     margin: "1.875rem 0",
     background: "#1F2023",
   },
-}
+};
 
-export default auditedStyle
+export default auditedStyle;

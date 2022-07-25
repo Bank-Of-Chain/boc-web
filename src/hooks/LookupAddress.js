@@ -43,7 +43,7 @@ const useLookupAddress = (provider, address) => {
     if (ensCache && ensCache.timestamp > Date.now()) {
       setEnsName(ensCache.name);
     } else if (provider) {
-      lookupAddress(provider, address).then(name => {
+      lookupAddress(provider, address).then((name) => {
         if (name) {
           setEnsName(name);
           setEnsCache({

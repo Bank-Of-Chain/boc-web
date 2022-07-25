@@ -1,12 +1,12 @@
 const tabPanelStyle = {
   tabPanel: {
-    position: "relative"
+    position: "relative",
   },
   hidden: {
     position: "absolute",
     visibility: "hidden",
-    zIndex: -100
-  }
-}
+    zIndex: -100,
+  },
+};
 
-export default tabPanelStyle
+export default tabPanelStyle;

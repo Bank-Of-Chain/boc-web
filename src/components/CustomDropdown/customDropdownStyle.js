@@ -29,7 +29,7 @@ const customDropdownStyle = (theme) => ({
     listStyle: "none",
     background: "#292b2e",
     backgroundClip: "padding-box",
-    boxShadow: "0 0 0px 1px rgba(161, 161, 161, 0.2)"
+    boxShadow: "0 0 0px 1px rgba(161, 161, 161, 0.2)",
   },
   menuList: {
     padding: "0",
@@ -128,8 +128,8 @@ const customDropdownStyle = (theme) => ({
   },
   dropdownTrigger: {
     "&.MuiButtonBase-root.MuiButton-root": {
-      paddingRight: "8px"
-    }
+      paddingRight: "8px",
+    },
   },
   caret: {
     transition: "all 150ms ease-in",
