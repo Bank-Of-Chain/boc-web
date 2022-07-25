@@ -36,7 +36,7 @@ async function deploy(upload) {
       async.asyncify(async (file) => {
         const Key = file
           .replace(`${rootFolder}\\build\\`, "")
-          .replace("\\", "/");
+          .replace(/:|\\/g, "/");
         console.log(`uploading: [${Key}]`);
         return new Promise((res, rej) => {
           s3.upload(
