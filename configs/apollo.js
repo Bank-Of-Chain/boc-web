@@ -16,7 +16,8 @@ const start = async () => {
     nextChain = await chooseLocalChainConfig();
   }
 
-  const host = "http://54.179.161.168";
+  const isLinux = process.platform === "linux";
+  const host = isLinux ? "http://172.31.22.200" : "http://54.179.161.168";
   const url = `${host}:8088/configfiles/json/boc-subgraph/${nextEnv}/boc1.application`;
   const { status, data } = await axios.get(url).catch((error) => {
     console.error(`${nextEnv}配置加载失败，url=${url}`);

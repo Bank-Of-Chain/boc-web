@@ -3,7 +3,6 @@ const moment = require("moment");
 const { env } = require("./configs/address.json");
 
 const FileManagerPlugin = require("filemanager-webpack-plugin");
-const HtmlWebpackExternalsPlugin = require("html-webpack-externals-plugin");
 
 function resolve(dir) {
   return path.join(__dirname, ".", dir);
