@@ -40,6 +40,8 @@ export const VAULTS = config.vaults;
 export const CHAIN_ID = config.chain_id;
 export const LEGACYS = config.legacys;
 export const RPC_URL = config.rpc_url;
+export const TWITTER_URL = config.twitter_url;
+export const LINKEDIN_URL = config.linkedin_url;
 
 export const NET_WORKS = [
   {

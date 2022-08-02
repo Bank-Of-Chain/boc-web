@@ -13,7 +13,13 @@ import Button from "@material-ui/core/Button";
 import Divider from "@material-ui/core/Divider";
 
 // === Constants === //
-import { COMMUNITY_URL, DOCUMENT_URL, TELEGRAM_URL } from "./../../constants";
+import {
+  COMMUNITY_URL,
+  DOCUMENT_URL,
+  TELEGRAM_URL,
+  TWITTER_URL,
+  LINKEDIN_URL,
+} from "./../../constants";
 
 import styles from "./footerStyle.js";
 
@@ -130,7 +136,7 @@ export default function Footer(props) {
                   className={classes.block}
                   target="_blank"
                   rel="noopener noreferrer"
-                  href={`${DOCUMENT_URL}/docs/protocol-mechanisms/governance`}
+                  href={"https://governance.bankofchain.io"}
                 >
                   Governance
                 </a>
@@ -201,12 +207,16 @@ export default function Footer(props) {
                 </a>
               </ListItem>
               <ListItem className={classes.inlineBlock}>
-                <a target="_blank" rel="noopener noreferrer">
+                <a target="_blank" rel="noopener noreferrer" href={TWITTER_URL}>
                   {ICON3}
                 </a>
               </ListItem>
               <ListItem className={classes.inlineBlock}>
-                <a target="_blank" rel="noopener noreferrer">
+                <a
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  href={LINKEDIN_URL}
+                >
                   {ICON4}
                 </a>
               </ListItem>
