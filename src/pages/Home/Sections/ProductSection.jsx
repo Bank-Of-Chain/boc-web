@@ -6,6 +6,7 @@ import InfoArea from "../../../components/InfoArea/InfoArea";
 
 // === Utils === //
 import map from "lodash/map";
+import useMediaQuery from "@material-ui/core/useMediaQuery";
 
 // === Styles === //
 import styles from "./productStyle";
@@ -71,6 +72,7 @@ const data = [
 
 export default function ProductSection() {
   const classes = useStyles();
+  const isLayoutSm = useMediaQuery("(max-width: 960px)");
   return (
     <div className={classes.section}>
       <h1 className={classes.text}>BoC is different.</h1>
@@ -79,7 +81,7 @@ export default function ProductSection() {
           loop={true}
           modules={[Navigation, Autoplay]}
           spaceBetween={24}
-          slidesPerView={3}
+          slidesPerView={isLayoutSm ? 2 : 3}
           navigation={{
             nextEl: ".swiper-button-next",
             prevEl: ".swiper-button-prev",
@@ -102,7 +104,10 @@ export default function ProductSection() {
                   ))}
                   icon={<img src={imagePath} alt="" />}
                   vertical
-                  style={{ height: "40rem" }}
+                  style={{
+                    height: "40rem",
+                    padding: isLayoutSm ? "2rem" : "6rem 3rem 3rem",
+                  }}
                 />
               </SwiperSlide>
             );

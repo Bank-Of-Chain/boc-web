@@ -15,7 +15,7 @@ const customTabsStyle = {
     minHeight: "unset !important",
   },
   tabRootButton: {
-    width: "17.5rem",
+    width: "30%",
     maxWidth: "17.5rem",
     padding: "0.625rem 1rem",
     lineHeight: "1.5rem",
