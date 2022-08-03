@@ -185,11 +185,6 @@ const chooseLocalChainConfig = () => {
           value: "config1",
         },
         {
-          key: "config56",
-          name: "币安链",
-          value: "config56",
-        },
-        {
           key: "config137",
           name: "Matic链",
           value: "config137",
