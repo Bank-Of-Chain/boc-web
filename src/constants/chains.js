@@ -13,7 +13,7 @@ const MATIC = {
   name: "Polygon",
   url: "https://polygonscan.com",
 };
-const CHAINS = [ETH, BSC, MATIC];
+const CHAINS = [ETH, MATIC];
 
 export { ETH, BSC, MATIC };
 export default CHAINS;
