@@ -4,6 +4,11 @@ const auditedStyle = {
     padding: "16rem 8.75rem",
     background: "linear-gradient(180deg, #F6F6F6 30%, #E5DFF7 100%)",
   },
+  sectionMobile: {
+    color: "#1F2023",
+    padding: "5rem 2.75rem",
+    background: "linear-gradient(180deg, #F6F6F6 30%, #E5DFF7 100%)",
+  },
   title: {
     margin: 0,
     fontSize: "6.25rem",

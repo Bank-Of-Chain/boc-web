@@ -13,7 +13,7 @@ const ammSectionStyle = {
     width: "52.5rem",
     padding: "5rem 0 0",
     margin: "0 auto",
-    textAlign: "left",
+    textAlign: "center",
   },
   title: {
     width: "50%",

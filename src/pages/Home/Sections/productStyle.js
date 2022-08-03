@@ -24,8 +24,8 @@ const productStyle = {
   },
   swiper: {
     position: "relative",
-    width: "1176px",
-    padding: "0 70px",
+    width: "calc(100% - 6rem)",
+    padding: "0 3rem",
     margin: "0 auto",
   },
 };

@@ -1,5 +1,6 @@
 import React from "react";
 import { makeStyles } from "@material-ui/core/styles";
+import useMediaQuery from "@material-ui/core/useMediaQuery";
 
 // === Components === //
 import ProductSection from "./Sections/ProductSection";
@@ -19,13 +20,23 @@ const useStyles = makeStyles(styles);
 
 export default function Home(props) {
   const classes = useStyles();
+  const isLayoutSm = useMediaQuery("(max-width: 960px)");
 
   return (
     <div className={classes.container}>
       <GridContainer>
-        <GridItem xs={12} sm={12} md={12} className={classes.grid}>
-          <h1 className={classes.title}>The Multichain</h1>
-          <h1 className={classes.title}>Yield Optimizer</h1>
+        <GridItem
+          xs={12}
+          sm={12}
+          md={12}
+          className={isLayoutSm ? classes.gridMobile : classes.grid}
+        >
+          <h1 className={isLayoutSm ? classes.titleMobile : classes.title}>
+            The Multichain
+          </h1>
+          <h1 className={isLayoutSm ? classes.titleMobile : classes.title}>
+            Yield Optimizer
+          </h1>
           <h4 className={classes.text} style={{ marginTop: 40 }}>
             BOC is a DeFi protocol that
           </h4>
