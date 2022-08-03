@@ -326,7 +326,7 @@ function Invest(props) {
   return (
     <div className={classes.container}>
       <GridContainer spacing={0} style={{ paddingTop: "100px" }}>
-        <GridItem xs={3} sm={2} md={3} style={{ padding: "0 2rem" }}>
+        <GridItem xs={2} sm={2} md={3} style={{ padding: "0 2rem" }}>
           <List>
             <ListItem
               key="My Account"
@@ -412,7 +412,7 @@ function Invest(props) {
             </ListItem>
           </List>
         </GridItem>
-        <GridItem xs={6} sm={9} md={6}>
+        <GridItem xs={9} sm={9} md={6}>
           {current === 0 && (
             <Card className={classes.balanceCard}>
               <div className={classes.balanceCardItem}>

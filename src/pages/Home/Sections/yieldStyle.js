@@ -47,8 +47,8 @@ const yieldStyle = {
   checkIcon: {
     fontSize: "28px",
     color: "#A68EFE",
-    marginLeft: 36,
-    marginRight: 72,
+    marginLeft: "2rem",
+    marginRight: "3rem",
   },
 };
 

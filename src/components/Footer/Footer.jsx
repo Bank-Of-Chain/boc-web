@@ -113,13 +113,13 @@ export default function Footer(props) {
     <footer className={footerClasses}>
       <div className={classes.container}>
         <GridContainer>
-          <GridItem xs={6} sm={12} md={6} className={classes.item}>
+          <GridItem xs={12} sm={12} md={6} className={classes.item}>
             <Button className={classes.title} href="/#/">
               <img alt="" src="/logo.png" />
               &nbsp;&nbsp;Bank of Chain
             </Button>
           </GridItem>
-          <GridItem xs={6} sm={12} md={6} className={classes.item}>
+          <GridItem xs={12} sm={12} md={6} className={classes.item}>
             <List className={classes.list}>
               <ListItem className={classes.inlineBlock}>
                 <a
@@ -174,12 +174,12 @@ export default function Footer(props) {
             </List>
           </GridItem>
           <Divider />
-          <GridItem xs={6} sm={12} md={6} className={classes.item}>
+          <GridItem xs={12} sm={12} md={6} className={classes.item}>
             <p className={classes.text}>
               @{1900 + new Date().getYear()} Bank of Chain, all right reserved.
             </p>
           </GridItem>
-          <GridItem xs={6} sm={12} md={6} className={classes.item}>
+          <GridItem xs={12} sm={12} md={6} className={classes.item}>
             <p>
               Do you have any questions?{" "}
               <a className={classes.text}>Contact us</a> contact@bankofchian.io
