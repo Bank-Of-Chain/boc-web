@@ -50,7 +50,7 @@
     "graphql": "^15.3.0",
     "isomorphic-fetch": "^3.0.0",
     "moment": "^2.29.4",
-    "piggy-finance-utils": "1.0.54",
+    "piggy-finance-utils": "1.0.55",
     "qrcode.react": "^1.0.0",
     "react": "16.9.0",
     "react-blockies": "^1.4.1",
@@ -75,8 +75,8 @@
     "material-ui-popup-state": "^3.1.1",
     "mustache": "^4.2.0",
     "prettier": "^2.0.5",
-    "react-scripts": "^3.4.4",
     "react-app-rewired": "^2.2.1",
+    "react-scripts": "^3.4.4",
     "source-map-explorer": "^2.5.2",
     "surge": "^0.21.5"
   },
