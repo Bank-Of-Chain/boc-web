@@ -19,9 +19,8 @@ import Snackbar from "@material-ui/core/Snackbar";
 import Alert from "@material-ui/lab/Alert";
 
 // === Utils === //
-import { USDT_ADDRESS, NET_WORKS, LOCAL_CHAIN_ID } from "./constants";
+import { NET_WORKS, LOCAL_CHAIN_ID } from "./constants";
 import { makeStyles } from "@material-ui/core/styles";
-import { lendSwap } from "piggy-finance-utils";
 import isEmpty from "lodash/isEmpty";
 import isUndefined from "lodash/isUndefined";
 import map from "lodash/map";
@@ -31,12 +30,6 @@ import { isInMobileWalletApp, isInMobileH5 } from "./helpers/plugin-util";
 
 // === Styles === //
 import "./App.css";
-
-try {
-  lendSwap.setUnderlying(USDT_ADDRESS);
-} catch (error) {
-  console.warn(`*** ${error.message} ***`);
-}
 
 const Home = lazy(() => import("./pages/Home/index"));
 const InvestNew = lazy(() => import("./pages/InvestNew/index"));
