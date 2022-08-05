@@ -52,6 +52,14 @@ const ammSectionStyle = {
   more: {
     cursor: "pointer",
   },
+  "@media screen and (max-width: 923px)": {
+    iconContainer: {
+      padding: "2rem 0 0",
+    },
+    text: {
+      margin: "0.625rem 0 1.75rem",
+    },
+  },
 };
 
 export default ammSectionStyle;
