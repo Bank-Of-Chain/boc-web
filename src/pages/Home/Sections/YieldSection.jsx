@@ -16,29 +16,7 @@ export default function YieldSection() {
     <div className={classes.yieldSection}>
       <h2 className={classes.title}>
         Sources of
-        <svg width={280} height={155} className={classes.svg}>
-          <defs>
-            <linearGradient
-              id="colorfulSvg"
-              gradientUnits="userSpaceOnUse"
-              x1="0"
-              y1="100%"
-              x2="103%"
-              y2="0"
-            >
-              <stop offset="0" style={{ stopColor: "#F4ACF3" }} />
-              <stop offset="1" style={{ stopColor: "#A68EFD" }} />
-            </linearGradient>
-          </defs>
-          <text
-            textAnchor="middle"
-            className={classes.colorful}
-            x="150"
-            y="104"
-          >
-            yield.
-          </text>
-        </svg>
+        <span className={classes.colorful}> yield.</span>
       </h2>
       <h3 className={classes.subTitle}>
         The best long-term <strong>risk-free</strong> return
