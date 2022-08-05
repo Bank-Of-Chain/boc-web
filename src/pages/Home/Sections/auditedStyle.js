@@ -14,6 +14,12 @@ const auditedStyle = {
     fontSize: "6.25rem",
     lineHeight: "8.125rem",
   },
+  "@media screen and (max-width: 923px)": {
+    title: {
+      fontSize: "4.6rem",
+      lineHeight: "6rem",
+    },
+  },
   text: {
     width: "34rem",
     margin: 0,

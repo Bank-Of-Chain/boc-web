@@ -1,3 +1,5 @@
+import { gradientText } from "../../../assets/jss/common.js";
+
 const yieldStyle = {
   yieldSection: {
     width: "80%",
@@ -10,12 +12,16 @@ const yieldStyle = {
     fontWeight: "bold",
     margin: 0,
   },
+  "@media screen and (max-width: 923px)": {
+    title: {
+      fontSize: "3.4rem",
+    },
+  },
   svg: {
     verticalAlign: "middle",
   },
   colorful: {
-    fill: "url(#colorfulSvg)",
-    fontSize: "100px",
+    ...gradientText,
     fontWeight: "bold",
   },
   subTitle: {
