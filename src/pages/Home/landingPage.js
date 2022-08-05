@@ -4,8 +4,13 @@ const landingPageStyle = {
   container: {
     zIndex: "12",
     color: "#FFFFFF",
-    marginTop: "84px",
+    marginTop: "6rem",
     ...container,
+  },
+  "@media (max-width: 960px)": {
+    container: {
+      marginTop: "84px",
+    },
   },
   subtitle: {
     fontSize: "1.313rem",
