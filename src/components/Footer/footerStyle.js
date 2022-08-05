@@ -19,7 +19,6 @@ const footerStyle = {
     color: "#fff",
     padding: "0.9375rem",
     fontWeight: "500",
-    fontSize: "12px",
     textTransform: "none",
     borderRadius: "3px",
     textDecoration: "none",
