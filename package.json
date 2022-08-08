@@ -80,9 +80,6 @@
     "source-map-explorer": "^2.5.2",
     "surge": "^0.21.5"
   },
-  "eslintConfig": {
-    "extends": "react-app"
-  },
   "scripts": {
     "apollo": "node ./configs/apollo.js",
     "mustache": "mustache ./configs/address.json ./configs/config.template.js > ./src/config/config.js",
@@ -100,6 +97,7 @@
     "lint": "prettier --write .",
     "surge": "surge ./build",
     "ship": "yarn surge",
+    "eslint": "eslint --cache --ext .js,.jsx,.ts,.tsx ./src",
     "analyze": "source-map-explorer 'build/static/js/*.js'"
   }
 }
