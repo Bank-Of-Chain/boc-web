@@ -16,7 +16,7 @@ const ammSectionStyle = {
     textAlign: "center",
   },
   title: {
-    width: "50%",
+    width: "80%",
     maxWidth: "43rem",
     margin: "2.5rem auto",
     fontWeight: "normal",
@@ -51,6 +51,14 @@ const ammSectionStyle = {
   },
   more: {
     cursor: "pointer",
+  },
+  "@media screen and (max-width: 923px)": {
+    iconContainer: {
+      padding: "2rem 0 0",
+    },
+    text: {
+      margin: "0.625rem 0 1.75rem",
+    },
   },
 };
 

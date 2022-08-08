@@ -7,6 +7,11 @@ const landingPageStyle = {
     marginTop: "6rem",
     ...container,
   },
+  "@media (max-width: 960px)": {
+    container: {
+      marginTop: "84px",
+    },
+  },
   subtitle: {
     fontSize: "1.313rem",
     maxWidth: "500px",

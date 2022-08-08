@@ -15,11 +15,15 @@ const footerStyle = {
     padding: "2rem 0",
     borderTop: "1px solid #a0a0a0",
   },
+  "@media (max-width: 1200px)": {
+    item: {
+      padding: "1rem 0",
+    },
+  },
   block: {
     color: "#fff",
     padding: "0.9375rem",
     fontWeight: "500",
-    fontSize: "12px",
     textTransform: "none",
     borderRadius: "3px",
     textDecoration: "none",
