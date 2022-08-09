@@ -18,7 +18,7 @@ import styles from "./landingPage";
 
 const useStyles = makeStyles(styles);
 
-export default function Home(props) {
+export default function Home() {
   const classes = useStyles();
   const isLayoutSm = useMediaQuery("(max-width: 960px)");
 

@@ -100,7 +100,7 @@ function useWallet() {
     if (!userProvider) {
       return;
     }
-    userProvider._networkPromise.then((v) => {
+    userProvider._networkPromise.then(() => {
       setChainId(getChainId(userProvider));
     });
   }, [userProvider]);

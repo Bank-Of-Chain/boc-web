@@ -16,7 +16,7 @@ const makeComponentStyles = makeStyles(() => ({
   ...buttonStyle,
 }));
 
-const RegularButton = React.forwardRef((props, ref) => {
+const RegularButton = React.forwardRef(function RegularButton(props, ref) {
   const {
     color,
     round,
