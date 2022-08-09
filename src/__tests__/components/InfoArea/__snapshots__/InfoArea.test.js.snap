@@ -17,10 +17,14 @@ exports[`InfoArea Component Render 1`] = `
     >
       <h4
         class="makeStyles-title-11"
-      />
+      >
+        test
+      </h4>
       <p
         class="makeStyles-description-12"
-      />
+      >
+        description
+      </p>
     </div>
   </div>
 </DocumentFragment>

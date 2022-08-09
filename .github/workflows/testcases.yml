@@ -4,7 +4,7 @@ on:
     branches:
       - '**'
 jobs:
-  release:
+  test:
     name: testcases runner
     runs-on: ubuntu-latest
     steps:
@@ -13,7 +13,7 @@ jobs:
         uses: borales/actions-yarn@master
         with:
           cmd: install
-      - name: Release
+      - name: CICD
         uses: borales/actions-yarn@master
         with:
           cmd: test
