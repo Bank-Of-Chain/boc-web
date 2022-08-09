@@ -7,11 +7,3 @@ exports[`GridItem Component Render 1`] = `
   />
 </DocumentFragment>
 `;
-
-exports[`TestComponent Component Render 1`] = `
-<DocumentFragment>
-  <span>
-    TestComponent
-  </span>
-</DocumentFragment>
-`;
