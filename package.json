@@ -66,6 +66,7 @@
   },
   "devDependencies": {
     "@testing-library/dom": "^6.12.2",
+    "@testing-library/react-hooks": "^8.0.1",
     "@types/react": "^16.9.19",
     "chalk": "^4.1.0",
     "cross-env": "^7.0.3",
@@ -96,7 +97,7 @@
     "apollo:stage-sg": "node configs/apollo.js --env=stage-sg",
     "apollo:pr-sg": "node configs/apollo.js --env=pr-sg",
     "eject": "react-scripts eject",
-    "test": "react-scripts test",
+    "test": "react-app-rewired test",
     "lint": "prettier --write .",
     "surge": "surge ./build",
     "ship": "yarn surge",
