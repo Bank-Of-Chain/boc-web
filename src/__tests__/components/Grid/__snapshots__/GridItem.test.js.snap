@@ -1,0 +1,17 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`GridItem Component Render 1`] = `
+<DocumentFragment>
+  <div
+    class="MuiGrid-root makeStyles-grid-1  MuiGrid-item"
+  />
+</DocumentFragment>
+`;
+
+exports[`TestComponent Component Render 1`] = `
+<DocumentFragment>
+  <span>
+    TestComponent
+  </span>
+</DocumentFragment>
+`;

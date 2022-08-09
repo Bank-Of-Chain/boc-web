@@ -4,7 +4,8 @@ import padEnd from "lodash/padEnd";
 import { isNil, isNull } from "lodash";
 
 export const toFixed = (value, precision = 1, ...args) => {
-  if (isNil(value) || isNull(precision)) return undefined;
+  if (isNil(value)) return undefined;
+  if (isNull(precision)) return value.toString();
   const precisionBN = BN(precision.toString());
   if (isEmpty(value) || precisionBN.isZero()) {
     return 0;
