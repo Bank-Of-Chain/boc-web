@@ -5,17 +5,14 @@
 const ETHI_FOR_ETH = "{{ETHI_FOR_ETH}}";
 
 const USDI_FOR_ETH = "{{USDI_FOR_ETH}}";
-const USDI_FOR_BSC = "{{USDI_FOR_BSC}}";
 const USDI_FOR_MATIC = "{{USDI_FOR_MATIC}}";
 
 const ETHI_VAULT = "{{ETHI_VAULT}}";
 const USDI_VAULT_FOR_ETH = "{{USDI_VAULT_FOR_ETH}}";
-const USDI_VAULT_FOR_BSC = "{{USDI_VAULT_FOR_BSC}}";
 const USDI_VAULT_FOR_MATIC = "{{USDI_VAULT_FOR_MATIC}}";
 
 const VAULT_BUFFER_FOR_ETHI_ETH = "{{VAULT_BUFFER_FOR_ETHI_ETH}}";
 const VAULT_BUFFER_FOR_USDI_ETH = "{{VAULT_BUFFER_FOR_USDI_ETH}}";
-const VAULT_BUFFER_FOR_USDI_BSC = "{{VAULT_BUFFER_FOR_USDI_BSC}}";
 const VAULT_BUFFER_FOR_USDI_MATIC = "{{VAULT_BUFFER_FOR_USDI_MATIC}}";
 
 const configBase = {
@@ -35,7 +32,6 @@ const configBase = {
   boc_server: "{{{API_SERVER}}}",
   rpc_url: {
     1: "{{{RPC_FOR_1}}}",
-    56: "{{{RPC_FOR_56}}}",
     137: "{{{RPC_FOR_137}}}",
     31337: "{{{RPC_FOR_31337}}}",
   },
@@ -75,53 +71,6 @@ const config137 = {
       VAULT_ADDRESS: USDI_VAULT_FOR_MATIC,
       USDI_ADDRESS: USDI_FOR_MATIC,
       VAULT_BUFFER_ADDRESS: VAULT_BUFFER_FOR_USDI_MATIC,
-      isOpen: true,
-    },
-    {
-      id: "ethi",
-      name: "Vault for ETHi",
-      description: "这是ethi的池子",
-      path: "#/ethi",
-      abi_version: "ethi",
-      VAULT_ADDRESS: "",
-      ETHI_ADDRESS: "",
-      VAULT_BUFFER_ADDRESS: "",
-      isOpen: true,
-    },
-  ],
-};
-
-const config56 = {
-  ...configBase,
-  apy_server: "{{{KEEPER_FOR_BSC_USDI}}}",
-  usdt_address: "0x55d398326f99059fF775485246999027B3197955",
-  usdc_address: "0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d",
-  dai_address: "0x1AF3F329e8BE154074D8769D1FFa4eE058B1DBc3",
-  exchange_extra_params: {
-    oneInchV4: {
-      network: 56,
-      excludeProtocols: [
-        "BSC_ONE_INCH_LIMIT_ORDER",
-        "BSC_ONE_INCH_LIMIT_ORDER_V2",
-      ],
-    },
-    paraswap: {
-      network: 56,
-      excludeContractMethods: ["swapOnZeroXv2", "swapOnZeroXv4"],
-    },
-  },
-  // 币安链一个区块8千万，使用90%的空间即可，过大会造成打块过慢
-  max_gas_limit: 7200 * 10 ** 4,
-  chain_id: 56,
-  vaults: [
-    {
-      id: "mutilCoins",
-      name: "Vault for USDi",
-      path: "#/mutils",
-      abi_version: "beta-v1.5.9",
-      VAULT_ADDRESS: USDI_VAULT_FOR_BSC,
-      USDI_ADDRESS: USDI_FOR_BSC,
-      VAULT_BUFFER_ADDRESS: VAULT_BUFFER_FOR_USDI_BSC,
       isOpen: true,
     },
     {
@@ -189,7 +138,6 @@ const config1 = {
 const glo = {
   configBase,
   config137,
-  config56,
   config1,
 };
 export default {
@@ -197,8 +145,6 @@ export default {
   31337: glo["{{LOCAL_CHAIN_CONFIG}}"],
   // polygon
   137: config137,
-  // bsc
-  56: config56,
   // eth
   1: config1,
   // 无链信息时的加载
