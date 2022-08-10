@@ -1,7 +1,6 @@
 import axios from "axios";
 import isEmpty from "lodash/isEmpty";
 import map from "lodash/map";
-import moment from "moment";
 import { ENV_NETWORK_TYPE } from "../constants";
 
 // === Constants === //
@@ -28,7 +27,6 @@ export const getDefiRate = async () => {
 };
 
 export const getAPY = async ({
-  date = moment().utcOffset(0).subtract(1, "days").format("YYYY-MM-DD"), // 展示昨天数据
   duration = "monthly",
   chainId = ENV_NETWORK_TYPE,
   tokenType = "USDi",

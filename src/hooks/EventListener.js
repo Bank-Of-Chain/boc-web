@@ -22,8 +22,7 @@ export default function useEventListener(
   contractName,
   eventName,
   provider,
-  startBlock,
-  args
+  startBlock
 ) {
   const [updates, setUpdates] = useState([]);
 

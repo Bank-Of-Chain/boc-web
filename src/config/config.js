@@ -2,19 +2,19 @@
  * qa03-sg环境配置文件
  */
 
-const ETHI_FOR_ETH = "22";
+const ETHI_FOR_ETH = "0x4ff1f64683785E0460c24A4EF78D582C2488704f";
 
-const USDI_FOR_ETH = "10";
+const USDI_FOR_ETH = "0x572316aC11CB4bc5daf6BDae68f43EA3CCE3aE0e";
 const USDI_FOR_BSC = "4";
 const USDI_FOR_MATIC = "0xfDFB68F5195DF817824Ee881CF63E94402eEc46A";
 
-const ETHI_VAULT = "19";
-const USDI_VAULT_FOR_ETH = "711";
+const ETHI_VAULT = "0x124dDf9BdD2DdaD012ef1D5bBd77c00F05C610DA";
+const USDI_VAULT_FOR_ETH = "0xb932C8342106776E73E39D695F3FFC3A9624eCE0";
 const USDI_VAULT_FOR_BSC = "111";
 const USDI_VAULT_FOR_MATIC = "0xd3feAe6c4fdfDE73Bd2fE99c8fE6944904DAA68A";
 
-const VAULT_BUFFER_FOR_ETHI_ETH = "20";
-const VAULT_BUFFER_FOR_USDI_ETH = "8";
+const VAULT_BUFFER_FOR_ETHI_ETH = "0x398E4948e373Db819606A459456176D31C3B1F91";
+const VAULT_BUFFER_FOR_USDI_ETH = "0xCa1D199b6F53Af7387ac543Af8e8a34455BBe5E0";
 const VAULT_BUFFER_FOR_USDI_BSC = "2";
 const VAULT_BUFFER_FOR_USDI_MATIC = "0xfa949750F82779376B174C195D8f2baef20750F2";
 
@@ -29,6 +29,8 @@ const configBase = {
   aboutus_url: "https://piggyfinance.github.io/docs/zh/aboutus/",
   blog_url: "https://piggyfinance.github.io/docs/zh/blog/",
   licenses_url: "https://piggyfinance.github.io/docs/zh/licenses/",
+  twitter_url: "https://twitter.com/bankofchain_dao",
+  linkedin_url: "https://www.linkedin.com/company/bank-of-chain",
   document_url: "https://docs.bankofchain.io",
   boc_server: "https://service-qa03-sg.bankofchain.io",
   rpc_url: {
@@ -192,7 +194,7 @@ const glo = {
 };
 export default {
   // 本地链
-  31337: glo["config137"],
+  31337: glo["config1"],
   // polygon
   137: config137,
   // bsc

@@ -7986,6 +7986,11 @@ https-browserify@^1.0.0:
   resolved "https://registry.npmmirror.com/https-browserify/-/https-browserify-1.0.0.tgz#ec06c10e0a34c0f2faf199f7fd7fc78fffd03c73"
   integrity sha512-J+FkSdyD+0mA0N+81tMotaRMfSL9SGi+xpD3T6YApKsc3bGSXJlfXri3VyFOeYkfLRQisDk1W+jIFFKBeUBbBg==
 
+husky@^8.0.0:
+  version "8.0.1"
+  resolved "https://registry.yarnpkg.com/husky/-/husky-8.0.1.tgz#511cb3e57de3e3190514ae49ed50f6bc3f50b3e9"
+  integrity sha512-xs7/chUH/CKdOCs7Zy0Aev9e/dKOMZf3K1Az1nar3tzlv0jfqnYtu235bstsWTmXOR0EfINrPa97yy4Lz6RiKw==
+
 hyphenate-style-name@^1.0.3:
   version "1.0.4"
   resolved "https://registry.npmmirror.com/hyphenate-style-name/-/hyphenate-style-name-1.0.4.tgz#691879af8e220aea5750e8827db4ef62a54e361d"
@@ -11295,7 +11300,7 @@ pify@^5.0.0:
 
 piggy-finance-utils@1.0.55:
   version "1.0.55"
-  resolved "https://registry.npmjs.org/piggy-finance-utils/-/piggy-finance-utils-1.0.55.tgz#a7cb2601c860060adc3b0928ff96fab187722b1a"
+  resolved "https://registry.yarnpkg.com/piggy-finance-utils/-/piggy-finance-utils-1.0.55.tgz#a7cb2601c860060adc3b0928ff96fab187722b1a"
   integrity sha512-fen0lPPnytzvYnnDK5pIwoU+qBrZLWbnkhfn1vZQyaBmSt3Skq3PgeVQMr5/vo5FqOVJGvEaoGjUeIWwfQ3pjg==
   dependencies:
     "@babel/runtime" "^7.11.4"
