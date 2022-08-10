@@ -54,15 +54,6 @@ export const NET_WORKS = [
     blockExplorerIcon: "/images/chains/logo-etherscan.png",
   },
   {
-    name: "BNB Chain",
-    color: "#e0d068",
-    chainId: 56,
-    rpcUrl: `https://bsc-dataseed.binance.org/`,
-    faucet: "",
-    blockExplorer: "https://bscscan.com",
-    blockExplorerIcon: "/images/chains/logo-bscscan.png",
-  },
-  {
     name: "Polygon",
     color: "#2bbdf7",
     chainId: 137,
