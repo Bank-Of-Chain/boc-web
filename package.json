@@ -78,7 +78,8 @@
     "react-app-rewired": "^2.2.1",
     "react-scripts": "^3.4.4",
     "source-map-explorer": "^2.5.2",
-    "surge": "^0.21.5"
+    "surge": "^0.21.5",
+    "husky": "^8.0.0"
   },
   "scripts": {
     "apollo": "node ./configs/apollo.js",
@@ -98,6 +99,7 @@
     "surge": "surge ./build",
     "ship": "yarn surge",
     "eslint": "eslint --cache --ext .js,.jsx,.ts,.tsx ./src",
-    "analyze": "source-map-explorer 'build/static/js/*.js'"
+    "analyze": "source-map-explorer 'build/static/js/*.js'",
+    "prepare": "husky install"
   }
 }
