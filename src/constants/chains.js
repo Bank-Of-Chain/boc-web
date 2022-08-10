@@ -3,11 +3,6 @@ const ETH = {
   name: "Ethereum",
   url: "https://etherscan.io",
 };
-const BSC = {
-  id: "56",
-  name: "BNB Chain",
-  url: "https://bscscan.com",
-};
 const MATIC = {
   id: "137",
   name: "Polygon",
@@ -15,5 +10,5 @@ const MATIC = {
 };
 const CHAINS = [ETH, MATIC];
 
-export { ETH, BSC, MATIC };
+export { ETH, MATIC };
 export default CHAINS;
