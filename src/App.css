@@ -3,15 +3,19 @@
   flex-direction: column;
   min-height: 100%;
   margin: 0 auto;
-  width: 95rem;
+  width: 100%;
+  max-width: 95rem;
 }
 
 html,
 body,
 #root {
   background-color: #070b10;
-  font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+  font-family: 'Roboto', 'Helvetica', 'Arial', sans-serif;
   height: 100%;
+}
+body > iframe {
+  display: none;
 }
 
 #root {

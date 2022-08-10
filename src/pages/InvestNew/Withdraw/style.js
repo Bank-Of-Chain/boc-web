@@ -132,8 +132,8 @@ const componentsStyle = (theme) => ({
   },
   setting: {
     position: "absolute",
-    right: "1.2rem",
-    top: "1.2rem",
+    right: "1rem",
+    top: "1rem",
     cursor: "pointer",
   },
   popover: {

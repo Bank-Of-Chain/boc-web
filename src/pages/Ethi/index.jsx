@@ -18,6 +18,7 @@ import UndoIcon from "@material-ui/icons/Undo";
 import Tooltip from "@material-ui/core/Tooltip";
 import InfoIcon from "@material-ui/icons/Info";
 import Loading from "../../components/LoadingComponent";
+import useMediaQuery from "@material-ui/core/useMediaQuery";
 
 import Deposit from "./Deposit";
 import Withdraw from "./Withdraw";
@@ -55,6 +56,7 @@ function Ethi(props) {
   const classes = useStyles();
   const dispatch = useDispatch();
   const history = useHistory();
+  const isLayoutSm = useMediaQuery("(max-width: 960px)");
 
   const {
     address,
@@ -237,11 +239,8 @@ function Ethi(props) {
 
   return (
     <div className={classes.container}>
-      <GridContainer
-        spacing={0}
-        style={{ paddingTop: "100px", minHeight: "50rem" }}
-      >
-        <GridItem xs={3} sm={3} md={3} style={{ paddingLeft: "3rem" }}>
+      <GridContainer spacing={0} style={{ paddingTop: "100px" }}>
+        <GridItem xs={2} sm={2} md={3} style={{ paddingLeft: "2rem" }}>
           <List>
             <ListItem
               key="My Account"
@@ -254,12 +253,14 @@ function Ethi(props) {
                   style={{ color: current === 0 ? "#A68EFE" : "#fff" }}
                 />
               </ListItemIcon>
-              <ListItemText
-                primary={"My Account"}
-                className={classNames(
-                  current === 0 ? classes.check : classes.text
-                )}
-              />
+              {!isLayoutSm && (
+                <ListItemText
+                  primary={"My Account"}
+                  className={classNames(
+                    current === 0 ? classes.check : classes.text
+                  )}
+                />
+              )}
             </ListItem>
             <ListItem
               key="Deposit"
@@ -275,12 +276,14 @@ function Ethi(props) {
                   style={{ color: current === 1 ? "#A68EFE" : "#fff" }}
                 />
               </ListItemIcon>
-              <ListItemText
-                primary={"Deposit"}
-                className={classNames(
-                  current === 1 ? classes.check : classes.text
-                )}
-              />
+              {!isLayoutSm && (
+                <ListItemText
+                  primary={"Deposit"}
+                  className={classNames(
+                    current === 1 ? classes.check : classes.text
+                  )}
+                />
+              )}
             </ListItem>
             <ListItem
               key="Withdraw"
@@ -293,12 +296,14 @@ function Ethi(props) {
                   style={{ color: current === 2 ? "#A68EFE" : "#fff" }}
                 />
               </ListItemIcon>
-              <ListItemText
-                primary={"Withdraw"}
-                className={classNames(
-                  current === 2 ? classes.check : classes.text
-                )}
-              />
+              {!isLayoutSm && (
+                <ListItemText
+                  primary={"Withdraw"}
+                  className={classNames(
+                    current === 2 ? classes.check : classes.text
+                  )}
+                />
+              )}
             </ListItem>
             <ListItem
               key="Switch to USDi"
@@ -309,14 +314,16 @@ function Ethi(props) {
               <ListItemIcon>
                 <SwapHorizIcon style={{ color: "#fff" }} />
               </ListItemIcon>
-              <ListItemText
-                primary={"Switch to USDi"}
-                className={classNames(classes.text)}
-              />
+              {!isLayoutSm && (
+                <ListItemText
+                  primary={"Switch to USDi"}
+                  className={classNames(classes.text)}
+                />
+              )}
             </ListItem>
           </List>
         </GridItem>
-        <GridItem xs={6} sm={6} md={6}>
+        <GridItem xs={9} sm={9} md={6}>
           {current === 0 && (
             <Card className={classes.balanceCard}>
               <div className={classes.balanceCardItem}>
@@ -381,17 +388,12 @@ function Ethi(props) {
                   AVAILABLE BALANCE
                 </div>
               </div>
-              {/* <div className={classes.tokenInfo}>
-                {userProvider && (
-                  <a href={`${net.blockExplorer}/address/${ETHI_ADDRESS}`} target='_blank' rel='noopener noreferrer'>
-                    <img className={classes.scanToken} src={net.blockExplorerIcon} alt='wallet' />
-                  </a>
-                )}
-              </div> */}
             </Card>
           )}
           {current === 1 && (
-            <div className={classes.wrapper}>
+            <div
+              className={isLayoutSm ? classes.wrapperMobile : classes.wrapper}
+            >
               <Deposit
                 address={address}
                 ethBalance={ethBalance}
@@ -412,7 +414,9 @@ function Ethi(props) {
             </div>
           )}
           {current === 2 && (
-            <div className={classes.wrapper}>
+            <div
+              className={isLayoutSm ? classes.wrapperMobile : classes.wrapper}
+            >
               <Withdraw
                 ethiBalance={ethiBalance}
                 ethiDecimals={ethiDecimals}

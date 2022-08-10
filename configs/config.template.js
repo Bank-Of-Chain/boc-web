@@ -26,6 +26,8 @@ const configBase = {
   aboutus_url: "https://piggyfinance.github.io/docs/zh/aboutus/",
   blog_url: "https://piggyfinance.github.io/docs/zh/blog/",
   licenses_url: "https://piggyfinance.github.io/docs/zh/licenses/",
+  twitter_url: "https://twitter.com/bankofchain_dao",
+  linkedin_url: "https://www.linkedin.com/company/bank-of-chain",
   document_url: "https://docs.bankofchain.io",
   boc_server: "{{{API_SERVER}}}",
   rpc_url: {

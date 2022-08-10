@@ -4,8 +4,13 @@ const landingPageStyle = {
   container: {
     zIndex: "12",
     color: "#FFFFFF",
-    marginTop: 65,
+    marginTop: "6rem",
     ...container,
+  },
+  "@media (max-width: 960px)": {
+    container: {
+      marginTop: "84px",
+    },
   },
   subtitle: {
     fontSize: "1.313rem",
@@ -17,6 +22,12 @@ const landingPageStyle = {
     width: "80%",
     margin: "0 auto",
     lineHeight: "9rem",
+  },
+  titleMobile: {
+    fontSize: "6rem",
+    width: "80%",
+    margin: "0 auto",
+    lineHeight: "6rem",
   },
   text: {
     margin: 0,
@@ -86,6 +97,11 @@ const landingPageStyle = {
   },
   grid: {
     padding: "15rem 0",
+    textAlign: "center",
+    background: "#1F2023 url(/images/home/bg-line.png) no-repeat center",
+  },
+  gridMobile: {
+    padding: "5rem 0",
     textAlign: "center",
     background: "#1F2023 url(/images/home/bg-line.png) no-repeat center",
   },

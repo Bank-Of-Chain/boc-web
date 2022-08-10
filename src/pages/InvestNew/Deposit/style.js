@@ -86,6 +86,9 @@ const componentsStyle = (theme) => ({
     border: "1px solid #A68EFE",
     backgroundColor: "#000",
     borderRadius: "1rem",
+    "&:active": {
+      outline: "none",
+    }
   },
   root: {
     padding: "1.5rem 0",

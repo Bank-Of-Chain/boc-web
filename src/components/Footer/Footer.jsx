@@ -13,7 +13,13 @@ import Button from "@material-ui/core/Button";
 import Divider from "@material-ui/core/Divider";
 
 // === Constants === //
-import { COMMUNITY_URL, DOCUMENT_URL, TELEGRAM_URL } from "./../../constants";
+import {
+  COMMUNITY_URL,
+  DOCUMENT_URL,
+  TELEGRAM_URL,
+  TWITTER_URL,
+  LINKEDIN_URL,
+} from "./../../constants";
 
 import styles from "./footerStyle.js";
 
@@ -107,13 +113,13 @@ export default function Footer(props) {
     <footer className={footerClasses}>
       <div className={classes.container}>
         <GridContainer>
-          <GridItem xs={6} sm={6} md={6} className={classes.item}>
+          <GridItem xs={12} sm={12} md={6} className={classes.item}>
             <Button className={classes.title} href="/#/">
               <img alt="" src="/logo.png" />
               &nbsp;&nbsp;Bank of Chain
             </Button>
           </GridItem>
-          <GridItem xs={6} sm={6} md={6} className={classes.item}>
+          <GridItem xs={12} sm={12} md={6} className={classes.item}>
             <List className={classes.list}>
               <ListItem className={classes.inlineBlock}>
                 <a
@@ -130,7 +136,7 @@ export default function Footer(props) {
                   className={classes.block}
                   target="_blank"
                   rel="noopener noreferrer"
-                  href={`${DOCUMENT_URL}/docs/protocol-mechanisms/governance`}
+                  href={"https://governance.bankofchain.io"}
                 >
                   Governance
                 </a>
@@ -168,12 +174,12 @@ export default function Footer(props) {
             </List>
           </GridItem>
           <Divider />
-          <GridItem xs={6} sm={6} md={6} className={classes.item}>
+          <GridItem xs={12} sm={12} md={6} className={classes.item}>
             <p className={classes.text}>
               @{1900 + new Date().getYear()} Bank of Chain, all right reserved.
             </p>
           </GridItem>
-          <GridItem xs={6} sm={6} md={6} className={classes.item}>
+          <GridItem xs={12} sm={12} md={6} className={classes.item}>
             <p>
               Do you have any questions?{" "}
               <a className={classes.text}>Contact us</a> contact@bankofchian.io
@@ -200,16 +206,20 @@ export default function Footer(props) {
                   {ICON2}
                 </a>
               </ListItem>
-              {/* <ListItem className={classes.inlineBlock}>
-                <a target='_blank' rel='noopener noreferrer'>
+              <ListItem className={classes.inlineBlock}>
+                <a target="_blank" rel="noopener noreferrer" href={TWITTER_URL}>
                   {ICON3}
                 </a>
               </ListItem>
               <ListItem className={classes.inlineBlock}>
-                <a target='_blank' rel='noopener noreferrer'>
+                <a
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  href={LINKEDIN_URL}
+                >
                   {ICON4}
                 </a>
-              </ListItem> */}
+              </ListItem>
             </List>
           </GridItem>
         </GridContainer>

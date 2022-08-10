@@ -167,7 +167,15 @@ export default function LendingSection() {
                           </Tooltip>
                         </GridItem>
                         <GridItem className={classes.footer}>
-                          <img title={title} src={imagePath} alt={title} />
+                          <img
+                            title={title}
+                            src={imagePath}
+                            alt={title}
+                            onError={({ currentTarget }) => {
+                              currentTarget.onerror = null; // prevents looping
+                              currentTarget.src = "/default.png";
+                            }}
+                          />
                           <p>{title}</p>
                         </GridItem>
                       </GridContainer>

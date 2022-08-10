@@ -43,6 +43,7 @@ import usePriceProvider from "../../../hooks/usePriceProvider";
 // === Utils === //
 import { getBestSwapInfo } from "piggy-finance-utils";
 import isUndefined from "lodash/isUndefined";
+import assign from "lodash/assign";
 import map from "lodash/map";
 import get from "lodash/get";
 import debounce from "lodash/debounce";
@@ -215,7 +216,12 @@ export default function Withdraw({
                 parseInt(100 * parseFloat(slipper)) || 0,
                 ORACLE_ADDITIONAL_SLIPPAGE,
                 exchangePlatformAdapters,
-                EXCHANGE_EXTRA_PARAMS
+                assign(
+                  EXCHANGE_EXTRA_PARAMS,
+                  isEmpty(exchangePlatformAdapters.testAdapter)
+                    ? {}
+                    : { testAdapter: {} }
+                )
               );
               if (isEmpty(bestSwapInfo)) {
                 throw new Error("兑换路径获取失败");
@@ -425,7 +431,12 @@ export default function Withdraw({
               parseInt(100 * parseFloat(slipper)) || 0,
               ORACLE_ADDITIONAL_SLIPPAGE,
               exchangePlatformAdapters,
-              EXCHANGE_EXTRA_PARAMS
+              assign(
+                EXCHANGE_EXTRA_PARAMS,
+                isEmpty(exchangePlatformAdapters.testAdapter)
+                  ? {}
+                  : { testAdapter: {} }
+              )
             );
             if (isEmpty(bestSwapInfo)) {
               throw new Error("兑换路径获取失败");
