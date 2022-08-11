@@ -224,6 +224,7 @@ exports[`Footer Component Render 1`] = `
               class="MuiListItem-root makeStyles-inlineBlock-12 MuiListItem-gutters"
             >
               <a
+                href="https://twitter.com/bankofchain_dao"
                 rel="noopener noreferrer"
                 target="_blank"
               >
@@ -265,6 +266,7 @@ exports[`Footer Component Render 1`] = `
               class="MuiListItem-root makeStyles-inlineBlock-12 MuiListItem-gutters"
             >
               <a
+                href="https://www.linkedin.com/company/bank-of-chain"
                 rel="noopener noreferrer"
                 target="_blank"
               >
