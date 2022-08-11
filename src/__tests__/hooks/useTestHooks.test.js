@@ -1,7 +1,7 @@
 import { renderHook, act } from "@testing-library/react-hooks";
 import useTestHooks from "../../hooks/useTestHooks";
 
-test("TestComponent Component Render", () => {
+test("useTestHooks hooks render", () => {
   const { result } = renderHook(() => useTestHooks());
 
   act(() => {
