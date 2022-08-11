@@ -27,9 +27,6 @@ const start = async () => {
         "boc.networks.eth.vaultAddress": "",
         "boc.networks.eth.pegTokenAddress": "",
         "boc.networks.eth.vaultBufferAddress": "",
-        "boc.networks.bsc.vaultAddress": "",
-        "boc.networks.bsc.pegTokenAddress": "",
-        "boc.networks.bsc.vaultBufferAddress": "",
         "boc.networks.polygon.vaultAddress": "",
         "boc.networks.polygon.pegTokenAddress": "",
         "boc.networks.polygon.vaultBufferAddress": "",
@@ -45,11 +42,6 @@ const start = async () => {
     const VAULT_BUFFER_FOR_USDI_ETH =
       data["boc.networks.eth.vaultBufferAddress"];
 
-    const USDI_VAULT_FOR_BSC = data["boc.networks.bsc.vaultAddress"];
-    const USDI_FOR_BSC = data["boc.networks.bsc.pegTokenAddress"];
-    const VAULT_BUFFER_FOR_USDI_BSC =
-      data["boc.networks.bsc.vaultBufferAddress"];
-
     const USDI_VAULT_FOR_MATIC = data["boc.networks.polygon.vaultAddress"];
     const USDI_FOR_MATIC = data["boc.networks.polygon.pegTokenAddress"];
     const VAULT_BUFFER_FOR_USDI_MATIC =
@@ -64,15 +56,12 @@ const start = async () => {
       LOCAL_CHAIN_CONFIG: nextChain,
       ETHI_FOR_ETH,
       USDI_FOR_ETH,
-      USDI_FOR_BSC,
       USDI_FOR_MATIC,
       ETHI_VAULT,
       USDI_VAULT_FOR_ETH,
-      USDI_VAULT_FOR_BSC,
       USDI_VAULT_FOR_MATIC,
       VAULT_BUFFER_FOR_ETHI_ETH,
       VAULT_BUFFER_FOR_USDI_ETH,
-      VAULT_BUFFER_FOR_USDI_BSC,
       VAULT_BUFFER_FOR_USDI_MATIC,
       API_SERVER: getApiServer(),
       DASHBOARD_ROOT: getDashboardRoot(),
@@ -82,7 +71,6 @@ const start = async () => {
       RPC_FOR_31337: getRpcFor31337(),
       KEEPER_FOR_ETH_ETHI: getKeeperForEthEthi(),
       KEEPER_FOR_ETH_USDI: getKeeperForEthUsdi(),
-      KEEPER_FOR_BSC_USDI: getKeeperForBscUsdi(),
       KEEPER_FOR_MATIC_USDI: getKeeperForMaticUsdi(),
     };
 
@@ -119,11 +107,7 @@ const getRpcFor1 = () => {
   if (isPrSg()) return "https://rpc.ankr.com/eth";
   return `https://rpc-${nextEnv}.bankofchain.io`;
 };
-const getRpcFor56 = () => {
-  if (isDevLocal()) return "http://localhost:8545";
-  if (isPrSg()) return "https://bsc-dataseed.binance.org";
-  return `https://rpc-${nextEnv}.bankofchain.io`;
-};
+
 const getRpcFor137 = () => {
   if (isDevLocal()) return "http://localhost:8545";
   if (isPrSg()) return "https://rpc-mainnet.maticvigil.com";
@@ -139,12 +123,6 @@ const getKeeperForEthUsdi = () => {
   if (isDevLocal()) return "http://localhost:5000";
   if (isPrSg()) return "https://v1-keeper-eth.bankofchain.io";
   return `https://${nextEnv}-keeper-eth.bankofchain.io`;
-};
-
-const getKeeperForBscUsdi = () => {
-  if (isDevLocal()) return "http://localhost:4000";
-  if (isPrSg()) return "https://v1-keeper-bsc.bankofchain.io";
-  return `https://${nextEnv}-keeper-bsc.bankofchain.io`;
 };
 
 const getKeeperForMaticUsdi = () => {
@@ -218,11 +196,6 @@ const chooseLocalChainConfig = () => {
           key: "config1",
           name: "以太链",
           value: "config1",
-        },
-        {
-          key: "config56",
-          name: "币安链",
-          value: "config56",
         },
         {
           key: "config137",

@@ -85,7 +85,7 @@ function App() {
       isLoadingTimer.current = setTimeout(() => {
         setIsLoadingChainId(true);
       }, 500);
-      userProvider._networkPromise.then((v) => {
+      userProvider._networkPromise.then(() => {
         setIsLoadingChainId(false);
         clearTimeout(isLoadingTimer.current);
       });
@@ -135,75 +135,70 @@ function App() {
     }
   }, [selectedChainId]);
 
-  const changeNetwork = (targetNetwork) => {
-    return new Promise(async (resolver, reject) => {
-      if (isEmpty(targetNetwork)) return;
-      // 如果metamask已经使用的是targetNetwork的话，则修改localStorage.REACT_APP_NETWORK_TYPE之后，进行页面刷新。
-      if (targetNetwork.chainId === selectedChainId) {
-        localStorage.REACT_APP_NETWORK_TYPE = targetNetwork.chainId;
-        setTimeout(() => {
-          window.location.reload();
-        }, 1);
-        return;
-      }
-      // unlogin and no browser wallet plugin, allow switch tab
-      if (!window.ethereum && !userProvider) {
-        resolver();
-        return;
-      }
-      const supportSwitch = [WALLETS.MetaMask.info.symbol];
-      if (userProvider && !supportSwitch.includes(walletName)) {
-        dispatch(
-          warmDialog({
-            open: true,
-            type: "warning",
-            message: "Switch networks in your wallet, then reconnect",
-          })
-        );
-        reject();
-        return;
-      }
-      const data = [
-        {
-          chainId: "0x" + targetNetwork.chainId.toString(16),
-          chainName: targetNetwork.name,
-          nativeCurrency: targetNetwork.nativeCurrency,
-          rpcUrls: [targetNetwork.rpcUrl],
-          blockExplorerUrls: [targetNetwork.blockExplorer],
-        },
-      ];
-      console.log("data", data);
+  const changeNetwork = async (targetNetwork) => {
+    if (isEmpty(targetNetwork)) return;
+    // 如果metamask已经使用的是targetNetwork的话，则修改localStorage.REACT_APP_NETWORK_TYPE之后，进行页面刷新。
+    if (targetNetwork.chainId === selectedChainId) {
+      localStorage.REACT_APP_NETWORK_TYPE = targetNetwork.chainId;
+      setTimeout(() => {
+        window.location.reload();
+      }, 1);
+      return;
+    }
+    // unlogin and no browser wallet plugin, allow switch tab
+    if (!window.ethereum && !userProvider) {
+      return;
+    }
+    const supportSwitch = [WALLETS.MetaMask.info.symbol];
+    if (userProvider && !supportSwitch.includes(walletName)) {
+      dispatch(
+        warmDialog({
+          open: true,
+          type: "warning",
+          message: "Switch networks in your wallet, then reconnect",
+        })
+      );
+      return Promise.reject();
+    }
+    const data = [
+      {
+        chainId: "0x" + targetNetwork.chainId.toString(16),
+        chainName: targetNetwork.name,
+        nativeCurrency: targetNetwork.nativeCurrency,
+        rpcUrls: [targetNetwork.rpcUrl],
+        blockExplorerUrls: [targetNetwork.blockExplorer],
+      },
+    ];
+    console.log("data", data);
 
-      let switchTx;
-      // https://docs.metamask.io/guide/rpc-api.html#other-rpc-methods
+    let switchTx;
+    // https://docs.metamask.io/guide/rpc-api.html#other-rpc-methods
+    try {
+      // wallet connect does not support change chain, so use window.ethereum, otherwise use userProvider.send
+      switchTx = await window.ethereum.request({
+        method: "wallet_switchEthereumChain",
+        params: [{ chainId: data[0].chainId }],
+      });
+    } catch (switchError) {
+      if (switchError.code === 4001) {
+        return Promise.reject();
+      }
+      // not checking specific error code, because maybe we're not using MetaMask
       try {
-        // wallet connect does not support change chain, so use window.ethereum, otherwise use userProvider.send
         switchTx = await window.ethereum.request({
-          method: "wallet_switchEthereumChain",
-          params: [{ chainId: data[0].chainId }],
+          method: "wallet_addEthereumChain",
+          params: data,
         });
-      } catch (switchError) {
-        if (switchError.code === 4001) {
-          reject();
-        }
-        // not checking specific error code, because maybe we're not using MetaMask
-        try {
-          switchTx = await window.ethereum.request({
-            method: "wallet_addEthereumChain",
-            params: data,
-          });
-        } catch (addError) {
-          console.log("addError=", addError);
-          reject();
-          // handle "add" error
-        }
+      } catch (addError) {
+        console.log("addError=", addError);
+        return Promise.reject();
+        // handle "add" error
       }
+    }
 
-      if (switchTx) {
-        console.log(switchTx);
-      }
-      resolver();
-    });
+    if (switchTx) {
+      console.log(switchTx);
+    }
   };
 
   const modalJsx = (isOpen, renderText) => {

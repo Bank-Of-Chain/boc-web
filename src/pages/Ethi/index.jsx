@@ -184,6 +184,25 @@ function Ethi(props) {
     // eslint-disable-next-line
   }, [totalValue.toString()]);
 
+  function handleMint(...eventArgs) {
+    console.log("Mint=", eventArgs);
+    const block = last(eventArgs);
+    block &&
+      block
+        .getTransaction()
+        .then((tx) => tx.wait())
+        .then(loadBanlance);
+  }
+  function handleBurn(...eventArgs) {
+    console.log("Burn=", eventArgs);
+    const block = last(eventArgs);
+    block &&
+      block
+        .getTransaction()
+        .then((tx) => tx.wait())
+        .then(loadBanlance);
+  }
+
   useEffect(() => {
     const listener = () => {
       if (isEmpty(VAULT_ABI) || isEmpty(userProvider)) return;
@@ -195,24 +214,6 @@ function Ethi(props) {
         userProvider
       );
       if (!isEmpty(address)) {
-        function handleMint(...eventArgs) {
-          console.log("Mint=", eventArgs);
-          const block = last(eventArgs);
-          block &&
-            block
-              .getTransaction()
-              .then((tx) => tx.wait())
-              .then(loadBanlance);
-        }
-        function handleBurn(...eventArgs) {
-          console.log("Burn=", eventArgs);
-          const block = last(eventArgs);
-          block &&
-            block
-              .getTransaction()
-              .then((tx) => tx.wait())
-              .then(loadBanlance);
-        }
         vaultContract.on("Mint", handleMint);
         vaultContract.on("Burn", handleBurn);
         return () => {
