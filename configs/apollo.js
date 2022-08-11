@@ -66,7 +66,6 @@ const start = async () => {
       API_SERVER: getApiServer(),
       DASHBOARD_ROOT: getDashboardRoot(),
       RPC_FOR_1: getRpcFor1(),
-      RPC_FOR_56: getRpcFor56(),
       RPC_FOR_137: getRpcFor137(),
       RPC_FOR_31337: getRpcFor31337(),
       KEEPER_FOR_ETH_ETHI: getKeeperForEthEthi(),
