@@ -307,7 +307,6 @@ export default function Deposit({
   useEffect(() => {
     estimateMint();
     return () => estimateMint.cancel();
-    // eslint-disable-next-line
   }, [ethValue]);
 
   // 每隔30s获取一下最新的gasprice，获取异常，则不修改原有数值
@@ -346,8 +345,6 @@ export default function Deposit({
       })
       .then(setMintGasLimit)
       .catch(noop);
-
-    // eslint-disable-next-line
   }, [userProvider, VAULT_ADDRESS, ethBalance, VAULT_ABI]);
 
   const isLogin = !isEmpty(userProvider);

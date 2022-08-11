@@ -23,7 +23,6 @@ const useContractExistsAtAddress = (provider, contractAddress) => {
   // If we find code then we know that a contract exists there.
   // If we find nothing (0x0) then there is no contract deployed to that address
   useEffect(() => {
-    // eslint-disable-next-line consistent-return
     const checkDeployment = async () => {
       if (!isAddress(contractAddress)) return false;
       const bytecode = await provider.getCode(contractAddress);

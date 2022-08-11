@@ -447,7 +447,6 @@ export default function Deposit({
   useEffect(() => {
     estimateMint();
     return () => estimateMint.cancel();
-    // eslint-disable-next-line
   }, [usdcValue, usdtValue, daiValue]);
 
   const isLogin = !isEmpty(userProvider);

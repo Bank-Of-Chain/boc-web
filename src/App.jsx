@@ -1,4 +1,3 @@
-/* eslint-disable no-extend-native */
 import React, { useState, useEffect, useRef, Suspense, lazy } from "react";
 import { Switch, Route, Redirect, HashRouter } from "react-router-dom";
 import { useUserAddress } from "eth-hooks";

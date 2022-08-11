@@ -1,4 +1,3 @@
-/* eslint-disable global-require */
 import { Contract } from "@ethersproject/contracts";
 import { useState, useEffect } from "react";
 
