@@ -1,7 +1,7 @@
 // === Utils === //
 import isEmpty from "lodash/isEmpty";
 
-export default function resolver(abiPrefix) {
+function useAbiResolver(abiPrefix) {
   if (isEmpty(abiPrefix)) return {};
 
   let VAULT_BUFFER_ABI,
@@ -48,3 +48,5 @@ export default function resolver(abiPrefix) {
     EXCHANGE_AGGREGATOR_ABI,
   };
 }
+
+export default useAbiResolver;
