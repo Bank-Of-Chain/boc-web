@@ -1,4 +1,3 @@
-/*eslint-disable*/
 import React, { useState, useRef } from "react";
 import classNames from "classnames";
 import { useDispatch } from "react-redux";
@@ -163,9 +162,11 @@ export default function HeaderLinks(props) {
             }}
             dropdownList={[
               <a
+                key="polygon-bridge"
                 target="_blank"
                 href="https://wallet.polygon.technology/bridge"
                 className={classes.dropdownLink}
+                rel="noreferrer"
               >
                 Polygon Bridge
               </a>,
@@ -208,7 +209,7 @@ export default function HeaderLinks(props) {
             </Button>
           </ListItem>
         )}
-        {location.hash === "#/" ? (
+        {window.location.hash === "#/" ? (
           <ListItem className={classes.listItem}>
             <Button
               className={`${classes.navLink} ${classes.colorfulLink}`}
@@ -252,6 +253,7 @@ export default function HeaderLinks(props) {
                 }}
                 dropdownList={[
                   <div
+                    key="My Account"
                     className={classes.dropdownLink}
                     onClick={handleGoToAccount}
                   >
@@ -261,6 +263,7 @@ export default function HeaderLinks(props) {
                     <a>My Account</a>
                   </div>,
                   <div
+                    key="Copy Addres"
                     onClick={handleCopyAddress}
                     className={classes.dropdownLink}
                   >
@@ -270,13 +273,18 @@ export default function HeaderLinks(props) {
                     <a>Copy Address</a>
                   </div>,
                   <div
+                    key="Change Wallet"
                     onClick={handleClickConnect}
                     className={classes.dropdownLink}
                   >
                     <PaymentOutlinedIcon className={classes.dropdownLinkIcon} />
                     <a>Change Wallet</a>
                   </div>,
-                  <div onClick={disconnect} className={classes.dropdownLink}>
+                  <div
+                    key="Disconnect"
+                    onClick={disconnect}
+                    className={classes.dropdownLink}
+                  >
                     <ExitToAppOutlinedIcon
                       className={classes.dropdownLinkIcon}
                     />

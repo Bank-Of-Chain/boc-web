@@ -663,7 +663,6 @@ export default function Withdraw({
       setEstimateWithdrawArray([]);
       return estimateWithdraw.cancel();
     };
-    // eslint-disable-next-line
   }, [toValue, allowMaxLoss, slipper, shouldExchange, token]);
 
   const handleAmountChange = (event) => {

@@ -1,4 +1,3 @@
-/*eslint-disable*/
 import React from "react";
 import classNames from "classnames";
 import { List, ListItem } from "@material-ui/core";
@@ -103,10 +102,6 @@ export default function Footer(props) {
   const { whiteFont } = props;
   const footerClasses = classNames({
     [classes.footer]: true,
-    [classes.footerWhiteFont]: whiteFont,
-  });
-  const aClasses = classNames({
-    [classes.a]: true,
     [classes.footerWhiteFont]: whiteFont,
   });
   return (

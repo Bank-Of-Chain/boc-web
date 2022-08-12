@@ -56,7 +56,7 @@ const config137 = {
     },
     paraswap: {
       network: 137,
-      excludeContractMethods: ["swapOnZeroXv2", "swapOnZeroXv4"],
+      excludeContractMethods: [],
     },
   },
   // 币安链一个区块2千万，使用90%的空间即可，过大会造成打块过慢
@@ -71,7 +71,6 @@ const config137 = {
       VAULT_ADDRESS: USDI_VAULT_FOR_MATIC,
       USDI_ADDRESS: USDI_FOR_MATIC,
       VAULT_BUFFER_ADDRESS: VAULT_BUFFER_FOR_USDI_MATIC,
-      isOpen: true,
     },
     {
       id: "ethi",
@@ -82,7 +81,6 @@ const config137 = {
       VAULT_ADDRESS: "",
       ETHI_ADDRESS: "",
       VAULT_BUFFER_ADDRESS: "",
-      isOpen: true,
     },
   ],
 };
@@ -98,13 +96,12 @@ const config1 = {
   exchange_extra_params: {
     oneInchV4: {
       network: 1,
-      protocols:
-        "BALANCER,BALANCER_V2,PMMX,UNIFI,SHIBASWAP,CLIPPER,DXSWAP,FIXED_FEE_SWAP,DFX_FINANCE,CONVERGENCE_X,SAKESWAP,CREAM_LENDING,CURVE_V2,CURVE_V2_EURS_2_ASSET,CURVE_V2_EURT_2_ASSET,SETH_WRAPPER,MOONISWAP,SUSHI,COMPOUND,KYBER,CREAMSWAP,AAVE,CURVE,UNISWAP_V1,UNISWAP_V2,CHAI,OASIS,BANCOR,IEARN,SWERVE,VALUELIQUID,DODO,SHELL,BLACKHOLESWAP,PMM1,DEFISWAP,MINISWAP,AAVE_V2,ST_ETH,ONE_INCH_LP,LINKSWAP,S_FINANCE,ONE_INCH_LP_1_1,PSM,POWERINDEX,SMOOTHY_FINANCE,PMM2,PMM3,SADDLE,PMM4,KYBER_DMM,UNISWAP_V3,DEFI_PLAZA,CURVE_V2_ETH_CRV,FIXED_FEE_SWAP_V3,CURVE_V2_ETH_CVX,CURVE_V2_XAUT_2_ASSET,WSTETH,CURVE_V2_SPELL_2_ASSET,CURVE_V2_YFI_2_ASSET,CURVE_V2_THRESHOLDNETWORK_2_ASSET,SYNAPSE,POOLTOGETHER,CURVE_V2_ETH_PAL,ETH_BANCOR_V3",
+      excludeProtocols: ["ONE_INCH_LIMIT_ORDER", "ONE_INCH_LIMIT_ORDER_V2"],
     },
     paraswap: {
       network: 1,
-      excludeDEXS: "0x,0xRFQt,Balancer",
       excludeContractMethods: ["swapOnZeroXv2", "swapOnZeroXv4"],
+      excludeDEXS: ["acryptos"],
     },
   },
   // ETH链一个区块3千万，使用90%的空间即可，过大会造成打块过慢
@@ -119,7 +116,6 @@ const config1 = {
       VAULT_ADDRESS: USDI_VAULT_FOR_ETH,
       USDI_ADDRESS: USDI_FOR_ETH,
       VAULT_BUFFER_ADDRESS: VAULT_BUFFER_FOR_USDI_ETH,
-      isOpen: true,
     },
     {
       id: "ethi",
@@ -130,7 +126,6 @@ const config1 = {
       VAULT_ADDRESS: ETHI_VAULT,
       ETHI_ADDRESS: ETHI_FOR_ETH,
       VAULT_BUFFER_ADDRESS: VAULT_BUFFER_FOR_ETHI_ETH,
-      isOpen: true,
     },
   ],
 };

@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect } from "react";
 import classNames from "classnames";
 import { makeStyles } from "@material-ui/core/styles";
@@ -181,7 +180,6 @@ function Ethi(props) {
         .catch(noop);
     const timer = setInterval(loadTotalAssetsFn, 3000);
     return () => clearInterval(timer);
-    // eslint-disable-next-line
   }, [totalValue.toString()]);
 
   function handleMint(...eventArgs) {

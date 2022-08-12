@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import { useState, useEffect } from "react";
 
 // === Utils === //
@@ -6,7 +5,7 @@ import * as ethers from "ethers";
 import isEmpty from "lodash/isEmpty";
 
 // === Hooks === //
-import { useUserAddress } from "eth-hooks";
+import useUserAddress from "./useUserAddress";
 
 const { Contract } = ethers;
 
