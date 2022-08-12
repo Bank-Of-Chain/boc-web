@@ -98,8 +98,8 @@ function Ethi(props) {
     userProvider
   );
 
-  // 载入账户数据
-  const loadBanlance = () => {
+  // load user balance
+  const loadBalance = () => {
     if (isEmpty(address) || isEmpty(userProvider)) {
       return;
     }
@@ -189,7 +189,7 @@ function Ethi(props) {
       block
         .getTransaction()
         .then((tx) => tx.wait())
-        .then(loadBanlance);
+        .then(loadBalance);
   }
   function handleBurn(...eventArgs) {
     console.log("Burn=", eventArgs);
@@ -198,13 +198,13 @@ function Ethi(props) {
       block
         .getTransaction()
         .then((tx) => tx.wait())
-        .then(loadBanlance);
+        .then(loadBalance);
   }
 
   useEffect(() => {
     const listener = () => {
       if (isEmpty(VAULT_ABI) || isEmpty(userProvider)) return;
-      loadBanlance();
+      loadBalance();
       if (isEmpty(VAULT_ADDRESS)) return;
       const vaultContract = new ethers.Contract(
         VAULT_ADDRESS,

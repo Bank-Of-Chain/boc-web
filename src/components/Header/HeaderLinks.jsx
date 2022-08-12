@@ -113,7 +113,7 @@ export default function HeaderLinks(props) {
     let nextChainId = CHAIN_ID || "1";
     let nextVault = window.location.hash === "#/ethi" ? "ethi" : "usdi";
 
-    // 如果是ethi模块，则必须跳转eth链
+    // If it's in ETHi, jump to eth chain
     if (nextVault === "ethi") {
       nextChainId = "1";
     }

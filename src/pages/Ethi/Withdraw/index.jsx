@@ -180,7 +180,7 @@ export default function Withdraw({
           tokens,
           map(amounts, (i) => i.toString())
         );
-        // 查询兑换路径
+        // fetch the exchange path
         let exchangeArray = await Promise.all(
           map(tokens, async (tokenItem, index) => {
             const exchangeAmounts = amounts[index].toString();
@@ -224,7 +224,7 @@ export default function Withdraw({
                 )
               );
               if (isEmpty(bestSwapInfo)) {
-                throw new Error("兑换路径获取失败");
+                throw new Error("Failed to fetch the exchange path");
               }
               return {
                 fromToken: tokenItem,
@@ -395,7 +395,7 @@ export default function Withdraw({
         exchangeManagerContract,
         userProvider
       );
-      // 查询兑换路径
+      // fetch the exchange path
       exchangeArray = await Promise.all(
         map(tokens, async (tokenItem, index) => {
           const exchangeAmounts = amounts[index].toString();
@@ -439,7 +439,7 @@ export default function Withdraw({
               )
             );
             if (isEmpty(bestSwapInfo)) {
-              throw new Error("兑换路径获取失败");
+              throw new Error("Failed to fetch the exchange path");
             }
             return {
               fromToken: tokenItem,
@@ -464,7 +464,7 @@ export default function Withdraw({
       const nextArray = filter(exchangeArray, (i) => !isEmpty(i));
       console.log("nextArray=", nextArray);
       let tx;
-      // gasLimit如果需要配置倍数的话，则需要estimateGas一下
+      // if gasLimit times not 1, need estimateGas
       if (isNumber(MULTIPLE_OF_GAS) && MULTIPLE_OF_GAS !== 1) {
         const gas = await vaultContractWithSigner.estimateGas.burn(
           nextValue,
@@ -476,7 +476,7 @@ export default function Withdraw({
         setCurrentStep(4);
         estimateGasFinish = Date.now();
         const gasLimit = Math.ceil(gas * MULTIPLE_OF_GAS);
-        // 乘以倍数后，如果大于3千万gas，则按3千万执行
+        // gasLimit not exceed maximum
         const maxGasLimit = gasLimit < MAX_GAS_LIMIT ? gasLimit : MAX_GAS_LIMIT;
         tx = await vaultContractWithSigner.burn(
           nextValue,
@@ -543,7 +543,7 @@ export default function Withdraw({
       setWithdrawError({});
       setCurrentStep(0);
     }, 2000);
-    // 最后输出一下withdraw总耗时
+    // log withdraw total time
     const totalTime = withdrawTransationFinish - withdrawTimeStart;
     const szjy = withdrawValidFinish - withdrawTimeStart;
     const szjyPercents = ((100 * szjy) / totalTime).toFixed(2);
@@ -566,12 +566,12 @@ export default function Withdraw({
     const swc = withdrawTransationFinish - withdrawFinish;
     const swcPercents = ((100 * swc) / totalTime).toFixed(2);
     console.table({
-      数值校验: `${szjy}(${szjyPercents}%)`,
-      预提取获取币种及数量: `${ytq}(${ytqPercents}%)`,
-      查询兑换路径: `${hqdhlj}(${hqdhljPercents}%)`,
+      valid: `${szjy}(${szjyPercents}%)`,
+      preWithdraw: `${ytq}(${ytqPercents}%)`,
+      getSwapPath: `${hqdhlj}(${hqdhljPercents}%)`,
       estimateGas: `${eg}(${egPercents}%)`,
-      取款: `${qk}(${qkPercents}%)`,
-      事务确认: `${swc}(${swcPercents}%)`,
+      withdraw: `${qk}(${qkPercents}%)`,
+      transaction: `${swc}(${swcPercents}%)`,
     });
   };
 
@@ -582,32 +582,32 @@ export default function Withdraw({
   }
 
   /**
-   * 校验toValue是否为有效输入
+   * check if toValue is valid
    * @returns
    */
   const isValidToValue = () => {
     if (toValue === "" || toValue === "-" || isEmpty(toValue.replace(/ /g, "")))
       return;
-    // 如果不是一个数值
+    // not a number
     if (isNaN(Number(toValue))) return false;
     const nextValue = BN(toValue);
     const nextToValue = nextValue.multipliedBy(
       BigNumber.from(10).pow(ethiDecimals).toString()
     );
-    // 判断值为正数
+    // should be positive
     if (nextToValue.lte(0)) return false;
-    // 精度处理完之后，应该为整数
+    // should be integer
     const nextToValueString = nextValue.multipliedBy(
       BigNumber.from(10).pow(ethiDecimals).toString()
     );
     if (nextToValueString.toFixed().indexOf(".") !== -1) return false;
-    // 数值小于最大数量
+    // balance less than value
     if (ethiBalance.lt(BigNumber.from(nextToValue.toFixed()))) return false;
     return true;
   };
 
   /**
-   * 校验allow loss是否为有效输入
+   * check if allow loss is valid
    * @returns
    */
   const isValidAllowLoss = () => {
@@ -625,8 +625,8 @@ export default function Withdraw({
   };
 
   useEffect(() => {
-    // 未打开高级选项页面，则不继续数值预估
-    // 如果输入的slipper等值不正确，则不继续数值预估
+    // need open advanced setting
+    // allowLoss, slipper, toValue need valid
     if (isValidAllowLoss() && isValidSlipper() && isValidToValue()) {
       estimateWithdraw();
     }

@@ -31,7 +31,7 @@ export const formatBalance = (balance, decimals, options = {}) => {
     }
     return fixedValue;
   }
-  // 显示的值为 0.000000 的话补 ...
+  // If number lt 0.000000, add ...
   const isLessThenDisplay =
     decimals > 6 &&
     !value.eq(0) &&

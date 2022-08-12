@@ -136,7 +136,8 @@ function App() {
 
   const changeNetwork = async (targetNetwork) => {
     if (isEmpty(targetNetwork)) return;
-    // 如果metamask已经使用的是targetNetwork的话，则修改localStorage.REACT_APP_NETWORK_TYPE之后，进行页面刷新。
+    // If the network of wallet is equal targetNetwork,
+    // update localStorage.REACT_APP_NETWORK_TYPE and then reload page.
     if (targetNetwork.chainId === selectedChainId) {
       localStorage.REACT_APP_NETWORK_TYPE = targetNetwork.chainId;
       setTimeout(() => {

@@ -10,7 +10,7 @@ var options = {
 };
 
 /**
- * 获取最近的可能dohardwordk的时间戳
+ * get next dohardwork time 
  */
 export const getLastDohardworkTime = () => {
   const dohardworkCron = parser.parseExpression(DO_HARDWORK_CRON, options);
@@ -19,7 +19,7 @@ export const getLastDohardworkTime = () => {
 };
 
 /**
- * 获取最近的可能allocation的时间戳
+ * get next allocation time
  */
 export const getLastAllocationTime = () => {
   const allocationCron = parser.parseExpression(DO_ALLOCATION_CRON, options);
@@ -28,7 +28,7 @@ export const getLastAllocationTime = () => {
 };
 
 /**
- * 获取最近的可能rebase的时间戳
+ * get next rebase time
  */
 export const getLastPossibleRebaseTime = () => {
   return min([getLastDohardworkTime(), getLastAllocationTime()]);
