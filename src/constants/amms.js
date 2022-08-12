@@ -1,3 +1,4 @@
+// current amms displayed in home page
 const STRATEGIES = [
   "Balancer",
   "Dodo",
@@ -31,6 +32,7 @@ export const PLATFORM_HOME_URL = {
   Synapse: "https://synapseprotocol.com",
   Stargate: "https://stargate.finance/",
   DForce: "https://dforce.network/",
+  //TODO: should add amms links
 };
 
 export default STRATEGIES;

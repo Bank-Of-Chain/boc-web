@@ -120,9 +120,7 @@ export default function HeaderLinks(props) {
     return `${DASHBOARD_URL}/#/?chain=${nextChainId}&vault=${nextVault}`;
   };
 
-  const handleGoToAccount = () => {
-    dispatch(setCurrentTab(INVEST_TAB.account));
-  };
+  const handleGoToAccount = () => dispatch(setCurrentTab(INVEST_TAB.account));
 
   return (
     <>

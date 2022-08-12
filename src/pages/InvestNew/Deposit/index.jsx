@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
+import { makeStyles } from "@material-ui/core/styles";
 
 // === Utils === //
 import * as ethers from "ethers";
@@ -11,9 +12,8 @@ import every from "lodash/every";
 import reduce from "lodash/reduce";
 import debounce from "lodash/debounce";
 import isEmpty from "lodash/isEmpty";
-import { makeStyles } from "@material-ui/core/styles";
 import moment from "moment";
-import { getLastPossibleRebaseTime } from "../../../helpers/time-util";
+import { getLastPossibleRebaseTime } from "@helpers/time-util";
 import {
   isAd,
   isEs,
@@ -21,14 +21,14 @@ import {
   isDistributing,
   errorTextOutput,
   isLessThanMinValue,
-} from "../../../helpers/error-handler";
+} from "@helpers/error-handler";
 
 // === Components === //
 import Step from "@material-ui/core/Step";
-import BocStepper from "../../../components/Stepper/Stepper";
-import BocStepLabel from "../../../components/Stepper/StepLabel";
-import BocStepIcon from "../../../components/Stepper/StepIcon";
-import BocStepConnector from "../../../components/Stepper/StepConnector";
+import BocStepper from "@components/Stepper/Stepper";
+import BocStepLabel from "@components/Stepper/StepLabel";
+import BocStepIcon from "@components/Stepper/StepIcon";
+import BocStepConnector from "@components/Stepper/StepConnector";
 import Typography from "@material-ui/core/Typography";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import Modal from "@material-ui/core/Modal";
@@ -36,14 +36,14 @@ import Paper from "@material-ui/core/Paper";
 import Tooltip from "@material-ui/core/Tooltip";
 import InfoIcon from "@material-ui/icons/Info";
 
-import GridContainer from "../../../components/Grid/GridContainer";
-import GridItem from "../../../components/Grid/GridItem";
-import CustomTextField from "../../../components/CustomTextField";
-import Muted from "../../../components/Typography/Muted";
-import Button from "../../../components/CustomButtons/Button";
-import { warmDialog } from "./../../../reducers/meta-reducer";
-import { toFixed, formatBalance } from "../../../helpers/number-format";
-import Loading from "../../../components/LoadingComponent";
+import GridContainer from "@components/Grid/GridContainer";
+import GridItem from "@components/Grid/GridItem";
+import CustomTextField from "@components/CustomTextField";
+import Muted from "@components/Typography/Muted";
+import Button from "@components/CustomButtons/Button";
+import { warmDialog } from "@reducers/meta-reducer";
+import { toFixed, formatBalance } from "@helpers/number-format";
+import Loading from "@components/LoadingComponent";
 
 // === Constants === //
 import {
@@ -51,7 +51,7 @@ import {
   USDC_ADDRESS,
   DAI_ADDRESS,
   IERC20_ABI,
-} from "../../../constants";
+} from "@constants";
 
 // === Styles === //
 import styles from "./style";

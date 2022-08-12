@@ -1,11 +1,9 @@
 // === Utils === //
 import isEmpty from "lodash/isEmpty";
 
-/**
- * 按版本解析abijson文件
- */
 export default function resolver(abiPrefix) {
   if (isEmpty(abiPrefix)) return {};
+
   let VAULT_BUFFER_ABI,
     VAULT_ABI,
     EXCHANGE_ADAPTER_ABI,

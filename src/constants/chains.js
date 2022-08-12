@@ -11,4 +11,5 @@ const MATIC = {
 const CHAINS = [ETH, MATIC];
 
 export { ETH, MATIC };
+
 export default CHAINS;

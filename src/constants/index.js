@@ -1,10 +1,4 @@
-import genConfig from "./config/config";
-
-// MY INFURA_ID, SWAP IN YOURS FROM https://infura.io/dashboard/ethereum
-export const INFURA_ID = "3be290dd5c1a46f894bdf28625c000ce";
-
-// MY ETHERSCAN_ID, SWAP IN YOURS FROM https://etherscan.io/myapikey
-export const ETHERSCAN_KEY = "PSW8C433Q667DVEX5BCRMGNAH9FSGFZ7Q8";
+import genConfig from "@/config/config";
 
 // EXTERNAL CONTRACTS
 export const ENV_NETWORK_TYPE =

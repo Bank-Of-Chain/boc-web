@@ -3,13 +3,13 @@ import React from "react";
 import { makeStyles } from "@material-ui/core/styles";
 
 // === Components === //
-import Tabs from "../../../components/CustomTabs/CustomTabs";
-import GridItem from "../../../components/Grid/GridItem";
+import Tabs from "@components/CustomTabs/CustomTabs";
+import GridItem from "@components/Grid/GridItem";
 
 // === Constants === //
-import AMMS, { PLATFORM_HOME_URL } from "../../../constants/amms";
-import CHAINS from "../../../constants/chains";
-import STABLECOINS from "../../../constants/stableCoins";
+import AMMS, { PLATFORM_HOME_URL } from "@constants/amms";
+import CHAINS from "@constants/chains";
+import STABLECOINS from "@constants/tokens";
 
 // === Utils === //
 import map from "lodash/map";

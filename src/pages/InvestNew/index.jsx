@@ -5,8 +5,6 @@ import { useHistory } from "react-router-dom";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
 
 // === Components === //
-import GridContainer from "../../components/Grid/GridContainer";
-import GridItem from "../../components/Grid/GridItem";
 import Card from "@material-ui/core/Card";
 import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
@@ -19,14 +17,16 @@ import SwapHorizIcon from "@material-ui/icons/SwapHoriz";
 import AccountBalanceWalletIcon from "@material-ui/icons/AccountBalanceWallet";
 import SaveAltIcon from "@material-ui/icons/SaveAlt";
 import UndoIcon from "@material-ui/icons/Undo";
-import Loading from "../../components/LoadingComponent";
+import Loading from "@components/LoadingComponent";
+import GridItem from "@components/Grid/GridItem";
+import GridContainer from "@components/Grid/GridContainer";
 import Deposit from "./Deposit";
 import Withdraw from "./Withdraw";
 
 // === Reducers === //
 import { useDispatch, useSelector } from "react-redux";
-import { warmDialog } from "./../../reducers/meta-reducer";
-import { setCurrentTab } from "./../../reducers/invest-reducer";
+import { warmDialog } from "@reducers/meta-reducer";
+import { setCurrentTab } from "@reducers/invest-reducer";
 
 // === constants === //
 import {
@@ -36,20 +36,20 @@ import {
   NET_WORKS,
   CHAIN_ID,
   IERC20_ABI,
-} from "../../constants";
-import { INVEST_TAB } from "../../constants/invest";
+} from "@constants";
+import { INVEST_TAB } from "@constants/invest";
 
 // === Utils === //
-import { formatBalance } from "../../helpers/number-format";
+import { formatBalance } from "@helpers/number-format";
 import moment from "moment";
 import isEmpty from "lodash/isEmpty";
 import last from "lodash/last";
 import noop from "lodash/noop";
 import * as ethers from "ethers";
-import useVersionWapper from "../../hooks/useVersionWapper";
-import { addToken } from "../../helpers/wallet";
-import { getLastPossibleRebaseTime } from "../../helpers/time-util";
-import useVault from "../../hooks/useVault";
+import useVersionWapper from "@hooks/useVersionWapper";
+import { addToken } from "@helpers/wallet";
+import { getLastPossibleRebaseTime } from "@helpers/time-util";
+import useVault from "@hooks/useVault";
 
 // === Styles === //
 import styles from "./style";

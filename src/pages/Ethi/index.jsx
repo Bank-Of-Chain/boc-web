@@ -25,17 +25,17 @@ import Withdraw from "./Withdraw";
 import { useSelector, useDispatch } from "react-redux";
 
 // === Reducers === //
-import { warmDialog } from "./../../reducers/meta-reducer";
-import { setCurrentTab } from "./../../reducers/invest-reducer";
+import { warmDialog } from "@reducers/meta-reducer";
+import { setCurrentTab } from "@reducers/invest-reducer";
 
 // === constants === //
-import { ETH_ADDRESS, ETH_DECIMALS } from "../../constants/token";
-import { INVEST_TAB } from "../../constants/invest";
-import { IERC20_ABI } from "../../constants";
+import { ETH_ADDRESS, ETH_DECIMALS } from "@constants/tokens";
+import { INVEST_TAB } from "@constants/invest";
+import { IERC20_ABI } from "@constants";
 
 // === Utils === //
 import moment from "moment";
-import { formatBalance } from "../../helpers/number-format";
+import { formatBalance } from "@helpers/number-format";
 import isEmpty from "lodash/isEmpty";
 import last from "lodash/last";
 import noop from "lodash/noop";
@@ -43,7 +43,7 @@ import * as ethers from "ethers";
 import useVersionWapper from "../../hooks/useVersionWapper";
 import { addToken } from "../../helpers/wallet";
 import { getLastPossibleRebaseTime } from "../../helpers/time-util";
-import useVault from "../../hooks/useVault";
+import useVault from "@hooks/useVault";
 
 // === Styles === //
 import styles from "./style";

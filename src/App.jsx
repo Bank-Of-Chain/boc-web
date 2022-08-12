@@ -227,12 +227,12 @@ function App() {
   const renderModalValid = () => {
     if (isLoadingChainId) {
       return modalJsx(true, [
-        <div key="1" style={{ textAlign: "center" }}>
+        <div key="loading-elm" style={{ textAlign: "center" }}>
           <CircularProgress color="inherit" />
           <p>loading...</p>
         </div>,
         <Chains
-          key="2"
+          key="chains-elm"
           maskStyle={{ textAlign: "center" }}
           array={NET_WORKS}
           handleClick={changeNetwork}
