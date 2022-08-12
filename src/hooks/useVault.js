@@ -5,7 +5,7 @@ import * as ethers from "ethers";
 import isEmpty from "lodash/isEmpty";
 
 // === Hooks === //
-import { useUserAddress } from "eth-hooks";
+import useUserAddress from "./useUserAddress";
 
 const { Contract } = ethers;
 
