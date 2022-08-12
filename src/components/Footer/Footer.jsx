@@ -4,8 +4,8 @@ import { List, ListItem } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 
 // === Components === //
-import GridContainer from "../../components/Grid/GridContainer";
-import GridItem from "../../components/Grid/GridItem";
+import GridContainer from "@/components/Grid/GridContainer";
+import GridItem from "@/components/Grid/GridItem";
 import IconButton from "@material-ui/core/IconButton";
 import SvgIcon from "@material-ui/core/SvgIcon";
 import Button from "@material-ui/core/Button";
@@ -18,7 +18,7 @@ import {
   TELEGRAM_URL,
   TWITTER_URL,
   LINKEDIN_URL,
-} from "./../../constants";
+} from "@/constants";
 
 import styles from "./footerStyle.js";
 

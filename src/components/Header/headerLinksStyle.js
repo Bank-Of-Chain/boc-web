@@ -1,4 +1,4 @@
-import { defaultFont } from "../../assets/jss/material-kit-react.js";
+import { defaultFont } from "@/assets/jss/material-kit-react.js";
 
 import tooltip from "./tooltipsStyle.js";
 

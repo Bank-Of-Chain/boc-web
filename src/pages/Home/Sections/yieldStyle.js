@@ -1,4 +1,4 @@
-import { gradientText } from "../../../assets/jss/common.js";
+import { gradientText } from "@/assets/jss/common.js";
 
 const yieldStyle = {
   yieldSection: {

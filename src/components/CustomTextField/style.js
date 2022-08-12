@@ -1,4 +1,4 @@
-import { dangerColor } from "../../assets/jss/material-kit-react.js";
+import { dangerColor } from "@/assets/jss/material-kit-react.js";
 
 const style = {
   root: {

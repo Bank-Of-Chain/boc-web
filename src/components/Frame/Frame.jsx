@@ -2,9 +2,9 @@ import React, { Fragment } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 
 // === Components === //
-import Header from "../../components/Header/Header";
-import Footer from "../../components/Footer/Footer";
-import HeaderLinks from "../../components/Header/HeaderLinks";
+import Header from "@/components/Header/Header";
+import Footer from "@/components/Footer/Footer";
+import HeaderLinks from "@/components/Header/HeaderLinks";
 
 import styles from "./style";
 

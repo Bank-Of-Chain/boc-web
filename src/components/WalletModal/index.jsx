@@ -7,7 +7,7 @@ import Modal from "@material-ui/core/Modal";
 import Paper from "@material-ui/core/Paper";
 import CloseIcon from "@material-ui/icons/Close";
 import Button from "../CustomButtons/Button";
-import { WALLET_OPTIONS } from "../../constants/wallet";
+import { WALLET_OPTIONS } from "@/constants/wallet";
 
 import styles from "./style";
 

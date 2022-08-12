@@ -1,6 +1,6 @@
 import React from "react";
 import { render } from "@testing-library/react";
-import Address from "../../../components/Address/Address";
+import Address from "@/components/Address/Address";
 
 test("Address Component Render", () => {
   const { asFragment } = render(

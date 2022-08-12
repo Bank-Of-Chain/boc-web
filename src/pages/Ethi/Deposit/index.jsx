@@ -11,28 +11,28 @@ import { makeStyles } from "@material-ui/core/styles";
 
 // === Components === //
 import Step from "@material-ui/core/Step";
-import BocStepper from "../../../components/Stepper/Stepper";
-import BocStepLabel from "../../../components/Stepper/StepLabel";
-import BocStepIcon from "../../../components/Stepper/StepIcon";
-import BocStepConnector from "../../../components/Stepper/StepConnector";
+import BocStepper from "@/components/Stepper/Stepper";
+import BocStepLabel from "@/components/Stepper/StepLabel";
+import BocStepIcon from "@/components/Stepper/StepIcon";
+import BocStepConnector from "@/components/Stepper/StepConnector";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import Modal from "@material-ui/core/Modal";
 import Paper from "@material-ui/core/Paper";
 import Tooltip from "@material-ui/core/Tooltip";
 import InfoIcon from "@material-ui/icons/Info";
 import Typography from "@material-ui/core/Typography";
-import Loading from "../../../components/LoadingComponent";
+import Loading from "@/components/LoadingComponent";
 
-import GridContainer from "../../../components/Grid/GridContainer";
-import GridItem from "../../../components/Grid/GridItem";
-import CustomTextField from "../../../components/CustomTextField";
-import Button from "../../../components/CustomButtons/Button";
-import { warmDialog } from "./../../../reducers/meta-reducer";
-import { toFixed, formatBalance } from "../../../helpers/number-format";
+import GridContainer from "@/components/Grid/GridContainer";
+import GridItem from "@/components/Grid/GridItem";
+import CustomTextField from "@/components/CustomTextField";
+import Button from "@/components/CustomButtons/Button";
+import { warmDialog } from "@/reducers/meta-reducer";
+import { toFixed, formatBalance } from "@/helpers/number-format";
 
 // === Utils === //
 import noop from "lodash/noop";
-import { getLastPossibleRebaseTime } from "../../../helpers/time-util";
+import { getLastPossibleRebaseTime } from "@/helpers/time-util";
 import {
   isAd,
   isEs,
@@ -40,7 +40,7 @@ import {
   isDistributing,
   errorTextOutput,
   isLessThanMinValue,
-} from "../../../helpers/error-handler";
+} from "@/helpers/error-handler";
 
 import styles from "./style";
 

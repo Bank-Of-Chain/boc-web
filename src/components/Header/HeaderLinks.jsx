@@ -2,8 +2,8 @@ import React, { useState, useRef } from "react";
 import classNames from "classnames";
 import { useDispatch } from "react-redux";
 import copy from "copy-to-clipboard";
-import { warmDialog } from "../../reducers/meta-reducer";
-import { setCurrentTab } from "../../reducers/invest-reducer";
+import { warmDialog } from "@/reducers/meta-reducer";
+import { setCurrentTab } from "@/reducers/invest-reducer";
 
 import { makeStyles } from "@material-ui/core/styles";
 
@@ -29,7 +29,7 @@ import isEmpty from "lodash/isEmpty";
 import map from "lodash/map";
 import get from "lodash/get";
 import find from "lodash/find";
-import { isInMobileWalletApp, isInMobileH5 } from "../../helpers/plugin-util";
+import { isInMobileWalletApp, isInMobileH5 } from "@/helpers/plugin-util";
 
 // === Constants === //
 import {
@@ -38,8 +38,8 @@ import {
   DOCUMENT_URL,
   CHAIN_ID,
   LEGACYS,
-} from "./../../constants";
-import { INVEST_TAB } from "./../../constants/invest";
+} from "@/constants";
+import { INVEST_TAB } from "@/constants/invest";
 
 const CHAIN_SELECTOR_SHOW_ROUTER = ["#/mutils"];
 

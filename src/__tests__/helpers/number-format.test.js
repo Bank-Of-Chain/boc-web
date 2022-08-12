@@ -1,4 +1,4 @@
-import { toFixed, formatBalance } from "./../../helpers/number-format";
+import { toFixed, formatBalance } from "@/helpers/number-format";
 
 test("number-format toFixed", () => {
   const text = toFixed("10000", "100");

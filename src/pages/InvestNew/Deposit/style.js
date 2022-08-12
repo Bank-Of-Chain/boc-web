@@ -1,4 +1,4 @@
-import { container } from "../../../assets/jss/material-kit-react.js";
+import { container } from "@/assets/jss/material-kit-react.js";
 
 const componentsStyle = () => ({
   container,
@@ -88,7 +88,7 @@ const componentsStyle = () => ({
     borderRadius: "1rem",
     "&:active": {
       outline: "none",
-    }
+    },
   },
   root: {
     padding: "1.5rem 0",

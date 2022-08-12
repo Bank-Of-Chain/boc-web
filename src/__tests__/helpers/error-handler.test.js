@@ -1,4 +1,4 @@
-import { errorTextOutput, isEs, isAd } from "../../helpers/error-handler";
+import { errorTextOutput, isEs, isAd } from "@/helpers/error-handler";
 
 test("isAd logic correctly", () => {
   const errorMsg = "xxxxxx'AD'";

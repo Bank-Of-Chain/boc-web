@@ -17,28 +17,28 @@ import Popover from "@material-ui/core/Popover";
 import PopupState, { bindTrigger, bindPopover } from "material-ui-popup-state";
 import Box from "@material-ui/core/Box";
 
-import CustomTextField from "../../../components/CustomTextField";
-import BocStepper from "../../../components/Stepper/Stepper";
-import BocStepLabel from "../../../components/Stepper/StepLabel";
-import BocStepIcon from "../../../components/Stepper/StepIcon";
-import BocStepConnector from "../../../components/Stepper/StepConnector";
-import GridContainer from "../../../components/Grid/GridContainer";
-import GridItem from "../../../components/Grid/GridItem";
-import Button from "../../../components/CustomButtons/Button";
-import Loading from "../../../components/LoadingComponent";
-import { warmDialog } from "./../../../reducers/meta-reducer";
-import { toFixed, formatBalance } from "../../../helpers/number-format";
-import { addToken } from "../../../helpers/wallet";
+import CustomTextField from "@/components/CustomTextField";
+import BocStepper from "@/components/Stepper/Stepper";
+import BocStepLabel from "@/components/Stepper/StepLabel";
+import BocStepIcon from "@/components/Stepper/StepIcon";
+import BocStepConnector from "@/components/Stepper/StepConnector";
+import GridContainer from "@/components/Grid/GridContainer";
+import GridItem from "@/components/Grid/GridItem";
+import Button from "@/components/CustomButtons/Button";
+import Loading from "@/components/LoadingComponent";
+import { warmDialog } from "@/reducers/meta-reducer";
+import { toFixed, formatBalance } from "@/helpers/number-format";
+import { addToken } from "@/helpers/wallet";
 import {
   EXCHANGE_EXTRA_PARAMS,
   MULTIPLE_OF_GAS,
   MAX_GAS_LIMIT,
   ORACLE_ADDITIONAL_SLIPPAGE,
-} from "../../../constants";
+} from "@/constants";
 
 // === Hooks === //
-import useRedeemFeeBps from "../../../hooks/useRedeemFeeBps";
-import usePriceProvider from "../../../hooks/usePriceProvider";
+import useRedeemFeeBps from "@/hooks/useRedeemFeeBps";
+import usePriceProvider from "@/hooks/usePriceProvider";
 
 // === Utils === //
 import { getBestSwapInfo } from "piggy-finance-utils";
@@ -60,10 +60,10 @@ import {
   isLossMuch,
   isExchangeFail,
   errorTextOutput,
-} from "../../../helpers/error-handler";
+} from "@/helpers/error-handler";
 
 // === Constants === //
-import { IERC20_ABI } from "../../../constants";
+import { IERC20_ABI } from "@/constants";
 
 // === Styles === //
 import styles from "./style";

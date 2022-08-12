@@ -1,5 +1,5 @@
-import { container } from "../../assets/jss/material-kit-react.js";
-import { gradientText } from "../../assets/jss/common.js";
+import { container } from "@/assets/jss/material-kit-react.js";
+import { gradientText } from "@/assets/jss/common.js";
 
 const componentsStyle = (theme) => ({
   container: {

@@ -2,8 +2,8 @@ import React, { useState, useEffect } from "react";
 import classNames from "classnames";
 import { makeStyles } from "@material-ui/core/styles";
 import { useHistory } from "react-router-dom";
-import GridContainer from "../../components/Grid/GridContainer";
-import GridItem from "../../components/Grid/GridItem";
+import GridContainer from "@/components/Grid/GridContainer";
+import GridItem from "@/components/Grid/GridItem";
 import Card from "@material-ui/core/Card";
 import AddCircleOutlineIcon from "@material-ui/icons/AddCircleOutline";
 import List from "@material-ui/core/List";
@@ -16,7 +16,7 @@ import SaveAltIcon from "@material-ui/icons/SaveAlt";
 import UndoIcon from "@material-ui/icons/Undo";
 import Tooltip from "@material-ui/core/Tooltip";
 import InfoIcon from "@material-ui/icons/Info";
-import Loading from "../../components/LoadingComponent";
+import Loading from "@/components/LoadingComponent";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
 
 import Deposit from "./Deposit";
@@ -40,9 +40,9 @@ import isEmpty from "lodash/isEmpty";
 import last from "lodash/last";
 import noop from "lodash/noop";
 import * as ethers from "ethers";
-import useVersionWapper from "../../hooks/useVersionWapper";
-import { addToken } from "../../helpers/wallet";
-import { getLastPossibleRebaseTime } from "../../helpers/time-util";
+import useVersionWapper from "@/hooks/useVersionWapper";
+import { addToken } from "@/helpers/wallet";
+import { getLastPossibleRebaseTime } from "@/helpers/time-util";
 import useVault from "@/hooks/useVault";
 
 // === Styles === //
