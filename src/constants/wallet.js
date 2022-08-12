@@ -4,7 +4,7 @@ import WalletConnectProvider from "@walletconnect/web3-provider";
 import map from "lodash/map";
 
 // === Constants === //
-import { RPC_URL } from "@constants";
+import { RPC_URL } from "@/constants";
 
 export const WALLETS = {
   MetaMask: {

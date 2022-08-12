@@ -3,8 +3,8 @@ import classNames from "classnames";
 import { makeStyles } from "@material-ui/core/styles";
 
 // === Components === //
-import GridContainer from "@components/Grid/GridContainer";
-import GridItem from "@components/Grid/GridItem";
+import GridContainer from "@/components/Grid/GridContainer";
+import GridItem from "@/components/Grid/GridItem";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
 import Tooltip from "@material-ui/core/Tooltip";
@@ -16,8 +16,8 @@ import maxBy from "lodash/maxBy";
 import isNaN from "lodash/isNaN";
 import filter from "lodash/filter";
 import sortBy from "lodash/sortBy";
-import { toFixed } from "@helpers/number-format";
-import { getDefiRate, getAPY } from "@services/api-service";
+import { toFixed } from "@/helpers/number-format";
+import { getDefiRate, getAPY } from "@/services/api-service";
 
 // === Styles === //
 import styles, { smStyle } from "./lendingStyle";

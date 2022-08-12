@@ -1,5 +1,10 @@
 {
   "name": "@scaffold-eth/react-app",
+  "jest": {
+    "moduleNameMapper": {
+      "^@/(.*)$": "<rootDir>/src/$1"
+    }
+  },
   "version": "1.0.0",
   "homepage": ".",
   "browserslist": {

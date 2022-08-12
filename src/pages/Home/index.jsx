@@ -9,9 +9,9 @@ import AmmSection from "./Sections/AmmSection";
 import YieldSection from "./Sections/YieldSection";
 import LendingSection from "./Sections/LendingSection";
 import RoadMapSection from "./Sections/RoadMapSection";
-import GridContainer from "../../components/Grid/GridContainer";
-import GridItem from "@components/Grid/GridItem";
-import Button from "@components/CustomButtons/Button";
+import GridContainer from "@/components/Grid/GridContainer";
+import GridItem from "@/components/Grid/GridItem";
+import Button from "@/components/CustomButtons/Button";
 
 // === Styles === //
 import styles from "./landingPage";

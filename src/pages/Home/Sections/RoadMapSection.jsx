@@ -2,7 +2,7 @@ import React from "react";
 import { makeStyles } from "@material-ui/core/styles";
 
 // === Components === //
-import Timeline from "@components/Timeline";
+import Timeline from "@/components/Timeline";
 
 // === Styles === //
 import styles from "./roadMapStyle";

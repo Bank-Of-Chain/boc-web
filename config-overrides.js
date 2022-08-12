@@ -15,13 +15,6 @@ module.exports = function override(config) {
   config.resolve.alias = {
     ...config.resolve.alias,
     "@": resolve("src"),
-    "@hooks": resolve("src/hooks"),
-    "@config": resolve("src/config"),
-    "@helpers": resolve("src/helpers"),
-    "@services": resolve("src/services"),
-    "@reducers": resolve("src/reducers"),
-    "@constants": resolve("src/constants"),
-    "@components": resolve("src/components"),
   };
   if (NODE_ENV === "production") {
     config.plugins.push(

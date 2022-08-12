@@ -2,7 +2,7 @@ import React from "react";
 import { makeStyles } from "@material-ui/core/styles";
 
 // === Components === //
-import InfoArea from "@components/InfoArea/InfoArea";
+import InfoArea from "@/components/InfoArea/InfoArea";
 
 // === Utils === //
 import map from "lodash/map";

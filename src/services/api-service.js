@@ -5,7 +5,7 @@ import map from "lodash/map";
 import isEmpty from "lodash/isEmpty";
 
 // === Constants === //
-import { BOC_SERVER, NET_WORKS, ENV_NETWORK_TYPE } from "@constants";
+import { BOC_SERVER, NET_WORKS, ENV_NETWORK_TYPE } from "@/constants";
 
 const ETH = NET_WORKS[0];
 

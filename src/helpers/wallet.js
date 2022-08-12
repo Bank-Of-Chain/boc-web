@@ -1,11 +1,11 @@
 import * as ethers from "ethers";
 import store from "../store";
-import { warmDialog } from "@reducers/meta-reducer";
+import { warmDialog } from "@/reducers/meta-reducer";
 
 // === Constants === //
-import { WALLETS } from "@constants/wallet";
-import { ETH_ADDRESS } from "@constants/tokens";
-import { IERC20_ABI } from "@constants";
+import { WALLETS } from "@/constants/wallet";
+import { ETH_ADDRESS } from "@/constants/tokens";
+import { IERC20_ABI } from "@/constants";
 
 export const getWalletName = (web3Modal, userProvider) => {
   if (!userProvider) {
