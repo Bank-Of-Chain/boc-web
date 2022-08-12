@@ -1,5 +1,5 @@
 import React from "react";
-import { useLookupAddress } from "../../hooks";
+import useLookupAddress from "../../hooks/LookupAddress";
 
 // changed value={address} to address={address}
 
