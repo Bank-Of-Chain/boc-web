@@ -7,9 +7,6 @@
     "**/src/__tests__/**"
   ],
   "ignoreUnresolved": [],
-  "ignoreUnimported": [
-    "src/hooks/useTestHooks.js",
-    "src/components/TestComponent/TestComponent.jsx"
-  ],
+  "ignoreUnimported": [],
   "ignoreUnused": []
 }
