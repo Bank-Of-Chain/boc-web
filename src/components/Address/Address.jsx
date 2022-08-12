@@ -1,6 +1,6 @@
 import React from "react";
 import PropTypes from "prop-types";
-import useLookupAddress from "../../hooks/LookupAddress";
+import useLookupAddress from "../../hooks/useLookupAddress";
 
 function Address(props) {
   const ens = useLookupAddress(props.ensProvider, props.address);
