@@ -1,15 +1,15 @@
-# 获取apollo配置
+# Apollo config
 
-> 执行 `yarn apollo` 或执行对应环境的 `yarn apollo:qa-sg`
+> `yarn apollo` or `yarn apollo:{env}` like `yarn apollo:qa-sg`
 
-# 生成配置文件
+# Generate config.js
 
-> 确认 configs/address.json中的各个字段是否正确？执行`yarn mustache`生成配置文件。配置文件存放路径：src/configs/config.js
+> Make sure configs/address.json is right. Run `yarn mustache` to generate config.js. The path: src/configs/config.js
 
-# 本地启动
+# Run
 
-> 执行`yarn start`启动项目
+> `yarn start`
 
-# 本地打包
+# Build
 
-> 执行`yarn build`进行打包操作，文件输出至 /zip 路径
+> `yarn build` and there is a zip file in /zip

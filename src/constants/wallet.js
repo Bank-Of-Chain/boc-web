@@ -10,8 +10,8 @@ export const WALLETS = {
   MetaMask: {
     info: {
       name: "MetaMask",
-      value: "injected", // connectTo 参数
-      symbol: "metamask", // 是否为当前连接判断, 统一全小写
+      value: "injected", // param connectTo
+      symbol: "metamask", // current connect, lowercase
       logo: "./images/wallets/MetaMask.png",
     },
     getProviderOption: () => {},

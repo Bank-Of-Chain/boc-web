@@ -1,5 +1,5 @@
 /**
- * {{env}}环境配置文件
+ * {{env}} config
  */
 
 const ETHI_FOR_ETH = "{{ETHI_FOR_ETH}}";
@@ -59,7 +59,6 @@ const config137 = {
       excludeContractMethods: [],
     },
   },
-  // 币安链一个区块2千万，使用90%的空间即可，过大会造成打块过慢
   max_gas_limit: 1800 * 10 ** 4,
   chain_id: 137,
   vaults: [
@@ -75,7 +74,7 @@ const config137 = {
     {
       id: "ethi",
       name: "Vault for ETHi",
-      description: "这是ethi的池子",
+      description: "Vault for ETHi",
       path: "#/ethi",
       abi_version: "ethi",
       VAULT_ADDRESS: "",
@@ -104,7 +103,6 @@ const config1 = {
       excludeDEXS: ["acryptos"],
     },
   },
-  // ETH链一个区块3千万，使用90%的空间即可，过大会造成打块过慢
   max_gas_limit: 2700 * 10 ** 4,
   chain_id: 1,
   vaults: [
@@ -120,7 +118,7 @@ const config1 = {
     {
       id: "ethi",
       name: "Vault for ETHi",
-      description: "这是ethi的池子",
+      description: "Vault for ETHi",
       path: "#/ethi",
       abi_version: "ethi",
       VAULT_ADDRESS: ETHI_VAULT,
@@ -136,12 +134,11 @@ const glo = {
   config1,
 };
 export default {
-  // 本地链
+  // local
   31337: glo["{{LOCAL_CHAIN_CONFIG}}"],
   // polygon
   137: config137,
   // eth
   1: config1,
-  // 无链信息时的加载
   [undefined]: configBase,
 };

@@ -33,7 +33,7 @@ function useWallet() {
   );
 
   const disconnectPassive = useCallback(async () => {
-    // walletconnect 异常关闭下 session 会一直存在，这边做个移除
+    // walletconnect close by exception, remove localStorage
     localStorage.removeItem("walletconnect");
     await web3Modal.clearCachedProvider();
     setTimeout(() => {

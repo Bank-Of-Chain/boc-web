@@ -93,7 +93,7 @@ export default function Deposit({
   };
 
   /**
-   * 校验value是否为有效输入
+   * check if value is valid
    * @returns
    */
   function isValidValue() {
@@ -107,20 +107,20 @@ export default function Deposit({
       isEmpty(value.replace(/ /g, ""))
     )
       return;
-    // 如果不是一个数值
+    // not a number
     if (isNaN(Number(value))) return false;
     const nextValue = BN(value);
     const nextFromValue = nextValue.multipliedBy(
       BigNumber.from(10).pow(decimals).toString()
     );
-    // 判断值为正数
+    // less than 0
     if (nextFromValue.lte(0)) return false;
-    // 精度处理完之后，应该为整数
+    // value should be integer
     const nextFromValueString = nextValue.multipliedBy(
       BigNumber.from(10).pow(decimals).toString()
     );
     if (nextFromValueString.toFixed().indexOf(".") !== -1) return false;
-    // 数值小于最大数量
+    // balance less than value
     if (balance.lt(BigNumber.from(nextFromValue.toFixed()))) return false;
 
     if (balance.sub(BigNumber.from(nextFromValue.toFixed())).lt(getGasFee()))
@@ -309,7 +309,7 @@ export default function Deposit({
     return () => estimateMint.cancel();
   }, [ethValue]);
 
-  // 每隔30s获取一下最新的gasprice，获取异常，则不修改原有数值
+  // get gasprice per 15s
   useEffect(() => {
     if (!userProvider) {
       return;

@@ -1,5 +1,5 @@
 /**
- * 解析出error中的错误文本信息
+ * analysis text in error
  * @param {*} error
  * @returns
  */
@@ -21,7 +21,7 @@ export const errorTextOutput = (error) => {
 };
 
 /**
- * 正在adjustment状态
+ * adjustment
  * @param {*} errorMsg
  * @returns
  */
@@ -30,7 +30,7 @@ export const isAd = (errorMsg = "") => {
 };
 
 /**
- * 正在ermery shutdown状态
+ * emergency shutdown
  * @param {*} errorMsg
  * @returns
  */
@@ -39,7 +39,7 @@ export const isEs = (errorMsg = "") => {
 };
 
 /**
- *
+ * rebase pause
  * @param {*} errorMsg
  * @returns
  */
@@ -48,8 +48,7 @@ export const isRp = (errorMsg = "") => {
 };
 
 /**
- * 兑换异常
- * 针对那种，设置了过低的兑换异常，多试几次都没有用的，只有通过提高slipper来使兑换通过
+ * exchange error slippage not enough
  * @param {*} errorMsg
  * @returns
  */
@@ -85,8 +84,7 @@ export const isLossMuch = (errorMsg = "") => {
 };
 
 /**
- * 取款异常
- * 针对那种maxloss设置过低，导致取款失败的问题
+ * withdraw error
  * @param {*} errorMsg
  * @returns
  */
@@ -98,8 +96,7 @@ export const isMaxLoss = (errorMsg = "") => {
 };
 
 /**
- * 兑换异常
- * 针对那种，线上查询成功，fork链上兑换，兑换失败的情况，多试试还是能通的
+ * exchange error in fork chain
  * @param {*} errorMsg
  * @returns
  */
@@ -108,7 +105,7 @@ export const isExchangeFail = (errorMsg = "") => {
 };
 
 /**
- * 正在distributing状态
+ * distributing
  * @param {*} errorMsg
  * @returns
  */
@@ -117,7 +114,7 @@ export const isDistributing = (errorMsg = "") => {
 };
 
 /**
- * 小于最小投资额
+ * less then minimum
  * @param {*} errorMsg
  * @returns
  */

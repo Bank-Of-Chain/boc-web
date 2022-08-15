@@ -150,7 +150,7 @@ export default function Deposit({
   ];
 
   /**
-   * 校验value是否为有效输入
+   * check if value is valid
    * @returns
    */
   function isValidValue(token) {
@@ -162,20 +162,20 @@ export default function Deposit({
       isEmpty(value.replace(/ /g, ""))
     )
       return;
-    // 如果不是一个数值
+    // not a number
     if (isNaN(Number(value))) return false;
     const nextValue = BN(value);
     const nextFromValue = nextValue.multipliedBy(
       BigNumber.from(10).pow(decimals).toString()
     );
-    // 判断值为正数
+    // should be positive
     if (nextFromValue.lte(0)) return false;
-    // 精度处理完之后，应该为整数
+    // should be integer
     const nextFromValueString = nextValue.multipliedBy(
       BigNumber.from(10).pow(decimals).toString()
     );
     if (nextFromValueString.toFixed().indexOf(".") !== -1) return false;
-    // 数值小于最大数量
+    // balance less than value
     if (balance.lt(BigNumber.from(nextFromValue.toFixed()))) return false;
     return true;
   }
@@ -231,10 +231,9 @@ export default function Deposit({
     return [nextTokens, nextAmounts];
   };
 
-  const diposit = async () => {
-    // 取款逻辑参考：https://github.com/PiggyFinance/piggy-finance-web/issues/178
+  const deposit = async () => {
     clearTimeout(loadingTimer.current);
-    // step1: 校验三个币，起码一个有值
+    // step1: valid three tokens
     const isValidUsdtValue = isValidValue(TOKEN.USDT);
     const isValidUsdcValue = isValidValue(TOKEN.USDC);
     const isValidDaiValue = isValidValue(TOKEN.DAI);
@@ -247,7 +246,7 @@ export default function Deposit({
         })
       );
     }
-    // step2：折算精度，授权三个币及数值
+    // step2: convert precision, approve three tokens
     setIsLoading(true);
     const [nextTokens, nextAmounts] = getTokenAndAmonut();
     console.log("nextTokens=", nextTokens, nextAmounts);
@@ -259,12 +258,12 @@ export default function Deposit({
         userProvider
       );
       const contractWithUser = contract.connect(signer);
-      // 获取当前允许的额度
+      // get allow amount
       const allowanceAmount = await contractWithUser.allowance(
         address,
         VAULT_ADDRESS
       );
-      // 如果充值金额大于允许的额度，则需要重新设置额度
+      // If deposit amount greater than allow amount, reset amount
       if (nextAmounts[key].gt(allowanceAmount)) {
         // 如果允许的额度为0，则直接设置新的额度。否则，则设置为0后，再设置新的额度。
         if (allowanceAmount.gt(0)) {
@@ -279,7 +278,7 @@ export default function Deposit({
             )
             .then((tx) => tx.wait())
             .catch((e) => {
-              // 如果是用户自行取消的，则直接返回
+              // cancel by user
               if (e.code === 4001) {
                 setIsLoading(false);
                 return Promise.reject(e);
@@ -305,7 +304,7 @@ export default function Deposit({
             .approve(VAULT_ADDRESS, nextAmounts[key])
             .then((tx) => tx.wait())
             .catch((e) => {
-              // 如果是用户自行取消的，则直接返回
+              // cancel by user
               if (e.code === 4001) {
                 setIsLoading(false);
                 return Promise.reject(e);
@@ -314,7 +313,7 @@ export default function Deposit({
         }
       }
     }
-    // step3: 存钱
+    // step3: deposit
     const vaultContract = new ethers.Contract(
       VAULT_ADDRESS,
       VAULT_ABI,
@@ -595,7 +594,7 @@ export default function Deposit({
                       )))
                 }
                 color="colorfull"
-                onClick={diposit}
+                onClick={deposit}
                 style={{ width: "100%" }}
               >
                 Deposit
@@ -759,7 +758,7 @@ export default function Deposit({
             >
               <Button
                 color="colorfull"
-                onClick={diposit}
+                onClick={deposit}
                 style={{ width: "50%" }}
               >
                 Continue

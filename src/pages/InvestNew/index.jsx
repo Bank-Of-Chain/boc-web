@@ -108,8 +108,8 @@ function Invest(props) {
     userProvider
   );
 
-  // 载入账户数据
-  const loadBanlance = () => {
+  // load user balance
+  const loadBalance = () => {
     if (isEmpty(address)) return;
     const usdtContract = new ethers.Contract(
       USDT_ADDRESS,
@@ -169,7 +169,7 @@ function Invest(props) {
   };
 
   /**
-   * 此方法只载入balance数据
+   * only load balance
    * @returns
    */
   const loadCoinsBalance = () => {
@@ -258,7 +258,7 @@ function Invest(props) {
       block
         .getTransaction()
         .then((tx) => tx.wait())
-        .then(loadBanlance);
+        .then(loadBalance);
   }
   function handleBurn(...eventArgs) {
     console.log("Burn=", eventArgs);
@@ -267,13 +267,13 @@ function Invest(props) {
       block
         .getTransaction()
         .then((tx) => tx.wait())
-        .then(loadBanlance);
+        .then(loadBalance);
   }
 
   useEffect(() => {
     const listener = () => {
       if (isEmpty(VAULT_ABI) || isEmpty(userProvider)) return;
-      loadBanlance();
+      loadBalance();
       if (isEmpty(VAULT_ADDRESS)) return;
       const vaultContract = new ethers.Contract(
         VAULT_ADDRESS,

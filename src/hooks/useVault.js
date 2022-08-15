@@ -33,7 +33,7 @@ const useVault = (VAULT_ADDRESS, VAULT_ABI, userProvider) => {
   };
 
   /**
-   * 查询vault的基础信息
+   * query vault base info
    * @returns
    */
   const queryBaseInfo = () => {

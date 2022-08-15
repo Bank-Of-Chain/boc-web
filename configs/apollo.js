@@ -20,7 +20,7 @@ const start = async () => {
   const host = isLinux ? "http://172.31.22.200" : "http://54.179.161.168";
   const url = `${host}:8088/configfiles/json/boc-subgraph/${nextEnv}/boc1.application`;
   const { status, data } = await axios.get(url).catch((error) => {
-    console.error(`${nextEnv}配置加载失败，url=${url}`);
+    console.error(`load ${nextEnv} config error, url=${url}`);
     return {
       status: 200,
       data: {
@@ -141,7 +141,7 @@ const chooseEnv = () => {
     {
       type: "list",
       name: "confirm",
-      message: "请选择需要发布的环境：",
+      message: "Select env to deploy:",
       choices: [
         {
           key: "dev-local",
@@ -175,7 +175,7 @@ const chooseEnv = () => {
         },
         {
           key: "pr-sg",
-          name: "pr-sg(生产)",
+          name: "pr-sg(production)",
           value: "pr-sg",
         },
       ],
@@ -189,21 +189,21 @@ const chooseLocalChainConfig = () => {
     {
       type: "list",
       name: "confirm",
-      message: "请选择要发布的链：",
+      message: "Select chain to deploy",
       choices: [
         {
           key: "config1",
-          name: "以太链",
+          name: "ETH",
           value: "config1",
         },
         {
           key: "config137",
-          name: "Matic链",
+          name: "Polygon",
           value: "config137",
         },
         {
           key: "configBase",
-          name: "跳过",
+          name: "default",
           value: "configBase",
         },
       ],
