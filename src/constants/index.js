@@ -7,7 +7,7 @@ const config = genConfig[ENV_NETWORK_TYPE] || genConfig[undefined];
 console.log("env config=", ENV_NETWORK_TYPE, config);
 
 if (!config) {
-  throw new Error("配置未正确加载");
+  throw new Error("load config error");
 }
 
 // === configs === //

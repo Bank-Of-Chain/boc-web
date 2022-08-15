@@ -363,7 +363,7 @@ export default function Withdraw({
       );
       const vaultContractWithSigner = vaultContract.connect(signer);
       let exchangeArray = [];
-      // 如果不需要兑换则按照多币返回
+      // Return multiple tokens if no need exchange
       console.log(
         "----------start callStatic withdraw----------",
         nextValue,
