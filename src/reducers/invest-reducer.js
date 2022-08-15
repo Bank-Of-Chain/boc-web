@@ -1,19 +1,19 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice } from '@reduxjs/toolkit'
 
 export const metaStore = createSlice({
-  name: "investStore",
+  name: 'investStore',
   initialState: {
-    currentTab: 0,
+    currentTab: 0
   },
   reducers: {
     setCurrentTab: (state, action) => {
-      const { payload } = action;
-      state.currentTab = payload;
-    },
-  },
-});
+      const { payload } = action
+      state.currentTab = payload
+    }
+  }
+})
 
 // Action creators are generated for each case reducer function
-export const { setCurrentTab } = metaStore.actions;
+export const { setCurrentTab } = metaStore.actions
 
-export default metaStore.reducer;
+export default metaStore.reducer
