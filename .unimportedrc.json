@@ -8,5 +8,8 @@
   ],
   "ignoreUnresolved": [],
   "ignoreUnimported": [],
-  "ignoreUnused": []
+  "ignoreUnused": [],
+  "aliases": {
+    "@/*": ["./src"]
+  }
 }
