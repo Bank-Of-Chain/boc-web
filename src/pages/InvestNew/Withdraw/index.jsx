@@ -469,27 +469,27 @@ export default function Withdraw({
   }
 
   /**
-   * 校验toValue是否为有效输入
+   * check if toValue is valid
    * @returns
    */
   const isValidToValue = () => {
     if (toValue === '' || toValue === '-' || isEmpty(toValue.replace(/ /g, ''))) return
-    // 如果不是一个数值
+    // should be a number
     if (isNaN(Number(toValue))) return false
     const nextValue = BN(toValue)
     const nextToValue = nextValue.multipliedBy(BigNumber.from(10).pow(usdiDecimals).toString())
-    // 判断值为正数
+    // should be positive
     if (nextToValue.lte(0)) return false
-    // 精度处理完之后，应该为整数
+    // should be integer
     const nextToValueString = nextValue.multipliedBy(BigNumber.from(10).pow(usdiDecimals).toString())
     if (nextToValueString.toFixed().indexOf('.') !== -1) return false
-    // 数值小于最大数量
+    // balance less than value
     if (toBalance.lt(BigNumber.from(nextToValue.toFixed()))) return false
     return true
   }
 
   /**
-   * 校验allow loss是否为有效输入
+   * check if allow loss is valid
    * @returns
    */
   const isValidAllowLoss = () => {
@@ -507,8 +507,8 @@ export default function Withdraw({
   }
 
   useEffect(() => {
-    // 未打开高级选项页面，则不继续数值预估
-    // 如果输入的slipper等值不正确，则不继续数值预估
+    // need open advanced setting
+    // allowLoss, slipper, toValue need valid
     if (isValidAllowLoss() && isValidSlipper() && isValidToValue()) {
       estimateWithdraw()
     }

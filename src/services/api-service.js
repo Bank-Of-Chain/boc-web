@@ -11,7 +11,7 @@ const ETH = NET_WORKS[0]
 
 export const getDefiRate = async () => {
   const rs = await axios.get(`${BOC_SERVER}/v1/defi/rate`).then(resp => resp.data)
-  if (isEmpty(rs)) throw new Error('查询失败')
+  if (isEmpty(rs)) throw new Error('fetch error')
   return rs
 }
 

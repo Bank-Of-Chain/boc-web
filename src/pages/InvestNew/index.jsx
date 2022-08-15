@@ -103,7 +103,6 @@ function Invest(props) {
     const daiContract = new ethers.Contract(DAI_ADDRESS, IERC20_ABI, userProvider)
     const usdiContract = new ethers.Contract(USDI_ADDRESS, IERC20_ABI, userProvider)
 
-    // 如果abi版本等于beta-v1.5.9，则需要多查询vaultBuffer的账户余额
     const vaultBufferContract = new ethers.Contract(VAULT_BUFFER_ADDRESS, VAULT_BUFFER_ABI, userProvider)
     vaultBufferContract
       .decimals()

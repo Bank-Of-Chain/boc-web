@@ -459,7 +459,7 @@ export default function Withdraw({
    */
   const isValidToValue = () => {
     if (toValue === '' || toValue === '-' || isEmpty(toValue.replace(/ /g, ''))) return
-    // not a number
+    // should be a number
     if (isNaN(Number(toValue))) return false
     const nextValue = BN(toValue)
     const nextToValue = nextValue.multipliedBy(BigNumber.from(10).pow(ethiDecimals).toString())

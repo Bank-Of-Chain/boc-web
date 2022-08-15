@@ -25,7 +25,7 @@ import isUndefined from 'lodash/isUndefined'
 import map from 'lodash/map'
 
 import { WALLETS } from './constants/wallet'
-import { isInMobileWalletApp, isInMobileH5 } from './helpers/plugin-util'
+import { isInMobileWalletApp, isInMobileH5, hasWalletInstalled } from './helpers/plugin-util'
 
 // === Styles === //
 import './App.css'
@@ -92,7 +92,7 @@ function App() {
 
   useEffect(() => {
     const isBrowserPluginWallet = [WALLETS.MetaMask.info.symbol].includes(walletName)
-    if (!window.ethereum || !isBrowserPluginWallet) {
+    if (!hasWalletInstalled() || !isBrowserPluginWallet) {
       return
     }
     function chainChangedReload(chainId) {
@@ -134,7 +134,7 @@ function App() {
       return
     }
     // unlogin and no browser wallet plugin, allow switch tab
-    if (!window.ethereum && !userProvider) {
+    if (!hasWalletInstalled() && !userProvider) {
       return
     }
     const supportSwitch = [WALLETS.MetaMask.info.symbol]
