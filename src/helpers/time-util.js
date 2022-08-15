@@ -3,7 +3,7 @@ import parser from 'cron-parser'
 import min from 'lodash/min'
 
 // === Constants === //
-import { DO_HARDWORK_CRON, DO_ALLOCATION_CRON } from '../constants/cron'
+import { DO_HARDWORK_CRON, DO_ALLOCATION_CRON } from '@/constants/cron'
 
 var options = {
   tz: 'Asia/Shanghai'
