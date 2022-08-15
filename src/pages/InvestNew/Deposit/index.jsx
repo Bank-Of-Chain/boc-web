@@ -265,10 +265,10 @@ export default function Deposit({
       );
       // If deposit amount greater than allow amount, reset amount
       if (nextAmounts[key].gt(allowanceAmount)) {
-        // 如果允许的额度为0，则直接设置新的额度。否则，则设置为0后，再设置新的额度。
+        // If allowance equal 0, approve nextAmount, otherwise approve 0 and approve nextAmount
         if (allowanceAmount.gt(0)) {
           console.log(
-            "补充allowance:",
+            "add allowance:",
             nextAmounts[key].sub(allowanceAmount).toString()
           );
           await contractWithUser
@@ -283,7 +283,7 @@ export default function Deposit({
                 setIsLoading(false);
                 return Promise.reject(e);
               }
-              // 如果补齐失败，则需要使用最糟的方式，将allowance设置为0后，再设置成新的额度。
+              // If increase failed, approve 0 and approve nextAmounts
               return contractWithUser
                 .approve(VAULT_ADDRESS, 0)
                 .then((tx) => tx.wait())
@@ -295,9 +295,9 @@ export default function Deposit({
             });
         } else {
           console.log(
-            "当前授权：",
+            "current allowance:",
             allowanceAmount.toString(),
-            "准备授权：",
+            "next allowance:",
             nextAmounts[key].toString()
           );
           await contractWithUser
