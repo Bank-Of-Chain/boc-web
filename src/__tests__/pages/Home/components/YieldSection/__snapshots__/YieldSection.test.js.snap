@@ -1,0 +1,94 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`YieldSection Component Render 1`] = `
+<DocumentFragment>
+  <div
+    class="makeStyles-yieldSection-1"
+  >
+    <h2
+      class="makeStyles-title-2"
+    >
+      Sources of
+      <span
+        class="makeStyles-colorful-4"
+      >
+         yield.
+      </span>
+    </h2>
+    <h3
+      class="makeStyles-subTitle-5"
+    >
+      The best long-term 
+      <strong>
+        risk-free
+      </strong>
+       return
+    </h3>
+    <p
+      class="makeStyles-description-6"
+    >
+      Bank of Chain maximizes returns in a scalable and safe manner, only interacting with carefully-vetted protocols.
+    </p>
+    <p
+      class="makeStyles-description-6"
+    >
+      Yields are obtained from three sources:
+    </p>
+    <ul
+      class="makeStyles-sourceList-7"
+    >
+      <li
+        class="makeStyles-sourceItem-8"
+      >
+        <svg
+          aria-hidden="true"
+          class="MuiSvgIcon-root makeStyles-checkIcon-9"
+          focusable="false"
+          viewBox="0 0 24 24"
+        >
+          <path
+            d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"
+          />
+        </svg>
+        <span>
+          Market-making fees.
+        </span>
+      </li>
+      <li
+        class="makeStyles-sourceItem-8"
+      >
+        <svg
+          aria-hidden="true"
+          class="MuiSvgIcon-root makeStyles-checkIcon-9"
+          focusable="false"
+          viewBox="0 0 24 24"
+        >
+          <path
+            d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"
+          />
+        </svg>
+        <span>
+          Interest from over-collateralized lending.
+        </span>
+      </li>
+      <li
+        class="makeStyles-sourceItem-8"
+      >
+        <svg
+          aria-hidden="true"
+          class="MuiSvgIcon-root makeStyles-checkIcon-9"
+          focusable="false"
+          viewBox="0 0 24 24"
+        >
+          <path
+            d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"
+          />
+        </svg>
+        <span>
+          Governance token rewards.
+        </span>
+      </li>
+    </ul>
+  </div>
+</DocumentFragment>
+`;

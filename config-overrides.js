@@ -1,20 +1,20 @@
 const path = require("path");
+
+const { env } = require("./configs/address.json");
+
+// === Utils === //
 const moment = require("moment");
 
+// === Plugins === //
 const FileManagerPlugin = require("filemanager-webpack-plugin");
 
-function resolve(dir) {
-  return path.join(__dirname, ".", dir);
-}
+const resolve = (dir) => path.join(__dirname, ".", dir);
 
 const { NODE_ENV } = process.env;
 module.exports = function override(config) {
   config.resolve.alias = {
     ...config.resolve.alias,
     "@": resolve("src"),
-    "@components": resolve("src/components"),
-    "@constants": resolve("src/constants"),
-    "@hooks": resolve("src/hooks"),
   };
   if (NODE_ENV === "production") {
     config.plugins.push(
@@ -28,7 +28,7 @@ module.exports = function override(config) {
                   "./zip/web-" +
                   moment().format("yyyyMMDDHHmmss") +
                   "(" +
-                  process.env.REACT_APP_ENV +
+                  env +
                   ").zip",
               },
             ],

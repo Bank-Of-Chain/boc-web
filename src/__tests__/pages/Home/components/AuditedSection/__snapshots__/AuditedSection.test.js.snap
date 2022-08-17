@@ -1,0 +1,28 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`AuditedSection Component Render 1`] = `
+<DocumentFragment>
+  <div
+    class="makeStyles-section-1"
+  >
+    <h1
+      class="makeStyles-title-3"
+    >
+      Your assets,
+    </h1>
+    <h1
+      class="makeStyles-title-3"
+    >
+      secured
+    </h1>
+    <div
+      class="makeStyles-divider-5"
+    />
+    <h4
+      class="makeStyles-text-4"
+    >
+      The smart contracts underlying the BoC protocol have been throughly and repeatedly tested. BoC has been audited by reputable security firms including XXXXXXXXXX, YYYYYYYYYYY and ZZZZZZZZZZZZZZZ.
+    </h4>
+  </div>
+</DocumentFragment>
+`;

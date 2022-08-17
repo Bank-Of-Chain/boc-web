@@ -1,0 +1,42 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`CustomDropdown Component Render 1`] = `
+<DocumentFragment>
+  <div>
+    <div>
+      <button
+        aria-haspopup="true"
+        aria-label="Notifications"
+        class="MuiButtonBase-root MuiButton-root MuiButton-text makeStyles-button-22 abc makeStyles-dropdownTrigger-16"
+        tabindex="0"
+        type="button"
+      >
+        <span
+          class="MuiButton-label"
+        >
+          <span
+            aria-hidden="true"
+            class="material-icons MuiIcon-root makeStyles-buttonIcon-15"
+          >
+            abc
+          </span>
+          abc
+          <svg
+            aria-hidden="true"
+            class="MuiSvgIcon-root makeStyles-caret-17"
+            focusable="false"
+            viewBox="0 0 24 24"
+          >
+            <path
+              d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"
+            />
+          </svg>
+        </span>
+        <span
+          class="MuiTouchRipple-root"
+        />
+      </button>
+    </div>
+  </div>
+</DocumentFragment>
+`;

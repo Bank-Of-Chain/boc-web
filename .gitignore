@@ -1,4 +1,6 @@
 build/
 node_modules/
 zip/
+coverage/
 .env
+.eslintcache

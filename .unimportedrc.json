@@ -1,0 +1,15 @@
+{
+  "entry": ["src/app.jsx", "src/index.jsx", "src/pages/**/*.{js}x"],
+  "extensions": [".jsx", ".js"],
+  "ignorePatterns": [
+    "**/node_modules/**",
+    "**/public/**",
+    "**/src/__tests__/**"
+  ],
+  "ignoreUnresolved": [],
+  "ignoreUnimported": [],
+  "ignoreUnused": [],
+  "aliases": {
+    "@/*": ["./src"]
+  }
+}
