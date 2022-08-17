@@ -1,42 +1,33 @@
-import React from "react";
-import { makeStyles } from "@material-ui/core/styles";
-import useMediaQuery from "@material-ui/core/useMediaQuery";
+import React from 'react'
+import { makeStyles } from '@material-ui/core/styles'
+import useMediaQuery from '@material-ui/core/useMediaQuery'
 
 // === Components === //
-import ProductSection from "./Sections/ProductSection";
-import AuditedSection from "./Sections/AuditedSection";
-import AmmSection from "./Sections/AmmSection";
-import YieldSection from "./Sections/YieldSection";
-import LendingSection from "./Sections/LendingSection";
-import RoadMapSection from "./Sections/RoadMapSection";
-import GridContainer from "../../components/Grid/GridContainer";
-import GridItem from "../../components/Grid/GridItem";
-import Button from "../../components/CustomButtons/Button";
+import ProductSection from './components/ProductSection'
+import AuditedSection from './components/AuditedSection'
+import AmmSection from './components/AmmSection'
+import YieldSection from './components/YieldSection'
+import LendingSection from './components/LendingSection'
+import RoadMapSection from './components/RoadMapSection'
+import GridContainer from '@/components/Grid/GridContainer'
+import GridItem from '@/components/Grid/GridItem'
+import Button from '@/components/CustomButtons/Button'
 
 // === Styles === //
-import styles from "./landingPage";
+import styles from './landingPage'
 
-const useStyles = makeStyles(styles);
+const useStyles = makeStyles(styles)
 
 export default function Home() {
-  const classes = useStyles();
-  const isLayoutSm = useMediaQuery("(max-width: 960px)");
+  const classes = useStyles()
+  const isLayoutSm = useMediaQuery('(max-width: 960px)')
 
   return (
     <div className={classes.container}>
       <GridContainer>
-        <GridItem
-          xs={12}
-          sm={12}
-          md={12}
-          className={isLayoutSm ? classes.gridMobile : classes.grid}
-        >
-          <h1 className={isLayoutSm ? classes.titleMobile : classes.title}>
-            The Multichain
-          </h1>
-          <h1 className={isLayoutSm ? classes.titleMobile : classes.title}>
-            Yield Optimizer
-          </h1>
+        <GridItem xs={12} sm={12} md={12} className={isLayoutSm ? classes.gridMobile : classes.grid}>
+          <h1 className={isLayoutSm ? classes.titleMobile : classes.title}>The Multichain</h1>
+          <h1 className={isLayoutSm ? classes.titleMobile : classes.title}>Yield Optimizer</h1>
           <h4 className={classes.text} style={{ marginTop: 40 }}>
             BOC is a DeFi protocol that
           </h4>
@@ -46,12 +37,7 @@ export default function Home() {
             return
           </h4>
           <p className={classes.text} style={{ marginTop: 40 }}>
-            <Button
-              className={classes.invest}
-              color="colorfull-border"
-              size="sm"
-              href="/#/mutils"
-            >
+            <Button className={classes.invest} color="colorfull-border" size="sm" href="/#/mutils">
               Launch App
             </Button>
           </p>
@@ -64,5 +50,5 @@ export default function Home() {
       <RoadMapSection />
       <AuditedSection />
     </div>
-  );
+  )
 }

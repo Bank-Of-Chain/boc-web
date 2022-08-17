@@ -1,38 +1,25 @@
-import React from "react";
+import React from 'react'
 // nodejs library to set properties for components
-import PropTypes from "prop-types";
+import PropTypes from 'prop-types'
 // nodejs library that concatenates classes
-import classNames from "classnames";
+import classNames from 'classnames'
 
 // @material-ui/core components
-import makeStyles from "@material-ui/core/styles/makeStyles";
-import Button from "@material-ui/core/Button";
+import makeStyles from '@material-ui/core/styles/makeStyles'
+import Button from '@material-ui/core/Button'
 
 // core components
 
-import buttonStyle from "./buttonStyle";
+import buttonStyle from './buttonStyle'
 
 const makeComponentStyles = makeStyles(() => ({
-  ...buttonStyle,
-}));
+  ...buttonStyle
+}))
 
 const RegularButton = React.forwardRef(function RegularButton(props, ref) {
-  const {
-    color,
-    round,
-    children,
-    fullWidth,
-    disabled,
-    simple,
-    size,
-    block,
-    link,
-    justIcon,
-    className,
-    ...rest
-  } = props;
+  const { color, round, children, fullWidth, disabled, simple, size, block, link, justIcon, className, ...rest } = props
 
-  const classes = makeComponentStyles();
+  const classes = makeComponentStyles()
 
   const btnClasses = classNames({
     [classes.button]: true,
@@ -45,34 +32,34 @@ const RegularButton = React.forwardRef(function RegularButton(props, ref) {
     [classes.block]: block,
     [classes.link]: link,
     [classes.justIcon]: justIcon,
-    [className]: className,
-  });
+    [className]: className
+  })
   return (
     <Button {...rest} ref={ref} className={btnClasses}>
       {children}
     </Button>
-  );
-});
+  )
+})
 
 RegularButton.propTypes = {
   color: PropTypes.oneOf([
-    "primary",
-    "info",
-    "success",
-    "warning",
-    "danger",
-    "rose",
-    "white",
-    "facebook",
-    "twitter",
-    "google",
-    "github",
-    "transparent",
-    "colorfull",
-    "colorfull-border",
-    "colorfull-border-2",
+    'primary',
+    'info',
+    'success',
+    'warning',
+    'danger',
+    'rose',
+    'white',
+    'facebook',
+    'twitter',
+    'google',
+    'github',
+    'transparent',
+    'colorfull',
+    'colorfull-border',
+    'colorfull-border-2'
   ]),
-  size: PropTypes.oneOf(["sm", "lg"]),
+  size: PropTypes.oneOf(['sm', 'lg']),
   simple: PropTypes.bool,
   round: PropTypes.bool,
   fullWidth: PropTypes.bool,
@@ -81,7 +68,7 @@ RegularButton.propTypes = {
   link: PropTypes.bool,
   justIcon: PropTypes.bool,
   children: PropTypes.node,
-  className: PropTypes.string,
-};
+  className: PropTypes.string
+}
 
-export default RegularButton;
+export default RegularButton

@@ -1,18 +1,18 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect } from 'react'
 
-const useUserAddress = (provider) => {
-  const [userAddress, setUserAddress] = useState("");
+const useUserAddress = provider => {
+  const [userAddress, setUserAddress] = useState('')
 
   useEffect(() => {
-    const getUserAddress = async (injectedProvider) => {
-      const signer = injectedProvider.getSigner();
-      if (signer) setUserAddress(await signer.getAddress());
-    };
+    const getUserAddress = async injectedProvider => {
+      const signer = injectedProvider.getSigner()
+      if (signer) setUserAddress(await signer.getAddress())
+    }
 
-    if (provider) getUserAddress(provider);
-  }, [provider]);
+    if (provider) getUserAddress(provider)
+  }, [provider])
 
-  return userAddress;
-};
+  return userAddress
+}
 
-export default useUserAddress;
+export default useUserAddress
