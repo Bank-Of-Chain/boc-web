@@ -1,43 +1,42 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-import { useState, useEffect } from "react";
+import { useState, useEffect } from 'react'
 
 // === Utils === //
-import * as ethers from "ethers";
-import isEmpty from "lodash/isEmpty";
+import * as ethers from 'ethers'
+import isEmpty from 'lodash/isEmpty'
 
-const { Contract, BigNumber } = ethers;
+const { Contract, BigNumber } = ethers
 
-const useRedeemFeeBps = (props) => {
-  const { userProvider, VAULT_ADDRESS, VAULT_ABI } = props;
-  const [value, setValue] = useState(BigNumber.from(0));
-  const [error, setError] = useState();
-  const [loading, setLoading] = useState(false);
+const useRedeemFeeBps = props => {
+  const { userProvider, VAULT_ADDRESS, VAULT_ABI } = props
+  const [value, setValue] = useState(BigNumber.from(0))
+  const [error, setError] = useState()
+  const [loading, setLoading] = useState(false)
 
   const reload = () => {
-    setLoading(true);
-    const vaultContract = new Contract(VAULT_ADDRESS, VAULT_ABI, userProvider);
+    setLoading(true)
+    const vaultContract = new Contract(VAULT_ADDRESS, VAULT_ABI, userProvider)
     vaultContract
       .redeemFeeBps()
       .then(setValue)
       .catch(setError)
-      .finally(() => setLoading(false));
-  };
+      .finally(() => setLoading(false))
+  }
 
   useEffect(() => {
     if (isEmpty(userProvider) || isEmpty(VAULT_ADDRESS)) {
-      setLoading(false);
-      setError();
-      return;
+      setLoading(false)
+      setError()
+      return
     }
-    reload();
-  }, [userProvider, VAULT_ADDRESS]);
+    reload()
+  }, [userProvider, VAULT_ADDRESS])
 
   return {
     value,
     loading,
     error,
-    reload,
-  };
-};
+    reload
+  }
+}
 
-export default useRedeemFeeBps;
+export default useRedeemFeeBps

@@ -1,17 +1,17 @@
-import React, { Fragment } from "react";
-import { makeStyles } from "@material-ui/core/styles";
+import React, { Fragment } from 'react'
+import { makeStyles } from '@material-ui/core/styles'
 
 // === Components === //
-import Header from "../../components/Header/Header";
-import Footer from "../../components/Footer/Footer";
-import HeaderLinks from "../../components/Header/HeaderLinks";
+import Header from '@/components/Header/Header'
+import Footer from '@/components/Footer/Footer'
+import HeaderLinks from '@/components/Header/HeaderLinks'
 
-import styles from "./style";
+import styles from './style'
 
-const useStyles = makeStyles(styles);
+const useStyles = makeStyles(styles)
 
 export default function Frame(props) {
-  const classes = useStyles();
+  const classes = useStyles()
   return (
     <Fragment>
       <Header
@@ -21,12 +21,12 @@ export default function Frame(props) {
         fixed
         changeColorOnScroll={{
           height: 90,
-          color: "white",
+          color: 'white'
         }}
         {...props}
       />
       <main className={classes.main}>{props.children}</main>
       <Footer whiteFont />
     </Fragment>
-  );
+  )
 }
