@@ -221,12 +221,8 @@ function Invest(props) {
   }, [address, VAULT_ADDRESS, VAULT_ABI, userProvider])
 
   const loadTotalAssets = () => {
-    if (abi_version === 'beta-v1.5.9') {
-      const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider)
-      return vaultContract.totalAssetsIncludeVaultBuffer()
-    }
-    const usdiContract = new ethers.Contract(USDI_ADDRESS, IERC20_ABI, userProvider)
-    return usdiContract.totalSupply()
+    const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider)
+    return vaultContract.totalAssetsIncludeVaultBuffer()
   }
 
   const handleAddUSDi = () => {
@@ -302,37 +298,28 @@ function Invest(props) {
                     </span>
                   )}
                 </div>
-                {abi_version === 'beta-v1.5.9' && (
-                  <div className={classes.balanceCardValue} style={{ fontSize: '1rem' }}>
-                    <span title={formatBalance(vaultBufferBalance, vaultBufferDecimals, { showAll: true })}>
-                      <Loading loading={isBalanceLoading}>{formatBalance(vaultBufferBalance, vaultBufferDecimals)}</Loading>
-                    </span>
-                    <span className={classes.symbol}>USDi Ticket&nbsp;&nbsp;</span>
-                    <Tooltip
-                      classes={{
-                        tooltip: classes.tooltip
-                      }}
-                      placement="right"
-                      title={
-                        <span>
-                          The USDi ticket is automatically converted to USDi. And was last executed in&nbsp;
-                          <span style={{ color: 'red', fontWeight: 'bold' }}>{moment(lastRebaseTime).format('yyyy-MM-DD HH:mm')}</span>
-                        </span>
-                      }
-                    >
-                      <InfoIcon style={{ fontSize: '1rem' }} />
-                    </Tooltip>
-                  </div>
-                )}
+                <div className={classes.balanceCardValue} style={{ fontSize: '1rem' }}>
+                  <span title={formatBalance(vaultBufferBalance, vaultBufferDecimals, { showAll: true })}>
+                    <Loading loading={isBalanceLoading}>{formatBalance(vaultBufferBalance, vaultBufferDecimals)}</Loading>
+                  </span>
+                  <span className={classes.symbol}>USDi Ticket&nbsp;&nbsp;</span>
+                  <Tooltip
+                    classes={{
+                      tooltip: classes.tooltip
+                    }}
+                    placement="right"
+                    title={
+                      <span>
+                        The USDi ticket is automatically converted to USDi. And was last executed in&nbsp;
+                        <span style={{ color: 'red', fontWeight: 'bold' }}>{moment(lastRebaseTime).format('yyyy-MM-DD HH:mm')}</span>
+                      </span>
+                    }
+                  >
+                    <InfoIcon style={{ fontSize: '1rem' }} />
+                  </Tooltip>
+                </div>
                 <div className={classes.balanceCardLabel}>AVAILABLE BALANCE</div>
               </div>
-              {/* <div className={classes.tokenInfo}>
-                {userProvider && (
-                  <a href={`${net.blockExplorer}/address/${USDI_ADDRESS}`} target='_blank' rel='noopener noreferrer'>
-                    <img className={classes.scanToken} src={net.blockExplorerIcon} alt='wallet' />
-                  </a>
-                )}
-              </div> */}
             </Card>
           )}
           {current === 1 && (

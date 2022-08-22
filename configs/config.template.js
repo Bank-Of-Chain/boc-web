@@ -63,7 +63,7 @@ const config137 = {
       id: 'mutilCoins',
       name: 'Vault for USDi',
       path: '#/mutils',
-      abi_version: 'beta-v1.5.9',
+      abi_version: 'usdi-v1.6.0',
       VAULT_ADDRESS: USDI_VAULT_FOR_MATIC,
       USDI_ADDRESS: USDI_FOR_MATIC,
       VAULT_BUFFER_ADDRESS: VAULT_BUFFER_FOR_USDI_MATIC
@@ -73,7 +73,7 @@ const config137 = {
       name: 'Vault for ETHi',
       description: 'Vault for ETHi',
       path: '#/ethi',
-      abi_version: 'ethi',
+      abi_version: 'ethi-v1.6.0',
       VAULT_ADDRESS: '',
       ETHI_ADDRESS: '',
       VAULT_BUFFER_ADDRESS: ''
@@ -107,7 +107,7 @@ const config1 = {
       id: 'mutilCoins',
       name: 'Vault for USDi',
       path: '#/mutils',
-      abi_version: 'beta-v1.5.9',
+      abi_version: 'usdi-v1.6.0',
       VAULT_ADDRESS: USDI_VAULT_FOR_ETH,
       USDI_ADDRESS: USDI_FOR_ETH,
       VAULT_BUFFER_ADDRESS: VAULT_BUFFER_FOR_USDI_ETH
@@ -117,7 +117,7 @@ const config1 = {
       name: 'Vault for ETHi',
       description: 'Vault for ETHi',
       path: '#/ethi',
-      abi_version: 'ethi',
+      abi_version: 'ethi-v1.6.0',
       VAULT_ADDRESS: ETHI_VAULT,
       ETHI_ADDRESS: ETHI_FOR_ETH,
       VAULT_BUFFER_ADDRESS: VAULT_BUFFER_FOR_ETHI_ETH
