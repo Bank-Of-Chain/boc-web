@@ -1,7 +1,6 @@
 const style = {
   selectWrapper: {
     position: 'relative',
-    height: '51px',
     lineHeight: '51px'
   },
   selectTrigger: {
@@ -15,6 +14,9 @@ const style = {
     borderRadius: '20px',
     paddingLeft: 16,
     paddingRight: 24
+  },
+  disabled: {
+    backgroundColor: 'ivory'
   },
   triggerLabelWrapper: {
     display: 'flex',

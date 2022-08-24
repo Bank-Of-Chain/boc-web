@@ -10,7 +10,7 @@ import styles from './style'
 
 const useStyles = makeStyles(styles)
 
-function Select({ value, onChange = () => {}, options = [] }) {
+function Select({ value, onChange = () => {}, options = [], disabled }) {
   const [popVisible, setPopVisible] = useState(false)
   const classes = useStyles()
   const selectedOpt = find(options, opt => opt.value === value) || {}
@@ -19,6 +19,7 @@ function Select({ value, onChange = () => {}, options = [] }) {
   }
 
   const handleTogglePop = () => {
+    if (disabled) return
     setPopVisible(!popVisible)
   }
 
@@ -30,7 +31,12 @@ function Select({ value, onChange = () => {}, options = [] }) {
   return (
     <ClickAwayListener onClickAway={handleClickAway}>
       <div className={classes.selectWrapper}>
-        <div className={classes.selectTrigger} onClick={handleTogglePop}>
+        <div
+          className={classNames(classes.selectTrigger, {
+            [classes.disabled]: disabled
+          })}
+          onClick={handleTogglePop}
+        >
           <div className={classes.triggerLabelWrapper}>
             {selectedOpt.img &&
               (!isArray(selectedOpt.img) ? (
@@ -44,11 +50,13 @@ function Select({ value, onChange = () => {}, options = [] }) {
               ))}
             <span className={classes.triggerLabel}>{selectedOpt.label}</span>
           </div>
-          <ExpandMoreIcon
-            className={classNames(classes.caret, {
-              [classes.expandLess]: popVisible
-            })}
-          />
+          {!disabled && (
+            <ExpandMoreIcon
+              className={classNames(classes.caret, {
+                [classes.expandLess]: popVisible
+              })}
+            />
+          )}
         </div>
         <ul
           className={classNames(classes.selectPop, {
