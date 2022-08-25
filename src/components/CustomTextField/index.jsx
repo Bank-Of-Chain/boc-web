@@ -6,7 +6,15 @@ import styles from './style'
 
 const useStyles = makeStyles(styles)
 
-function CustomTextField({ classes = {}, variant = 'outlined', maxEndAdornment = false, onMaxClick = () => {}, isMax = false, ...restProps }) {
+function CustomTextField({
+  classes = {},
+  variant = 'outlined',
+  maxEndAdornment = false,
+  onMaxClick = () => {},
+  isMax = false,
+  InputProps,
+  ...restProps
+}) {
   const styleClasses = useStyles()
   const { root: rootClass, ...restClass } = classes
 
@@ -17,6 +25,7 @@ function CustomTextField({ classes = {}, variant = 'outlined', maxEndAdornment =
         ...restClass
       }}
       InputProps={{
+        ...InputProps,
         endAdornment: maxEndAdornment ? (
           <span
             className={classNames(styleClasses.endAdornment, {

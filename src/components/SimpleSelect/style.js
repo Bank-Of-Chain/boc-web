@@ -1,5 +1,6 @@
 const style = {
   selectWrapper: {
+    height: '51px',
     position: 'relative',
     lineHeight: '51px'
   },
@@ -7,7 +8,6 @@ const style = {
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
-    width: '200px',
     height: '100%',
     cursor: 'pointer',
     border: '1px solid #666666',
