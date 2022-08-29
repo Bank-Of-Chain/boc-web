@@ -159,29 +159,27 @@ export default function Deposit({
         isSuccess = true
       })
       .catch(error => {
-        if (error && error.data) {
-          const errorMsg = errorTextOutput(error)
-          let tip = ''
-          if (isEs(errorMsg)) {
-            tip = 'Vault has been shut down, please try again later!'
-          } else if (isAd(errorMsg)) {
-            tip = 'Vault is in adjustment status, please try again later!'
-          } else if (isRp(errorMsg)) {
-            tip = 'Vault is in rebase status, please try again later!'
-          } else if (isDistributing(errorMsg)) {
-            tip = 'Vault is in distributing, please try again later!'
-          } else if (isLessThanMinValue(errorMsg)) {
-            tip = `Deposit Amount must be greater than ${toFixed(minimumInvestmentAmount, BigNumber.from(10).pow(18), 2)}ETH!`
-          }
-          if (tip) {
-            dispatch(
-              warmDialog({
-                open: true,
-                type: 'error',
-                message: tip
-              })
-            )
-          }
+        const errorMsg = errorTextOutput(error)
+        let tip = ''
+        if (isEs(errorMsg)) {
+          tip = 'Vault has been shut down, please try again later!'
+        } else if (isAd(errorMsg)) {
+          tip = 'Vault is in adjustment status, please try again later!'
+        } else if (isRp(errorMsg)) {
+          tip = 'Vault is in rebase status, please try again later!'
+        } else if (isDistributing(errorMsg)) {
+          tip = 'Vault is in distributing, please try again later!'
+        } else if (isLessThanMinValue(errorMsg)) {
+          tip = `Deposit Amount must be greater than ${toFixed(minimumInvestmentAmount, BigNumber.from(10).pow(18), 2)}ETH!`
+        }
+        if (tip) {
+          dispatch(
+            warmDialog({
+              open: true,
+              type: 'error',
+              message: tip
+            })
+          )
         }
         setIsLoading(false)
       })

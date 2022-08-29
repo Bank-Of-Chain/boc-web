@@ -32,7 +32,6 @@ import InfoIcon from '@material-ui/icons/Info'
 import GridContainer from '@/components/Grid/GridContainer'
 import GridItem from '@/components/Grid/GridItem'
 import CustomTextField from '@/components/CustomTextField'
-import Muted from '@/components/Typography/Muted'
 import Button from '@/components/CustomButtons/Button'
 import { warmDialog } from '@/reducers/meta-reducer'
 import { toFixed, formatBalance } from '@/helpers/number-format'
@@ -66,7 +65,6 @@ export default function Deposit({
   userProvider,
   VAULT_ABI,
   VAULT_ADDRESS,
-  abi_version,
   vaultBufferBalance,
   vaultBufferDecimals,
   isBalanceLoading,
@@ -402,78 +400,39 @@ export default function Deposit({
         ))}
       </GridContainer>
       <GridContainer classes={{ root: classes.estimateContainer }}>
-        {abi_version === 'beta-v1.5.9' ? (
-          <GridItem xs={12} sm={12} md={12} lg={12}>
-            <p className={classes.estimateText}>To</p>
-            <p className={classes.estimateBalanceTitle}>
-              USDi Ticket:
-              <span className={classes.estimateBalanceNum}>
-                <Loading loading={isEstimate}>{toFixed(estimateVaultBuffValue, BigNumber.from(10).pow(usdiDecimals))}</Loading>
-              </span>
-            </p>
-            <p className={classes.estimateText}>
-              Balance:&nbsp;&nbsp;
-              <span>
-                <Loading loading={isBalanceLoading}>{formatBalance(vaultBufferBalance, vaultBufferDecimals)}</Loading>
-              </span>
-            </p>
-          </GridItem>
-        ) : (
-          <GridItem xs={12} sm={12} md={12} lg={12}>
-            <div className={classes.depositComfirmArea}>
-              <Muted>
-                <p
-                  style={{
-                    fontSize: 16,
-                    wordBreak: 'break-all',
-                    letterSpacing: '0.01071em'
-                  }}
-                >
-                  Estimated: &nbsp;
-                  <Loading loading={isEstimate} element={toFixed(estimateVaultBuffValue, BigNumber.from(10).pow(usdiDecimals))} />
-                  &nbsp;USDi
-                </p>
-              </Muted>
-            </div>
-          </GridItem>
-        )}
+        <GridItem xs={12} sm={12} md={12} lg={12}>
+          <p className={classes.estimateText}>To</p>
+          <p className={classes.estimateBalanceTitle}>
+            USDi Ticket:
+            <span className={classes.estimateBalanceNum}>
+              <Loading loading={isEstimate}>{toFixed(estimateVaultBuffValue, BigNumber.from(10).pow(usdiDecimals))}</Loading>
+            </span>
+          </p>
+          <p className={classes.estimateText}>
+            Balance:&nbsp;&nbsp;
+            <span>
+              <Loading loading={isBalanceLoading}>{formatBalance(vaultBufferBalance, vaultBufferDecimals)}</Loading>
+            </span>
+          </p>
+        </GridItem>
       </GridContainer>
       <GridContainer>
-        {abi_version === 'beta-v1.5.9' ? (
-          <GridItem xs={12} sm={12} md={12} lg={12}>
-            <div className={classes.footerContainer}>
-              <Button
-                disabled={
-                  !isLogin ||
-                  (isLogin &&
-                    (some(formConfig, item => isValidValue(item.name) === false) || every(formConfig, item => isValidValue(item.name) !== true)))
-                }
-                color="colorfull"
-                onClick={openEstimateModal}
-                style={{ width: '100%' }}
-              >
-                Deposit
-              </Button>
-            </div>
-          </GridItem>
-        ) : (
-          <GridItem xs={12} sm={12} md={12} lg={12}>
-            <div className={classes.footerContainer}>
-              <Button
-                disabled={
-                  !isLogin ||
-                  (isLogin &&
-                    (some(formConfig, item => isValidValue(item.name) === false) || every(formConfig, item => isValidValue(item.name) !== true)))
-                }
-                color="colorfull"
-                onClick={deposit}
-                style={{ width: '100%' }}
-              >
-                Deposit
-              </Button>
-            </div>
-          </GridItem>
-        )}
+        <GridItem xs={12} sm={12} md={12} lg={12}>
+          <div className={classes.footerContainer}>
+            <Button
+              disabled={
+                !isLogin ||
+                (isLogin &&
+                  (some(formConfig, item => isValidValue(item.name) === false) || every(formConfig, item => isValidValue(item.name) !== true)))
+              }
+              color="colorfull"
+              onClick={openEstimateModal}
+              style={{ width: '100%' }}
+            >
+              Deposit
+            </Button>
+          </div>
+        </GridItem>
       </GridContainer>
       <Modal className={classes.modal} open={isOpenEstimateModal} aria-labelledby="simple-modal-title" aria-describedby="simple-modal-description">
         <Paper elevation={3} className={classes.depositModal}>
