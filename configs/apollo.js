@@ -79,7 +79,7 @@ const isPrSg = () => {
 }
 
 const isDevLocal = () => {
-  return nextEnv === 'dev-local'
+  return nextEnv === 'local'
 }
 
 const getApiServer = () => {
@@ -137,9 +137,9 @@ const chooseEnv = () => {
       message: 'Select env to deploy:',
       choices: [
         {
-          key: 'dev-local',
-          name: 'dev-local',
-          value: 'dev-local'
+          key: 'local',
+          name: 'local',
+          value: 'local'
         },
         {
           key: 'qa-sg',

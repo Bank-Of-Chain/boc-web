@@ -12,13 +12,13 @@ export default function YieldSection() {
     <div className={classes.yieldSection}>
       <h2 className={classes.title}>
         Sources of
-        <span className={classes.colorful}> yield.</span>
+        <span className={classes.colorful}> yield</span>
       </h2>
       <h3 className={classes.subTitle}>
         The best long-term <strong>risk-free</strong> return
       </h3>
       <p className={classes.description}>
-        Bank of Chain maximizes returns in a scalable and safe manner, only interacting with carefully-vetted protocols.
+        Bank of Chain maximizes returns in a scalable and safe manner by only interacting with rigorously-evaluated protocols.
       </p>
       <p className={classes.description}>Yields are obtained from three sources:</p>
       <ul className={classes.sourceList}>

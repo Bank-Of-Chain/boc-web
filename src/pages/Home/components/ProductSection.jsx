@@ -19,53 +19,28 @@ const useStyles = makeStyles(styles)
 
 const data = [
   {
-    title: 'Smart',
-    descriptions: [
-      'Regularly calibrate the yield, and weigh the cost and reward of reallocation.',
-      'Search for the best rate through exchange aggregators.',
-      'Complex FX interest swap. Adjusting FX synthesis based on exchange rate and yield.',
-      'Automatically set parameters for market-making and lending strategy.'
-    ],
+    title: 'Full automation',
+    descriptions: ['Regular yield calibration for the best rates, adjusting for FX and the costs and rewards of reallocation.'],
     imagePath: require('./../images/point-6.png')
   },
   {
-    title: 'Easy to Use',
-    descriptions: [
-      'Only deposit and withdraw, no necessary to implement and bear the cost of complex operations such as harvest, exchange, and reallocation.',
-      'Automatically reinvest. Flexible deposit and withdrawal.',
-      'Yield generations are visible.'
-    ],
+    title: 'Ease of use',
+    descriptions: ['Flexible deposit/withdrawal. No complex operations. Visible yields. Automatic reinvestment.'],
     imagePath: require('./../images/point-3.png')
   },
   {
     title: 'Safe',
-    descriptions: [
-      'Market cap of qualified stablecoins exceeds 1 billion dollars.',
-      'The TVL of qualified Blockchains exceeds 5 billion dollars.',
-      'Third-party auditing.',
-      'Only official cross-chain bridge.',
-      'Price Quotation relies on Oracle.'
-    ],
+    descriptions: ['Only Chainlink oracles. Only official cross-chain bridges. Only billion-dollar stablecoins and blockchains.'],
     imagePath: require('./../images/point-1.png')
   },
   {
     title: 'Risk control',
-    descriptions: [
-      'De-anchoring risk: no algorithmic stablecoin, No partially collateralized stablecoin, No stablecoin collateralized by a long-tail asset.',
-      'Risk of impermanent loss: market-making only for stablecoin pairs.',
-      'Systemic risk: very selective wrapped tokens and yield aggregators.',
-      'Long-tail risk: no yield generated from risk-taking, such as insurance underwriting, sell call options.',
-      'Leverage risk: no leverage in this version.'
-    ],
+    descriptions: ['The incorporation of protocols and stablecoins with minimal risk of depegging and suffering from impermanent loss.'],
     imagePath: require('./../images/point-5.png')
   },
   {
-    title: 'Third-Party Risk Diversification',
-    descriptions: [
-      'Investment in a single protocol shall not exceed 30% of the total capital.',
-      'Investment in a single capital pool shall not exceed 20% of the total capital.',
-      'Investment in a single capital pool shall not exceed 50% of the existing capital in that pool.'
-    ],
+    title: 'Diversification',
+    descriptions: ['Investments in a single capital pool or a protocol will be strictly capped, minimizing third-party risks.'],
     imagePath: require('./../images/point-4.png')
   }
 ]
@@ -86,7 +61,7 @@ export default function ProductSection() {
             nextEl: '.swiper-button-next',
             prevEl: '.swiper-button-prev'
           }}
-          autoplay={true}
+          autoplay={false}
         >
           {map(data, (item, i) => {
             const { title, descriptions = [], imagePath } = item
@@ -96,13 +71,14 @@ export default function ProductSection() {
                   title={title}
                   description={map(descriptions, (d, index) => (
                     <span key={`item-${index}`} style={{ display: 'inline-block' }}>
-                      {index + 1}. {d}
+                      {descriptions.length > 1 ? `${index + 1}. ` : ''}
+                      {d}
                     </span>
                   ))}
                   icon={<img src={imagePath} alt="" />}
                   vertical
                   style={{
-                    height: '40rem',
+                    height: '25rem',
                     padding: isLayoutSm ? '2rem' : '6rem 3rem 3rem'
                   }}
                 />
