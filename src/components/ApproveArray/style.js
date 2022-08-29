@@ -8,7 +8,7 @@ const componentsStyle = () => ({
     marginRight: 8
   },
   approveContainer: {
-    maxHeight: '500px'
+    maxHeight: '400px'
   },
   approveItem: {
     textAlign: 'left',
@@ -28,19 +28,37 @@ const componentsStyle = () => ({
     color: 'red'
   },
   errorContainer: {
-    border: '1px solid red'
+    border: '1px solid red',
+    margin: '2px'
   },
   reciveContainer: {
     backgroundColor: 'rgba(255,255,255,0.87)'
   },
   left: {
-    textAlign: 'left'
+    textAlign: 'left',
+    marginLeft: '6rem'
   },
   right: {
-    textAlign: 'right'
+    float: 'right',
+    marginRight: '6rem'
   },
   select: {
-    width: 'auto'
+    width: '90%',
+    margin: '0 auto'
+  },
+  estimateContainer: {
+    display: 'flex',
+    justifyContent: 'center',
+    flexDirection: 'column',
+    minHeight: '10rem'
+  },
+  estimateBalance: {
+    height: '23.75px'
+  },
+  tokenList: {
+    overflow: 'auto',
+    border: '1px solid rgb(166, 142, 254)',
+    borderRadius: '1rem'
   }
 })
 

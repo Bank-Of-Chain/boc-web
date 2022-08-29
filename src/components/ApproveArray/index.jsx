@@ -30,6 +30,7 @@ import { warmDialog } from '@/reducers/meta-reducer'
 
 // === Constants === //
 import { IERC20_ABI, EXCHANGE_EXTRA_PARAMS, ORACLE_ADDITIONAL_SLIPPAGE, USDT_ADDRESS, USDC_ADDRESS, DAI_ADDRESS } from '@/constants'
+import { ETH_ADDRESS } from '@/constants/tokens'
 
 // === Styles === //
 import styles from './style'
@@ -41,8 +42,18 @@ const useStyles = makeStyles(styles)
 const ApproveArray = props => {
   const classes = useStyles()
   const dispatch = useDispatch()
-  const { userProvider, tokens, address: userAddress, exchangeManager, EXCHANGE_AGGREGATOR_ABI, slipper, EXCHANGE_ADAPTER_ABI, handleClose } = props
-  const [receiveToken, setReceiveToken] = useState(USDT_ADDRESS)
+  const {
+    isEthi,
+    userProvider,
+    tokens,
+    address: userAddress,
+    exchangeManager,
+    EXCHANGE_AGGREGATOR_ABI,
+    slipper,
+    EXCHANGE_ADAPTER_ABI,
+    handleClose
+  } = props
+  const [receiveToken, setReceiveToken] = useState(isEthi ? ETH_ADDRESS : USDT_ADDRESS)
   const [receiveAmount, setReceiveAmount] = useState(BigNumber.from(0))
   const [isEstimate, setIsEstimate] = useState(false)
   const [values, setValues] = useState([])
@@ -52,7 +63,9 @@ const ApproveArray = props => {
   const [swapArray, setSwapArray] = useState([])
   const [isLoading, setIsLoading] = useState(false)
 
-  const receiveTokenDecimals = get(decimals, findIndex(tokens, { address: receiveToken }), 0)
+  const receiveTokenIndex = findIndex(tokens, { address: receiveToken })
+  const receiveTokenDecimals = get(decimals, receiveTokenIndex, 0)
+  const receiveTokenAmount = get(tokens, `${receiveTokenIndex}.amount`, BigNumber.from(0))
 
   const getExchangePlatformAdapters = async (exchangeAggregator, userProvider) => {
     const { _exchangeAdapters: adapters } = await exchangeAggregator.getExchangeAdapters()
@@ -64,23 +77,31 @@ const ApproveArray = props => {
     return exchangePlatformAdapters
   }
 
-  const selectOptions = [
-    {
-      label: 'USDT',
-      value: USDT_ADDRESS,
-      img: `./images/${USDT_ADDRESS}.png`
-    },
-    {
-      label: 'USDC',
-      value: USDC_ADDRESS,
-      img: `./images/${USDC_ADDRESS}.png`
-    },
-    {
-      label: 'DAI',
-      value: DAI_ADDRESS,
-      img: `./images/${DAI_ADDRESS}.png`
-    }
-  ]
+  const selectOptions = isEthi
+    ? [
+        {
+          label: 'ETH',
+          value: ETH_ADDRESS,
+          img: `./images/${ETH_ADDRESS}.png`
+        }
+      ]
+    : [
+        {
+          label: 'USDT',
+          value: USDT_ADDRESS,
+          img: `./images/${USDT_ADDRESS}.png`
+        },
+        {
+          label: 'USDC',
+          value: USDC_ADDRESS,
+          img: `./images/${USDC_ADDRESS}.png`
+        },
+        {
+          label: 'DAI',
+          value: DAI_ADDRESS,
+          img: `./images/${DAI_ADDRESS}.png`
+        }
+      ]
 
   async function reload(tokens = [], userAddress, exchangeManager) {
     if (isEmpty(tokens) || isEmpty(exchangeManager) || isEmpty(userAddress)) {
@@ -90,6 +111,15 @@ const ApproveArray = props => {
     const array = await Promise.all(
       map(tokens, async token => {
         const { address, amount } = token
+        if (address === ETH_ADDRESS) {
+          return {
+            address,
+            amount,
+            decimal: 18,
+            allowance: '0',
+            balance: (await userProvider.getBalance(userAddress)).toString()
+          }
+        }
         const contract = new Contract(address, IERC20_ABI, userProvider)
         const allowance = (await contract.allowance(userAddress, exchangeManager)).toString()
         const balance = (await contract.balanceOf(userAddress)).toString()
@@ -142,7 +172,8 @@ const ApproveArray = props => {
     const token = get(tokens, index)
     const value = get(values, index)
     const decimal = get(decimals, index)
-    if (isEmpty(token) || isNil(value) || value === '0') return Promise.reject()
+    // ETH no need approve
+    if (isEmpty(token) || isNil(value) || value === '0') return
     const { address } = token
     const signer = userProvider.getSigner()
     const contract = new Contract(address, IERC20_ABI, userProvider)
@@ -195,7 +226,7 @@ const ApproveArray = props => {
       const allowance = allowances[index]
       const decimal = decimals[index]
       const value = values[index]
-      if (isEmpty(allowance) || isEmpty(decimal) || isEmpty(value)) return false
+      if (isEmpty(allowance) || isEmpty(decimal) || isEmpty(value) || token.address === ETH_ADDRESS || token.address === receiveToken) return false
       let nextValue
       try {
         nextValue = BigNumber.from(new BN(value).multipliedBy(decimal.toString()).toFixed())
@@ -242,17 +273,35 @@ const ApproveArray = props => {
         const decimal = decimals[index]
         if (isNil(decimal) || isNil(value) || value === '0' || token.address === receiveToken) return
         const swapAmount = BigNumber.from(new BN(value).multipliedBy(decimal.toString()).toFixed())
-        const fromTokenConstract = new Contract(token.address, IERC20_ABI, userProvider)
-        const toTokenConstract = new Contract(receiveToken, IERC20_ABI, userProvider)
-        const bestSwapInfo = await getBestSwapInfo(
-          {
+        let fromToken = {}
+        let toToken = {}
+        if (token.address === ETH_ADDRESS) {
+          fromToken = {
+            decimals: 18,
+            address: token.address
+          }
+        } else {
+          const fromTokenConstract = new Contract(token.address, IERC20_ABI, userProvider)
+          fromToken = {
             decimals: parseInt((await fromTokenConstract.decimals()).toString()),
             address: token.address
-          },
-          {
+          }
+        }
+        if (receiveToken === ETH_ADDRESS) {
+          toToken = {
+            decimals: 18,
+            address: receiveToken
+          }
+        } else {
+          const toTokenConstract = new Contract(receiveToken, IERC20_ABI, userProvider)
+          toToken = {
             decimals: parseInt((await toTokenConstract.decimals()).toString()),
             address: receiveToken
-          },
+          }
+        }
+        const bestSwapInfo = await getBestSwapInfo(
+          fromToken,
+          toToken,
           swapAmount,
           parseInt(100 * parseFloat(slipper)) || 0,
           ORACLE_ADDITIONAL_SLIPPAGE,
@@ -310,19 +359,20 @@ const ApproveArray = props => {
       <GridItem xs={12} sm={12} md={12}>
         <h2>Swap into one token</h2>
       </GridItem>
-      <GridItem xs={12} sm={12} md={12}>
-        <GridContainer spacing={1}>
-          <GridItem xs={12} sm={12} md={8} style={{ overflow: 'auto', border: '1px solid #A68EFE' }}>
+      <GridItem xs={12} sm={12} md={12} style={{ padding: '1rem 0' }}>
+        <GridContainer>
+          <GridItem xs={12} sm={12} md={8} className={classes.tokenList}>
             <GridContainer className={classes.approveContainer}>
               {map(tokens, ({ address, amount }, index) => {
                 const isReciveToken = address === receiveToken
-                if (amount === '0' || isReciveToken) return
+                if (amount === '0') return
                 const value = values[index] || ''
                 const balance = balances[index]
                 const decimal = decimals[index]
                 const allowance = allowances[index]
                 const swapError = swapArray[index] instanceof Error
                 const isValid = isEmpty(value) || new BN(balance).gte(value)
+                const isEthAddress = address === ETH_ADDRESS
                 return (
                   <GridItem
                     xs={12}
@@ -341,13 +391,17 @@ const ApproveArray = props => {
                         InputProps={{
                           startAdornment: <img className={classes.tokenLogo} src={`./images/${address}.png`} />
                         }}
-                        onMaxClick={() => handleInputChange(toFixed(balance, decimal), index)}
+                        disabled={isReciveToken}
+                        onMaxClick={() => {
+                          if (isReciveToken) return
+                          handleInputChange(toFixed(balance, decimal), index)
+                        }}
                         error={!isValid}
                       />
                       <Button
                         className={classes.approveButton}
                         color="colorfull"
-                        disabled={isReciveToken || value === toFixed(allowance, decimal)}
+                        disabled={isEthAddress || isReciveToken || value === toFixed(allowance, decimal)}
                         onClick={() => approveValue(index).then(() => reload(tokens, userAddress, exchangeManager))}
                       >
                         approve
@@ -356,7 +410,7 @@ const ApproveArray = props => {
                     {!isReciveToken && (
                       <p className={classes.balanceText}>
                         balance: <Loading loading={isLoading}>{toFixed(balances[index], decimal)}</Loading>
-                        <span style={{ float: 'right', marginRight: '0.5rem' }} className={classNames({ [classes.errorText]: swapError })}>
+                        <span style={{ float: 'right', marginRight: '2.5rem' }} className={classNames({ [classes.errorText]: swapError })}>
                           allowance: <Loading loading={isLoading}>{toFixed(allowances[index], decimal)}</Loading>
                         </span>
                       </p>
@@ -367,22 +421,24 @@ const ApproveArray = props => {
               })}
             </GridContainer>
           </GridItem>
-          <GridItem xs={12} sm={12} md={4}>
+          <GridItem xs={12} sm={12} md={4} className={classes.estimateContainer}>
             <SimpleSelect className={classes.select} value={receiveToken} onChange={setReceiveToken} options={selectOptions} />
-            <Loading loading={isEstimate}>
-              <p>{toFixed(receiveAmount, receiveTokenDecimals, 6)}</p>
-            </Loading>
+            <p className={classes.estimateBalance}>
+              <Loading loading={isEstimate}>
+                {toFixed(receiveAmount, receiveTokenDecimals)}+({toFixed(receiveTokenAmount, receiveTokenDecimals)})
+              </Loading>
+            </p>
           </GridItem>
         </GridContainer>
       </GridItem>
       <GridItem xs={12} sm={12} md={12}>
-        <p>
-          <span className={classes.left}>Slippage tolerance: </span>
-          <span className={classes.rigth}>{toFixed(`${slipper}`, 10 ** 2, 2)}%</span>
-        </p>
-        <p>
-          <span className={classes.left}>Estimated gas fee:</span> <span className={classes.rigth}>15.5usd</span>
-        </p>
+        <h3 className={classes.left}>
+          <span>Slippage tolerance: </span>
+          <span className={classes.right}>{toFixed(`${slipper}`, 10 ** 2, 2)}%</span>
+        </h3>
+        {/* <h3 className={classes.left}>
+          <span>Estimated gas fee:</span> <span className={classes.right}>15.5usd</span>
+        </h3> */}
       </GridItem>
       <GridItem xs={12} sm={12} md={12}>
         <Button color="colorfull" onClick={swap} style={{ width: '50%' }}>

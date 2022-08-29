@@ -90,7 +90,7 @@ function Ethi(props) {
     loadCoinsBalance()
     dispatch(setCurrentTab(tab))
   }
-  const { minimumInvestmentAmount } = useVault(VAULT_ADDRESS, VAULT_ABI, userProvider)
+  const { minimumInvestmentAmount, exchangeManager } = useVault(VAULT_ADDRESS, VAULT_ABI, userProvider)
 
   // load user balance
   const loadBalance = () => {
@@ -309,6 +309,8 @@ function Ethi(props) {
           {current === 2 && (
             <div className={isLayoutSm ? classes.wrapperMobile : classes.wrapper}>
               <Withdraw
+                address={address}
+                exchangeManager={exchangeManager}
                 ethiBalance={ethiBalance}
                 ethiDecimals={ethiDecimals}
                 userProvider={userProvider}

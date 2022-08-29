@@ -110,7 +110,6 @@ export default function Withdraw({
       const vaultContractWithSigner = vaultContract.connect(signer)
 
       try {
-        console.log('estimate shouldExchange:', shouldExchange)
         let [tokens, amounts] = await vaultContractWithSigner.callStatic.burn(nextValue, allowMaxLossValue)
         console.log(
           'tokens, amounts=',
@@ -574,7 +573,7 @@ export default function Withdraw({
       </GridContainer>
       <GridContainer className={classes.outputContainer}>
         <GridItem xs={12} sm={12} md={12} lg={12}>
-          <p className={classes.estimateText}>To</p>
+          <p className={classes.estimateText}>To recived tokens</p>
         </GridItem>
         <GridItem xs={12} sm={12} md={12} lg={12}>
           <div className={classes.selectorlWrapper}>

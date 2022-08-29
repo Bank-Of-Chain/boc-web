@@ -10,7 +10,7 @@ import styles from './style'
 
 const useStyles = makeStyles(styles)
 
-function Select({ value, onChange = () => {}, options = [], disabled }) {
+function Select({ value, onChange = () => {}, options = [], disabled, className }) {
   const [popVisible, setPopVisible] = useState(false)
   const classes = useStyles()
   const selectedOpt = find(options, opt => opt.value === value) || {}
@@ -30,7 +30,7 @@ function Select({ value, onChange = () => {}, options = [], disabled }) {
 
   return (
     <ClickAwayListener onClickAway={handleClickAway}>
-      <div className={classes.selectWrapper}>
+      <div className={classNames(classes.selectWrapper, className)}>
         <div
           className={classNames(classes.selectTrigger, {
             [classes.disabled]: disabled

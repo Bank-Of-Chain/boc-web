@@ -22,6 +22,15 @@ const componentsStyle = () => ({
   modalBody: {
     textAlign: 'center'
   },
+  approvePaper: {
+    padding: '1rem',
+    maxWidth: '40rem',
+    color: 'rgba(255, 255, 255, 0.87)',
+    border: '1px solid #A68EFE',
+    backgroundColor: '#000',
+    borderRadius: '1rem',
+    width: '100%'
+  },
   withdrawContainer: {
     padding: '2.6875rem 2.25rem',
     border: '1px solid #A68EFD',
