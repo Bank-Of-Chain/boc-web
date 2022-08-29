@@ -135,7 +135,8 @@ const componentsStyle = () => ({
     color: 'rgba(255, 255, 255, 0.87)',
     border: '1px solid #A68EFE',
     backgroundColor: '#000',
-    borderRadius: '1rem'
+    borderRadius: '1rem',
+    width: '100%'
   },
   estimateBalanceTitle: {
     fontSize: '1.625rem'

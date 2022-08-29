@@ -18,7 +18,7 @@ const componentsStyle = () => ({
     margin: '12px 0 8px 8px'
   },
   input: {
-    width: '15rem'
+    width: '13rem'
   },
   balanceText: {
     textAlign: 'left',
@@ -32,7 +32,7 @@ const componentsStyle = () => ({
     margin: '2px'
   },
   reciveContainer: {
-    backgroundColor: 'rgba(255,255,255,0.87)'
+    backgroundColor: 'dimgrey'
   },
   left: {
     textAlign: 'left',

@@ -9,6 +9,8 @@ import SimpleSelect from '@/components/SimpleSelect'
 import Button from '@/components/CustomButtons/Button'
 import CustomTextField from '@/components/CustomTextField'
 import Loading from '@/components/LoadingComponent'
+import CheckIcon from '@material-ui/icons/Check'
+import CompareArrowsIcon from '@material-ui/icons/CompareArrows'
 
 // === Utils === //
 import { useDispatch } from 'react-redux'
@@ -65,7 +67,7 @@ const ApproveArray = props => {
 
   const receiveTokenIndex = findIndex(tokens, { address: receiveToken })
   const receiveTokenDecimals = get(decimals, receiveTokenIndex, 0)
-  const receiveTokenAmount = get(tokens, `${receiveTokenIndex}.amount`, BigNumber.from(0))
+  const receiveTokenAmount = get(tokens, `${receiveTokenIndex}.amount`, '0')
 
   const getExchangePlatformAdapters = async (exchangeAggregator, userProvider) => {
     const { _exchangeAdapters: adapters } = await exchangeAggregator.getExchangeAdapters()
@@ -222,28 +224,6 @@ const ApproveArray = props => {
   const swap = () => {
     if (isEmpty(swapArray)) return
 
-    const someNotApprove = some(tokens, (token, index) => {
-      const allowance = allowances[index]
-      const decimal = decimals[index]
-      const value = values[index]
-      if (isEmpty(allowance) || isEmpty(decimal) || isEmpty(value) || token.address === ETH_ADDRESS || token.address === receiveToken) return false
-      let nextValue
-      try {
-        nextValue = BigNumber.from(new BN(value).multipliedBy(decimal.toString()).toFixed())
-        return nextValue.gt(BigNumber.from(allowance))
-      } catch (error) {
-        return false
-      }
-    })
-    if (someNotApprove) {
-      return dispatch(
-        warmDialog({
-          open: true,
-          type: 'warning',
-          message: 'Approval all tokens firstly!'
-        })
-      )
-    }
     const nextSwapArray = map(compact(swapArray), i => {
       const { bestSwapInfo, info } = i
       return {
@@ -260,6 +240,15 @@ const ApproveArray = props => {
       .batchSwap(nextSwapArray)
       .then(tx => tx.wait())
       .then(handleClose)
+      .then(() => {
+        dispatch(
+          warmDialog({
+            open: true,
+            type: 'success',
+            message: 'One Coins Success!'
+          })
+        )
+      })
   }
 
   const estimateWithValue = useCallback(
@@ -354,6 +343,20 @@ const ApproveArray = props => {
     return () => estimateWithValue.cancel()
   }, [isLoading, values, decimals, receiveToken])
 
+  const someNotApprove = some(tokens, (token, index) => {
+    const allowance = allowances[index]
+    const decimal = decimals[index]
+    const value = values[index]
+    if (isEmpty(allowance) || isEmpty(decimal) || isEmpty(value) || token.address === ETH_ADDRESS || token.address === receiveToken) return false
+    let nextValue
+    try {
+      nextValue = BigNumber.from(new BN(value).multipliedBy(decimal.toString()).toFixed())
+      return nextValue.gt(BigNumber.from(allowance))
+    } catch (error) {
+      return false
+    }
+  })
+
   return (
     <GridContainer>
       <GridItem xs={12} sm={12} md={12}>
@@ -368,11 +371,12 @@ const ApproveArray = props => {
                 if (amount === '0') return
                 const value = values[index] || ''
                 const balance = balances[index]
-                const decimal = decimals[index]
-                const allowance = allowances[index]
+                const decimal = decimals[index] || BigNumber.from(0)
+                const allowance = allowances[index] || BigNumber.from(0)
                 const swapError = swapArray[index] instanceof Error
                 const isValid = isEmpty(value) || new BN(balance).gte(value)
                 const isEthAddress = address === ETH_ADDRESS
+                const isOverFlow = new BN(value).multipliedBy(decimal.toString()).lte(allowance.toString())
                 return (
                   <GridItem
                     xs={12}
@@ -398,14 +402,20 @@ const ApproveArray = props => {
                         }}
                         error={!isValid}
                       />
-                      <Button
-                        className={classes.approveButton}
-                        color="colorfull"
-                        disabled={isEthAddress || isReciveToken || value === toFixed(allowance, decimal)}
-                        onClick={() => approveValue(index).then(() => reload(tokens, userAddress, exchangeManager))}
-                      >
-                        approve
-                      </Button>
+                      {isEthAddress || isReciveToken || (
+                        <Button
+                          className={classes.approveButton}
+                          color="colorfull"
+                          onClick={() => approveValue(index).then(() => reload(tokens, userAddress, exchangeManager))}
+                        >
+                          {isOverFlow ? (
+                            <CheckIcon style={{ marginRight: '0.5rem', color: 'greenyellow' }} />
+                          ) : (
+                            <CompareArrowsIcon style={{ marginRight: '0.5rem' }} />
+                          )}
+                          approve
+                        </Button>
+                      )}
                     </div>
                     {!isReciveToken && (
                       <p className={classes.balanceText}>
@@ -425,7 +435,8 @@ const ApproveArray = props => {
             <SimpleSelect className={classes.select} value={receiveToken} onChange={setReceiveToken} options={selectOptions} />
             <p className={classes.estimateBalance}>
               <Loading loading={isEstimate}>
-                {toFixed(receiveAmount, receiveTokenDecimals)}+({toFixed(receiveTokenAmount, receiveTokenDecimals)})
+                {toFixed(receiveAmount, receiveTokenDecimals)}
+                {receiveTokenAmount !== '0' && `+(${toFixed(receiveTokenAmount, receiveTokenDecimals)})`}
               </Loading>
             </p>
           </GridItem>
@@ -441,7 +452,7 @@ const ApproveArray = props => {
         </h3> */}
       </GridItem>
       <GridItem xs={12} sm={12} md={12}>
-        <Button color="colorfull" onClick={swap} style={{ width: '50%' }}>
+        <Button color="colorfull" onClick={swap} disabled={someNotApprove} style={{ width: '50%' }}>
           One Coin
         </Button>
         <Button color="danger" style={{ marginLeft: '1rem' }} onClick={handleClose}>

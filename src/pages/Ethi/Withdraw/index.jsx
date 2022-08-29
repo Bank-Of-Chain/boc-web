@@ -49,6 +49,7 @@ import { MULTIPLE_OF_GAS, MAX_GAS_LIMIT } from '@/constants'
 
 // === Styles === //
 import styles from './style'
+import { some } from 'lodash'
 
 const { BigNumber } = ethers
 const useStyles = makeStyles(styles)
@@ -81,7 +82,7 @@ export default function Withdraw({
   const [withdrawError, setWithdrawError] = useState({})
 
   const [burnTokens, setBurnTokens] = useState([])
-  const [isShowZipModal, setIsShowZipModal] = useState(true)
+  const [isShowZipModal, setIsShowZipModal] = useState(false)
 
   const { value: redeemFeeBps } = useRedeemFeeBps({
     userProvider,
@@ -158,15 +159,20 @@ export default function Withdraw({
   )
 
   const handleBurn = (a, b, c, d, tokens, amounts) => {
-    setIsShowZipModal(true)
-    setBurnTokens(
-      map(tokens, (token, i) => {
-        return {
-          address: token,
-          amount: toFixed(amounts[i], 1)
-        }
+    const nextBurnTokens = map(tokens, (token, i) => {
+      return {
+        address: token,
+        amount: toFixed(amounts[i], 1)
+      }
+    })
+    if (
+      some(nextBurnTokens, i => {
+        return i.address !== ETH_ADDRESS && i.amount !== '0'
       })
-    )
+    ) {
+      setIsShowZipModal(true)
+      setBurnTokens(nextBurnTokens)
+    }
   }
 
   const withdraw = async () => {
