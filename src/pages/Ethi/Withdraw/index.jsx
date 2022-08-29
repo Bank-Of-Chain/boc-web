@@ -26,49 +26,39 @@ import GridContainer from '@/components/Grid/GridContainer'
 import GridItem from '@/components/Grid/GridItem'
 import Button from '@/components/CustomButtons/Button'
 import Loading from '@/components/LoadingComponent'
-import { warmDialog } from '@/reducers/meta-reducer'
-import { toFixed, formatBalance } from '@/helpers/number-format'
-import { addToken } from '@/helpers/wallet'
-import { EXCHANGE_EXTRA_PARAMS, MULTIPLE_OF_GAS, MAX_GAS_LIMIT, ORACLE_ADDITIONAL_SLIPPAGE } from '@/constants'
+import ApproveArray from '@/components/ApproveArray'
 
 // === Hooks === //
+import { warmDialog } from '@/reducers/meta-reducer'
 import useRedeemFeeBps from '@/hooks/useRedeemFeeBps'
-import usePriceProvider from '@/hooks/usePriceProvider'
 
 // === Utils === //
-import { getBestSwapInfo } from 'piggy-finance-utils'
 import isUndefined from 'lodash/isUndefined'
-import assign from 'lodash/assign'
 import map from 'lodash/map'
 import get from 'lodash/get'
 import debounce from 'lodash/debounce'
 import compact from 'lodash/compact'
 import isEmpty from 'lodash/isEmpty'
-import some from 'lodash/some'
-import filter from 'lodash/filter'
 import isNumber from 'lodash/isNumber'
+import { addToken } from '@/helpers/wallet'
+import { toFixed, formatBalance } from '@/helpers/number-format'
 import { isAd, isEs, isRp, isMaxLoss, isLossMuch, isExchangeFail, errorTextOutput } from '@/helpers/error-handler'
 
 // === Constants === //
-import { IERC20_ABI } from '@/constants'
+import { MULTIPLE_OF_GAS, MAX_GAS_LIMIT } from '@/constants'
 
 // === Styles === //
 import styles from './style'
+import { some } from 'lodash'
 
 const { BigNumber } = ethers
 const useStyles = makeStyles(styles)
 
-const steps = [
-  { title: 'Shares Validation' },
-  { title: 'Pre Withdraw' },
-  { title: 'Exchange Path Query' },
-  { title: 'Gas Estimates' },
-  { title: 'Withdraw' }
-]
-
-const WITHDRAW_EXCHANGE_THRESHOLD = BigNumber.from(10).pow(16)
+const steps = [{ title: 'Shares Validation' }, { title: 'Gas Estimates' }, { title: 'Withdraw' }]
 
 export default function Withdraw({
+  address,
+  exchangeManager,
   ethiBalance,
   ethiDecimals,
   userProvider,
@@ -77,7 +67,6 @@ export default function Withdraw({
   VAULT_ABI,
   EXCHANGE_AGGREGATOR_ABI,
   EXCHANGE_ADAPTER_ABI,
-  PRICE_ORCALE_ABI,
   isBalanceLoading,
   reloadBalance
 }) {
@@ -91,12 +80,9 @@ export default function Withdraw({
   const [isWithdrawLoading, setIsWithdrawLoading] = useState(false)
   const [currentStep, setCurrentStep] = useState(0)
   const [withdrawError, setWithdrawError] = useState({})
-  const { getPriceProvider } = usePriceProvider({
-    userProvider,
-    VAULT_ADDRESS,
-    VAULT_ABI,
-    PRICE_ORCALE_ABI
-  })
+
+  const [burnTokens, setBurnTokens] = useState([])
+  const [isShowZipModal, setIsShowZipModal] = useState(false)
 
   const { value: redeemFeeBps } = useRedeemFeeBps({
     userProvider,
@@ -105,16 +91,6 @@ export default function Withdraw({
   })
 
   const redeemFeeBpsPercent = redeemFeeBps.toNumber() / 100
-
-  const getExchangePlatformAdapters = async (exchangeAggregator, userProvider) => {
-    const adapters = await exchangeAggregator.getExchangeAdapters()
-    const exchangePlatformAdapters = {}
-    for (const address of adapters) {
-      const contract = new ethers.Contract(address, EXCHANGE_ADAPTER_ABI, userProvider)
-      exchangePlatformAdapters[await contract.identifier()] = address
-    }
-    return exchangePlatformAdapters
-  }
 
   const estimateWithdraw = useCallback(
     debounce(async () => {
@@ -128,75 +104,7 @@ export default function Withdraw({
       const vaultContractWithSigner = vaultContract.connect(signer)
 
       try {
-        let [tokens, amounts] = await vaultContractWithSigner.callStatic.burn(nextValue, ETH_ADDRESS, allowMaxLossValue, false, [])
-        const exchangeManager = await vaultContract.exchangeManager()
-        const exchangeManagerContract = new ethers.Contract(exchangeManager, EXCHANGE_AGGREGATOR_ABI, userProvider)
-        const exchangePlatformAdapters = await getExchangePlatformAdapters(exchangeManagerContract, userProvider)
-        console.log(
-          'estimate get exchange path:',
-          tokens,
-          map(amounts, i => i.toString())
-        )
-        // fetch the exchange path
-        let exchangeArray = await Promise.all(
-          map(tokens, async (tokenItem, index) => {
-            const exchangeAmounts = amounts[index].toString()
-            if (tokenItem === ETH_ADDRESS || exchangeAmounts === '0') {
-              return {}
-            }
-            const fromConstrat = new ethers.Contract(tokenItem, IERC20_ABI, userProvider)
-            const priceProvider = await getPriceProvider()
-            const amountsInEth = await priceProvider.valueInEth(tokenItem, exchangeAmounts)
-            if (WITHDRAW_EXCHANGE_THRESHOLD.gt(amountsInEth)) {
-              return {}
-            }
-            const fromToken = {
-              decimals: parseInt((await fromConstrat.decimals()).toString()),
-              symbol: await fromConstrat.symbol(),
-              address: tokenItem
-            }
-            try {
-              const bestSwapInfo = await getBestSwapInfo(
-                fromToken,
-                {
-                  decimals: 18,
-                  address: ETH_ADDRESS
-                },
-                amounts[index].toString(),
-                parseInt(100 * parseFloat(slipper)) || 0,
-                ORACLE_ADDITIONAL_SLIPPAGE,
-                exchangePlatformAdapters,
-                assign(EXCHANGE_EXTRA_PARAMS, isEmpty(exchangePlatformAdapters.testAdapter) ? {} : { testAdapter: {} })
-              )
-              if (isEmpty(bestSwapInfo)) {
-                throw new Error('Failed to fetch the exchange path')
-              }
-              return {
-                fromToken: tokenItem,
-                toToken: ETH_ADDRESS,
-                fromAmount: exchangeAmounts,
-                exchangeParam: bestSwapInfo
-              }
-            } catch (error) {
-              console.log('error=', error)
-              return
-            }
-          })
-        )
-
-        if (some(exchangeArray, isUndefined)) {
-          dispatch(
-            warmDialog({
-              open: true,
-              type: 'error',
-              message: 'Failed to fetch the exchange path. Please try again later.'
-            })
-          )
-          return
-        }
-        console.log('exchangeArray=', exchangeArray)
-        const nextArray = filter(exchangeArray, i => !isEmpty(i))
-        ;[tokens, amounts] = await vaultContractWithSigner.callStatic.burn(nextValue, ETH_ADDRESS, allowMaxLossValue, true, nextArray)
+        const [tokens, amounts] = await vaultContractWithSigner.callStatic.burn(nextValue, allowMaxLossValue)
         console.log('estimate withdraw result:', tokens, amounts)
         let nextEstimateWithdrawArray = compact(
           await Promise.all(
@@ -250,6 +158,23 @@ export default function Withdraw({
     }, 1500)
   )
 
+  const handleBurn = (a, b, c, d, tokens, amounts) => {
+    const nextBurnTokens = map(tokens, (token, i) => {
+      return {
+        address: token,
+        amount: toFixed(amounts[i], 1)
+      }
+    })
+    if (
+      some(nextBurnTokens, i => {
+        return i.address !== ETH_ADDRESS && i.amount !== '0'
+      })
+    ) {
+      setIsShowZipModal(true)
+      setBurnTokens(nextBurnTokens)
+    }
+  }
+
   const withdraw = async () => {
     let withdrawTimeStart = Date.now(),
       withdrawValidFinish = 0,
@@ -290,99 +215,30 @@ export default function Withdraw({
     try {
       const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider)
       const vaultContractWithSigner = vaultContract.connect(signer)
-      let exchangeArray = []
-      // Return multiple tokens if no need exchange
-      console.log('----------start callStatic withdraw----------', nextValue, allowMaxLossValue)
 
-      const [tokens, amounts] = await vaultContractWithSigner.callStatic.burn(nextValue, ETH_ADDRESS, allowMaxLossValue, false, [])
-
-      console.log(
-        'tokens, amounts=',
-        tokens,
-        map(amounts, i => i.toString())
-      )
-      preWithdrawGetCoins = Date.now()
-      setCurrentStep(2)
-      const exchangeManager = await vaultContract.exchangeManager()
-      const exchangeManagerContract = new ethers.Contract(exchangeManager, EXCHANGE_AGGREGATOR_ABI, userProvider)
-      const exchangePlatformAdapters = await getExchangePlatformAdapters(exchangeManagerContract, userProvider)
-      // fetch the exchange path
-      exchangeArray = await Promise.all(
-        map(tokens, async (tokenItem, index) => {
-          const exchangeAmounts = amounts[index].toString()
-          if (tokenItem === ETH_ADDRESS || exchangeAmounts === '0') {
-            return {}
-          }
-          const fromConstrat = new ethers.Contract(tokenItem, IERC20_ABI, userProvider)
-          const priceProvider = await getPriceProvider()
-          const amountsInEth = await priceProvider.valueInEth(tokenItem, exchangeAmounts)
-          if (WITHDRAW_EXCHANGE_THRESHOLD.gt(amountsInEth)) {
-            return {}
-          }
-          const fromToken = {
-            decimals: parseInt((await fromConstrat.decimals()).toString()),
-            symbol: await fromConstrat.symbol(),
-            address: tokenItem
-          }
-          try {
-            const bestSwapInfo = await getBestSwapInfo(
-              fromToken,
-              {
-                decimals: 18,
-                address: ETH_ADDRESS
-              },
-              amounts[index].toString(),
-              parseInt(100 * parseFloat(slipper)) || 0,
-              ORACLE_ADDITIONAL_SLIPPAGE,
-              exchangePlatformAdapters,
-              assign(EXCHANGE_EXTRA_PARAMS, isEmpty(exchangePlatformAdapters.testAdapter) ? {} : { testAdapter: {} })
-            )
-            if (isEmpty(bestSwapInfo)) {
-              throw new Error('Failed to fetch the exchange path')
-            }
-            return {
-              fromToken: tokenItem,
-              toToken: ETH_ADDRESS,
-              fromAmount: exchangeAmounts,
-              exchangeParam: bestSwapInfo
-            }
-          } catch (error) {
-            return
-          }
-        })
-      )
-      console.log('exchangeArray=', exchangeArray)
-      if (some(exchangeArray, isUndefined)) {
-        return setWithdrawError({
-          type: 'error',
-          message: 'Failed to fetch the exchange path. Please try again later.'
-        })
-      }
       getSwapInfoFinish = Date.now()
-      setCurrentStep(3)
-      const nextArray = filter(exchangeArray, i => !isEmpty(i))
-      console.log('nextArray=', nextArray)
+      setCurrentStep(2)
       let tx
       // if gasLimit times not 1, need estimateGas
       if (isNumber(MULTIPLE_OF_GAS) && MULTIPLE_OF_GAS !== 1) {
-        const gas = await vaultContractWithSigner.estimateGas.burn(nextValue, ETH_ADDRESS, allowMaxLossValue, true, nextArray)
-        setCurrentStep(4)
+        const gas = await vaultContractWithSigner.estimateGas.burn(nextValue, allowMaxLossValue)
+        setCurrentStep(3)
         estimateGasFinish = Date.now()
         const gasLimit = Math.ceil(gas * MULTIPLE_OF_GAS)
         // gasLimit not exceed maximum
         const maxGasLimit = gasLimit < MAX_GAS_LIMIT ? gasLimit : MAX_GAS_LIMIT
-        tx = await vaultContractWithSigner.burn(nextValue, ETH_ADDRESS, allowMaxLossValue, true, nextArray, {
+        tx = await vaultContractWithSigner.burn(nextValue, allowMaxLossValue, {
           gasLimit: maxGasLimit
         })
       } else {
-        tx = await vaultContractWithSigner.burn(nextValue, ETH_ADDRESS, allowMaxLossValue, true, nextArray)
+        tx = await vaultContractWithSigner.burn(nextValue, allowMaxLossValue)
       }
       withdrawFinish = Date.now()
 
       await tx.wait()
 
       withdrawTransationFinish = Date.now()
-      setCurrentStep(5)
+      setCurrentStep(4)
       setToValue('')
       dispatch(
         warmDialog({
@@ -391,6 +247,7 @@ export default function Withdraw({
           message: 'Success!'
         })
       )
+      vaultContract.on('Burn', handleBurn)
     } catch (error) {
       console.log('withdraw original error :', error)
       const errorMsg = errorTextOutput(error)
@@ -764,6 +621,25 @@ export default function Withdraw({
             >
               Cancel
             </Button>
+          </div>
+        </Paper>
+      </Modal>
+      <Modal className={classes.modal} open={isShowZipModal} aria-labelledby="simple-modal-title" aria-describedby="simple-modal-description">
+        <Paper elevation={3} className={classes.approvePaper}>
+          <div className={classes.modalBody}>
+            {!isEmpty(address) && !isEmpty(exchangeManager) && (
+              <ApproveArray
+                isEthi
+                address={address}
+                tokens={burnTokens}
+                userProvider={userProvider}
+                exchangeManager={exchangeManager}
+                EXCHANGE_ADAPTER_ABI={EXCHANGE_ADAPTER_ABI}
+                EXCHANGE_AGGREGATOR_ABI={EXCHANGE_AGGREGATOR_ABI}
+                slipper={parseInt(100 * parseFloat(slipper)) || 0}
+                handleClose={() => setIsShowZipModal(false)}
+              />
+            )}
           </div>
         </Paper>
       </Modal>

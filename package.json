@@ -38,7 +38,7 @@
     "ethers": "^5.4.4",
     "lodash": "^4.17.21",
     "moment": "^2.29.4",
-    "piggy-finance-utils": "1.0.55",
+    "piggy-finance-utils": "1.0.56",
     "prop-types": "^15.8.1",
     "react": "16.9.0",
     "react-dom": "16.9.0",

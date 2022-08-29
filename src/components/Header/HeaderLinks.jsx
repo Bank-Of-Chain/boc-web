@@ -32,7 +32,7 @@ import find from 'lodash/find'
 import { isInMobileWalletApp, isInMobileH5 } from '@/helpers/plugin-util'
 
 // === Constants === //
-import { NET_WORKS, DASHBOARD_URL, DOCUMENT_URL, CHAIN_ID, LEGACYS } from '@/constants'
+import { NET_WORKS, DASHBOARD_URL, DOCUMENT_URL, CHAIN_ID, LEGACYS, POLYGON_HIDDEN } from '@/constants'
 import { INVEST_TAB } from '@/constants/invest'
 
 const CHAIN_SELECTOR_SHOW_ROUTER = ['#/mutils']
@@ -132,27 +132,29 @@ export default function HeaderLinks(props) {
             Docs
           </Button>
         </ListItem>
-        <ListItem className={classes.listItem}>
-          <CustomDropdown
-            noLiPadding
-            buttonText="Bridge"
-            buttonProps={{
-              className: classes.navLink,
-              color: 'transparent'
-            }}
-            dropdownList={[
-              <a
-                key="polygon-bridge"
-                target="_blank"
-                href="https://wallet.polygon.technology/bridge"
-                className={classes.dropdownLink}
-                rel="noreferrer"
-              >
-                Polygon Bridge
-              </a>
-            ]}
-          />
-        </ListItem>
+        {!POLYGON_HIDDEN && (
+          <ListItem className={classes.listItem}>
+            <CustomDropdown
+              noLiPadding
+              buttonText="Bridge"
+              buttonProps={{
+                className: classes.navLink,
+                color: 'transparent'
+              }}
+              dropdownList={[
+                <a
+                  key="polygon-bridge"
+                  target="_blank"
+                  href="https://wallet.polygon.technology/bridge"
+                  className={classes.dropdownLink}
+                  rel="noreferrer"
+                >
+                  Polygon Bridge
+                </a>
+              ]}
+            />
+          </ListItem>
+        )}
         {CHAIN_SELECTOR_SHOW_ROUTER.includes(window.location.hash) && (
           <ListItem className={classes.listItem}>
             <CustomDropdown

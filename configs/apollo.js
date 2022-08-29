@@ -36,17 +36,17 @@ const start = async () => {
     }
   })
   if (status === 200) {
-    const USDI_VAULT_FOR_ETH = data['boc.networks.eth.vaultAddress']
-    const USDI_FOR_ETH = data['boc.networks.eth.pegTokenAddress']
-    const VAULT_BUFFER_FOR_USDI_ETH = data['boc.networks.eth.vaultBufferAddress']
+    const USDI_VAULT_FOR_ETH = data['boc.networks.eth.vaultAddress'] || ''
+    const USDI_FOR_ETH = data['boc.networks.eth.pegTokenAddress'] || ''
+    const VAULT_BUFFER_FOR_USDI_ETH = data['boc.networks.eth.vaultBufferAddress'] || ''
 
-    const USDI_VAULT_FOR_MATIC = data['boc.networks.polygon.vaultAddress']
-    const USDI_FOR_MATIC = data['boc.networks.polygon.pegTokenAddress']
-    const VAULT_BUFFER_FOR_USDI_MATIC = data['boc.networks.polygon.vaultBufferAddress']
+    const USDI_VAULT_FOR_MATIC = data['boc.networks.polygon.vaultAddress'] || ''
+    const USDI_FOR_MATIC = data['boc.networks.polygon.pegTokenAddress'] || ''
+    const VAULT_BUFFER_FOR_USDI_MATIC = data['boc.networks.polygon.vaultBufferAddress'] || ''
 
-    const ETHI_VAULT = data['boc.networks.ethi.vaultAddress']
-    const ETHI_FOR_ETH = data['boc.networks.ethi.pegTokenAddress']
-    const VAULT_BUFFER_FOR_ETHI_ETH = data['boc.networks.ethi.vaultBufferAddress']
+    const ETHI_VAULT = data['boc.networks.ethi.vaultAddress'] || ''
+    const ETHI_FOR_ETH = data['boc.networks.ethi.pegTokenAddress'] || ''
+    const VAULT_BUFFER_FOR_ETHI_ETH = data['boc.networks.ethi.vaultBufferAddress'] || ''
     let config = {
       env: nextEnv,
       LOCAL_CHAIN_CONFIG: nextChain,

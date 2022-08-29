@@ -36,28 +36,42 @@ export const RPC_URL = config.rpc_url
 export const TWITTER_URL = config.twitter_url
 export const LINKEDIN_URL = config.linkedin_url
 
-export const NET_WORKS = [
-  {
-    name: 'Ethereum',
-    color: '#e0d068',
-    chainId: 1,
-    rpcUrl: `https://cloudflare-eth.com`,
-    faucet: '',
-    blockExplorer: 'https://etherscan.io',
-    blockExplorerIcon: '/images/chains/logo-etherscan.png'
-  },
-  {
-    name: 'Polygon',
-    color: '#2bbdf7',
-    chainId: 137,
-    price: 1,
-    gasPrice: 1000000000,
-    rpcUrl: 'https://polygon-rpc.com/',
-    faucet: 'https://faucet.matic.network/',
-    blockExplorer: 'https://explorer-mainnet.maticvigil.com',
-    blockExplorerIcon: '/images/chains/logo-polygoncan.png'
-  }
-]
+export const POLYGON_HIDDEN = true
+
+export const NET_WORKS = POLYGON_HIDDEN
+  ? [
+      {
+        name: 'Ethereum',
+        color: '#e0d068',
+        chainId: 1,
+        rpcUrl: `https://cloudflare-eth.com`,
+        faucet: '',
+        blockExplorer: 'https://etherscan.io',
+        blockExplorerIcon: '/images/chains/logo-etherscan.png'
+      }
+    ]
+  : [
+      {
+        name: 'Ethereum',
+        color: '#e0d068',
+        chainId: 1,
+        rpcUrl: `https://cloudflare-eth.com`,
+        faucet: '',
+        blockExplorer: 'https://etherscan.io',
+        blockExplorerIcon: '/images/chains/logo-etherscan.png'
+      },
+      {
+        name: 'Polygon',
+        color: '#2bbdf7',
+        chainId: 137,
+        price: 1,
+        gasPrice: 1000000000,
+        rpcUrl: 'https://polygon-rpc.com/',
+        faucet: 'https://faucet.matic.network/',
+        blockExplorer: 'https://explorer-mainnet.maticvigil.com',
+        blockExplorerIcon: '/images/chains/logo-polygoncan.png'
+      }
+    ]
 
 export const LOCAL_CHAIN_ID = 31337
 
