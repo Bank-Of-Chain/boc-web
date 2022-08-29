@@ -15,8 +15,8 @@ export default function TeamSection() {
       <h1 className={classes.title}>secured</h1>
       <div className={classes.divider}></div>
       <h4 className={classes.text}>
-        The smart contracts underlying the BoC protocol have been throughly and repeatedly tested. BoC has been audited by reputable security firms
-        including XXXXXXXXXX, YYYYYYYYYYY and ZZZZZZZZZZZZZZZ.
+        The underlying smart contracts of the BoC protocol have been thoroughly and repeatedly tested. BoC contracts are currently under our first
+        third-party audit.
       </h4>
     </div>
   )

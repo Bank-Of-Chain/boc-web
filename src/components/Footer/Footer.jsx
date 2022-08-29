@@ -125,11 +125,11 @@ export default function Footer(props) {
           </GridItem>
           <Divider />
           <GridItem xs={12} sm={12} md={6} className={classes.item}>
-            <p className={classes.text}>@{1900 + new Date().getYear()} Bank of Chain, all right reserved.</p>
+            <p className={classes.text}>@{1900 + new Date().getYear()} Bank of Chain, all rights reserved.</p>
           </GridItem>
           <GridItem xs={12} sm={12} md={6} className={classes.item}>
             <p>
-              Do you have any questions? <a className={classes.text}>Contact us</a> contact@bankofchian.io
+              Any further queries? Contact us at <a className={classes.text}>contact@bankofchian.io</a>
             </p>
           </GridItem>
           <Divider />

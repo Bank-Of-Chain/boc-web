@@ -15,7 +15,7 @@ export default function Frame(props) {
   return (
     <Fragment>
       <Header
-        color="transparent"
+        color="#000"
         brand="Bank Of Chain"
         rightLinks={<HeaderLinks {...props} />}
         fixed
