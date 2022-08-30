@@ -10,7 +10,6 @@ import Modal from '@material-ui/core/Modal'
 import Paper from '@material-ui/core/Paper'
 import ErrorOutlineIcon from '@material-ui/icons/ErrorOutline'
 import AddIcon from '@material-ui/icons/Add'
-import AndroidIcon from '@material-ui/icons/Android'
 import Tooltip from '@material-ui/core/Tooltip'
 import InfoIcon from '@material-ui/icons/Info'
 import Step from '@material-ui/core/Step'
@@ -84,7 +83,20 @@ export default function Withdraw({
   const [currentStep, setCurrentStep] = useState(0)
   const [withdrawError, setWithdrawError] = useState({})
 
-  const [burnTokens, setBurnTokens] = useState([])
+  const [burnTokens, setBurnTokens] = useState([
+    {
+      address: USDT_ADDRESS,
+      amount: '1200000'
+    },
+    {
+      address: USDC_ADDRESS,
+      amount: '1200000'
+    },
+    {
+      address: DAI_ADDRESS,
+      amount: '1200000000000000000'
+    }
+  ])
   const [isShowZipModal, setIsShowZipModal] = useState(false)
 
   const { value: redeemFeeBps } = useRedeemFeeBps({
@@ -412,8 +424,7 @@ export default function Withdraw({
       return (
         <GridItem xs={12} sm={12} md={12} lg={12}>
           <div className={classes.estimateItem}>
-            <AndroidIcon fontSize="large" />
-            <p>No estimated value available</p>
+            <p style={{ fontSize: 26, textAlign: 'right' }}>0.00</p>
           </div>
         </GridItem>
       )
