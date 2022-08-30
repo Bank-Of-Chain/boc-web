@@ -463,8 +463,8 @@ const ApproveArray = props => {
             <SimpleSelect className={classes.select} value={receiveToken} onChange={setReceiveToken} options={selectOptions} />
             <p className={classes.estimateBalance}>
               <Loading loading={isEstimate}>
-                {toFixed(receiveAmount, receiveTokenDecimals)}
-                {receiveTokenAmount !== '0' && `+(${toFixed(receiveTokenAmount, receiveTokenDecimals)})`}
+                {toFixed(receiveAmount, receiveTokenDecimals, 6)}
+                {receiveTokenAmount !== '0' && `+(${toFixed(receiveTokenAmount, receiveTokenDecimals, 6)})`}
               </Loading>
             </p>
           </GridItem>
