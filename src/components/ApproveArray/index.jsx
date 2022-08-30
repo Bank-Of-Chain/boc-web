@@ -10,6 +10,7 @@ import Button from '@/components/CustomButtons/Button'
 import CustomTextField from '@/components/CustomTextField'
 import Loading from '@/components/LoadingComponent'
 import CheckIcon from '@material-ui/icons/Check'
+import AddIcon from '@material-ui/icons/Add'
 import CompareArrowsIcon from '@material-ui/icons/CompareArrows'
 
 // === Utils === //
@@ -28,7 +29,9 @@ import findIndex from 'lodash/findIndex'
 import { toFixed } from '@/helpers/number-format'
 import { getBestSwapInfo } from 'piggy-finance-utils'
 import BN from 'bignumber.js'
+import { addToken } from '@/helpers/wallet'
 import { warmDialog } from '@/reducers/meta-reducer'
+import { errorTextOutput, isTransferNotEnough } from '@/helpers/error-handler'
 
 // === Constants === //
 import { IERC20_ABI, EXCHANGE_EXTRA_PARAMS, ORACLE_ADDITIONAL_SLIPPAGE, USDT_ADDRESS, USDC_ADDRESS, DAI_ADDRESS } from '@/constants'
@@ -249,6 +252,20 @@ const ApproveArray = props => {
           })
         )
       })
+      .catch(error => {
+        const errorMsg = errorTextOutput(error)
+        let tip = 'One Coins Failed. Please checking the approved value and try again!'
+        if (isTransferNotEnough(errorMsg)) {
+          tip = 'Transfer Not Enough!'
+        }
+        dispatch(
+          warmDialog({
+            open: true,
+            type: 'error',
+            message: tip
+          })
+        )
+      })
   }
 
   const estimateWithValue = useCallback(
@@ -258,7 +275,7 @@ const ApproveArray = props => {
       const exchangeManagerContract = new Contract(exchangeManager, EXCHANGE_AGGREGATOR_ABI, userProvider)
       const exchangePlatformAdapters = await getExchangePlatformAdapters(exchangeManagerContract, userProvider)
       const requestArray = map(tokens, async (token, index) => {
-        const value = values[index]
+        const value = values[index] || '0'
         const decimal = decimals[index]
         if (isNil(decimal) || isNil(value) || value === '0' || token.address === receiveToken) return
         const swapAmount = BigNumber.from(new BN(value).multipliedBy(decimal.toString()).toFixed())
@@ -347,11 +364,11 @@ const ApproveArray = props => {
     const allowance = allowances[index]
     const decimal = decimals[index]
     const value = values[index]
+    const balance = balances[index]
     if (isEmpty(allowance) || isEmpty(decimal) || isEmpty(value) || token.address === ETH_ADDRESS || token.address === receiveToken) return false
-    let nextValue
     try {
-      nextValue = BigNumber.from(new BN(value).multipliedBy(decimal.toString()).toFixed())
-      return nextValue.gt(BigNumber.from(allowance))
+      const nextValue = new BN(value).multipliedBy(decimal.toString())
+      return nextValue.gt(allowance) || nextValue.gt(balance)
     } catch (error) {
       return false
     }
@@ -370,11 +387,11 @@ const ApproveArray = props => {
                 const isReciveToken = address === receiveToken
                 if (amount === '0') return
                 const value = values[index] || ''
-                const balance = balances[index]
+                const balance = balances[index] || '0'
                 const decimal = decimals[index] || BigNumber.from(0)
                 const allowance = allowances[index] || BigNumber.from(0)
                 const swapError = swapArray[index] instanceof Error
-                const isValid = isEmpty(value) || new BN(balance).gte(value)
+                const isErrorValue = !isEmpty(value) && new BN(value).multipliedBy(decimal.toString()).gt(balance)
                 const isEthAddress = address === ETH_ADDRESS
                 const isOverFlow = new BN(value).multipliedBy(decimal.toString()).lte(allowance.toString())
                 return (
@@ -393,14 +410,19 @@ const ApproveArray = props => {
                         placeholder="approve amount"
                         maxEndAdornment
                         InputProps={{
-                          startAdornment: <img className={classes.tokenLogo} src={`./images/${address}.png`} />
+                          startAdornment: (
+                            <div onClick={() => addToken(address)}>
+                              <AddIcon fontSize="small" style={{ position: 'absolute', top: 28, left: 35 }} />
+                              <img className={classes.tokenLogo} src={`./images/${address}.png`} />
+                            </div>
+                          )
                         }}
                         disabled={isReciveToken}
                         onMaxClick={() => {
                           if (isReciveToken) return
                           handleInputChange(toFixed(balance, decimal), index)
                         }}
-                        error={!isValid}
+                        error={isErrorValue}
                       />
                       {isEthAddress || isReciveToken || (
                         <Button
@@ -453,12 +475,9 @@ const ApproveArray = props => {
           <span>Slippage tolerance: </span>
           <span className={classes.right}>{toFixed(`${slipper}`, 10 ** 2, 2)}%</span>
         </h3>
-        {/* <h3 className={classes.left}>
-          <span>Estimated gas fee:</span> <span className={classes.right}>15.5usd</span>
-        </h3> */}
       </GridItem>
       <GridItem xs={12} sm={12} md={12}>
-        <Button color="colorfull" onClick={swap} disabled={someNotApprove} style={{ width: '50%' }}>
+        <Button color="colorfull" onClick={swap} disabled={someNotApprove || isEstimate} style={{ width: '50%' }}>
           One Coin
         </Button>
         <Button color="danger" style={{ marginLeft: '1rem' }} onClick={handleClose}>
