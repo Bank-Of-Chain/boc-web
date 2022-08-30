@@ -18,7 +18,7 @@ const componentsStyle = () => ({
     margin: '12px 0 8px 8px'
   },
   input: {
-    width: '13rem'
+    width: '14rem'
   },
   balanceText: {
     textAlign: 'left',
@@ -32,7 +32,7 @@ const componentsStyle = () => ({
     margin: '2px'
   },
   reciveContainer: {
-    backgroundColor: 'dimgrey'
+    background: 'linear-gradient(223.3deg, #A68EFD 20.71%, #F4ACF3 103.56%)'
   },
   left: {
     textAlign: 'left',

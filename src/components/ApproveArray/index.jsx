@@ -135,29 +135,29 @@ const ApproveArray = props => {
         }
       })
     )
-    const { allowances, balances, decimals, values } = reduce(
+    const { nextAllowances, nextBalances, nextDecimals, nextValues } = reduce(
       array,
       (rs, item, i) => {
         const { allowance, balance, amount, decimal } = item
-        rs.amounts[i] = amount
-        rs.balances[i] = balance
-        rs.decimals[i] = BigNumber.from(10).pow(decimal)
-        rs.allowances[i] = allowance
-        rs.values[i] = toFixed(amount, BigNumber.from(10).pow(decimal))
+        rs.nextAmounts[i] = amount
+        rs.nextBalances[i] = balance
+        rs.nextDecimals[i] = BigNumber.from(10).pow(decimal)
+        rs.nextAllowances[i] = allowance
+        rs.nextValues[i] = values[i] || toFixed(amount, BigNumber.from(10).pow(decimal))
         return rs
       },
       {
-        allowances: [],
-        balances: [],
-        amounts: [],
-        decimals: [],
-        values: []
+        nextAllowances: [],
+        nextBalances: [],
+        nextAmounts: [],
+        nextDecimals: [],
+        nextValues: []
       }
     )
-    setValues(values)
-    setBalances(balances)
-    setDecimals(decimals)
-    setAllowances(allowances)
+    setValues(nextValues)
+    setBalances(nextBalances)
+    setDecimals(nextDecimals)
+    setAllowances(nextAllowances)
     setIsLoading(false)
     return reload
   }
@@ -186,7 +186,7 @@ const ApproveArray = props => {
     } catch (e) {
       return
     }
-    const allowanceAmount = await contractWithUser.allowance(address, userAddress)
+    const allowanceAmount = await contractWithUser.allowance(userAddress, exchangeManager)
     // If deposit amount greater than allow amount, reset amount
     if (nextValue.gt(allowanceAmount)) {
       // If allowance equal 0, approve nextAmount, otherwise approve 0 and approve nextAmount
@@ -419,9 +419,15 @@ const ApproveArray = props => {
                     </div>
                     {!isReciveToken && (
                       <p className={classes.balanceText}>
-                        balance: <Loading loading={isLoading}>{toFixed(balances[index], decimal)}</Loading>
-                        <span style={{ float: 'right', marginRight: '2.5rem' }} className={classNames({ [classes.errorText]: swapError })}>
-                          allowance: <Loading loading={isLoading}>{toFixed(allowances[index], decimal)}</Loading>
+                        balance:{' '}
+                        <Loading loading={isLoading}>
+                          <span title={toFixed(balances[index], decimal)}>{toFixed(balances[index], decimal, 6)}</span>
+                        </Loading>
+                        <span style={{ float: 'right', marginRight: '2rem' }} className={classNames({ [classes.errorText]: swapError })}>
+                          allowance:{' '}
+                          <Loading loading={isLoading}>
+                            <span title={toFixed(allowances[index], decimal)}>{toFixed(allowances[index], decimal, 6)}</span>
+                          </Loading>
                         </span>
                       </p>
                     )}
