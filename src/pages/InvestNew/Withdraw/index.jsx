@@ -83,20 +83,7 @@ export default function Withdraw({
   const [currentStep, setCurrentStep] = useState(0)
   const [withdrawError, setWithdrawError] = useState({})
 
-  const [burnTokens, setBurnTokens] = useState([
-    {
-      address: USDT_ADDRESS,
-      amount: '1200000'
-    },
-    {
-      address: USDC_ADDRESS,
-      amount: '1200000'
-    },
-    {
-      address: DAI_ADDRESS,
-      amount: '1200000000000000000'
-    }
-  ])
+  const [burnTokens, setBurnTokens] = useState([])
   const [isShowZipModal, setIsShowZipModal] = useState(false)
 
   const { value: redeemFeeBps } = useRedeemFeeBps({
