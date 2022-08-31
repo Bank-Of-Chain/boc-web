@@ -30,6 +30,7 @@ import ApproveArray from '@/components/ApproveArray'
 // === Hooks === //
 import { warmDialog } from '@/reducers/meta-reducer'
 import useRedeemFeeBps from '@/hooks/useRedeemFeeBps'
+import usePriceProvider from '@/hooks/usePriceProvider'
 
 // === Utils === //
 import isUndefined from 'lodash/isUndefined'
@@ -55,6 +56,8 @@ const useStyles = makeStyles(styles)
 
 const steps = [{ title: 'Shares Validation' }, { title: 'Gas Estimates' }, { title: 'Withdraw' }]
 
+const WITHDRAW_EXCHANGE_THRESHOLD = BigNumber.from(10).pow(16)
+
 export default function Withdraw({
   address,
   exchangeManager,
@@ -67,7 +70,8 @@ export default function Withdraw({
   EXCHANGE_AGGREGATOR_ABI,
   EXCHANGE_ADAPTER_ABI,
   isBalanceLoading,
-  reloadBalance
+  reloadBalance,
+  PRICE_ORCALE_ABI
 }) {
   const classes = useStyles()
   const dispatch = useDispatch()
@@ -87,6 +91,13 @@ export default function Withdraw({
     userProvider,
     VAULT_ADDRESS,
     VAULT_ABI
+  })
+
+  const { getPriceProvider } = usePriceProvider({
+    userProvider,
+    VAULT_ADDRESS,
+    VAULT_ABI,
+    PRICE_ORCALE_ABI
   })
 
   const redeemFeeBpsPercent = redeemFeeBps.toNumber() / 100
@@ -157,21 +168,31 @@ export default function Withdraw({
     }, 1500)
   )
 
-  const handleBurn = (a, b, c, d, tokens, amounts) => {
-    const nextBurnTokens = map(tokens, (token, i) => {
-      return {
-        address: token,
-        amount: toFixed(amounts[i], 1)
+  const handleBurn = async (a, b, c, d, tokens, amounts) => {
+    const priceProvider = await getPriceProvider()
+    return Promise.all(
+      map(tokens, async (token, i) => {
+        const amount = toFixed(amounts[i], 1)
+        const amountsInEth = await priceProvider.valueInEth(token, amount)
+        if (WITHDRAW_EXCHANGE_THRESHOLD.gt(amountsInEth)) {
+          return
+        }
+        return {
+          address: token,
+          amount: amount
+        }
+      })
+    ).then(array => {
+      const nextBurnTokens = compact(array)
+      if (
+        some(nextBurnTokens, i => {
+          return i.address !== ETH_ADDRESS && i.amount !== '0'
+        })
+      ) {
+        setIsShowZipModal(true)
+        setBurnTokens(nextBurnTokens)
       }
     })
-    if (
-      some(nextBurnTokens, i => {
-        return i.address !== ETH_ADDRESS && i.amount !== '0'
-      })
-    ) {
-      setIsShowZipModal(true)
-      setBurnTokens(nextBurnTokens)
-    }
   }
 
   const withdraw = async () => {
