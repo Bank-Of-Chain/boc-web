@@ -285,7 +285,9 @@ const ApproveArray = props => {
         const value = values[index] || '0'
         const decimal = decimals[index]
         if (isNil(decimal) || isNil(value) || value === '0' || token.address === receiveToken) return
-        const swapAmount = BigNumber.from(new BN(value).multipliedBy(decimal.toString()).toFixed())
+        const nextFromValueString = new BN(value).multipliedBy(decimal.toString()).toFixed()
+        if (nextFromValueString.indexOf('.') !== -1) return
+        const swapAmount = BigNumber.from(nextFromValueString)
         let fromToken = {}
         let toToken = {}
         if (token.address === ETH_ADDRESS) {
@@ -405,7 +407,10 @@ const ApproveArray = props => {
                 const decimal = decimals[index] || BigNumber.from(0)
                 const allowance = allowances[index] || BigNumber.from(0)
                 const swapError = swapArray[index] instanceof Error
-                const isErrorValue = !isEmpty(value) && new BN(value).multipliedBy(decimal.toString()).gt(balance)
+                // value should be a integer
+                const nextFromValueString = new BN(value).multipliedBy(decimal.toString())
+                const isErrorValue =
+                  !isEmpty(value) && (new BN(value).multipliedBy(decimal.toString()).gt(balance) || nextFromValueString.toFixed().indexOf('.') !== -1)
                 const isEthAddress = address === ETH_ADDRESS
                 const isOverFlow = new BN(value).multipliedBy(decimal.toString()).lte(allowance.toString())
                 return (

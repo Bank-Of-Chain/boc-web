@@ -169,15 +169,24 @@ export default function Withdraw({
   )
 
   const handleBurn = (a, b, c, d, tokens, amounts) => {
-    setIsShowZipModal(true)
-    setBurnTokens(
-      map(tokens, (token, i) => {
+    return Promise.all(
+      map(tokens, async (token, i) => {
+        const fromContract = new ethers.Contract(token, IERC20_ABI, userProvider)
+        const fromDecimal = await fromContract.decimals()
+        const exchangeAmounts = amounts[i]
+        if (BigNumber.from(10).pow(fromDecimal).gt(exchangeAmounts)) {
+          return
+        }
         return {
           address: token,
           amount: toFixed(amounts[i], 1)
         }
       })
-    )
+    ).then(array => {
+      const nextBurnTokens = compact(array)
+      setIsShowZipModal(true)
+      setBurnTokens(nextBurnTokens)
+    })
   }
 
   const withdraw = async () => {
