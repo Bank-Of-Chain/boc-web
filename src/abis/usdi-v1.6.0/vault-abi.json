@@ -205,6 +205,19 @@
       {
         "indexed": false,
         "internalType": "uint256",
+        "name": "_minCheckedStrategyTotalDebt",
+        "type": "uint256"
+      }
+    ],
+    "name": "MinCheckedStrategyTotalDebtChanged",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
         "name": "_minimumInvestmentAmount",
         "type": "uint256"
       }
@@ -859,6 +872,19 @@
   },
   {
     "inputs": [],
+    "name": "getPegTokenPrice",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
     "name": "getStrategies",
     "outputs": [
       {
@@ -992,6 +1018,19 @@
   {
     "inputs": [],
     "name": "maxTimestampBetweenTwoReported",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "minCheckedStrategyTotalDebt",
     "outputs": [
       {
         "internalType": "uint256",
@@ -1251,6 +1290,19 @@
       }
     ],
     "name": "setMaxTimestampBetweenTwoReported",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_minCheckedStrategyTotalDebt",
+        "type": "uint256"
+      }
+    ],
+    "name": "setMinCheckedStrategyTotalDebt",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"

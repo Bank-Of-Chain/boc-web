@@ -87,6 +87,9 @@ export default function Withdraw({
   const [burnTokens, setBurnTokens] = useState([])
   const [isShowZipModal, setIsShowZipModal] = useState(false)
 
+  const [pegTokenPrice, setPegTokenPrice] = useState(0)
+  const [isPriceLoading, setIsPriceLoading] = useState(true)
+
   const { value: redeemFeeBps } = useRedeemFeeBps({
     userProvider,
     VAULT_ADDRESS,
@@ -105,11 +108,14 @@ export default function Withdraw({
   const estimateWithdraw = useCallback(
     debounce(async () => {
       setIsEstimate(true)
-      const nextValue = BigNumber.from(BN(toValue).multipliedBy(BigNumber.from(10).pow(ethiDecimals).toString()).toFixed())
-      const allowMaxLossValue = BigNumber.from(10000 - parseInt(100 * parseFloat(allowMaxLoss)))
-        .mul(nextValue)
-        .div(BigNumber.from(1e4))
       const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider)
+      const price = await vaultContract.getPegTokenPrice()
+      setPegTokenPrice(price)
+      const nextValue = BigNumber.from(BN(toValue).multipliedBy(BigNumber.from(10).pow(ethiDecimals).toString()).toFixed())
+      const usdValue = nextValue.mul(price).div(BigNumber.from(10).pow(18))
+      const allowMaxLossValue = BigNumber.from(10000 - parseInt(100 * (parseFloat(allowMaxLoss) + redeemFeeBpsPercent)))
+        .mul(usdValue)
+        .div(BigNumber.from(1e4))
       const signer = userProvider.getSigner()
       const vaultContractWithSigner = vaultContract.connect(signer)
 
@@ -227,13 +233,16 @@ export default function Withdraw({
     }
     withdrawValidFinish = Date.now()
     setCurrentStep(1)
+    const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider)
     const signer = userProvider.getSigner()
+    const price = await vaultContract.getPegTokenPrice()
+    setPegTokenPrice(price)
     const nextValue = BigNumber.from(BN(toValue).multipliedBy(BigNumber.from(10).pow(ethiDecimals).toString()).toFixed())
-    const allowMaxLossValue = BigNumber.from(10000 - parseInt(100 * parseFloat(allowMaxLoss)))
-      .mul(nextValue)
+    const usdValue = nextValue.mul(price).div(BigNumber.from(10).pow(18))
+    const allowMaxLossValue = BigNumber.from(10000 - parseInt(100 * (parseFloat(allowMaxLoss) + redeemFeeBpsPercent)))
+      .mul(usdValue)
       .div(BigNumber.from(1e4))
     try {
-      const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider)
       const vaultContractWithSigner = vaultContract.connect(signer)
 
       getSwapInfoFinish = Date.now()
@@ -299,6 +308,9 @@ export default function Withdraw({
       setIsWithdrawLoading(false)
       setWithdrawError({})
       setCurrentStep(0)
+      vaultContract.getPegTokenPrice().then(result => {
+        setPegTokenPrice(result)
+      })
     }, 2000)
     // log withdraw total time
     const totalTime = withdrawTransationFinish - withdrawTimeStart
@@ -454,9 +466,16 @@ export default function Withdraw({
 
   const isValidToValueFlag = isValidToValue()
   const isValidAllowLossFlag = isValidAllowLoss()
-  const isValidSlipperFlag = isValidSlipper()
 
   const isLogin = !isEmpty(userProvider)
+
+  useEffect(() => {
+    const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider)
+    vaultContract.getPegTokenPrice().then(result => {
+      setPegTokenPrice(result)
+      setIsPriceLoading(false)
+    })
+  }, [])
 
   return (
     <>
@@ -509,21 +528,6 @@ export default function Withdraw({
                         error={!isUndefined(isValidAllowLossFlag) && !isValidAllowLossFlag}
                       />
                     </GridItem>
-                    <GridItem xs={12} sm={12} md={12} lg={12}>
-                      <p className={classes.popoverTitle}>Slippage</p>
-                      <CustomTextField
-                        classes={{ root: classes.input }}
-                        value={slipper}
-                        placeholder="Allow slipper percent"
-                        maxEndAdornment
-                        onMaxClick={() => setSlipper('45')}
-                        onChange={event => {
-                          const value = event.target.value
-                          setSlipper(value)
-                        }}
-                        error={!isUndefined(isValidSlipperFlag) && !isValidSlipperFlag}
-                      />
-                    </GridItem>
                   </GridContainer>
                 </Box>
               </Popover>
@@ -553,8 +557,15 @@ export default function Withdraw({
         </GridItem>
         <GridItem xs={12} sm={12} md={12} lg={12}>
           <p className={classes.estimateText} title={formatBalance(ethiBalance, ethiDecimals, { showAll: true })}>
-            Balance:&nbsp;&nbsp;
+            Balance:&nbsp;
             <Loading loading={isBalanceLoading}>{formatBalance(ethiBalance, ethiDecimals)}</Loading>
+          </p>
+        </GridItem>
+        <GridItem xs={12} sm={12} md={12} lg={12}>
+          <p className={classes.estimateText} title={toFixed(pegTokenPrice, BigNumber.from(10).pow(18))}>
+            <span>1ETHi ≈&nbsp;</span>
+            <Loading loading={isPriceLoading}>{toFixed(pegTokenPrice, BigNumber.from(10).pow(18), 6)}</Loading>
+            ETH
           </p>
         </GridItem>
       </GridContainer>
@@ -655,7 +666,8 @@ export default function Withdraw({
                 exchangeManager={exchangeManager}
                 EXCHANGE_ADAPTER_ABI={EXCHANGE_ADAPTER_ABI}
                 EXCHANGE_AGGREGATOR_ABI={EXCHANGE_AGGREGATOR_ABI}
-                slipper={parseInt(100 * parseFloat(slipper)) || 0}
+                slipper={slipper}
+                onSlippageChange={setSlipper}
                 handleClose={() => setIsShowZipModal(false)}
               />
             )}
