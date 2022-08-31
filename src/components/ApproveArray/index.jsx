@@ -11,6 +11,7 @@ import CustomTextField from '@/components/CustomTextField'
 import Loading from '@/components/LoadingComponent'
 import CheckIcon from '@material-ui/icons/Check'
 import AddIcon from '@material-ui/icons/Add'
+import ArrowRightAltIcon from '@material-ui/icons/ArrowRightAlt'
 import CompareArrowsIcon from '@material-ui/icons/CompareArrows'
 
 // === Utils === //
@@ -25,7 +26,7 @@ import assign from 'lodash/assign'
 import reduce from 'lodash/reduce'
 import isEmpty from 'lodash/isEmpty'
 import debounce from 'lodash/debounce'
-import findIndex from 'lodash/findIndex'
+import isUndefined from 'lodash/isUndefined'
 import { toFixed } from '@/helpers/number-format'
 import { getBestSwapInfo } from 'piggy-finance-utils'
 import BN from 'bignumber.js'
@@ -56,8 +57,10 @@ const ApproveArray = props => {
     EXCHANGE_AGGREGATOR_ABI,
     slipper,
     EXCHANGE_ADAPTER_ABI,
-    handleClose
+    handleClose,
+    onSlippageChange
   } = props
+
   const [receiveToken, setReceiveToken] = useState(isEthi ? ETH_ADDRESS : USDT_ADDRESS)
   const [receiveAmount, setReceiveAmount] = useState(BigNumber.from(0))
   const [isEstimate, setIsEstimate] = useState(false)
@@ -67,10 +70,6 @@ const ApproveArray = props => {
   const [allowances, setAllowances] = useState([])
   const [swapArray, setSwapArray] = useState([])
   const [isLoading, setIsLoading] = useState(false)
-
-  const receiveTokenIndex = findIndex(tokens, { address: receiveToken })
-  const receiveTokenDecimals = get(decimals, receiveTokenIndex, 0)
-  const receiveTokenAmount = get(tokens, `${receiveTokenIndex}.amount`, '0')
 
   const getExchangePlatformAdapters = async (exchangeAggregator, userProvider) => {
     const { _exchangeAdapters: adapters } = await exchangeAggregator.getExchangeAdapters()
@@ -87,26 +86,33 @@ const ApproveArray = props => {
         {
           label: 'ETH',
           value: ETH_ADDRESS,
-          img: `./images/${ETH_ADDRESS}.png`
+          img: `./images/${ETH_ADDRESS}.png`,
+          decimal: BigNumber.from(10).pow(18)
         }
       ]
     : [
         {
           label: 'USDT',
           value: USDT_ADDRESS,
-          img: `./images/${USDT_ADDRESS}.png`
+          img: `./images/${USDT_ADDRESS}.png`,
+          decimal: BigNumber.from(10).pow(6)
         },
         {
           label: 'USDC',
           value: USDC_ADDRESS,
-          img: `./images/${USDC_ADDRESS}.png`
+          img: `./images/${USDC_ADDRESS}.png`,
+          decimal: BigNumber.from(10).pow(6)
         },
         {
           label: 'DAI',
           value: DAI_ADDRESS,
-          img: `./images/${DAI_ADDRESS}.png`
+          img: `./images/${DAI_ADDRESS}.png`,
+          decimal: BigNumber.from(10).pow(18)
         }
       ]
+
+  const receiveTokenDecimals = selectOptions.find(el => el.value === receiveToken).decimal
+  const receiveTokenAmount = tokens.find(el => el.address === receiveToken)?.amount || '0'
 
   async function reload(tokens = [], userAddress, exchangeManager) {
     if (isEmpty(tokens) || isEmpty(exchangeManager) || isEmpty(userAddress)) {
@@ -129,6 +135,7 @@ const ApproveArray = props => {
         const allowance = (await contract.allowance(userAddress, exchangeManager)).toString()
         const balance = (await contract.balanceOf(userAddress)).toString()
         const decimal = await contract.decimals()
+        console.log('decimal', decimal)
         return {
           address,
           amount,
@@ -248,13 +255,13 @@ const ApproveArray = props => {
           warmDialog({
             open: true,
             type: 'success',
-            message: 'One Coins Success!'
+            message: 'Swap Success!'
           })
         )
       })
       .catch(error => {
         const errorMsg = errorTextOutput(error)
-        let tip = 'One Coins Failed. Please checking the approved value and try again!'
+        let tip = 'Swap Failed. Please checking the approved value and try again!'
         if (isTransferNotEnough(errorMsg)) {
           tip = 'Transfer Not Enough!'
         }
@@ -358,7 +365,7 @@ const ApproveArray = props => {
     }
     estimateWithValue(values, decimals, receiveToken)
     return () => estimateWithValue.cancel()
-  }, [isLoading, values, decimals, receiveToken])
+  }, [isLoading, values, decimals, receiveToken, slipper])
 
   const someNotApprove = some(tokens, (token, index) => {
     const allowance = allowances[index]
@@ -374,10 +381,17 @@ const ApproveArray = props => {
     }
   })
 
+  const isValidSlipper = () => {
+    if (slipper === '' || isEmpty(slipper.replace(/ /g, ''))) return
+    if (isNaN(slipper)) return false
+    if (slipper < 0 || slipper > 45) return false
+    return true
+  }
+
   return (
     <GridContainer>
       <GridItem xs={12} sm={12} md={12}>
-        <h2>Swap into one token</h2>
+        <h2>Swap to single token</h2>
       </GridItem>
       <GridItem xs={12} sm={12} md={12} style={{ padding: '1rem 0' }}>
         <GridContainer>
@@ -402,87 +416,105 @@ const ApproveArray = props => {
                     key={address}
                     className={classNames({ [classes.errorContainer]: swapError, [classes.reciveContainer]: isReciveToken })}
                   >
-                    <div className={classes.approveItem}>
-                      <CustomTextField
-                        classes={{ root: classes.input }}
-                        value={value}
-                        onChange={event => handleInputChange(event.target.value, index)}
-                        placeholder="approve amount"
-                        maxEndAdornment
-                        InputProps={{
-                          startAdornment: (
-                            <div onClick={() => addToken(address)}>
-                              <AddIcon fontSize="small" style={{ position: 'absolute', top: 28, left: 35 }} />
-                              <img className={classes.tokenLogo} src={`./images/${address}.png`} />
-                            </div>
-                          )
-                        }}
-                        disabled={isReciveToken}
-                        onMaxClick={() => {
-                          if (isReciveToken) return
-                          handleInputChange(toFixed(balance, decimal), index)
-                        }}
-                        error={isErrorValue}
-                      />
-                      {isEthAddress || isReciveToken || (
-                        <Button
-                          className={classes.approveButton}
-                          color="colorfull"
-                          onClick={() => approveValue(index).then(() => reload(tokens, userAddress, exchangeManager))}
-                        >
-                          {isOverFlow ? (
-                            <CheckIcon style={{ marginRight: '0.5rem', color: 'greenyellow' }} />
-                          ) : (
-                            <CompareArrowsIcon style={{ marginRight: '0.5rem' }} />
-                          )}
-                          approve
-                        </Button>
-                      )}
-                    </div>
-                    {!isReciveToken && (
-                      <p className={classes.balanceText}>
-                        balance:{' '}
-                        <Loading loading={isLoading}>
-                          <span title={toFixed(balances[index], decimal)}>{toFixed(balances[index], decimal, 6)}</span>
-                        </Loading>
-                        <span style={{ float: 'right', marginRight: '2rem' }} className={classNames({ [classes.errorText]: swapError })}>
-                          allowance:{' '}
+                    <div className={classes.approveItemWrapper}>
+                      <div className={classes.approveItem}>
+                        <CustomTextField
+                          classes={{ root: classes.input }}
+                          value={value}
+                          onChange={event => handleInputChange(event.target.value, index)}
+                          placeholder="approve amount"
+                          maxEndAdornment
+                          InputProps={{
+                            startAdornment: (
+                              <div onClick={() => addToken(address)}>
+                                <AddIcon fontSize="small" style={{ position: 'absolute', top: 28, left: 35 }} />
+                                <img className={classes.tokenLogo} src={`./images/${address}.png`} />
+                              </div>
+                            )
+                          }}
+                          disabled={isReciveToken}
+                          onMaxClick={() => {
+                            if (isReciveToken) return
+                            handleInputChange(toFixed(balance, decimal), index)
+                          }}
+                          error={isErrorValue}
+                        />
+                        {isEthAddress || isReciveToken || (
+                          <Button
+                            className={classes.approveButton}
+                            color="colorfull"
+                            onClick={() => approveValue(index).then(() => reload(tokens, userAddress, exchangeManager))}
+                          >
+                            {isOverFlow ? (
+                              <CheckIcon style={{ marginRight: '0.5rem', color: 'greenyellow' }} />
+                            ) : (
+                              <CompareArrowsIcon style={{ marginRight: '0.5rem' }} />
+                            )}
+                            approve
+                          </Button>
+                        )}
+                      </div>
+                      {!isReciveToken && (
+                        <p className={classes.balanceText}>
+                          balance:{' '}
                           <Loading loading={isLoading}>
-                            <span title={toFixed(allowances[index], decimal)}>{toFixed(allowances[index], decimal, 6)}</span>
+                            <span title={toFixed(balances[index], decimal)}>{toFixed(balances[index], decimal, 6)}</span>
                           </Loading>
-                        </span>
-                      </p>
-                    )}
-                    {swapError && <p className={classNames(classes.errorText, classes.balanceText)}>swap path fetch error</p>}
+                          <span style={{ float: 'right' }} className={classNames({ [classes.errorText]: swapError })}>
+                            allowance:{' '}
+                            <Loading loading={isLoading}>
+                              <span title={toFixed(allowances[index], decimal)}>{toFixed(allowances[index], decimal, 6)}</span>
+                            </Loading>
+                          </span>
+                        </p>
+                      )}
+                      {swapError && <p className={classNames(classes.errorText, classes.balanceText)}>swap path fetch error</p>}
+                    </div>
                   </GridItem>
                 )
               })}
             </GridContainer>
           </GridItem>
-          <GridItem xs={12} sm={12} md={4} className={classes.estimateContainer}>
+          <GridItem xs={12} sm={12} md={1} className={classes.arrow}>
+            <ArrowRightAltIcon style={{ fontSize: 40 }} />
+          </GridItem>
+          <GridItem xs={12} sm={12} md={3} className={classes.estimateContainer}>
             <SimpleSelect className={classes.select} value={receiveToken} onChange={setReceiveToken} options={selectOptions} />
-            <p className={classes.estimateBalance}>
+            <div className={classes.estimateBalance}>
               <Loading loading={isEstimate}>
                 {toFixed(receiveAmount, receiveTokenDecimals, 6)}
-                {receiveTokenAmount !== '0' && `+(${toFixed(receiveTokenAmount, receiveTokenDecimals, 6)})`}
+                <div>{receiveTokenAmount !== '0' && `+(${toFixed(receiveTokenAmount, receiveTokenDecimals, 6)})`}</div>
               </Loading>
-            </p>
+            </div>
           </GridItem>
         </GridContainer>
       </GridItem>
-      <GridItem xs={12} sm={12} md={12}>
+      <GridItem xs={12} sm={12} md={12} className={classes.bottom}>
         <h3 className={classes.left}>
           <span>Slippage tolerance: </span>
-          <span className={classes.right}>{toFixed(`${slipper}`, 10 ** 2, 2)}%</span>
+          <span className={classes.right}>
+            <CustomTextField
+              classes={{ root: classes.input }}
+              value={slipper}
+              placeholder="Allow slipper percent"
+              maxEndAdornment
+              onMaxClick={() => onSlippageChange('45')}
+              onChange={event => {
+                const { value } = event.target
+                onSlippageChange(value)
+              }}
+              error={!isUndefined(isValidSlipper()) && !isValidSlipper()}
+            />
+          </span>
         </h3>
-      </GridItem>
-      <GridItem xs={12} sm={12} md={12}>
-        <Button color="colorfull" onClick={swap} disabled={someNotApprove || isEstimate} style={{ width: '50%' }}>
-          One Coin
-        </Button>
-        <Button color="danger" style={{ marginLeft: '1rem' }} onClick={handleClose}>
-          Cancel
-        </Button>
+        <div className={classes.buttonGroup}>
+          <Button color="colorfull" onClick={swap} disabled={someNotApprove || isEstimate} className={classes.okButton}>
+            Swap
+          </Button>
+          <Button color="danger" onClick={handleClose} className={classes.cancelButton}>
+            Cancel
+          </Button>
+        </div>
       </GridItem>
     </GridContainer>
   )

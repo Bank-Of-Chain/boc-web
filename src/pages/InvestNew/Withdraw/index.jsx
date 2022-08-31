@@ -465,7 +465,6 @@ export default function Withdraw({
 
   const isValidToValueFlag = isValidToValue()
   const isValidAllowLossFlag = isValidAllowLoss()
-  const isValidSlipperFlag = isValidSlipper()
 
   const isLogin = !isEmpty(userProvider)
 
@@ -518,21 +517,6 @@ export default function Withdraw({
                           setAllowMaxLoss(value)
                         }}
                         error={!isUndefined(isValidAllowLossFlag) && !isValidAllowLossFlag}
-                      />
-                    </GridItem>
-                    <GridItem xs={12} sm={12} md={12} lg={12}>
-                      <p className={classes.popoverTitle}>Slippage</p>
-                      <CustomTextField
-                        classes={{ root: classes.input }}
-                        value={slipper}
-                        placeholder="Allow slipper percent"
-                        maxEndAdornment
-                        onMaxClick={() => setSlipper('45')}
-                        onChange={event => {
-                          const value = event.target.value
-                          setSlipper(value)
-                        }}
-                        error={!isUndefined(isValidSlipperFlag) && !isValidSlipperFlag}
                       />
                     </GridItem>
                   </GridContainer>
@@ -670,12 +654,13 @@ export default function Withdraw({
             {!isEmpty(address) && !isEmpty(exchangeManager) && (
               <ApproveArray
                 address={address}
+                onSlippageChange={setSlipper}
                 tokens={burnTokens}
                 userProvider={userProvider}
                 exchangeManager={exchangeManager}
                 EXCHANGE_ADAPTER_ABI={EXCHANGE_ADAPTER_ABI}
                 EXCHANGE_AGGREGATOR_ABI={EXCHANGE_AGGREGATOR_ABI}
-                slipper={parseInt(100 * parseFloat(slipper)) || 0}
+                slipper={slipper}
                 handleClose={() => setIsShowZipModal(false)}
               />
             )}

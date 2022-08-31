@@ -10,37 +10,43 @@ const componentsStyle = () => ({
   approveContainer: {
     maxHeight: '400px'
   },
+  approveItemWrapper: {
+    margin: '0 1rem'
+  },
   approveItem: {
     textAlign: 'left',
-    margin: '0 1rem'
+    display: 'flex'
   },
   approveButton: {
     margin: '12px 0 8px 8px'
   },
   input: {
-    width: '14rem'
+    flex: 1
   },
   balanceText: {
-    textAlign: 'left',
-    marginLeft: '1rem'
+    textAlign: 'left'
   },
   errorText: {
-    color: 'red'
+    color: '#ff7875'
   },
   errorContainer: {
-    border: '1px solid red',
+    border: '1px solid #ff7875',
     margin: '2px'
   },
   reciveContainer: {
     background: 'linear-gradient(223.3deg, #A68EFD 20.71%, #F4ACF3 103.56%)'
   },
   left: {
-    textAlign: 'left',
-    marginLeft: '6rem'
+    marginBottom: '1rem',
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center'
   },
   right: {
-    float: 'right',
-    marginRight: '6rem'
+    width: '12.5rem'
+  },
+  slippage: {
+    marginRight: '0.5rem'
   },
   select: {
     width: '90%',
@@ -53,12 +59,33 @@ const componentsStyle = () => ({
     minHeight: '10rem'
   },
   estimateBalance: {
-    height: '23.75px'
+    marginTop: '1rem',
+    color: '#A0A0A0',
+    fontSize: '18px'
   },
   tokenList: {
+    padding: '0.5rem',
     overflow: 'auto',
     border: '1px solid rgb(166, 142, 254)',
-    borderRadius: '1rem'
+    borderRadius: '0.5rem'
+  },
+  arrow: {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
+  bottom: {
+    padding: '0 10rem'
+  },
+  buttonGroup: {
+    display: 'flex'
+  },
+  okButton: {
+    flex: 3
+  },
+  cancelButton: {
+    flex: 1,
+    marginLeft: '1rem'
   }
 })
 
