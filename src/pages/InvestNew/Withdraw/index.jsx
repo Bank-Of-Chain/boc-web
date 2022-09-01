@@ -103,10 +103,8 @@ export default function Withdraw({
     debounce(async () => {
       setIsEstimate(true)
       const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider)
-      const price = await vaultContract.getPegTokenPrice()
-      setPegTokenPrice(price)
       const nextValue = BigNumber.from(BN(toValue).multipliedBy(BigNumber.from(10).pow(usdiDecimals).toString()).toFixed())
-      const usdValue = nextValue.mul(price).div(BigNumber.from(10).pow(18))
+      const usdValue = nextValue.mul(pegTokenPrice).div(BigNumber.from(10).pow(18))
       const allowMaxLossValue = BigNumber.from(10000 - parseInt(100 * (parseFloat(allowMaxLoss) + redeemFeeBpsPercent)))
         .mul(usdValue)
         .div(BigNumber.from(1e4))
@@ -228,10 +226,8 @@ export default function Withdraw({
     setCurrentStep(1)
     const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider)
     const signer = userProvider.getSigner()
-    const price = await vaultContract.getPegTokenPrice()
-    setPegTokenPrice(price)
     const nextValue = BigNumber.from(BN(toValue).multipliedBy(BigNumber.from(10).pow(usdiDecimals).toString()).toFixed())
-    const usdValue = nextValue.mul(price).div(BigNumber.from(10).pow(18))
+    const usdValue = nextValue.mul(pegTokenPrice).div(BigNumber.from(10).pow(18))
     const allowMaxLossValue = BigNumber.from(10000 - parseInt(100 * (parseFloat(allowMaxLoss) + redeemFeeBpsPercent)))
       .mul(usdValue)
       .div(BigNumber.from(1e4))
@@ -300,9 +296,6 @@ export default function Withdraw({
       setIsWithdrawLoading(false)
       setWithdrawError({})
       setCurrentStep(0)
-      vaultContract.getPegTokenPrice().then(result => {
-        setPegTokenPrice(result)
-      })
     }, 2000)
     // log withdraw total time
     const totalTime = withdrawTransationFinish - withdrawTimeStart
@@ -488,11 +481,14 @@ export default function Withdraw({
   const isLogin = !isEmpty(userProvider)
 
   useEffect(() => {
-    const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider)
-    vaultContract.getPegTokenPrice().then(result => {
-      setPegTokenPrice(result)
-      setIsPriceLoading(false)
-    })
+    setInterval(() => {
+      setIsPriceLoading(true)
+      const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider)
+      vaultContract.getPegTokenPrice().then(result => {
+        setPegTokenPrice(result)
+        setIsPriceLoading(false)
+      })
+    }, 3000)
   }, [])
 
   return (
