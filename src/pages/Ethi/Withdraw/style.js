@@ -24,7 +24,7 @@ const componentsStyle = () => ({
   },
   approvePaper: {
     padding: '1rem',
-    maxWidth: '40rem',
+    maxWidth: '46rem',
     color: 'rgba(255, 255, 255, 0.87)',
     border: '1px solid #A68EFE',
     backgroundColor: '#000',
@@ -47,7 +47,9 @@ const componentsStyle = () => ({
   estimateText: {
     color: '#A0A0A0',
     margin: 0,
-    display: 'flex'
+    display: 'flex',
+    marginTop: '0.5rem',
+    alignItems: 'center'
   },
   input: {
     maxWidth: '12.5rem'

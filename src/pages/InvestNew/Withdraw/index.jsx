@@ -85,6 +85,8 @@ export default function Withdraw({
 
   const [burnTokens, setBurnTokens] = useState([])
   const [isShowZipModal, setIsShowZipModal] = useState(false)
+  const [pegTokenPrice, setPegTokenPrice] = useState(0)
+  const [isPriceLoading, setIsPriceLoading] = useState(true)
 
   const { value: redeemFeeBps } = useRedeemFeeBps({
     userProvider,
@@ -100,11 +102,12 @@ export default function Withdraw({
   const estimateWithdraw = useCallback(
     debounce(async () => {
       setIsEstimate(true)
-      const nextValue = BigNumber.from(BN(toValue).multipliedBy(BigNumber.from(10).pow(usdiDecimals).toString()).toFixed())
-      const allowMaxLossValue = BigNumber.from(10000 - parseInt(100 * (parseFloat(allowMaxLoss) + redeemFeeBpsPercent)))
-        .mul(nextValue)
-        .div(BigNumber.from(1e4))
       const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider)
+      const nextValue = BigNumber.from(BN(toValue).multipliedBy(BigNumber.from(10).pow(usdiDecimals).toString()).toFixed())
+      const usdValue = nextValue.mul(pegTokenPrice).div(BigNumber.from(10).pow(18))
+      const allowMaxLossValue = BigNumber.from(10000 - parseInt(100 * (parseFloat(allowMaxLoss) + redeemFeeBpsPercent)))
+        .mul(usdValue)
+        .div(BigNumber.from(1e4))
       const signer = userProvider.getSigner()
       const vaultContractWithSigner = vaultContract.connect(signer)
 
@@ -221,15 +224,15 @@ export default function Withdraw({
     }
     withdrawValidFinish = Date.now()
     setCurrentStep(1)
+    const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider)
     const signer = userProvider.getSigner()
     const nextValue = BigNumber.from(BN(toValue).multipliedBy(BigNumber.from(10).pow(usdiDecimals).toString()).toFixed())
+    const usdValue = nextValue.mul(pegTokenPrice).div(BigNumber.from(10).pow(18))
     const allowMaxLossValue = BigNumber.from(10000 - parseInt(100 * (parseFloat(allowMaxLoss) + redeemFeeBpsPercent)))
-      .mul(nextValue)
+      .mul(usdValue)
       .div(BigNumber.from(1e4))
     try {
-      const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider)
       const vaultContractWithSigner = vaultContract.connect(signer)
-
       getSwapInfoFinish = Date.now()
       setCurrentStep(2)
       let tx
@@ -477,6 +480,17 @@ export default function Withdraw({
 
   const isLogin = !isEmpty(userProvider)
 
+  useEffect(() => {
+    setInterval(() => {
+      setIsPriceLoading(true)
+      const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider)
+      vaultContract.getPegTokenPrice().then(result => {
+        setPegTokenPrice(result)
+        setIsPriceLoading(false)
+      })
+    }, 3000)
+  }, [])
+
   return (
     <>
       <div className={classes.setting}>
@@ -557,8 +571,15 @@ export default function Withdraw({
         </GridItem>
         <GridItem xs={12} sm={12} md={12} lg={12}>
           <p className={classes.estimateText} title={formatBalance(toBalance, usdiDecimals, { showAll: true })}>
-            Balance:&nbsp;&nbsp;
+            Balance:&nbsp;
             <Loading loading={isBalanceLoading}>{formatBalance(toBalance, usdiDecimals)}</Loading>
+          </p>
+        </GridItem>
+        <GridItem xs={12} sm={12} md={12} lg={12}>
+          <p className={classes.estimateText} title={toFixed(pegTokenPrice, BigNumber.from(10).pow(18))}>
+            <span>1USDi ≈&nbsp;</span>
+            <Loading loading={isPriceLoading}>{toFixed(pegTokenPrice, BigNumber.from(10).pow(18), 6)}</Loading>
+            USD
           </p>
         </GridItem>
       </GridContainer>

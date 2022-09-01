@@ -38,7 +38,9 @@ const componentsStyle = () => ({
   estimateText: {
     color: '#A0A0A0',
     margin: 0,
-    display: 'flex'
+    display: 'flex',
+    marginTop: '0.5rem',
+    alignItems: 'center'
   },
   input: {
     maxWidth: '12.5rem'
