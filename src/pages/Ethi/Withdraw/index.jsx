@@ -45,7 +45,7 @@ import { toFixed, formatBalance } from '@/helpers/number-format'
 import { isAd, isEs, isRp, isMaxLoss, isLossMuch, isExchangeFail, errorTextOutput } from '@/helpers/error-handler'
 
 // === Constants === //
-import { MULTIPLE_OF_GAS, MAX_GAS_LIMIT } from '@/constants'
+import { MULTIPLE_OF_GAS, MAX_GAS_LIMIT, IERC20_ABI } from '@/constants'
 
 // === Styles === //
 import styles from './style'
@@ -181,9 +181,18 @@ export default function Withdraw({
         if (WITHDRAW_EXCHANGE_THRESHOLD.gt(amountsInEth)) {
           return
         }
+
+        let balance = BigNumber.from(0)
+        if (token === ETH_ADDRESS) {
+          balance = await userProvider.getBalance(address)
+        } else {
+          const contract = new ethers.Contract(token, IERC20_ABI, userProvider)
+          balance = await contract.balanceOf(address)
+        }
+
         return {
           address: token,
-          amount: amount
+          amount: balance.gt(amounts[i]) ? amount : balance.toString()
         }
       })
     ).then(array => {
@@ -467,10 +476,12 @@ export default function Withdraw({
       setIsPriceLoading(true)
       const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider)
       vaultContract.getPegTokenPrice().then(result => {
-        setPegTokenPrice(result)
-        setIsPriceLoading(false)
+        setTimeout(() => {
+          setPegTokenPrice(result)
+          setIsPriceLoading(false)
+        }, 500)
       })
-    }, 3000)
+    }, 10000)
   }, [])
 
   return (
