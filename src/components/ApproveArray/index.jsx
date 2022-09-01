@@ -20,6 +20,8 @@ import * as ethers from 'ethers'
 import get from 'lodash/get'
 import map from 'lodash/map'
 import some from 'lodash/some'
+import size from 'lodash/size'
+import first from 'lodash/first'
 import isNil from 'lodash/isNil'
 import every from 'lodash/every'
 import assign from 'lodash/assign'
@@ -70,6 +72,8 @@ const ApproveArray = props => {
   const [allowances, setAllowances] = useState([])
   const [swapArray, setSwapArray] = useState([])
   const [isLoading, setIsLoading] = useState(false)
+
+  const noNeedSwap = size(tokens) === 1 && get(first(tokens), 'address', '') === receiveToken
 
   const getExchangePlatformAdapters = async (exchangeAggregator, userProvider) => {
     const { _exchangeAdapters: adapters } = await exchangeAggregator.getExchangeAdapters()
@@ -513,7 +517,7 @@ const ApproveArray = props => {
           </span>
         </h3>
         <div className={classes.buttonGroup}>
-          <Button color="colorfull" onClick={swap} disabled={someNotApprove || isEstimate} className={classes.okButton}>
+          <Button color="colorfull" onClick={swap} disabled={noNeedSwap || someNotApprove || isEstimate} className={classes.okButton}>
             Swap
           </Button>
           <Button color="danger" onClick={handleClose} className={classes.cancelButton}>
