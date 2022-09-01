@@ -1,8 +1,6 @@
 # Description
 
-
 # Ticket
-
 
 # Checklist:
 

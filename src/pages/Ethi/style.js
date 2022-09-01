@@ -1,98 +1,143 @@
-import {
-  container,
-} from "../../assets/jss/material-kit-react.js";
+import { container } from '@/assets/jss/material-kit-react.js'
+import { gradientText } from '@/assets/jss/common.js'
 
-const componentsStyle = (theme) => ({
-  container,
+const componentsStyle = theme => ({
+  container: {
+    zIndex: '12',
+    color: '#FFFFFF',
+    marginTop: 65,
+    marginBottom: 100,
+    ...container
+  },
   center: {
     justifyContent: 'center',
     padding: '50px 72px 50px',
-    backgroundColor: "#0c0735cc",
-    [theme.breakpoints.down("md")]: {
-      padding: '50px 16px 50px',
+    backgroundColor: '#0c0735cc',
+    [theme.breakpoints.down('md')]: {
+      padding: '50px 16px 50px'
     },
     margin: 0
   },
+  wrapper: {
+    padding: '5rem 3rem',
+    borderRadius: '1.25rem',
+    background: 'linear-gradient(111.68deg, rgba(87, 97, 125, 0.2) 7.59%, rgba(255, 255, 255, 0.078) 102.04%)'
+  },
+  wrapperMobile: {
+    padding: '3rem 2rem',
+    borderRadius: '1.25rem',
+    background: 'linear-gradient(111.68deg, rgba(87, 97, 125, 0.2) 7.59%, rgba(255, 255, 255, 0.078) 102.04%)'
+  },
+  deposit: {
+    padding: '1rem',
+    border: '1px solid #F4ACF3',
+    borderTopLeftRadius: '1.25rem',
+    borderTopRightRadius: '1.25rem'
+  },
+  balance: {
+    marginTop: '0.5rem',
+    marginBottom: '2rem',
+    padding: '1rem',
+    border: '1px solid #F4ACF3',
+    borderBottomLeftRadius: '1.25rem',
+    borderBottomRightRadius: '1.25rem'
+  },
+  symbol: {
+    color: '#A68EFD',
+    marginLeft: '1rem',
+    ...gradientText
+  },
+  footer: {},
+  item: {
+    color: '#fff',
+    marginBottom: 20,
+    '& .MuiListItemIcon-root': {
+      minWidth: '38px'
+    }
+  },
   centerItem: {
-    width: "630px"
+    width: '630px'
   },
   balanceCard: {
-    position: "relative",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "space-around",
-    textAlign: "center",
-    marginBottom: 24,
-    padding: "32px 16px",
-    backgroundColor: "#271f72",
-    color: "#fff",
-    borderRadius: 6,
+    position: 'relative',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+    marginTop: '0.5rem',
+    textAlign: 'left',
+    padding: '2.8125rem 2.4375rem',
+    background: 'linear-gradient(111.68deg, rgba(87, 97, 125, 0.2) 7.59%, rgba(255, 255, 255, 0.078) 102.04%)',
+    color: '#fff',
+    borderRadius: '1.25rem'
+  },
+  check: {
+    color: '#A68EFE'
   },
   balanceCardValue: {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'flex-start',
     height: 30,
-    lineHeight: "30px",
+    lineHeight: '30px',
     fontSize: 26,
-    color: "#fff",
+    fontWeight: 'bold',
+    fontFamily: 'DM Sans',
+    color: '#fff',
     marginBottom: 8
   },
   balanceCardLabel: {
-    color: "#b2add1",
+    color: '#b2add1',
     fontSize: 14
   },
   tokenInfo: {
-    display: "flex",
-    position: "absolute",
+    display: 'flex',
+    position: 'absolute',
     right: 12,
     top: 9
   },
   addTokenIcon: {
-    cursor: "pointer",
-    marginLeft: 4,
-    fontSize: 16
+    cursor: 'pointer',
+    marginLeft: '1rem',
+    display: 'flex'
   },
   scanToken: {
     width: 24,
-    height: "auto",
-    cursor: "pointer",
-    borderRadius: "50%",
-    backgroundColor: "#fff"
+    height: 'auto',
+    cursor: 'pointer',
+    borderRadius: '50%',
+    backgroundColor: '#fff'
   },
   hidden: {
-    display: "none"
+    display: 'none'
   },
   brand: {
-    color: "#FFFFFF",
-    textAlign: "left"
+    color: '#FFFFFF',
+    textAlign: 'left'
   },
   title: {
-    fontSize: "4.2rem",
-    fontWeight: "600",
-    display: "inline-block",
-    position: "relative",
+    fontSize: '4.2rem',
+    fontWeight: '600',
+    display: 'inline-block',
+    position: 'relative'
   },
   subtitle: {
-    fontSize: "1.313rem",
+    fontSize: '1.313rem',
     width: 'auto',
-    margin: "10px 0 0",
+    margin: '10px 0 0'
   },
   main: {
-    position: "relative",
+    position: 'relative',
     backgroundColor: 'transparent'
   },
   mainRaised: {
-    margin: "0 auto",
-    marginTop: 130,
-    marginBottom: 100,
-    borderRadius: "6px",
+    margin: '0 auto',
+    marginTop: 65
   },
   link: {
-    textDecoration: "none",
+    textDecoration: 'none'
   },
   textCenter: {
-    textAlign: "center",
+    textAlign: 'center'
   },
   switchBar: {
     backgroundColor: '#91d5ff !important'
@@ -101,36 +146,36 @@ const componentsStyle = (theme) => ({
     width: '25px'
   },
   radioUnchecked: {
-    width: "0px",
-    height: "0px",
-    padding: "7px",
-    border: "1px solid #fff",
-    borderRadius: "50%",
+    width: '0px',
+    height: '0px',
+    padding: '7px',
+    border: '1px solid #fff',
+    borderRadius: '50%'
   },
   radioChecked: {
-    width: "16px",
-    height: "16px",
-    border: "1px solid #fff",
-    borderRadius: "50%",
+    width: '16px',
+    height: '16px',
+    border: '1px solid #fff',
+    borderRadius: '50%'
   },
   radioRoot: {
-    padding: "12px",
-    "&:hover": {
-      backgroundColor: "unset",
-    },
+    padding: '12px',
+    '&:hover': {
+      backgroundColor: 'unset'
+    }
   },
   radio: {
-    color: "#fff !important",
+    color: '#fff !important'
   },
   investCard: {
-    padding: "20px 24px",
+    padding: '20px 24px',
     borderRadius: 6,
-    backgroundColor: "rgba(39, 31, 114, 0.8)",
-    overflow: "visible"
+    backgroundColor: 'rgba(39, 31, 114, 0.8)',
+    overflow: 'visible'
   },
   table: {
     backgroundColor: '#150752',
-    border: '1px solid rgb(222, 217, 213)',
+    border: '1px solid rgb(222, 217, 213)'
   },
   tableCell: {
     color: '#fff',
@@ -144,12 +189,12 @@ const componentsStyle = (theme) => ({
     color: '#40a9ff'
   },
   modal: {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center'
   },
   modalBody: {
-    textAlign: "center"
+    textAlign: 'center'
   },
   stepContainer: {
     padding: 20
@@ -158,7 +203,7 @@ const componentsStyle = (theme) => ({
     color: '#fff'
   },
   tabsRoot: {
-    padding: "0 20px",
+    padding: '0 20px'
   },
   tabsIndicator: {
     backgroundColor: 'transparent',
@@ -167,8 +212,8 @@ const componentsStyle = (theme) => ({
     '& > span': {
       maxWidth: 120,
       width: '100%',
-      backgroundColor: '#fff',
-    },
+      backgroundColor: '#fff'
+    }
   },
   tabTextColor: {
     color: '#fff'
@@ -179,7 +224,7 @@ const componentsStyle = (theme) => ({
     maxWidth: 'none'
   },
   detailWrapper: {
-    margin: "42px 0 0 0"
+    margin: '42px 0 0 0'
   },
   slider: {
     position: 'absolute',
@@ -187,9 +232,6 @@ const componentsStyle = (theme) => ({
     left: 'calc(50% - 33rem)',
     backgroundColor: '#271f72',
     color: 'azure'
-  },
-  check:{
-    background: '#271f72'
   },
   text: {
     color: 'azure'
@@ -204,6 +246,6 @@ const componentsStyle = (theme) => ({
     width: '54%',
     backgroundColor: '#fff'
   }
-});
+})
 
-export default componentsStyle;
+export default componentsStyle

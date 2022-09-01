@@ -1,17 +1,18 @@
-import React from "react"
-import classNames from "classnames"
-import TextField from "@material-ui/core/TextField"
-import { makeStyles } from "@material-ui/core/styles"
-import styles from "./style"
+import React from 'react'
+import classNames from 'classnames'
+import TextField from '@material-ui/core/TextField'
+import { makeStyles } from '@material-ui/core/styles'
+import styles from './style'
 
 const useStyles = makeStyles(styles)
 
-function CustomTextField ({
+function CustomTextField({
   classes = {},
-  variant = "outlined",
+  variant = 'outlined',
   maxEndAdornment = false,
   onMaxClick = () => {},
   isMax = false,
+  InputProps,
   ...restProps
 }) {
   const styleClasses = useStyles()
@@ -24,6 +25,7 @@ function CustomTextField ({
         ...restClass
       }}
       InputProps={{
+        ...InputProps,
         endAdornment: maxEndAdornment ? (
           <span
             className={classNames(styleClasses.endAdornment, {

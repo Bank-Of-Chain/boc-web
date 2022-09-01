@@ -1,9 +1,11 @@
-import * as ethers from "ethers"
-import store from "../store"
-import { warmDialog } from "../reducers/meta-reducer"
-import { WALLETS } from "../constants/wallet"
-import { ETH_ADDRESS } from "../constants/token"
-import IERC20_ABI from "../abis/beta-v1.5/ierc20-abi.json"
+import * as ethers from 'ethers'
+import store from '../store'
+import { warmDialog } from '@/reducers/meta-reducer'
+
+// === Constants === //
+import { WALLETS } from '@/constants/wallet'
+import { ETH_ADDRESS } from '@/constants/tokens'
+import { IERC20_ABI } from '@/constants'
 
 export const getWalletName = (web3Modal, userProvider) => {
   if (!userProvider) {
@@ -24,7 +26,7 @@ export const addToken = async (tokenAddress, symbol, decimals) => {
     return
   }
   const { web3Modal, userProvider } = store.getState().walletReducer
-  if (!web3Modal ||  !userProvider) {
+  if (!web3Modal || !userProvider) {
     console.log('wallet does not connect')
     return
   }
@@ -35,23 +37,23 @@ export const addToken = async (tokenAddress, symbol, decimals) => {
       store.dispatch(
         warmDialog({
           open: true,
-          type: "warning",
-          message: `The current wallet does not support adding token (address: ${tokenAddress}). You can add token manually.`,
+          type: 'warning',
+          message: `The current wallet does not support adding token (address: ${tokenAddress}). You can add token manually.`
         })
       )
       return
     }
     const tokenContract = new ethers.Contract(tokenAddress, IERC20_ABI, userProvider)
     window.ethereum.request({
-      method: "wallet_watchAsset",
+      method: 'wallet_watchAsset',
       params: {
-        type: "ERC20",
+        type: 'ERC20',
         options: {
           address: tokenAddress,
-          symbol: symbol || await tokenContract.symbol(),
-          decimals: decimals || await tokenContract.decimals(),
-        },
-      },
+          symbol: symbol || (await tokenContract.symbol()),
+          decimals: decimals || (await tokenContract.decimals())
+        }
+      }
     })
   } catch (error) {
     console.log(error)

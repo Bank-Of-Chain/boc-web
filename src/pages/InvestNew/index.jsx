@@ -1,75 +1,73 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-import React, { useState, useEffect } from "react"
-// nodejs library that concatenates classes
-import classNames from "classnames"
-// react components for routing our app without refresh
-// @material-ui/core components
-import { makeStyles } from "@material-ui/core/styles"
-import { useHistory } from "react-router-dom"
-import CountTo from "react-count-to"
-// core components
-import GridContainer from "../../components/Grid/GridContainer"
-import GridItem from "../../components/Grid/GridItem"
-// sections for this page
-import Table from "@material-ui/core/Table"
-import TableBody from "@material-ui/core/TableBody"
-import TableCell from "@material-ui/core/TableCell"
-import TableContainer from "@material-ui/core/TableContainer"
-import TableHead from "@material-ui/core/TableHead"
-import TableRow from "@material-ui/core/TableRow"
-import Paper from "@material-ui/core/Paper"
-import Card from "@material-ui/core/Card"
-import Tabs from '@material-ui/core/Tabs'
-import Tab from '@material-ui/core/Tab'
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemText from '@material-ui/core/ListItemText';
-import ForwardIcon from '@material-ui/icons/Forward';
+import React, { useState, useEffect } from 'react'
+import classNames from 'classnames'
+import { makeStyles } from '@material-ui/core/styles'
+import { useHistory } from 'react-router-dom'
+import useMediaQuery from '@material-ui/core/useMediaQuery'
 
+// === Components === //
+import Card from '@material-ui/core/Card'
+import List from '@material-ui/core/List'
+import ListItem from '@material-ui/core/ListItem'
+import ListItemIcon from '@material-ui/core/ListItemIcon'
+import ListItemText from '@material-ui/core/ListItemText'
 import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline'
-import TabPanel from '../../components/TabPanel'
-
+import Tooltip from '@material-ui/core/Tooltip'
+import InfoIcon from '@material-ui/icons/Info'
+import SwapHorizIcon from '@material-ui/icons/SwapHoriz'
+import AccountBalanceWalletIcon from '@material-ui/icons/AccountBalanceWallet'
+import SaveAltIcon from '@material-ui/icons/SaveAlt'
+import UndoIcon from '@material-ui/icons/Undo'
+import Loading from '@/components/LoadingComponent'
+import GridItem from '@/components/Grid/GridItem'
+import GridContainer from '@/components/Grid/GridContainer'
 import Deposit from './Deposit'
 import Withdraw from './Withdraw'
 
-import { useDispatch } from "react-redux"
-
 // === Reducers === //
-import { warmDialog } from "./../../reducers/meta-reducer"
+import { useDispatch, useSelector } from 'react-redux'
+import { warmDialog } from '@/reducers/meta-reducer'
+import { setCurrentTab } from '@/reducers/invest-reducer'
 
 // === constants === //
-import { USDT_ADDRESS, USDC_ADDRESS, DAI_ADDRESS, CHAIN_BROWSER_URL, NET_WORKS, VAULTS, CHAIN_ID } from "../../constants"
+import { USDT_ADDRESS, USDC_ADDRESS, DAI_ADDRESS, NET_WORKS, CHAIN_ID, IERC20_ABI } from '@/constants'
+import { INVEST_TAB } from '@/constants/invest'
 
 // === Utils === //
-import { toFixed, formatBalance } from "../../helpers/number-format"
-import map from "lodash/map"
-import isEmpty from "lodash/isEmpty"
-import last from "lodash/last"
-import noop from "lodash/noop"
-import find from 'lodash/find'
-import * as ethers from "ethers"
-import useVersionWapper from "../../hooks/useVersionWapper"
-import useMediaQuery from '@material-ui/core/useMediaQuery'
-import { addToken } from "../../helpers/wallet"
+import { formatBalance } from '@/helpers/number-format'
+import moment from 'moment'
+import isEmpty from 'lodash/isEmpty'
+import last from 'lodash/last'
+import noop from 'lodash/noop'
+import * as ethers from 'ethers'
+import useVersionWapper from '@/hooks/useVersionWapper'
+import { addToken } from '@/helpers/wallet'
+import { getLastPossibleRebaseTime } from '@/helpers/time-util'
+import useVault from '@/hooks/useVault'
 
 // === Styles === //
-import styles from "./style"
+import styles from './style'
 
-const TABS = {
-  DEPOSIT: 'Deposit',
-  WITHDRAW: 'Withdraw'
-}
 const useStyles = makeStyles(styles)
 const { BigNumber } = ethers
 
-function Invest (props) {
+function Invest(props) {
   const classes = useStyles()
   const dispatch = useDispatch()
   const history = useHistory()
+  const isLayoutSm = useMediaQuery('(max-width: 960px)')
 
-  const isMd = useMediaQuery('(min-width: 768px)')
-  const { address, userProvider, VAULT_ADDRESS, VAULT_ABI, USDI_ADDRESS, IERC20_ABI, EXCHANGE_AGGREGATOR_ABI, USDI_ABI, EXCHANGE_ADAPTER_ABI } = props
+  const {
+    address,
+    userProvider,
+    VAULT_ADDRESS,
+    VAULT_ABI,
+    USDI_ADDRESS,
+    EXCHANGE_AGGREGATOR_ABI,
+    EXCHANGE_ADAPTER_ABI,
+    VAULT_BUFFER_ADDRESS,
+    VAULT_BUFFER_ABI,
+    abi_version
+  } = props
   const [usdtBalance, setUsdtBalance] = useState(BigNumber.from(0))
   const [usdtDecimals, setUsdtDecimals] = useState(0)
   const [usdcBalance, setUsdcBalance] = useState(BigNumber.from(0))
@@ -82,49 +80,98 @@ function Invest (props) {
   const [beforeTotalValue, setBeforeTotalValue] = useState(BigNumber.from(0))
   const [totalValue, setTotalValue] = useState(BigNumber.from(0))
 
-  const [tab, setTab] = useState(TABS.DEPOSIT)
+  const [vaultBufferBalance, setVaultBufferBalance] = useState(BigNumber.from(0))
+  const [vaultBufferDecimals, setVaultBufferDecimals] = useState(0)
 
-  // 载入账户数据
-  const loadBanlance = () => {
-    if (isEmpty(address)) return loadBanlance
+  const [isBalanceLoading, setIsBalanceLoading] = useState(false)
+
+  const current = useSelector(state => state.investReducer.currentTab)
+  const setCurrent = tab => {
+    loadCoinsBalance()
+    dispatch(setCurrentTab(tab))
+  }
+
+  const lastRebaseTime = getLastPossibleRebaseTime()
+
+  const { minimumInvestmentAmount, exchangeManager } = useVault(VAULT_ADDRESS, VAULT_ABI, userProvider)
+  // load user balance
+  const loadBalance = () => {
+    if (isEmpty(address)) return
     const usdtContract = new ethers.Contract(USDT_ADDRESS, IERC20_ABI, userProvider)
     const usdcContract = new ethers.Contract(USDC_ADDRESS, IERC20_ABI, userProvider)
     const daiContract = new ethers.Contract(DAI_ADDRESS, IERC20_ABI, userProvider)
-    const usdiContract = new ethers.Contract(USDI_ADDRESS, USDI_ABI, userProvider)
+    const usdiContract = new ethers.Contract(USDI_ADDRESS, IERC20_ABI, userProvider)
+
+    const vaultBufferContract = new ethers.Contract(VAULT_BUFFER_ADDRESS, VAULT_BUFFER_ABI, userProvider)
+    vaultBufferContract
+      .decimals()
+      .then(setVaultBufferDecimals)
+      .catch(() => setVaultBufferDecimals(1))
+
     Promise.all([
-      usdtContract.balanceOf(address).then(setUsdtBalance),
-      usdcContract.balanceOf(address).then(setUsdcBalance),
-      daiContract.balanceOf(address).then(setDaiBalance),
-      usdiContract.balanceOf(address).then(setToBalance).catch(noop),
+      loadCoinsBalance(),
       loadTotalAssets()
-        .then((afterTotalValue) => {
+        .then(afterTotalValue => {
           setTotalValue(afterTotalValue)
         })
         .catch(noop),
-      // TODO:此处的usdtDecimals较特别为10的幂的数值，主要是因为lend方法里的usdtDecimals取幂操作
-      // 其他处的usdtDecimals都是为10**18或10**6
       usdtContract.decimals().then(setUsdtDecimals),
       usdcContract.decimals().then(setUsdcDecimals),
       daiContract.decimals().then(setDaiDecimals),
-      usdiContract.decimals().then(setUsdiDecimals),
-      // vaultContract.token().then(setToken),
-      // vaultContract.getTrackedAssets().then(setTrackedAssets)
+      usdiContract
+        .decimals()
+        .then(setUsdiDecimals)
+        .catch(() => setUsdiDecimals(1))
     ]).catch(() => {
       dispatch(
         warmDialog({
           open: true,
-          type: "warning",
-          message: "Please confirm wallet's network!",
-        }),
+          type: 'warning',
+          message: "Please confirm wallet's network!"
+        })
       )
     })
+  }
+
+  /**
+   * only load balance
+   * @returns
+   */
+  const loadCoinsBalance = () => {
+    if (isEmpty(address)) return
+    setIsBalanceLoading(true)
+    const usdtContract = new ethers.Contract(USDT_ADDRESS, IERC20_ABI, userProvider)
+    const usdcContract = new ethers.Contract(USDC_ADDRESS, IERC20_ABI, userProvider)
+    const daiContract = new ethers.Contract(DAI_ADDRESS, IERC20_ABI, userProvider)
+    const usdiContract = new ethers.Contract(USDI_ADDRESS, IERC20_ABI, userProvider)
+    const vaultBufferContract = new ethers.Contract(VAULT_BUFFER_ADDRESS, VAULT_BUFFER_ABI, userProvider)
+    return Promise.all([
+      usdiContract.balanceOf(address).catch(() => BigNumber.from(0)),
+      usdtContract.balanceOf(address),
+      usdcContract.balanceOf(address),
+      daiContract.balanceOf(address),
+      vaultBufferContract.balanceOf(address).catch(() => BigNumber.from(0))
+    ])
+      .then(([usdiBalance, usdtBalance, usdcBalance, daiBalance, vaultBufferBalance]) => {
+        setToBalance(usdiBalance)
+        setUsdtBalance(usdtBalance)
+        setUsdcBalance(usdcBalance)
+        setDaiBalance(daiBalance)
+        setVaultBufferBalance(vaultBufferBalance)
+        return [usdiBalance, usdtBalance, usdcBalance, daiBalance, vaultBufferBalance]
+      })
+      .finally(() => {
+        setTimeout(() => {
+          setIsBalanceLoading(false)
+        }, 1000)
+      })
   }
 
   useEffect(() => {
     if (isEmpty(VAULT_ADDRESS)) return
     const loadTotalAssetsFn = () =>
       loadTotalAssets()
-        .then((afterTotalValue) => {
+        .then(afterTotalValue => {
           if (!afterTotalValue.eq(beforeTotalValue)) {
             setBeforeTotalValue(totalValue)
             setTotalValue(afterTotalValue)
@@ -133,38 +180,39 @@ function Invest (props) {
         .catch(noop)
     const timer = setInterval(loadTotalAssetsFn, 3000)
     return () => clearInterval(timer)
-    // eslint-disable-next-line
   }, [totalValue.toString()])
+
+  function handleMint(...eventArgs) {
+    console.log('Mint=', eventArgs)
+    const block = last(eventArgs)
+    block &&
+      block
+        .getTransaction()
+        .then(tx => tx.wait())
+        .then(loadBalance)
+  }
+  function handleBurn(...eventArgs) {
+    console.log('Burn=', eventArgs)
+    const block = last(eventArgs)
+    block &&
+      block
+        .getTransaction()
+        .then(tx => tx.wait())
+        .then(loadBalance)
+  }
 
   useEffect(() => {
     const listener = () => {
-      if (isEmpty(VAULT_ADDRESS) || isEmpty(VAULT_ABI) || isEmpty(userProvider)) return
-      loadBanlance()
+      if (isEmpty(VAULT_ABI) || isEmpty(userProvider)) return
+      loadBalance()
+      if (isEmpty(VAULT_ADDRESS)) return
       const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider)
       if (!isEmpty(address)) {
-        function handleMint (...eventArgs) {
-          console.log("Mint=", eventArgs)
-          const block = last(eventArgs)
-          block &&
-            block
-              .getTransaction()
-              .then(tx => tx.wait())
-              .then(loadBanlance)
-        }
-        function handleBurn (...eventArgs) {
-          console.log("Burn=", eventArgs)
-          const block = last(eventArgs)
-          block &&
-            block
-              .getTransaction()
-              .then(tx => tx.wait())
-              .then(loadBanlance)
-        }
-        vaultContract.on("Mint", handleMint)
-        vaultContract.on("Burn", handleBurn)
+        vaultContract.on('Mint', handleMint)
+        vaultContract.on('Burn', handleBurn)
         return () => {
-          vaultContract.off("Mint", handleMint)
-          vaultContract.off("Burn", handleBurn)
+          vaultContract.off('Mint', handleMint)
+          vaultContract.off('Burn', handleBurn)
         }
       }
     }
@@ -172,172 +220,154 @@ function Invest (props) {
   }, [address, VAULT_ADDRESS, VAULT_ABI, userProvider])
 
   const loadTotalAssets = () => {
-    const usdiContract = new ethers.Contract(USDI_ADDRESS, USDI_ABI, userProvider)
-    return usdiContract.totalSupply()
+    const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider)
+    return vaultContract.totalAssetsIncludeVaultBuffer()
   }
 
-  const handleTabChange = (event, value) => setTab(value)
-
-  const handleAddUSDi = () =>  {
-    addToken(USDI_ADDRESS, "USDi", usdiDecimals)
+  const handleAddUSDi = () => {
+    addToken(USDI_ADDRESS, 'USDi', usdiDecimals)
   }
 
-  const changeRouter = (path) => {
+  const changeRouter = path => {
     let promise = Promise.resolve({})
-    if(path==="#/ethi" && CHAIN_ID !== 1) {
+    if (path === '#/ethi' && CHAIN_ID !== 1) {
       promise = props.changeNetwork(NET_WORKS[0])
     }
-    promise.then(() =>{
+    promise.then(() => {
       history.push(path.slice(1))
     })
   }
-  const net = find(NET_WORKS, (item) => item.chainId === props.selectedChainId) || NET_WORKS[0]
-
   return (
-    <div className={classNames(classes.main, classes.mainRaised)}>
-      <div className={classes.container}>
-        <GridContainer className={classNames(classes.center)}>
-          <div className={classes.slider} style={isMd ? {} : { position: 'inherit', width: '94%', marginBottom: '20px' }}>
-            <List>
-              {
-                map(VAULTS, item => {
-                  const { path } = item
-                  const isCheck = window.location.hash === path
-                  if(item.isOpen){
-                    return <ListItem key={item.id} button className={classNames(classes.item, isCheck && classes.check )} onClick={() => changeRouter(path)}>
-                      <ListItemText primary={item.name} className={classNames( isCheck && classes.text )} />
-                      { isCheck && <div className={classes.spliter}></div> }
-                      <ListItemIcon>
-                        { isCheck && <ForwardIcon color="primary" style={{color: 'azure', marginLeft: 20}} /> }
-                      </ListItemIcon>
-                    </ListItem>
-                  }
-                })
-              }
-            </List>
-          </div>
-          <GridItem xs={12} sm={12} md={8} className={classNames(classes.centerItem)}>
+    <div className={classes.container}>
+      <GridContainer spacing={0} style={{ paddingTop: '100px' }}>
+        <GridItem xs={2} sm={2} md={3} style={{ padding: '0 2rem' }}>
+          <List>
+            <ListItem key="My Account" button className={classNames(classes.item)} onClick={() => setCurrent(INVEST_TAB.account)}>
+              <ListItemIcon>
+                <AccountBalanceWalletIcon style={{ color: current === 0 ? '#A68EFE' : '#fff' }} />
+              </ListItemIcon>
+              {!isLayoutSm && <ListItemText primary={'My Account'} className={classNames(current === 0 ? classes.check : classes.text)} />}
+            </ListItem>
+            <ListItem
+              key="Deposit"
+              button
+              className={classNames(classes.item, current === 1 && classes.check)}
+              onClick={() => setCurrent(INVEST_TAB.deposit)}
+            >
+              <ListItemIcon>
+                <SaveAltIcon style={{ color: current === 1 ? '#A68EFE' : '#fff' }} />
+              </ListItemIcon>
+              {!isLayoutSm && <ListItemText primary={'Deposit'} className={classNames(current === 1 ? classes.check : classes.text)} />}
+            </ListItem>
+            <ListItem
+              key="Withdraw"
+              button
+              className={classNames(classes.item, current === 2 && classes.check)}
+              onClick={() => setCurrent(INVEST_TAB.withdraw)}
+            >
+              <ListItemIcon>
+                <UndoIcon style={{ color: current === 2 ? '#A68EFE' : '#fff' }} />
+              </ListItemIcon>
+              {!isLayoutSm && <ListItemText primary={'Withdraw'} className={classNames(current === 2 ? classes.check : classes.text)} />}
+            </ListItem>
+            <ListItem key="Switch to ETHi" button className={classNames(classes.item, classes.check)} onClick={() => changeRouter('#/ethi')}>
+              <ListItemIcon>
+                <SwapHorizIcon style={{ color: '#fff' }} />
+              </ListItemIcon>
+              {!isLayoutSm && <ListItemText primary={'Switch to ETHi'} className={classNames(classes.text)} />}
+            </ListItem>
+          </List>
+        </GridItem>
+        <GridItem xs={9} sm={9} md={6}>
+          {current === 0 && (
             <Card className={classes.balanceCard}>
               <div className={classes.balanceCardItem}>
                 <div className={classes.balanceCardValue}>
-                  <span title={formatBalance(toBalance, usdiDecimals, { showAll: true })}>{`${formatBalance(toBalance, usdiDecimals)} USDi`}</span>
+                  <span
+                    title={formatBalance(toBalance, usdiDecimals, {
+                      showAll: true
+                    })}
+                  >
+                    <Loading loading={isBalanceLoading}>{formatBalance(toBalance, usdiDecimals)}</Loading>
+                  </span>
+                  <span className={classes.symbol}>USDi</span>
                   {userProvider && (
                     <span title="Add token address to wallet">
-                      <AddCircleOutlineIcon className={classes.addTokenIcon} onClick={handleAddUSDi} fontSize='small' />
+                      <AddCircleOutlineIcon className={classes.addTokenIcon} onClick={handleAddUSDi} fontSize="small" />
                     </span>
                   )}
                 </div>
-                <div className={classes.balanceCardLabel}>Balance</div>
-              </div>
-              <div className={classes.tokenInfo}>
-                {userProvider && (
-                  <a
-                    href={`${net.blockExplorer}/address/${USDI_ADDRESS}`}
-                    target='_blank'
-                    rel='noopener noreferrer'
+                <div className={classes.balanceCardValue} style={{ fontSize: '1rem' }}>
+                  <span title={formatBalance(vaultBufferBalance, vaultBufferDecimals, { showAll: true })}>
+                    <Loading loading={isBalanceLoading}>{formatBalance(vaultBufferBalance, vaultBufferDecimals)}</Loading>
+                  </span>
+                  <span className={classes.symbol}>USDi Ticket&nbsp;&nbsp;</span>
+                  <Tooltip
+                    classes={{
+                      tooltip: classes.tooltip
+                    }}
+                    placement="right"
+                    title={
+                      <span>
+                        The USDi ticket is automatically converted to USDi. And was last executed in&nbsp;
+                        <span style={{ color: 'red', fontWeight: 'bold' }}>{moment(lastRebaseTime).format('yyyy-MM-DD HH:mm')}</span>
+                      </span>
+                    }
                   >
-                    <img className={classes.scanToken} src={net.blockExplorerIcon} alt="wallet" />
-                  </a>
-                )}
+                    <InfoIcon style={{ fontSize: '1rem' }} />
+                  </Tooltip>
+                </div>
+                <div className={classes.balanceCardLabel}>AVAILABLE BALANCE</div>
               </div>
             </Card>
-            <Card className={classes.investCard}>
-              <Tabs
-                value={tab}
-                onChange={handleTabChange}
-                classes={{
-                  root: classes.tabsRoot,
-                  indicator: classes.tabsIndicator
-                }}
-                TabIndicatorProps={{ children: <span /> }}
-              >
-                  {map(Object.keys(TABS), (key) => (
-                    <Tab
-                      key={key}
-                      label={TABS[key]}
-                      value={TABS[key]}
-                      classes={{
-                        root: classes.tabRoot,
-                        textColorInherit: classes.tabTextColor
-                      }}
-                    />
-                  ))}
-              </Tabs>
-              <TabPanel value={tab} index={TABS.DEPOSIT}>
-                <Deposit
-                  address={address}
-                  usdtBalance={usdtBalance}
-                  usdtDecimals={usdtDecimals}
-                  usdcBalance={usdcBalance}
-                  usdcDecimals={usdcDecimals}
-                  daiBalance={daiBalance}
-                  daiDecimals={daiDecimals}
-                  usdiDecimals={usdiDecimals}
-                  userProvider={userProvider}
-                  VAULT_ABI={VAULT_ABI}
-                  IERC20_ABI={IERC20_ABI}
-                  VAULT_ADDRESS={VAULT_ADDRESS}
-                />
-              </TabPanel>
-              <TabPanel value={tab} index={TABS.WITHDRAW}>
-                <Withdraw
-                  toBalance={toBalance}
-                  usdiDecimals={usdiDecimals}
-                  userProvider={userProvider}
-                  VAULT_ADDRESS={VAULT_ADDRESS}
-                  VAULT_ABI={VAULT_ABI}
-                  IERC20_ABI={IERC20_ABI}
-                  EXCHANGE_AGGREGATOR_ABI={EXCHANGE_AGGREGATOR_ABI}
-                  EXCHANGE_ADAPTER_ABI={EXCHANGE_ADAPTER_ABI}
-                />
-              </TabPanel>
-            </Card>
-          </GridItem>
-        </GridContainer>
-        <div className={classNames(classes.detailWrapper, {
-            [classes.hidden]: isEmpty(userProvider)
-          })}>
-            <p style={{ color: "#fff", letterSpacing: "0.01071em" }}>More Details</p>
-            <TableContainer component={Paper} style={{ borderRadius: 0 }}>
-              <Table className={classNames(classes.table)} aria-label='simple table'>
-                <TableHead>
-                  <TableRow>
-                    <TableCell className={classNames(classes.tableCell)}>Vault Symbol</TableCell>
-                    <TableCell className={classNames(classes.tableCell)}>Vault Address</TableCell>
-                    <TableCell className={classNames(classes.tableCell)}>Total Supply</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  <TableRow>
-                    <TableCell className={classNames(classes.tableCell)} component='th' scope='row'>
-                      BOC_Vault
-                    </TableCell>
-                    <TableCell className={classNames(classes.tableCell)}>
-                      <a
-                        style={{ color: "rgb(105, 192, 255)" }}
-                        href={CHAIN_BROWSER_URL && `${CHAIN_BROWSER_URL}/address/${VAULT_ADDRESS}`}
-                        target='_blank'
-                        rel='noopener noreferrer'
-                      >
-                        {VAULT_ADDRESS}
-                      </a>
-                    </TableCell>
-                    <TableCell className={classNames(classes.tableCell)}>
-                      <CountTo from={Number(beforeTotalValue.toBigInt())} to={Number(totalValue.toBigInt())} speed={3500}>
-                        {v => {
-                          return `${toFixed(v, BigNumber.from(10).pow(usdiDecimals), 6)} USDi`
-                        }}
-                      </CountTo>
-                    </TableCell>
-                  </TableRow>
-                </TableBody>
-              </Table>
-            </TableContainer>
-        </div>
-      </div>
+          )}
+          {current === 1 && (
+            <div className={isLayoutSm ? classes.wrapperMobile : classes.wrapper}>
+              <Deposit
+                address={address}
+                usdtBalance={usdtBalance}
+                usdtDecimals={usdtDecimals}
+                usdcBalance={usdcBalance}
+                usdcDecimals={usdcDecimals}
+                daiBalance={daiBalance}
+                daiDecimals={daiDecimals}
+                usdiDecimals={usdiDecimals}
+                userProvider={userProvider}
+                VAULT_ABI={VAULT_ABI}
+                IERC20_ABI={IERC20_ABI}
+                VAULT_ADDRESS={VAULT_ADDRESS}
+                abi_version={abi_version}
+                toBalance={toBalance}
+                vaultBufferBalance={vaultBufferBalance}
+                vaultBufferDecimals={vaultBufferDecimals}
+                isBalanceLoading={isBalanceLoading}
+                reloadBalance={loadCoinsBalance}
+                minimumInvestmentAmount={minimumInvestmentAmount}
+              />
+            </div>
+          )}
+          {current === 2 && (
+            <div className={isLayoutSm ? classes.wrapperMobile : classes.wrapper}>
+              <Withdraw
+                address={address}
+                exchangeManager={exchangeManager}
+                toBalance={toBalance}
+                usdiDecimals={usdiDecimals}
+                userProvider={userProvider}
+                VAULT_ADDRESS={VAULT_ADDRESS}
+                VAULT_ABI={VAULT_ABI}
+                IERC20_ABI={IERC20_ABI}
+                EXCHANGE_AGGREGATOR_ABI={EXCHANGE_AGGREGATOR_ABI}
+                EXCHANGE_ADAPTER_ABI={EXCHANGE_ADAPTER_ABI}
+                isBalanceLoading={isBalanceLoading}
+                reloadBalance={loadCoinsBalance}
+              />
+            </div>
+          )}
+        </GridItem>
+      </GridContainer>
     </div>
   )
 }
-
 
 export default useVersionWapper(Invest, 'mutilCoins')

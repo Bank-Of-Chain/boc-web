@@ -1,72 +1,91 @@
 const style = {
   selectWrapper: {
-    position: "relative",
-    height: "30px"
+    height: '51px',
+    position: 'relative',
+    lineHeight: '51px'
   },
   selectTrigger: {
-    display: "flex",
-    alignItems: "center",
-    height: "100%",
-    cursor: "pointer"
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    height: '100%',
+    cursor: 'pointer',
+    border: '1px solid #666666',
+    borderRadius: '20px',
+    paddingLeft: 16,
+    paddingRight: 24
+  },
+  disabled: {
+    backgroundColor: 'ivory'
+  },
+  triggerLabelWrapper: {
+    display: 'flex',
+    alignItems: 'center'
   },
   triggerLabel: {
-    color: "#fff"
+    color: '#A0A0A0',
+    fontWeight: 'bold'
+  },
+  caret: {
+    color: '#A68EFE',
+    transition: 'all 150ms ease-in'
+  },
+  expandLess: {
+    transform: 'rotate(180deg)'
   },
   selectPop: {
-    display: "none",
-    position: "absolute",
-    left: 0,
-    top: "100%",
-    minWidth: "120px",
-    marginTop: "6px",
-    padding: "8px 0",
+    display: 'none',
+    position: 'absolute',
+    left: '50%',
+    top: '100%',
+    minWidth: '206px',
+    marginTop: '12px',
+    padding: '8px 0',
     zIndex: 100,
-    background: "#fff",
-    borderRadius: "4px",
-    boxShadow: "0px 5px 5px -3px rgba(0,0,0,0.2),0px 8px 10px 1px rgba(0,0,0,0.14),0px 3px 14px 2px rgba(0,0,0,0.12)",
-    transformOrigin: "top",
+    background: '#292b2e',
+    borderRadius: '12px',
+    transformOrigin: 'top',
+    transform: 'translate(-50%, 0)',
+    boxShadow: '0 0 0px 1px rgba(161, 161, 161, 0.2)'
   },
   selectPopVisible: {
-    display: "block",
+    display: 'block'
   },
   selectItem: {
-    display: "flex",
-    alignItems: "center",
-    padding: "6px 16px",
-    cursor: "pointer",
+    display: 'flex',
+    alignItems: 'center',
+    padding: '0 24px',
+    cursor: 'pointer',
 
-    "&:hover": {
-      backgroundColor: "rgba(0, 0, 0, 0.04)"
+    '&:hover': {
+      background: '#323438'
     }
   },
-  selectActiveItem: {
-    backgroundColor: "rgba(0, 0, 0, 0.08)"
-  },
   optImg: {
-    width: "auto",
-    height: "30px",
-    marginRight: "8px",
-    borderRadius: "50%",
+    width: 'auto',
+    height: '30px',
+    marginRight: '8px',
+    borderRadius: '50%'
   },
   optMultiImgWrapper: {
-    height: "30px",
+    height: '30px',
     whiteSpace: 'nowrap'
-  }, 
+  },
   optMultiImg: {
-    width: "auto",
-    height: "30px",
-    borderRadius: "50%",
-    marginLeft: "-12px",
-    "&:first-child": {
+    width: 'auto',
+    height: '30px',
+    borderRadius: '50%',
+    marginLeft: '-12px',
+    '&:first-child': {
       marginLeft: 0
     },
-    "&:last-child": {
-      marginRight: "8px"
+    '&:last-child': {
+      marginRight: '8px'
     }
   },
   optLabel: {
-    color: "rgba(0, 0, 0, 0.87)",
-  },
+    color: '#A0A0A0'
+  }
 }
 
 export default style

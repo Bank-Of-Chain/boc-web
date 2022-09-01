@@ -1,3 +1,9 @@
-# folders
-build/
-node_modules/
+/lambda/
+/scripts
+.history
+public
+dist
+.umi
+mock
+*.png
+*.svg

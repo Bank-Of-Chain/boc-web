@@ -1,60 +1,53 @@
-import React from "react"
-import { makeStyles } from "@material-ui/core/styles"
-
-// === Constants === //
-import { NET_WORKS } from "./../../constants"
+import React from 'react'
+import { makeStyles } from '@material-ui/core/styles'
+import useMediaQuery from '@material-ui/core/useMediaQuery'
 
 // === Components === //
-import ProductSection from "./Sections/ProductSection"
-import AuditedSection from "./Sections/AuditedSection"
-import AmmSection from "./Sections/AmmSection"
-import LendingSection from "./Sections/LendingSection"
-import GridContainer from "../../components/Grid/GridContainer"
-import GridItem from "../../components/Grid/GridItem"
-import Button from "../../components/CustomButtons/Button"
-import Chains from "../../components/Chains/Chains"
+import ProductSection from './components/ProductSection'
+import AuditedSection from './components/AuditedSection'
+import AmmSection from './components/AmmSection'
+import YieldSection from './components/YieldSection'
+import LendingSection from './components/LendingSection'
+import RoadMapSection from './components/RoadMapSection'
+import GridContainer from '@/components/Grid/GridContainer'
+import GridItem from '@/components/Grid/GridItem'
+import Button from '@/components/CustomButtons/Button'
 
 // === Styles === //
-import styles from "./landingPage"
+import styles from './landingPage'
 
 const useStyles = makeStyles(styles)
 
-export default function Home (props) {
-  const { changeNetwork } = props
+export default function Home() {
   const classes = useStyles()
+  const isLayoutSm = useMediaQuery('(max-width: 960px)')
 
   return (
     <div className={classes.container}>
       <GridContainer>
-        <GridItem xs={12} sm={12} md={12} style={{ textAlign: "left", marginBottom: 0 }}>
-          <h1 className={classes.title}>The Multichain Yield Optimizer</h1>
-          <h4 className={classes.text}>
-            BOC is a DeFi protocol that provides the best long-term <b><strong>risk-free</strong></b> return
+        <GridItem xs={12} sm={12} md={12} className={isLayoutSm ? classes.gridMobile : classes.grid}>
+          <h1 className={isLayoutSm ? classes.titleMobile : classes.title}>The Multichain</h1>
+          <h1 className={isLayoutSm ? classes.titleMobile : classes.title}>Yield Optimizer</h1>
+          <h4 className={classes.text} style={{ marginTop: 40 }}>
+            BOC is a DeFi protocol that
           </h4>
-          <h2 style={{ marginBottom: 0 }}>
-            Source Of Yield:
-          </h2>
-          <ul className={classes.ull}>
-            <li>Market-making fee</li>
-            <li>Interest from over-collateralized lending</li>
-            <li>Government token rewards</li>
-          </ul>
-          <div className={classes.earth} style={{ textAlign: "right", display: "none" }}>
-            <Button className={classes.inverst} color='colorfull' size='lg' href='/#/invest'>
-              inverst
+          <h4 className={classes.text}>
+            provides the best long-term
+            <b> risk-free </b>
+            return
+          </h4>
+          <p className={classes.text} style={{ marginTop: 40 }}>
+            <Button className={classes.invest} color="colorfull-border" size="sm" href="/#/mutils">
+              Launch App
             </Button>
-            <Chains
-              maskStyle={{ display: "inline-block", paddingLeft: 10 }}
-              array={NET_WORKS}
-              handleClick={changeNetwork}
-            />
-            <p>You may need to manually switch network via your wallet.</p>
-          </div>
+          </p>
         </GridItem>
       </GridContainer>
       <LendingSection />
       <ProductSection />
+      <YieldSection />
       <AmmSection />
+      <RoadMapSection />
       <AuditedSection />
     </div>
   )

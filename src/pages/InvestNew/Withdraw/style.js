@@ -1,8 +1,6 @@
-import {
-  container,
-} from "../../../assets/jss/material-kit-react.js";
+import { container } from '@/assets/jss/material-kit-react.js'
 
-const componentsStyle = (theme) => ({
+const componentsStyle = () => ({
   container,
   switchBar: {
     backgroundColor: '#91d5ff !important'
@@ -17,49 +15,75 @@ const componentsStyle = (theme) => ({
     color: '#40a9ff'
   },
   modal: {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center'
   },
   modalBody: {
-    textAlign: "center"
+    textAlign: 'center'
   },
   withdrawContainer: {
-    padding: "32px 16px 0",
+    padding: '2.6875rem 2.25rem',
+    border: '1px solid #A68EFD',
+    borderTopLeftRadius: '1rem',
+    borderTopRightRadius: '1rem'
   },
-  withdrawItem: {
-    display: "flex",
-    alignItems: "center",
-    color: "#fff",
-    marginBottom: "16px",
+  outputContainer: {
+    padding: '2.6875rem 2.25rem',
+    border: '1px solid #A68EFD',
+    marginTop: '0.5rem',
+    borderBottomLeftRadius: '1rem',
+    borderBottomRightRadius: '1rem'
+  },
+  estimateText: {
+    color: '#A0A0A0',
+    margin: 0,
+    display: 'flex',
+    marginTop: '0.5rem',
+    alignItems: 'center'
+  },
+  input: {
+    maxWidth: '12.5rem'
+  },
+  footerContainer: {
+    marginTop: '2.5rem'
+  },
+  inputLabelWrapper: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center'
+  },
+  selectorlWrapper: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: '1rem 0'
+  },
+  depositComfirmArea: {
+    display: 'flex',
+    justifyContent: 'space-between'
+  },
+  tokenInfo: {
+    display: 'flex',
+    alignItems: 'center'
   },
   receiveTokenItem: {
     marginBottom: 0
   },
-  withdrawItemLabel: {
-    minWidth: 62,
-    marginRight: 12,
-    textAlign: "right"
-  },
-  withdrawComfirmArea: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    marginTop: 16
-  },
   settingBtn: {
-    color: "#39d0d8",
-    textAlign: "right",
-    lineHeight: "36px",
-    padding: "10px 0",
+    color: '#39d0d8',
+    textAlign: 'right',
+    lineHeight: '36px',
+    padding: '10px 0',
     marginRight: '16px'
   },
   settingTitle: {
-    color: "#fff",
+    color: '#fff',
     fontSize: 16,
-    letterSpacing: "0.01071em",
+    letterSpacing: '0.01071em',
     lineHeight: 1.5,
     textAlign: 'center',
-    width: '100%',
+    width: '100%'
   },
   settingItem: {
     height: 38,
@@ -76,26 +100,18 @@ const componentsStyle = (theme) => ({
     textAlign: 'right'
   },
   mutedLabel: {
-    position: "relative",
-    display: "inline-block"
+    position: 'relative',
+    display: 'inline-block'
   },
   maxLossFormCtrl: {
-    width: "160px"
+    width: '160px'
   },
   exchanged: {
     position: 'relative',
-    paddingLeft: 16,
+    paddingLeft: 16
   },
   tooltip: {
     fontSize: '14px'
-  },
-  labelToolTipIcon: {
-    position: 'absolute',
-    left: "-18px",
-    top: '50%',
-    color: "#fff",
-    fontSize: 16,
-    transform: 'translate(0, -50%)'
   },
   slippageItem: {
     display: 'flex',
@@ -106,12 +122,53 @@ const componentsStyle = (theme) => ({
     marginLeft: 16
   },
   widthdrawLoadingPaper: {
-    padding: 20,
-    minWidth: 650,
-    color: "rgba(255,255,255, 0.87)",
-    border: "1px solid",
-    background: "#150752",
+    padding: '1rem',
+    maxWidth: '500px',
+    color: 'rgba(255, 255, 255, 0.87)',
+    border: '1px solid #A68EFE',
+    backgroundColor: '#000',
+    borderRadius: '1rem',
+    width: '100%'
+  },
+  approvePaper: {
+    padding: '1rem',
+    maxWidth: '46rem',
+    color: 'rgba(255, 255, 255, 0.87)',
+    border: '1px solid #A68EFE',
+    backgroundColor: '#000',
+    borderRadius: '1rem',
+    width: '100%'
+  },
+  root: {
+    padding: '1.5rem 0'
+  },
+  setting: {
+    position: 'absolute',
+    right: '1rem',
+    top: '1rem',
+    cursor: 'pointer'
+  },
+  popover: {
+    width: '15rem',
+    background: '#292B2E',
+    border: ' 1px solid #666666',
+    borderRadius: '1.25rem',
+    padding: '1rem'
+  },
+  popoverTitle: {
+    color: '#A0A0A0',
+    margin: 0,
+    padding: '0.5rem 0'
+  },
+  estimateItem: {
+    textAlign: 'center',
+    minHeight: '100px',
+    color: '#A0A0A0',
+    paddingTop: '35px'
+  },
+  tokenName: {
+    fontSize: '1.625rem'
   }
-});
+})
 
-export default componentsStyle;
+export default componentsStyle

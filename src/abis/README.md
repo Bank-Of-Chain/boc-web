@@ -1,1 +1,0 @@
-由于可能出现不同链之间使用的abi不同的情况，所以也需要对abi进行版本管理，依据config.{env}.js文件中的abi_version进行区隔
