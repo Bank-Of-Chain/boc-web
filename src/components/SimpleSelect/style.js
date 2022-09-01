@@ -1,20 +1,22 @@
 const style = {
   selectWrapper: {
-    position: 'relative',
     height: '51px',
+    position: 'relative',
     lineHeight: '51px'
   },
   selectTrigger: {
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
-    width: '200px',
     height: '100%',
     cursor: 'pointer',
     border: '1px solid #666666',
     borderRadius: '20px',
     paddingLeft: 16,
     paddingRight: 24
+  },
+  disabled: {
+    backgroundColor: 'ivory'
   },
   triggerLabelWrapper: {
     display: 'flex',
