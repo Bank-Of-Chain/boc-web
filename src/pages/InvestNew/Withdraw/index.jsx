@@ -597,9 +597,7 @@ export default function Withdraw({
                     tooltip: classes.tooltip
                   }}
                   placement="top"
-                  title={
-                    'Mix mode will return a variety of coins, such as USDT/USDC/TUSD/BUSD, etc. You can view the estimated currency and quantity in Advanced Setting'
-                  }
+                  title={'Mix mode will return a variety of coins, such as USDT/USDC/TUSD/BUSD, etc.'}
                 >
                   <InfoIcon />
                 </Tooltip>
