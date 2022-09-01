@@ -187,8 +187,10 @@ export default function Withdraw({
       })
     ).then(array => {
       const nextBurnTokens = compact(array)
-      setIsShowZipModal(true)
-      setBurnTokens(nextBurnTokens)
+      if (!isEmpty(nextBurnTokens)) {
+        setIsShowZipModal(true)
+        setBurnTokens(nextBurnTokens)
+      }
     })
   }
 
