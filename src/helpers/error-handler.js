@@ -104,3 +104,12 @@ export const isDistributing = (errorMsg = '') => {
 export const isLessThanMinValue = (errorMsg = '') => {
   return errorMsg.endsWith("'Amount must be gt minimum Investment Amount'")
 }
+
+/**
+ * transfer not enough
+ * @param {*} errorMsg
+ * @returns
+ */
+export const isTransferNotEnough = (errorMsg = '') => {
+  return errorMsg.endsWith("'ERC20: transfer amount exceeds allowance'")
+}

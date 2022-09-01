@@ -27,10 +27,9 @@ const useSmStyles = makeStyles(smStyle)
 
 const bocTitle = 'BOC'
 
-const array = ['Compound', 'Aave', 'Coinbase', 'BlockFi', 'Nexo', 'Celsius', 'YearnFinance', 'Gemini', 'Bitfinex']
+const array = ['Compound', 'Aave', 'Coinbase', 'BlockFi', 'Nexo', 'YearnFinance', 'Gemini', 'Bitfinex']
 const apyType = {
   BlockFi: 'Fixed Rate',
-  Celsius: 'Fixed Rate',
   Nexo: 'Fixed Rate',
   Gemini: 'Fixed Rate',
   Coinbase: 'Fixed Rate',

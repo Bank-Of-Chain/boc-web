@@ -93,8 +93,7 @@ function Invest(props) {
 
   const lastRebaseTime = getLastPossibleRebaseTime()
 
-  const { minimumInvestmentAmount } = useVault(VAULT_ADDRESS, VAULT_ABI, userProvider)
-
+  const { minimumInvestmentAmount, exchangeManager } = useVault(VAULT_ADDRESS, VAULT_ABI, userProvider)
   // load user balance
   const loadBalance = () => {
     if (isEmpty(address)) return
@@ -350,6 +349,8 @@ function Invest(props) {
           {current === 2 && (
             <div className={isLayoutSm ? classes.wrapperMobile : classes.wrapper}>
               <Withdraw
+                address={address}
+                exchangeManager={exchangeManager}
                 toBalance={toBalance}
                 usdiDecimals={usdiDecimals}
                 userProvider={userProvider}

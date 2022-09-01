@@ -38,7 +38,9 @@ const componentsStyle = () => ({
   estimateText: {
     color: '#A0A0A0',
     margin: 0,
-    display: 'flex'
+    display: 'flex',
+    marginTop: '0.5rem',
+    alignItems: 'center'
   },
   input: {
     maxWidth: '12.5rem'
@@ -125,7 +127,17 @@ const componentsStyle = () => ({
     color: 'rgba(255, 255, 255, 0.87)',
     border: '1px solid #A68EFE',
     backgroundColor: '#000',
-    borderRadius: '1rem'
+    borderRadius: '1rem',
+    width: '100%'
+  },
+  approvePaper: {
+    padding: '1rem',
+    maxWidth: '46rem',
+    color: 'rgba(255, 255, 255, 0.87)',
+    border: '1px solid #A68EFE',
+    backgroundColor: '#000',
+    borderRadius: '1rem',
+    width: '100%'
   },
   root: {
     padding: '1.5rem 0'

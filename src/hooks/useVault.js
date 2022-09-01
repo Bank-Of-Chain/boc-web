@@ -12,6 +12,7 @@ const { Contract } = ethers
 const useVault = (VAULT_ADDRESS, VAULT_ABI, userProvider) => {
   const [error, setError] = useState()
   const [loading, setLoading] = useState(false)
+  const [exchangeManager, setExchangeManager] = useState('')
   const [decimals, setDecimals] = useState(ethers.BigNumber.from(0))
   const [totalAsset, setTotalAsset] = useState(ethers.BigNumber.from(0))
   const [rebaseThreshold, setRebaseThreshold] = useState(ethers.BigNumber.from(0))
@@ -40,14 +41,16 @@ const useVault = (VAULT_ADDRESS, VAULT_ABI, userProvider) => {
       vaultContract.totalDebt().catch(() => ethers.BigNumber.from(0)),
       vaultContract.rebaseThreshold().catch(() => ethers.BigNumber.from(0)),
       vaultContract.minimumInvestmentAmount(),
+      vaultContract.exchangeManager(),
       fetchUnderlyingUnitsPerShare()
     ]
     return Promise.all(requestArray)
-      .then(([totalAsset, decimals, rebaseThreshold, minimumInvestmentAmount]) => {
+      .then(([totalAsset, decimals, rebaseThreshold, minimumInvestmentAmount, exchangeManager]) => {
         setTotalAsset(totalAsset)
         setDecimals(decimals)
         setRebaseThreshold(rebaseThreshold)
         setMinimumInvestmentAmount(minimumInvestmentAmount)
+        setExchangeManager(exchangeManager)
         return {
           totalAsset,
           decimals,
@@ -109,6 +112,7 @@ const useVault = (VAULT_ADDRESS, VAULT_ABI, userProvider) => {
     error,
     totalAsset,
     decimals,
+    exchangeManager,
     minimumInvestmentAmount,
     fetchUnderlyingUnitsPerShare,
     rebaseThreshold,

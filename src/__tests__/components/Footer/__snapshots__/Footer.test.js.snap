@@ -111,20 +111,19 @@ exports[`Footer Component Render 1`] = `
           <p
             class="makeStyles-text-2"
           >
-            @2022 Bank of Chain, all right reserved.
+            @2022 Bank of Chain, all rights reserved.
           </p>
         </div>
         <div
           class="MuiGrid-root makeStyles-grid-16 makeStyles-item-3 MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-12 MuiGrid-grid-md-6"
         >
           <p>
-            Do you have any questions? 
+            Any further queries? Contact us at 
             <a
               class="makeStyles-text-2"
             >
-              Contact us
+              contact@bankofchian.io
             </a>
-             contact@bankofchian.io
           </p>
         </div>
         <hr

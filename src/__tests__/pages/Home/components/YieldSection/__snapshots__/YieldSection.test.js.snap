@@ -12,7 +12,7 @@ exports[`YieldSection Component Render 1`] = `
       <span
         class="makeStyles-colorful-4"
       >
-         yield.
+         yield
       </span>
     </h2>
     <h3
@@ -27,7 +27,7 @@ exports[`YieldSection Component Render 1`] = `
     <p
       class="makeStyles-description-6"
     >
-      Bank of Chain maximizes returns in a scalable and safe manner, only interacting with carefully-vetted protocols.
+      Bank of Chain maximizes returns in a scalable and safe manner by only interacting with rigorously-evaluated protocols.
     </p>
     <p
       class="makeStyles-description-6"

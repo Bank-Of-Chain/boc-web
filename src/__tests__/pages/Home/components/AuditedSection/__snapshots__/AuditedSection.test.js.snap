@@ -21,7 +21,7 @@ exports[`AuditedSection Component Render 1`] = `
     <h4
       class="makeStyles-text-4"
     >
-      The smart contracts underlying the BoC protocol have been throughly and repeatedly tested. BoC has been audited by reputable security firms including XXXXXXXXXX, YYYYYYYYYYY and ZZZZZZZZZZZZZZZ.
+      The underlying smart contracts of the BoC protocol have been thoroughly and repeatedly tested. BoC contracts are currently under our first third-party audit.
     </h4>
   </div>
 </DocumentFragment>
