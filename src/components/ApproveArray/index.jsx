@@ -400,6 +400,10 @@ const ApproveArray = props => {
     estimateWithValue(values, decimals, receiveToken)
   }
 
+  const isSwapError = () => {
+    return swapArray.some(el => el instanceof Error)
+  }
+
   return (
     <GridContainer>
       <GridItem xs={12} sm={12} md={12}>
@@ -528,7 +532,7 @@ const ApproveArray = props => {
           </span>
         </h3>
         <div className={classes.buttonGroup}>
-          <Button color="colorfull" onClick={swap} disabled={noNeedSwap || someNotApprove || isEstimate} className={classes.okButton}>
+          <Button color="colorfull" onClick={swap} disabled={noNeedSwap || someNotApprove || isEstimate || isSwapError()} className={classes.okButton}>
             Swap
           </Button>
           <Button color="danger" onClick={handleClose} className={classes.cancelButton}>
