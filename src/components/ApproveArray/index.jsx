@@ -11,6 +11,7 @@ import CustomTextField from '@/components/CustomTextField'
 import Loading from '@/components/LoadingComponent'
 import CheckIcon from '@material-ui/icons/Check'
 import AddIcon from '@material-ui/icons/Add'
+import ReplayIcon from '@material-ui/icons/Replay'
 import ArrowRightAltIcon from '@material-ui/icons/ArrowRightAlt'
 import CompareArrowsIcon from '@material-ui/icons/CompareArrows'
 
@@ -390,8 +391,13 @@ const ApproveArray = props => {
   const isValidSlipper = () => {
     if (slipper === '' || isEmpty(slipper.replace(/ /g, ''))) return
     if (isNaN(slipper)) return false
-    if (slipper < 0 || slipper > 45) return false
+    if (slipper < 0.01 || slipper > 45) return false
     return true
+  }
+
+  const reloadSwap = () => {
+    setSwapArray([])
+    estimateWithValue(values, decimals, receiveToken)
   }
 
   return (
@@ -435,7 +441,7 @@ const ApproveArray = props => {
                           maxEndAdornment
                           InputProps={{
                             startAdornment: (
-                              <div onClick={() => addToken(address)}>
+                              <div className={classes.addToken} onClick={() => addToken(address)}>
                                 <AddIcon fontSize="small" style={{ position: 'absolute', top: 28, left: 35 }} />
                                 <img className={classes.tokenLogo} src={`./images/${address}.png`} />
                               </div>
@@ -477,7 +483,12 @@ const ApproveArray = props => {
                           </span>
                         </p>
                       )}
-                      {swapError && <p className={classNames(classes.errorText, classes.balanceText)}>swap path fetch error</p>}
+                      {swapError && (
+                        <div className={classes.swapError}>
+                          <span>swap path fetch error</span>
+                          <ReplayIcon fontSize="small" style={{ cursor: 'pointer' }} onClick={reloadSwap} />
+                        </div>
+                      )}
                     </div>
                   </GridItem>
                 )
