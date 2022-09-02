@@ -39,7 +39,7 @@ import { errorTextOutput, isTransferNotEnough, isLossMuch } from '@/helpers/erro
 
 // === Constants === //
 import { IERC20_ABI, EXCHANGE_EXTRA_PARAMS, ORACLE_ADDITIONAL_SLIPPAGE, USDT_ADDRESS, USDC_ADDRESS, DAI_ADDRESS } from '@/constants'
-import { ETH_ADDRESS } from '@/constants/tokens'
+import { ETH_ADDRESS, WETH_ADDRESS } from '@/constants/tokens'
 import { BN_6, BN_18 } from '@/constants/big-number'
 
 // === Styles === //
@@ -209,6 +209,12 @@ const ApproveArray = props => {
       // If allowance equal 0, approve nextAmount, otherwise approve 0 and approve nextAmount
       if (allowanceAmount.gt(0)) {
         console.log('add allowance:', nextValue.sub(allowanceAmount).toString())
+        if (address === WETH_ADDRESS) {
+          return contractWithUser
+            .approve(exchangeManager, 0)
+            .then(tx => tx.wait())
+            .then(() => contractWithUser.approve(exchangeManager, nextValue).then(tx => tx.wait()))
+        }
         await contractWithUser
           .increaseAllowance(exchangeManager, nextValue.sub(allowanceAmount))
           .then(tx => tx.wait())
