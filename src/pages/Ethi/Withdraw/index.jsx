@@ -110,7 +110,7 @@ export default function Withdraw({
       setIsEstimate(true)
       const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider)
       const nextValue = BigNumber.from(BN(toValue).multipliedBy(BigNumber.from(10).pow(ethiDecimals).toString()).toFixed())
-      const usdValue = nextValue.mul(pegTokenPrice).div(BN_18)
+      const usdValue = nextValue.mul(pegTokenPrice).div(BN_18.toString())
       const allowMaxLossValue = BigNumber.from(10000 - parseInt(100 * (parseFloat(allowMaxLoss) + redeemFeeBpsPercent)))
         .mul(usdValue)
         .div(BigNumber.from(1e4))
@@ -249,7 +249,7 @@ export default function Withdraw({
     const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider)
     const signer = userProvider.getSigner()
     const nextValue = BigNumber.from(BN(toValue).multipliedBy(BigNumber.from(10).pow(ethiDecimals).toString()).toFixed())
-    const usdValue = nextValue.mul(pegTokenPrice).div(BN_18)
+    const usdValue = nextValue.mul(pegTokenPrice).div(BN_18.toString())
     const allowMaxLossValue = BigNumber.from(10000 - parseInt(100 * (parseFloat(allowMaxLoss) + redeemFeeBpsPercent)))
       .mul(usdValue)
       .div(BigNumber.from(1e4))
@@ -287,7 +287,7 @@ export default function Withdraw({
           message: 'Success!'
         })
       )
-      vaultContract.on('Burn', handleBurn)
+      vaultContract.once('Burn', handleBurn)
     } catch (error) {
       console.log('withdraw original error :', error)
       const errorMsg = errorTextOutput(error)
