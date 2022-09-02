@@ -96,6 +96,11 @@ const componentsStyle = () => ({
     marginBottom: '1rem',
     color: '#ff7875',
     textAlign: 'left'
+  },
+  textOverflow: {
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+    whiteSpace: 'nowrap'
   }
 })
 

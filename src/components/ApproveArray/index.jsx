@@ -35,11 +35,12 @@ import { getBestSwapInfo } from 'piggy-finance-utils'
 import BN from 'bignumber.js'
 import { addToken } from '@/helpers/wallet'
 import { warmDialog } from '@/reducers/meta-reducer'
-import { errorTextOutput, isTransferNotEnough } from '@/helpers/error-handler'
+import { errorTextOutput, isTransferNotEnough, isLossMuch } from '@/helpers/error-handler'
 
 // === Constants === //
 import { IERC20_ABI, EXCHANGE_EXTRA_PARAMS, ORACLE_ADDITIONAL_SLIPPAGE, USDT_ADDRESS, USDC_ADDRESS, DAI_ADDRESS } from '@/constants'
 import { ETH_ADDRESS } from '@/constants/tokens'
+import { BN_6, BN_18 } from '@/constants/big-number'
 
 // === Styles === //
 import styles from './style'
@@ -92,7 +93,7 @@ const ApproveArray = props => {
           label: 'ETH',
           value: ETH_ADDRESS,
           img: `./images/${ETH_ADDRESS}.png`,
-          decimal: BigNumber.from(10).pow(18)
+          decimal: BN_18
         }
       ]
     : [
@@ -100,19 +101,19 @@ const ApproveArray = props => {
           label: 'USDT',
           value: USDT_ADDRESS,
           img: `./images/${USDT_ADDRESS}.png`,
-          decimal: BigNumber.from(10).pow(6)
+          decimal: BN_6
         },
         {
           label: 'USDC',
           value: USDC_ADDRESS,
           img: `./images/${USDC_ADDRESS}.png`,
-          decimal: BigNumber.from(10).pow(6)
+          decimal: BN_6
         },
         {
           label: 'DAI',
           value: DAI_ADDRESS,
           img: `./images/${DAI_ADDRESS}.png`,
-          decimal: BigNumber.from(10).pow(18)
+          decimal: BN_18
         }
       ]
 
@@ -140,7 +141,6 @@ const ApproveArray = props => {
         const allowance = (await contract.allowance(userAddress, exchangeManager)).toString()
         const balance = (await contract.balanceOf(userAddress)).toString()
         const decimal = await contract.decimals()
-        console.log('decimal', decimal)
         return {
           address,
           amount,
@@ -266,9 +266,13 @@ const ApproveArray = props => {
       })
       .catch(error => {
         const errorMsg = errorTextOutput(error)
-        let tip = 'Swap Failed. Please checking the approved value and try again!'
+        let tip = ''
         if (isTransferNotEnough(errorMsg)) {
-          tip = 'Transfer Not Enough!'
+          tip = 'Transfer Not Enough'
+        } else if (isLossMuch(errorMsg)) {
+          tip = 'Swap Failed, please increase the exchange slippage'
+        } else {
+          tip = errorMsg
         }
         dispatch(
           warmDialog({
@@ -506,7 +510,7 @@ const ApproveArray = props => {
             <SimpleSelect className={classes.select} value={receiveToken} onChange={setReceiveToken} options={selectOptions} />
             <div className={classes.estimateBalance}>
               <Loading loading={isEstimate}>
-                {toFixed(receiveAmount, receiveTokenDecimals, 6)}
+                <div className={classes.textOverflow}>{toFixed(receiveAmount, receiveTokenDecimals, 6)}</div>
                 <div>{receiveTokenAmount !== '0' && `+(${toFixed(receiveTokenAmount, receiveTokenDecimals, 6)})`}</div>
               </Loading>
             </div>
