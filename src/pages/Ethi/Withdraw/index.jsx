@@ -471,21 +471,22 @@ export default function Withdraw({
 
   const isLogin = !isEmpty(userProvider)
 
-  useEffect(() => {
+  const getPegTokenPrice = () => {
+    setIsPriceLoading(true)
     const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider)
     vaultContract.getPegTokenPrice().then(result => {
-      setPegTokenPrice(result)
+      setTimeout(() => {
+        setPegTokenPrice(result)
+        setIsPriceLoading(false)
+      }, 500)
+    }).catch(() => {
       setIsPriceLoading(false)
     })
-    setInterval(() => {
-      setIsPriceLoading(true)
-      vaultContract.getPegTokenPrice().then(result => {
-        setTimeout(() => {
-          setPegTokenPrice(result)
-          setIsPriceLoading(false)
-        }, 500)
-      })
-    }, 10000)
+    return getPegTokenPrice
+  }
+
+  useEffect(() => {
+    setInterval(getPegTokenPrice(), 10000)
   }, [])
 
   return (
