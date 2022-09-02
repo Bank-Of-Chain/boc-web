@@ -46,6 +46,7 @@ import { isAd, isEs, isRp, isMaxLoss, isLossMuch, isExchangeFail, errorTextOutpu
 
 // === Constants === //
 import { MULTIPLE_OF_GAS, MAX_GAS_LIMIT, IERC20_ABI } from '@/constants'
+import { BN_18 } from '@/constants/big-number'
 
 // === Styles === //
 import styles from './style'
@@ -87,8 +88,7 @@ export default function Withdraw({
   const [burnTokens, setBurnTokens] = useState([])
   const [isShowZipModal, setIsShowZipModal] = useState(false)
 
-  const [pegTokenPrice, setPegTokenPrice] = useState(0)
-  const [isPriceLoading, setIsPriceLoading] = useState(true)
+  const [pegTokenPrice, setPegTokenPrice] = useState(BN_18)
 
   const { value: redeemFeeBps } = useRedeemFeeBps({
     userProvider,
@@ -110,7 +110,7 @@ export default function Withdraw({
       setIsEstimate(true)
       const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider)
       const nextValue = BigNumber.from(BN(toValue).multipliedBy(BigNumber.from(10).pow(ethiDecimals).toString()).toFixed())
-      const usdValue = nextValue.mul(pegTokenPrice).div(BigNumber.from(10).pow(18))
+      const usdValue = nextValue.mul(pegTokenPrice).div(BN_18)
       const allowMaxLossValue = BigNumber.from(10000 - parseInt(100 * (parseFloat(allowMaxLoss) + redeemFeeBpsPercent)))
         .mul(usdValue)
         .div(BigNumber.from(1e4))
@@ -173,6 +173,12 @@ export default function Withdraw({
   )
 
   const handleBurn = async (a, b, c, d, tokens, amounts) => {
+    console.log('handleBurn')
+    console.log('tokens', tokens)
+    console.log(
+      'amounts',
+      amounts.map(el => el.toString())
+    )
     const priceProvider = await getPriceProvider()
     return Promise.all(
       map(tokens, async (token, i) => {
@@ -243,7 +249,7 @@ export default function Withdraw({
     const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider)
     const signer = userProvider.getSigner()
     const nextValue = BigNumber.from(BN(toValue).multipliedBy(BigNumber.from(10).pow(ethiDecimals).toString()).toFixed())
-    const usdValue = nextValue.mul(pegTokenPrice).div(BigNumber.from(10).pow(18))
+    const usdValue = nextValue.mul(pegTokenPrice).div(BN_18)
     const allowMaxLossValue = BigNumber.from(10000 - parseInt(100 * (parseFloat(allowMaxLoss) + redeemFeeBpsPercent)))
       .mul(usdValue)
       .div(BigNumber.from(1e4))
@@ -472,15 +478,11 @@ export default function Withdraw({
   const isLogin = !isEmpty(userProvider)
 
   const getPegTokenPrice = () => {
-    setIsPriceLoading(true)
     const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider)
     vaultContract.getPegTokenPrice().then(result => {
       setTimeout(() => {
         setPegTokenPrice(result)
-        setIsPriceLoading(false)
       }, 500)
-    }).catch(() => {
-      setIsPriceLoading(false)
     })
     return getPegTokenPrice
   }
@@ -574,10 +576,8 @@ export default function Withdraw({
           </p>
         </GridItem>
         <GridItem xs={12} sm={12} md={12} lg={12}>
-          <p className={classes.estimateText} title={toFixed(pegTokenPrice, BigNumber.from(10).pow(18))}>
-            <span>1ETHi ≈&nbsp;</span>
-            <Loading loading={isPriceLoading}>{toFixed(pegTokenPrice, BigNumber.from(10).pow(18), 6)}</Loading>
-            ETH
+          <p className={classes.estimateText} title={toFixed(pegTokenPrice, BN_18)}>
+            <span>1ETHi ≈ {toFixed(pegTokenPrice, BN_18, 6)}ETH</span>
           </p>
         </GridItem>
       </GridContainer>
