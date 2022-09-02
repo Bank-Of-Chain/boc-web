@@ -401,7 +401,7 @@ const ApproveArray = props => {
   }
 
   const isSwapError = () => {
-    swapArray.some(el => el instanceof Error)
+    return swapArray.some(el => el instanceof Error)
   }
 
   return (
@@ -532,7 +532,7 @@ const ApproveArray = props => {
           </span>
         </h3>
         <div className={classes.buttonGroup}>
-          <Button color="colorfull" onClick={swap} disabled={noNeedSwap || someNotApprove || isEstimate || isSwapError} className={classes.okButton}>
+          <Button color="colorfull" onClick={swap} disabled={noNeedSwap || someNotApprove || isEstimate || isSwapError()} className={classes.okButton}>
             Swap
           </Button>
           <Button color="danger" onClick={handleClose} className={classes.cancelButton}>
