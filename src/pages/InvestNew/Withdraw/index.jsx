@@ -266,7 +266,7 @@ export default function Withdraw({
           message: 'Success!'
         })
       )
-      vaultContract.on('Burn', handleBurn)
+      vaultContract.once('Burn', handleBurn)
     } catch (error) {
       console.log('withdraw original error :', error)
       const errorMsg = errorTextOutput(error)
@@ -483,14 +483,20 @@ export default function Withdraw({
   const isLogin = !isEmpty(userProvider)
 
   useEffect(() => {
+    const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider)
+    vaultContract.getPegTokenPrice().then(result => {
+      setPegTokenPrice(result)
+      setIsPriceLoading(false)
+    })
     setInterval(() => {
       setIsPriceLoading(true)
-      const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider)
       vaultContract.getPegTokenPrice().then(result => {
-        setPegTokenPrice(result)
-        setIsPriceLoading(false)
+        setTimeout(() => {
+          setPegTokenPrice(result)
+          setIsPriceLoading(false)
+        }, 500)
       })
-    }, 3000)
+    }, 10000)
   }, [])
 
   return (
