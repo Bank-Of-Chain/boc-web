@@ -97,7 +97,8 @@ const config1 = {
     paraswap: {
       network: 1,
       excludeContractMethods: ['swapOnZeroXv2', 'swapOnZeroXv4'],
-      excludeDEXS: ['acryptos']
+      excludeDEXS: 'acryptos',
+      includeDEXS: ''
     }
   },
   max_gas_limit: 2700 * 10 ** 4,
