@@ -1,22 +1,19 @@
 /**
- * qa03-sg环境配置文件
+ * pr02-sg config
  */
 
-const ETHI_FOR_ETH = '0x4ff1f64683785E0460c24A4EF78D582C2488704f'
+const ETHI_FOR_ETH = '0x1A597356E7064D4401110FAa2242bD0B51D1E4Fa'
 
-const USDI_FOR_ETH = '0x572316aC11CB4bc5daf6BDae68f43EA3CCE3aE0e'
-const USDI_FOR_BSC = '4'
-const USDI_FOR_MATIC = '0xfDFB68F5195DF817824Ee881CF63E94402eEc46A'
+const USDI_FOR_ETH = '0x83131242843257bc6C43771762ba467346Efb2CF'
+const USDI_FOR_MATIC = ''
 
-const ETHI_VAULT = '0x124dDf9BdD2DdaD012ef1D5bBd77c00F05C610DA'
-const USDI_VAULT_FOR_ETH = '0xb932C8342106776E73E39D695F3FFC3A9624eCE0'
-const USDI_VAULT_FOR_BSC = '111'
-const USDI_VAULT_FOR_MATIC = '0xd3feAe6c4fdfDE73Bd2fE99c8fE6944904DAA68A'
+const ETHI_VAULT = '0x8f0Cb368C63fbEDF7a90E43fE50F7eb8B9411746'
+const USDI_VAULT_FOR_ETH = '0x30D120f80D60E7b58CA9fFaf1aaB1815f000B7c3'
+const USDI_VAULT_FOR_MATIC = ''
 
-const VAULT_BUFFER_FOR_ETHI_ETH = '0x398E4948e373Db819606A459456176D31C3B1F91'
-const VAULT_BUFFER_FOR_USDI_ETH = '0xCa1D199b6F53Af7387ac543Af8e8a34455BBe5E0'
-const VAULT_BUFFER_FOR_USDI_BSC = '2'
-const VAULT_BUFFER_FOR_USDI_MATIC = '0xfa949750F82779376B174C195D8f2baef20750F2'
+const VAULT_BUFFER_FOR_ETHI_ETH = '0xC8915157b36ed6D0F36827a1Bb5E9b0cDd1e87Cd'
+const VAULT_BUFFER_FOR_USDI_ETH = '0x0b8D3634a05cc6b50E4D026c0eaFa8469cA98480'
+const VAULT_BUFFER_FOR_USDI_MATIC = ''
 
 const configBase = {
   usdt_address: '0xdAC17F958D2ee523a2206206994597C13D831ec7',
@@ -32,21 +29,20 @@ const configBase = {
   twitter_url: 'https://twitter.com/bankofchain_dao',
   linkedin_url: 'https://www.linkedin.com/company/bank-of-chain',
   document_url: 'https://docs.bankofchain.io',
-  boc_server: 'https://service-qa03-sg.bankofchain.io',
+  boc_server: 'https://service-pr02-sg.bankofchain.io',
   rpc_url: {
-    1: 'https://rpc-qa03-sg.bankofchain.io',
-    56: 'https://rpc-qa03-sg.bankofchain.io',
-    137: 'https://rpc-qa03-sg.bankofchain.io',
-    31337: 'https://rpc-qa03-sg.bankofchain.io'
+    1: 'https://rpc.ankr.com/eth',
+    137: 'https://rpc-mainnet.maticvigil.com',
+    31337: ''
   },
   multiple_of_gas: 2,
-  dashboard_url: 'https://dashboard-qa03-sg.bankofchain.io',
+  dashboard_url: 'https://dashboard-v2.bankofchain.io',
   oracle_additional_slippage: 20
 }
 
 const config137 = {
   ...configBase,
-  apy_server: 'https://qa03-sg-keeper-polygon.bankofchain.io',
+  apy_server: 'https://pr02-sg-keeper-polygon.bankofchain.io',
   usdt_address: '0xc2132D05D31c914a87C6611C10748AEb04B58e8F',
   usdc_address: '0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174',
   dai_address: '0x8f3Cf7ad23Cd3CaDbD9735AFf958023239c6A063',
@@ -57,10 +53,9 @@ const config137 = {
     },
     paraswap: {
       network: 137,
-      excludeContractMethods: ['swapOnZeroXv2', 'swapOnZeroXv4']
+      excludeContractMethods: []
     }
   },
-  // 币安链一个区块2千万，使用90%的空间即可，过大会造成打块过慢
   max_gas_limit: 1800 * 10 ** 4,
   chain_id: 137,
   vaults: [
@@ -68,74 +63,28 @@ const config137 = {
       id: 'mutilCoins',
       name: 'Vault for USDi',
       path: '#/mutils',
-      abi_version: 'beta-v1.5.9',
+      abi_version: 'usdi-v1.6.0',
       VAULT_ADDRESS: USDI_VAULT_FOR_MATIC,
       USDI_ADDRESS: USDI_FOR_MATIC,
-      VAULT_BUFFER_ADDRESS: VAULT_BUFFER_FOR_USDI_MATIC,
-      isOpen: true
+      VAULT_BUFFER_ADDRESS: VAULT_BUFFER_FOR_USDI_MATIC
     },
     {
       id: 'ethi',
       name: 'Vault for ETHi',
-      description: '这是ethi的池子',
+      description: 'Vault for ETHi',
       path: '#/ethi',
-      abi_version: 'ethi',
+      abi_version: 'ethi-v1.6.0',
       VAULT_ADDRESS: '',
       ETHI_ADDRESS: '',
-      VAULT_BUFFER_ADDRESS: '',
-      isOpen: true
-    }
-  ]
-}
-
-const config56 = {
-  ...configBase,
-  apy_server: 'https://qa03-sg-keeper-bsc.bankofchain.io',
-  usdt_address: '0x55d398326f99059fF775485246999027B3197955',
-  usdc_address: '0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d',
-  dai_address: '0x1AF3F329e8BE154074D8769D1FFa4eE058B1DBc3',
-  exchange_extra_params: {
-    oneInchV4: {
-      network: 56,
-      excludeProtocols: ['BSC_ONE_INCH_LIMIT_ORDER', 'BSC_ONE_INCH_LIMIT_ORDER_V2']
-    },
-    paraswap: {
-      network: 56,
-      excludeContractMethods: ['swapOnZeroXv2', 'swapOnZeroXv4']
-    }
-  },
-  // 币安链一个区块8千万，使用90%的空间即可，过大会造成打块过慢
-  max_gas_limit: 7200 * 10 ** 4,
-  chain_id: 56,
-  vaults: [
-    {
-      id: 'mutilCoins',
-      name: 'Vault for USDi',
-      path: '#/mutils',
-      abi_version: 'beta-v1.5.9',
-      VAULT_ADDRESS: USDI_VAULT_FOR_BSC,
-      USDI_ADDRESS: USDI_FOR_BSC,
-      VAULT_BUFFER_ADDRESS: VAULT_BUFFER_FOR_USDI_BSC,
-      isOpen: true
-    },
-    {
-      id: 'ethi',
-      name: 'Vault for ETHi',
-      description: '这是ethi的池子',
-      path: '#/ethi',
-      abi_version: 'ethi',
-      VAULT_ADDRESS: '',
-      ETHI_ADDRESS: '',
-      VAULT_BUFFER_ADDRESS: '',
-      isOpen: true
+      VAULT_BUFFER_ADDRESS: ''
     }
   ]
 }
 
 const config1 = {
   ...configBase,
-  apy_server: 'https://qa03-sg-keeper-eth.bankofchain.io',
-  ethi_keeper_server: 'https://qa03-sg-keeper-ethi.bankofchain.io',
+  apy_server: 'https://pr02-sg-keeper-eth.bankofchain.io',
+  ethi_keeper_server: 'https://pr02-sg-keeper-ethi.bankofchain.io',
   usdt_address: '0xdAC17F958D2ee523a2206206994597C13D831ec7',
   usdc_address: '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48',
   dai_address: '0x6B175474E89094C44Da98b954EedeAC495271d0F',
@@ -143,16 +92,15 @@ const config1 = {
   exchange_extra_params: {
     oneInchV4: {
       network: 1,
-      protocols:
-        'BALANCER,BALANCER_V2,PMMX,UNIFI,SHIBASWAP,CLIPPER,DXSWAP,FIXED_FEE_SWAP,DFX_FINANCE,CONVERGENCE_X,SAKESWAP,CREAM_LENDING,CURVE_V2,CURVE_V2_EURS_2_ASSET,CURVE_V2_EURT_2_ASSET,SETH_WRAPPER,MOONISWAP,SUSHI,COMPOUND,KYBER,CREAMSWAP,AAVE,CURVE,UNISWAP_V1,UNISWAP_V2,CHAI,OASIS,BANCOR,IEARN,SWERVE,VALUELIQUID,DODO,SHELL,BLACKHOLESWAP,PMM1,DEFISWAP,MINISWAP,AAVE_V2,ST_ETH,ONE_INCH_LP,LINKSWAP,S_FINANCE,ONE_INCH_LP_1_1,PSM,POWERINDEX,SMOOTHY_FINANCE,PMM2,PMM3,SADDLE,PMM4,KYBER_DMM,UNISWAP_V3,DEFI_PLAZA,CURVE_V2_ETH_CRV,FIXED_FEE_SWAP_V3,CURVE_V2_ETH_CVX,CURVE_V2_XAUT_2_ASSET,WSTETH,CURVE_V2_SPELL_2_ASSET,CURVE_V2_YFI_2_ASSET,CURVE_V2_THRESHOLDNETWORK_2_ASSET,SYNAPSE,POOLTOGETHER,CURVE_V2_ETH_PAL,ETH_BANCOR_V3'
+      excludeProtocols: ['ONE_INCH_LIMIT_ORDER', 'ONE_INCH_LIMIT_ORDER_V2']
     },
     paraswap: {
       network: 1,
-      excludeDEXS: '0x,0xRFQt,Balancer',
-      excludeContractMethods: ['swapOnZeroXv2', 'swapOnZeroXv4']
+      excludeContractMethods: ['swapOnZeroXv2', 'swapOnZeroXv4'],
+      excludeDEXS: 'acryptos',
+      includeDEXS: ''
     }
   },
-  // ETH链一个区块3千万，使用90%的空间即可，过大会造成打块过慢
   max_gas_limit: 2700 * 10 ** 4,
   chain_id: 1,
   vaults: [
@@ -160,22 +108,20 @@ const config1 = {
       id: 'mutilCoins',
       name: 'Vault for USDi',
       path: '#/mutils',
-      abi_version: 'beta-v1.5.9',
+      abi_version: 'usdi-v1.6.0',
       VAULT_ADDRESS: USDI_VAULT_FOR_ETH,
       USDI_ADDRESS: USDI_FOR_ETH,
-      VAULT_BUFFER_ADDRESS: VAULT_BUFFER_FOR_USDI_ETH,
-      isOpen: true
+      VAULT_BUFFER_ADDRESS: VAULT_BUFFER_FOR_USDI_ETH
     },
     {
       id: 'ethi',
       name: 'Vault for ETHi',
-      description: '这是ethi的池子',
+      description: 'Vault for ETHi',
       path: '#/ethi',
-      abi_version: 'ethi',
+      abi_version: 'ethi-v1.6.0',
       VAULT_ADDRESS: ETHI_VAULT,
       ETHI_ADDRESS: ETHI_FOR_ETH,
-      VAULT_BUFFER_ADDRESS: VAULT_BUFFER_FOR_ETHI_ETH,
-      isOpen: true
+      VAULT_BUFFER_ADDRESS: VAULT_BUFFER_FOR_ETHI_ETH
     }
   ]
 }
@@ -183,18 +129,14 @@ const config1 = {
 const glo = {
   configBase,
   config137,
-  config56,
   config1
 }
 export default {
-  // 本地链
-  31337: glo['config1'],
+  // local
+  31337: glo['configBase'],
   // polygon
   137: config137,
-  // bsc
-  56: config56,
   // eth
   1: config1,
-  // 无链信息时的加载
   [undefined]: configBase
 }
