@@ -179,8 +179,6 @@ export default function Withdraw({
       'amounts',
       amounts.map(el => el.toString())
     )
-    const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider)
-    vaultContract.removeAllListeners('Burn')
     const priceProvider = await getPriceProvider()
     return Promise.all(
       map(tokens, async (token, i) => {
@@ -277,7 +275,15 @@ export default function Withdraw({
       }
       withdrawFinish = Date.now()
 
-      await tx.wait()
+      const { events } = await tx.wait()
+      let args = []
+      for (let i = events.length - 1; i >= 0; i--) {
+        if (events[i].event === 'Burn') {
+          args = events[i].args
+          break
+        }
+      }
+      handleBurn(...args)
 
       withdrawTransationFinish = Date.now()
       setCurrentStep(4)
@@ -289,8 +295,6 @@ export default function Withdraw({
           message: 'Success!'
         })
       )
-      vaultContract.removeAllListeners('Burn')
-      vaultContract.once('Burn', handleBurn)
     } catch (error) {
       console.log('withdraw original error :', error)
       const errorMsg = errorTextOutput(error)
