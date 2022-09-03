@@ -448,9 +448,17 @@ const ApproveArray = props => {
     constract
       .connect(signer)
       .callStatic.batchSwap(nextSwapArray)
-      .catch(() => {
+      .catch(error => {
         setIsStaticCallError(true)
-        let tip = 'Swap Failed. Please checking the approved value and try again!'
+        const errorMsg = errorTextOutput(error)
+        let tip = ''
+        if (isTransferNotEnough(errorMsg)) {
+          tip = 'Transfer Not Enough'
+        } else if (isLossMuch(errorMsg)) {
+          tip = 'Swap Failed, please increase the exchange slippage'
+        } else {
+          tip = errorMsg
+        }
         dispatch(
           warmDialog({
             open: true,
