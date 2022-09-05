@@ -93,7 +93,7 @@ export default function Footer(props) {
                   rel="noopener noreferrer"
                   href={`${DOCUMENT_URL}/docs/protocol-mechanisms/protocol-algorithm-design`}
                 >
-                  BOC Protocol
+                  BoC Protocol
                 </a>
               </ListItem>
               <ListItem className={classes.inlineBlock}>
@@ -129,7 +129,7 @@ export default function Footer(props) {
           </GridItem>
           <GridItem xs={12} sm={12} md={6} className={classes.item}>
             <p>
-              Any further queries? Contact us at <a className={classes.text}>contact@bankofchian.io</a>
+              Any further queries? Contact us at <a className={classes.text}>contact@bankofchain.io</a>
             </p>
           </GridItem>
           <Divider />

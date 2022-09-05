@@ -25,7 +25,7 @@ import styles, { smStyle } from './lendingStyle'
 const useStyles = makeStyles(styles)
 const useSmStyles = makeStyles(smStyle)
 
-const bocTitle = 'BOC'
+const bocTitle = 'BoC'
 
 const array = ['Compound', 'Aave', 'Coinbase', 'BlockFi', 'Nexo', 'YearnFinance', 'Gemini', 'Bitfinex']
 const apyType = {
@@ -36,7 +36,7 @@ const apyType = {
   YearnFinance: 'Current Rate',
   Compound: 'Current Rate',
   Aave: 'Current Rate',
-  BOC: 'Current Rate',
+  BoC: 'Current Rate',
   Bitfinex: 'Fixed Rate'
 }
 
