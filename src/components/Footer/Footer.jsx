@@ -93,7 +93,7 @@ export default function Footer(props) {
                   rel="noopener noreferrer"
                   href={`${DOCUMENT_URL}/docs/protocol-mechanisms/protocol-algorithm-design`}
                 >
-                  BOC Protocol
+                  BoC Protocol
                 </a>
               </ListItem>
               <ListItem className={classes.inlineBlock}>

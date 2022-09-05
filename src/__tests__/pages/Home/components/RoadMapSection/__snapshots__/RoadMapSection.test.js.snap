@@ -289,7 +289,7 @@ exports[`RoadMapSection Component Render 1`] = `
                 <p
                   class="makeStyles-content-16"
                 >
-                  BOC 1.5 Version
+                  BoC 1.5 Version
                 </p>
                 <div
                   class="makeStyles-arrow-17 makeStyles-arrowRight-19"
@@ -397,7 +397,7 @@ exports[`RoadMapSection Component Render 1`] = `
                 <p
                   class="makeStyles-content-16"
                 >
-                  BOC 2 Version
+                  BoC 2 Version
                 </p>
                 <div
                   class="makeStyles-arrow-17 makeStyles-arrowLeft-18"

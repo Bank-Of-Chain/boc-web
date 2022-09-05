@@ -29,7 +29,7 @@ export default function Home() {
           <h1 className={isLayoutSm ? classes.titleMobile : classes.title}>The Multichain</h1>
           <h1 className={isLayoutSm ? classes.titleMobile : classes.title}>Yield Optimizer</h1>
           <h4 className={classes.text} style={{ marginTop: 40 }}>
-            BOC is a DeFi protocol that
+            BoC is a DeFi protocol that
           </h4>
           <h4 className={classes.text}>
             provides the best long-term
