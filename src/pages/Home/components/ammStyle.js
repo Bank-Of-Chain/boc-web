@@ -38,8 +38,7 @@ const ammSectionStyle = {
   img: {
     height: '6rem',
     margin: '0.3rem',
-    borderRadius: '50%',
-    backgroundColor: '#fff'
+    borderRadius: '50%'
   },
   transparentBg: {
     background: 'transparent'
