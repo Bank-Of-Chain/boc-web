@@ -15,11 +15,11 @@ exports[`InfoArea Component Render 1`] = `
     <div
       class="makeStyles-descriptionWrapper-10"
     >
-      <h4
+      <div
         class="makeStyles-title-11"
       >
         test
-      </h4>
+      </div>
       <p
         class="makeStyles-description-12"
       >
