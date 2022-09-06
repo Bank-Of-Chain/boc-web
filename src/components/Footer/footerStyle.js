@@ -74,6 +74,13 @@ const footerStyle = {
     color: '#707eac',
     fontSize: '14px',
     padding: '15px'
+  },
+  disclaimer: {
+    padding: '2rem 5rem',
+    color: '#A0A0A0',
+    textAlign: 'left',
+    fontSize: '0.75rem',
+    lineHeight: '1.375rem'
   }
 }
 export default footerStyle
