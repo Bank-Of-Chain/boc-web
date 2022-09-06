@@ -43,8 +43,8 @@ export default function Home() {
           </p>
         </GridItem>
       </GridContainer>
-      <LendingSection />
       <ProductSection />
+      <LendingSection />
       <YieldSection />
       <AmmSection />
       <RoadMapSectionV2 />
