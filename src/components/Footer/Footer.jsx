@@ -74,6 +74,9 @@ export default function Footer(props) {
     [classes.footer]: true,
     [classes.footerWhiteFont]: whiteFont
   })
+
+  const isHomePage = window.location.hash === '#/'
+
   return (
     <footer className={footerClasses}>
       <div className={classes.container}>
@@ -157,6 +160,26 @@ export default function Footer(props) {
               </ListItem>
             </List>
           </GridItem>
+          {isHomePage && (
+            <GridItem xs={12} sm={12} md={12} className={classNames(classes.item, classes.disclaimer)}>
+              <p>DISCLAIMER</p>
+              <p>
+                Bank of Chain (“BoC”) is a decentralized yield generation protocol designed for the community to invest in the DeFi investment
+                ecosystem. BoC is a non-audited, open-source protocol, which includes a set of smart contracts that are deployed on the Ethereum
+                Blockchain and Polygon networks respectively. Your use of the BoC protocol involves various risks, including, but not limited to,
+                losses due to the fluctuation of prices of tokens in a vault, trading pair, liquidity pool, lending contracts, or any other smart
+                contracts (“Risks”). Your use of BoC shall be at your own risk. Please remember to not invest more than what you can afford to lose.
+                Before using BoC, you are expected to review the relevant documentation, ensuring that you fully understand how the BoC protocol
+                works.
+              </p>
+              <p>
+                BoC or its affiliates shall not be liable for any losses you may suffer arising from the use of BoC or due to the Risks. BOC OR ITS
+                AFFILIATES, MAKE NO REPRESENTATIONS OR WARRANTIES CONCERNING ANY SERVICES, OR FACILITIES PROVIDED UNDER THE BOC PROTOCOL. ANY AND ALL
+                WARRANTIES, EXPRESS OR IMPLIED (INCLUDING WITHOUT LIMITATION ANY AND ALL WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+                PURPOSE, AND NON-INFRINGEMENT OF THIRD PARTY RIGHTS) ARE HEREBY. DISCLAIMED TO THE FULLEST EXTENT PERMITTED BY APPLICABLE LAW.
+              </p>
+            </GridItem>
+          )}
         </GridContainer>
       </div>
     </footer>
