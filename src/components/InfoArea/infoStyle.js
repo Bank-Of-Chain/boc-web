@@ -1,10 +1,11 @@
-import { primaryColor, warningColor, dangerColor, successColor, infoColor, roseColor, grayColor, title } from '@/assets/jss/material-kit-react.js'
+import { primaryColor, warningColor, dangerColor, successColor, infoColor, roseColor, grayColor } from '@/assets/jss/material-kit-react.js'
 
 const infoStyle = {
   iconWrapper: {
-    float: 'left',
-    marginTop: '24px',
-    marginRight: '10px'
+    '& svg': {
+      width: '6.25rem',
+      height: '6.25rem'
+    }
   },
   primary: {
     color: primaryColor
@@ -33,21 +34,21 @@ const infoStyle = {
   },
   descriptionWrapper: {
     color: grayColor,
-    overflow: 'hidden'
+    overflow: 'hidden',
+    marginTop: '3.125rem'
   },
   title: {
-    ...title,
     color: '#fff',
-    fontSize: '2rem'
+    fontSize: '2rem',
+    lineHeight: '2.625rem'
   },
   description: {
     color: '#fff',
     overflow: 'hidden',
-    margin: '0',
+    margin: '1.5rem 0 0 0',
     fontSize: '0.875rem',
-    fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',
     lineHeight: '1.5em',
-    textAlign: 'left'
+    textAlign: 'center'
   },
   iconWrapperVertical: {
     float: 'none'
