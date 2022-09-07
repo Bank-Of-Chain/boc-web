@@ -44,7 +44,7 @@ export default function Header(props) {
       document.body.getElementsByTagName('header')[0].classList.remove(classes[changeColorOnScroll.color])
     }
   }
-  const { color, rightLinks, leftLinks, brand, fixed, absolute } = props
+  const { color, rightLinks, leftLinks, fixed, absolute } = props
   const appBarClasses = classNames({
     [classes.appBar]: true,
     [classes[color]]: color,
@@ -53,8 +53,7 @@ export default function Header(props) {
   })
   const brandComponent = (
     <Button className={classes.title} href="/#/">
-      <img alt="" src="/logo.png" />
-      &nbsp;&nbsp;{brand}
+      <img alt="" src="/logo.svg" style={{ width: 228, height: 36 }} />
     </Button>
   )
 
