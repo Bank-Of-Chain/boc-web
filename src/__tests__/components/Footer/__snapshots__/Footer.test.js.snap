@@ -9,10 +9,10 @@ exports[`Footer Component Render 1`] = `
       class="makeStyles-container-10"
     >
       <div
-        class="MuiGrid-root makeStyles-grid-16  MuiGrid-container"
+        class="MuiGrid-root makeStyles-grid-17  MuiGrid-container"
       >
         <div
-          class="MuiGrid-root makeStyles-grid-17 makeStyles-item-3 MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-12 MuiGrid-grid-md-6"
+          class="MuiGrid-root makeStyles-grid-18 makeStyles-item-3 MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-12 MuiGrid-grid-md-6"
         >
           <a
             aria-disabled="false"
@@ -25,9 +25,9 @@ exports[`Footer Component Render 1`] = `
             >
               <img
                 alt=""
-                src="/logo.png"
+                src="/logo.svg"
+                style="width: 228px; height: 36px;"
               />
-                Bank of Chain
             </span>
             <span
               class="MuiTouchRipple-root"
@@ -35,7 +35,7 @@ exports[`Footer Component Render 1`] = `
           </a>
         </div>
         <div
-          class="MuiGrid-root makeStyles-grid-17 makeStyles-item-3 MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-12 MuiGrid-grid-md-6"
+          class="MuiGrid-root makeStyles-grid-18 makeStyles-item-3 MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-12 MuiGrid-grid-md-6"
         >
           <ul
             class="MuiList-root makeStyles-list-11 MuiList-padding"
@@ -106,7 +106,7 @@ exports[`Footer Component Render 1`] = `
           class="MuiDivider-root"
         />
         <div
-          class="MuiGrid-root makeStyles-grid-17 makeStyles-item-3 MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-12 MuiGrid-grid-md-6"
+          class="MuiGrid-root makeStyles-grid-18 makeStyles-item-3 MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-12 MuiGrid-grid-md-6"
         >
           <p
             class="makeStyles-text-2"
@@ -115,12 +115,12 @@ exports[`Footer Component Render 1`] = `
           </p>
         </div>
         <div
-          class="MuiGrid-root makeStyles-grid-17 makeStyles-item-3 MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-12 MuiGrid-grid-md-6"
+          class="MuiGrid-root makeStyles-grid-18 makeStyles-item-3 MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-12 MuiGrid-grid-md-6"
         >
           <p>
             Any further queries? Contact us at 
             <a
-              class="makeStyles-text-2"
+              class="makeStyles-email-16"
             >
               contact@bankofchain.io
             </a>
@@ -130,7 +130,7 @@ exports[`Footer Component Render 1`] = `
           class="MuiDivider-root"
         />
         <div
-          class="MuiGrid-root makeStyles-grid-17 makeStyles-item-3 MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-12 MuiGrid-grid-md-12"
+          class="MuiGrid-root makeStyles-grid-18 makeStyles-item-3 MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-12 MuiGrid-grid-md-12"
         >
           <ul
             class="MuiList-root makeStyles-list-11 MuiList-padding"
