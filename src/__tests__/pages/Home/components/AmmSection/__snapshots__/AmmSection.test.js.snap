@@ -11,7 +11,7 @@ exports[`AmmSection Component Render 1`] = `
     <h4
       class="makeStyles-title-3"
     >
-      Bank of Chain integrates with the 2 major chains of DeFi and the world’s top 7 stablecoins, optimizing 14 AMM and lending pools.
+      Bank of Chain integrates with the 2 major chains of DeFi and the world’s top 9 stablecoins, optimizing 14 AMM and lending pools.
     </h4>
     <div
       class="MuiTabs-root makeStyles-tabsRoot-13"
@@ -179,6 +179,34 @@ exports[`AmmSection Component Render 1`] = `
             class="makeStyles-text-8"
           >
             LUSD
+          </p>
+        </div>
+        <div
+          class="makeStyles-item-4"
+        >
+          <img
+            alt="GUSD"
+            class="makeStyles-img-6"
+            src="/images/0x056Fd409E1d7A124BD7017459dFEa2F387b6d5Cd.png"
+          />
+          <p
+            class="makeStyles-text-8"
+          >
+            GUSD
+          </p>
+        </div>
+        <div
+          class="makeStyles-item-4"
+        >
+          <img
+            alt="SUSD"
+            class="makeStyles-img-6"
+            src="/images/0x57Ab1ec28D129707052df4dF418D58a2D46d5f51.png"
+          />
+          <p
+            class="makeStyles-text-8"
+          >
+            SUSD
           </p>
         </div>
         <div

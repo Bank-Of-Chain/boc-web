@@ -18,7 +18,8 @@ const style = {
     width: '18.25rem',
     margin: '0 auto',
     letterSpacing: '0.01em',
-    lineHeight: 2.7
+    lineHeight: 2.7,
+    backgroundColor: '#313036'
   },
   text: {
     fontSize: '1.375rem',
@@ -39,7 +40,7 @@ const style = {
     padding: '0 10%'
   },
   dataItemContainer: {
-    padding: '2.3rem 2.3rem 0'
+    padding: '2.3rem 2.3rem 0.6rem'
   },
   itemTitle: {
     margin: 0,
@@ -48,7 +49,13 @@ const style = {
     borderRadius: '2.5rem',
     position: 'absolute',
     transform: 'translate(-50%,-50%)',
-    letterSpacing: '0.01em'
+    letterSpacing: '0.01em',
+    lineHeight: '1.5rem',
+    fontWeight: 'bold',
+    fontStyle: 'italic'
+  },
+  dot: {
+    marginTop: '0.5rem'
   }
 }
 

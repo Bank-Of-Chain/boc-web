@@ -81,6 +81,9 @@ const footerStyle = {
     textAlign: 'left',
     fontSize: '0.75rem',
     lineHeight: '1.375rem'
+  },
+  email: {
+    textDecoration: 'underline'
   }
 }
 export default footerStyle

@@ -8,7 +8,7 @@ exports[`LendingSection Component Render 1`] = `
     <h2
       class="makeStyles-title-6"
     >
-      Crypto Lending Interest Rates.
+      Crypto Lending Interest Rates
     </h2>
     <div
       class="makeStyles-label-13"
@@ -23,9 +23,7 @@ exports[`LendingSection Component Render 1`] = `
           <div
             class="makeStyles-box-14"
           />
-          <span
-            style="font-size: 0.75rem;"
-          >
+          <span>
             Current Rate
           </span>
         </div>
@@ -35,9 +33,7 @@ exports[`LendingSection Component Render 1`] = `
           <div
             class="makeStyles-box1-15"
           />
-          <span
-            style="font-size: 0.75rem;"
-          >
+          <span>
             Fixed Rate
           </span>
         </div>

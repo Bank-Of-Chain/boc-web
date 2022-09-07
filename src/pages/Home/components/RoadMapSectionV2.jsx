@@ -16,8 +16,8 @@ import styles from './roadMapV2Style'
 
 const useStyles = makeStyles(styles)
 
-const DONE = <TripOriginIcon />
-const UNDONE = <FiberManualRecordIcon style={{ width: 30, height: 30 }} />
+const DONE = <TripOriginIcon style={{ fontSize: 30 }} />
+const UNDONE = <FiberManualRecordIcon style={{ fontSize: 30 }} />
 
 const paths = [
   {
@@ -26,7 +26,7 @@ const paths = [
     background: '#161a1e',
     data: [
       {
-        title: 'Launching test',
+        title: ['Launching', 'test'],
         done: true
       }
     ]
@@ -37,7 +37,7 @@ const paths = [
     background: '#151b21',
     data: [
       {
-        title: 'BoC USDi & ETHi vault',
+        title: ['BoC USDi &', 'ETHi vault'],
         done: true
       }
     ]
@@ -48,7 +48,7 @@ const paths = [
     background: '#151b21',
     data: [
       {
-        title: 'External audit',
+        title: ['External', 'audit'],
         done: false
       }
     ]
@@ -59,11 +59,11 @@ const paths = [
     background: '#151b21',
     data: [
       {
-        title: 'New blockchains',
+        title: ['New', 'blockchains'],
         done: false
       },
       {
-        title: 'Governance token',
+        title: ['Governance', 'token'],
         done: false
       }
     ]
@@ -71,14 +71,14 @@ const paths = [
   {
     title: 'Q2_2023',
     color: '#D28EC1',
-    background: '#151b21',
+    background: '#312B33',
     data: [
       {
-        title: 'Smart Contracts Insurance',
+        title: ['Smart Contracts', 'Insurance'],
         done: false
       },
       {
-        title: 'Alt-coins farming',
+        title: ['Alt-coins', 'farming'],
         done: false
       }
     ]
@@ -86,18 +86,18 @@ const paths = [
   {
     title: 'future and beyond',
     color: '#7E6DD2',
-    background: '#131523',
+    background: '#292835',
     data: [
       {
-        title: 'Personal banking',
+        title: ['Personal', 'banking'],
         done: false
       },
       {
-        title: 'Institutional services',
+        title: ['Institutional', 'services'],
         done: false
       },
       {
-        title: 'Payment solution',
+        title: ['Payment', 'solution'],
         done: false
       }
     ]
@@ -143,8 +143,10 @@ export default function RoadMapSectionV2() {
                     const comp = done ? DONE : UNDONE
                     return (
                       <div className={classes.textInner} style={{ color, width: `${100 / data.length}%` }} key={ii}>
-                        <p className={classes.textIn}>{title}</p>
-                        <p>{comp}</p>
+                        {title.map(item => (
+                          <div key={item} className={classes.textIn}>{item}</div>
+                        ))}
+                        <div className={classes.dot}>{comp}</div>
                       </div>
                     )
                   })}
