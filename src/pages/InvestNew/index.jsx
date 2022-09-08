@@ -96,7 +96,8 @@ function Invest(props) {
   const { minimumInvestmentAmount, exchangeManager } = useVault(VAULT_ADDRESS, VAULT_ABI, userProvider)
   // load user balance
   const loadBalance = () => {
-    if (isEmpty(address)) return
+    console.log('loadBalance address=', address)
+    if (isEmpty(address) || isEmpty(USDI_ADDRESS) || isEmpty(VAULT_BUFFER_ADDRESS)) return
     const usdtContract = new ethers.Contract(USDT_ADDRESS, IERC20_ABI, userProvider)
     const usdcContract = new ethers.Contract(USDC_ADDRESS, IERC20_ABI, userProvider)
     const daiContract = new ethers.Contract(DAI_ADDRESS, IERC20_ABI, userProvider)
@@ -138,7 +139,7 @@ function Invest(props) {
    * @returns
    */
   const loadCoinsBalance = () => {
-    if (isEmpty(address)) return
+    if (isEmpty(address) || isEmpty(VAULT_BUFFER_ADDRESS) || isEmpty(USDI_ADDRESS)) return
     setIsBalanceLoading(true)
     const usdtContract = new ethers.Contract(USDT_ADDRESS, IERC20_ABI, userProvider)
     const usdcContract = new ethers.Contract(USDC_ADDRESS, IERC20_ABI, userProvider)

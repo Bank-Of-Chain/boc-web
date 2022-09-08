@@ -94,7 +94,7 @@ function Ethi(props) {
 
   // load user balance
   const loadBalance = () => {
-    if (isEmpty(address) || isEmpty(userProvider)) {
+    if (isEmpty(address) || isEmpty(userProvider) || isEmpty(ETHI_ADDRESS) || isEmpty(VAULT_BUFFER_ADDRESS)) {
       return
     }
     const vaultBufferContract = new ethers.Contract(VAULT_BUFFER_ADDRESS, VAULT_BUFFER_ABI, userProvider)
@@ -121,7 +121,7 @@ function Ethi(props) {
   }
 
   const loadCoinsBalance = () => {
-    if (isEmpty(address) || isEmpty(userProvider)) {
+    if (isEmpty(address) || isEmpty(userProvider) || isEmpty(ETHI_ADDRESS) || isEmpty(VAULT_BUFFER_ADDRESS)) {
       return
     }
     setIsBalanceLoading(true)
