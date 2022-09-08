@@ -81,7 +81,6 @@ const componentsStyle = theme => ({
     lineHeight: '30px',
     fontSize: 26,
     fontWeight: 'bold',
-    fontFamily: 'DM Sans',
     color: '#fff',
     marginBottom: 8
   },

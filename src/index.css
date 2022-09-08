@@ -1,8 +1,19 @@
+@font-face {
+  font-family: 'DM Sans';
+  src : url('/font/DMSans-Regular.ttf');
+}
+
 body {
   margin: 0;
+  font-family: 'DM Sans';
+}
+
+.MuiButton-root,
+.MuiTab-root,
+.MuiTypography-body1 {
+  font-family: 'DM Sans' !important;
 }
 
 code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
-    monospace;
+  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New", monospace;
 }
