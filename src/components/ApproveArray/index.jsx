@@ -571,7 +571,15 @@ const ApproveArray = props => {
             <ArrowRightAltIcon style={{ fontSize: 40 }} />
           </GridItem>
           <GridItem xs={12} sm={12} md={3} className={classes.estimateContainer}>
-            <SimpleSelect className={classes.select} value={receiveToken} onChange={setReceiveToken} options={selectOptions} />
+            <SimpleSelect
+              className={classes.select}
+              value={receiveToken}
+              onChange={v => {
+                setSwapArray([])
+                setReceiveToken(v)
+              }}
+              options={selectOptions}
+            />
             <div className={classes.estimateBalance}>
               <Loading loading={isEstimate}>
                 <div className={classes.textOverflow}>{toFixed(receiveAmount, receiveTokenDecimals, 6)}</div>
