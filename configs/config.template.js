@@ -92,7 +92,7 @@ const config1 = {
   exchange_extra_params: {
     oneInchV4: {
       network: 1,
-      excludeProtocols: ['ONE_INCH_LIMIT_ORDER', 'ONE_INCH_LIMIT_ORDER_V2', 'SADDLE', 'ZEROX_LIMIT_ORDER']
+      excludeProtocols: ['ONE_INCH_LIMIT_ORDER', 'ONE_INCH_LIMIT_ORDER_V2', 'ZEROX_LIMIT_ORDER', 'PMM1', 'PMM2', 'PMM3', 'PMM4']
     },
     paraswap: {
       network: 1,
