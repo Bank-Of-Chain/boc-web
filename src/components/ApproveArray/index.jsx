@@ -22,6 +22,7 @@ import get from 'lodash/get'
 import map from 'lodash/map'
 import some from 'lodash/some'
 import size from 'lodash/size'
+import uniq from 'lodash/uniq'
 import first from 'lodash/first'
 import isNil from 'lodash/isNil'
 import every from 'lodash/every'
@@ -35,6 +36,7 @@ import { getBestSwapInfo } from 'piggy-finance-utils'
 import BN from 'bignumber.js'
 import { addToken } from '@/helpers/wallet'
 import { warmDialog } from '@/reducers/meta-reducer'
+import { getProtocolsFromBestRouter } from '@/helpers/swap-util'
 import { errorTextOutput, isTransferNotEnough, isLossMuch } from '@/helpers/error-handler'
 
 // === Constants === //
@@ -76,6 +78,12 @@ const ApproveArray = props => {
   const [isLoading, setIsLoading] = useState(false)
   const [isStaticCallError, setIsStaticCallError] = useState(false)
   const [isStaticCallLoading, setIsStaticCallLoading] = useState(false)
+
+  // staticCall resp, if failed set Error in it
+  const [staticCallResp, setStaticCallResp] = useState([])
+  // encludeArray for 1inch/paraswap
+  const [encludeArray, setEncludeArray] = useState([])
+  console.log('EncludeArray=', encludeArray)
 
   const noNeedSwap = size(tokens) === 1 && get(first(tokens), 'address', '') === receiveToken
 
@@ -184,7 +192,20 @@ const ApproveArray = props => {
       if (i === index) return val
       return values[i]
     })
+
+    const nextSwapArray = map(swapArray, (item, i) => {
+      if (i === index) return undefined
+      return item
+    })
+
+    const nextStaticCallResp = map(staticCallResp, (item, i) => {
+      if (i === index) return undefined
+      return item
+    })
+
     setValues(nextValue)
+    setSwapArray(nextSwapArray)
+    setStaticCallResp(nextStaticCallResp)
   }
 
   const approveValue = async index => {
@@ -303,6 +324,8 @@ const ApproveArray = props => {
       const exchangeManagerContract = new Contract(exchangeManager, EXCHANGE_AGGREGATOR_ABI, userProvider)
       const exchangePlatformAdapters = await getExchangePlatformAdapters(exchangeManagerContract, userProvider)
       const requestArray = map(tokens, async (token, index) => {
+        const swapInfoItem = swapArray[index]
+        if (!isEmpty(swapInfoItem) && !(swapInfoItem instanceof Error)) return swapInfoItem
         const value = values[index] || '0'
         const decimal = decimals[index]
         if (isNil(decimal) || isNil(value) || value === '0' || token.address === receiveToken) return
@@ -335,6 +358,22 @@ const ApproveArray = props => {
             address: receiveToken
           }
         }
+        console.groupCollapsed('查询最佳兑换路径' + fromToken.address + '-' + toToken.address + '-' + index)
+        let nextExchangeExtraParams = assign({}, EXCHANGE_EXTRA_PARAMS, isEmpty(exchangePlatformAdapters.testAdapter) ? {} : { testAdapter: {} })
+
+        if (!isEmpty(encludeArray[index])) {
+          const { oneInchV4, paraswap } = encludeArray[index]
+          nextExchangeExtraParams = assign({}, nextExchangeExtraParams, {
+            oneInchV4: {
+              ...nextExchangeExtraParams.oneInchV4,
+              excludeProtocols: uniq(oneInchV4.concat(nextExchangeExtraParams.oneInchV4.excludeProtocols))
+            },
+            paraswap: {
+              ...nextExchangeExtraParams.paraswap,
+              excludeDEXS: uniq([...paraswap, nextExchangeExtraParams.paraswap.excludeDEXS.split(',')]).join(',')
+            }
+          })
+        }
         const bestSwapInfo = await getBestSwapInfo(
           fromToken,
           toToken,
@@ -342,10 +381,11 @@ const ApproveArray = props => {
           parseInt(100 * parseFloat(slipper)) || 0,
           ORACLE_ADDITIONAL_SLIPPAGE,
           exchangePlatformAdapters,
-          assign(EXCHANGE_EXTRA_PARAMS, isEmpty(exchangePlatformAdapters.testAdapter) ? {} : { testAdapter: {} })
+          nextExchangeExtraParams
         ).catch(() => {
           return {}
         })
+        console.groupEnd('查询最佳兑换路径' + fromToken.address + '-' + toToken.address + '-' + index)
         if (isEmpty(bestSwapInfo)) return new Error('bestSwapInfo fetch error')
         return {
           bestSwapInfo,
@@ -375,6 +415,25 @@ const ApproveArray = props => {
     }, 1500)
   )
 
+  const renderError = (index, swapError, staticCallError) => {
+    if (swapError) {
+      return (
+        <div className={classes.swapError}>
+          <span>swap path fetch error</span>
+          <ReplayIcon fontSize="small" style={{ cursor: 'pointer' }} onClick={() => reloadSwap(index)} />
+        </div>
+      )
+    }
+    if (staticCallError) {
+      return (
+        <div className={classes.swapError}>
+          <span>The exchange may fail. Please modify the quantity and adjust the approved amount</span>
+          <ReplayIcon fontSize="small" style={{ cursor: 'pointer' }} onClick={() => reloadSwap(index, true)} />
+        </div>
+      )
+    }
+  }
+
   useEffect(() => {
     if (isEmpty(userAddress)) return
     const timer = setInterval(reload(tokens, userAddress, exchangeManager), 1000000)
@@ -394,7 +453,7 @@ const ApproveArray = props => {
     }
     estimateWithValue(values, decimals, receiveToken)
     return () => estimateWithValue.cancel()
-  }, [isLoading, values, decimals, receiveToken, slipper])
+  }, [isLoading, values, decimals, receiveToken, slipper, encludeArray])
 
   const someNotApprove = some(tokens, (token, index) => {
     const allowance = allowances[index]
@@ -417,9 +476,41 @@ const ApproveArray = props => {
     return true
   }
 
-  const reloadSwap = () => {
-    setSwapArray([])
-    estimateWithValue(values, decimals, receiveToken)
+  const reloadSwap = (index, encludeProtocols = false) => {
+    const nextSwapArray = map(swapArray, (item, i) => {
+      if (i === index) return undefined
+      return item
+    })
+
+    const nextStaticCallResp = map(staticCallResp, (item, i) => {
+      if (i === index) return undefined
+      return item
+    })
+
+    if (encludeProtocols) {
+      const bestSwapInfo = get(swapArray, `${index}.bestSwapInfo`, {})
+      if (!isEmpty(bestSwapInfo)) {
+        const { name } = bestSwapInfo
+        const array = getProtocolsFromBestRouter(bestSwapInfo)
+        const nextEncludeArray = map(swapArray, (item, i) => {
+          const encludeItem = encludeArray[i] || { oneInchV4: [], paraswap: [] }
+          if (i === index) {
+            const nextItem = {
+              ...encludeItem,
+              [name]: array.concat(encludeItem[name])
+            }
+            return nextItem
+          }
+          return encludeItem
+        })
+        setEncludeArray(nextEncludeArray)
+      }
+    } else {
+      estimateWithValue(values, decimals, receiveToken)
+    }
+
+    setSwapArray(nextSwapArray)
+    setStaticCallResp(nextStaticCallResp)
   }
 
   const isSwapError = () => {
@@ -431,23 +522,26 @@ const ApproveArray = props => {
 
     setIsStaticCallLoading(true)
     setIsStaticCallError(false)
-    const nextSwapArray = compact(
-      map(swapArray, i => {
-        if (isEmpty(i) || i instanceof Error) return
-        const { bestSwapInfo, info } = i
-        return {
-          platform: bestSwapInfo.platform,
-          method: bestSwapInfo.method,
-          data: bestSwapInfo.encodeExchangeArgs,
-          swapDescription: info
-        }
-      })
-    )
+    const nextSwapArray = map(swapArray, i => {
+      if (isEmpty(i) || i instanceof Error) return
+      const { bestSwapInfo, info } = i
+      return {
+        platform: bestSwapInfo.platform,
+        method: bestSwapInfo.method,
+        data: bestSwapInfo.encodeExchangeArgs,
+        swapDescription: info
+      }
+    })
     const constract = new Contract(exchangeManager, EXCHANGE_AGGREGATOR_ABI, userProvider)
     const signer = userProvider.getSigner()
-    constract
-      .connect(signer)
-      .callStatic.batchSwap(nextSwapArray)
+    const constractWithSigner = constract.connect(signer)
+    const staticCallArray = map(nextSwapArray, item => {
+      if (isEmpty(item)) return
+      const { platform, method, data, swapDescription } = item
+      return constractWithSigner.callStatic.swap(platform, method, data, swapDescription)
+    })
+
+    Promise.all([Promise.allSettled(staticCallArray).then(setStaticCallResp), constractWithSigner.callStatic.batchSwap(compact(nextSwapArray))])
       .catch(error => {
         setIsStaticCallError(true)
         const errorMsg = errorTextOutput(error)
@@ -489,6 +583,7 @@ const ApproveArray = props => {
                 const decimal = decimals[index] || BigNumber.from(0)
                 const allowance = allowances[index] || BigNumber.from(0)
                 const swapError = swapArray[index] instanceof Error
+                const staticCallError = get(staticCallResp, `${index}.status`, '') === 'rejected'
                 // value should be a integer
                 const nextFromValueString = new BN(value).multipliedBy(decimal.toString())
                 const isErrorValue =
@@ -501,7 +596,7 @@ const ApproveArray = props => {
                     sm={12}
                     md={12}
                     key={address}
-                    className={classNames({ [classes.errorContainer]: swapError, [classes.reciveContainer]: isReciveToken })}
+                    className={classNames({ [classes.errorContainer]: swapError || staticCallError, [classes.reciveContainer]: isReciveToken })}
                   >
                     <div className={classes.approveItemWrapper}>
                       <div className={classes.approveItem}>
@@ -547,7 +642,7 @@ const ApproveArray = props => {
                           <Loading loading={isLoading}>
                             <span title={toFixed(balances[index], decimal)}>{toFixed(balances[index], decimal, 6)}</span>
                           </Loading>
-                          <span style={{ float: 'right' }} className={classNames({ [classes.errorText]: swapError })}>
+                          <span style={{ float: 'right' }} className={classNames({ [classes.errorText]: swapError || staticCallError })}>
                             allowance:{' '}
                             <Loading loading={isLoading}>
                               <span title={toFixed(allowances[index], decimal)}>{toFixed(allowances[index], decimal, 6)}</span>
@@ -555,12 +650,7 @@ const ApproveArray = props => {
                           </span>
                         </p>
                       )}
-                      {swapError && (
-                        <div className={classes.swapError}>
-                          <span>swap path fetch error</span>
-                          <ReplayIcon fontSize="small" style={{ cursor: 'pointer' }} onClick={reloadSwap} />
-                        </div>
-                      )}
+                      {renderError(index, swapError, staticCallError)}
                     </div>
                   </GridItem>
                 )
@@ -606,7 +696,7 @@ const ApproveArray = props => {
             disabled={(!isStaticCallLoading && isStaticCallError) || noNeedSwap || someNotApprove || isEstimate || isSwapError()}
             className={classes.okButton}
           >
-            Swap
+            Swap<Loading loading={isStaticCallLoading}></Loading>
           </Button>
           <Button color="danger" onClick={handleClose} className={classes.cancelButton}>
             Cancel
