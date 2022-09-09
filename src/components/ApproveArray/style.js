@@ -101,6 +101,9 @@ const componentsStyle = () => ({
     overflow: 'hidden',
     textOverflow: 'ellipsis',
     whiteSpace: 'nowrap'
+  },
+  loading: {
+    animation: 'loading 1s linear infinite'
   }
 })
 
