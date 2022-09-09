@@ -78,7 +78,7 @@ const ApproveArray = props => {
   const [isStaticCallError, setIsStaticCallError] = useState(false)
   const [isStaticCallLoading, setIsStaticCallLoading] = useState(false)
   // record if in approve status
-  const [loadingArray, setLoadingArray] = useState(tokens.map(() => false))
+  const [loadingArray, setLoadingArray] = useState(map(tokens, () => false))
   const [isSwapping, setIsSwapping] = useState(false)
 
   const noNeedSwap = size(tokens) === 1 && get(first(tokens), 'address', '') === receiveToken
@@ -127,7 +127,7 @@ const ApproveArray = props => {
   const receiveTokenAmount = tokens.find(el => el.address === receiveToken)?.amount || '0'
 
   async function reload(tokens = [], userAddress, exchangeManager) {
-    const loadingArr = loadingArray.map(() => false)
+    const loadingArr = map(tokens, () => false)
     setLoadingArray(loadingArr)
     if (isEmpty(tokens) || isEmpty(exchangeManager) || isEmpty(userAddress)) {
       return
@@ -199,7 +199,7 @@ const ApproveArray = props => {
     const decimal = get(decimals, index)
     // ETH no need approve
     if (isEmpty(token) || isNil(value) || value === '0') return
-    const loadingArr = loadingArray.map((item, i) => i === index)
+    const loadingArr = map(tokens, (item, i) => i === index)
     setLoadingArray(loadingArr)
     const { address } = token
     const signer = userProvider.getSigner()
@@ -441,7 +441,7 @@ const ApproveArray = props => {
     approveValue(index)
       .then(() => reload(tokens, userAddress, exchangeManager))
       .finally(() => {
-        const loadingArr = loadingArray.map(() => false)
+        const loadingArr = map(tokens, () => false)
         setLoadingArray(loadingArr)
       })
 
