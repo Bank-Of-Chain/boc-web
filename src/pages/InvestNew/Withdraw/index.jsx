@@ -506,8 +506,10 @@ export default function Withdraw({
   }
 
   useEffect(() => {
-    setInterval(getPegTokenPrice(), 10000)
-  }, [])
+    if (isEmpty(address) || isEmpty(VAULT_ADDRESS) || isEmpty(VAULT_ABI)) return
+    const timer = setInterval(getPegTokenPrice(), 10000)
+    return () => clearInterval(timer)
+  }, [address, VAULT_ADDRESS, VAULT_ABI])
 
   return (
     <>
@@ -593,11 +595,13 @@ export default function Withdraw({
             <Loading loading={isBalanceLoading}>{formatBalance(toBalance, usdiDecimals)}</Loading>
           </p>
         </GridItem>
-        <GridItem xs={12} sm={12} md={12} lg={12}>
-          <p className={classes.estimateText} title={toFixed(pegTokenPrice, BN_18)}>
-            <span>1USDi ≈ {toFixed(pegTokenPrice, BN_18, 6)}USD</span>
-          </p>
-        </GridItem>
+        {address && (
+          <GridItem xs={12} sm={12} md={12} lg={12}>
+            <p className={classes.estimateText} title={toFixed(pegTokenPrice, BN_18)}>
+              <span>1USDi ≈ {toFixed(pegTokenPrice, BN_18, 6)}USD</span>
+            </p>
+          </GridItem>
+        )}
       </GridContainer>
       <GridContainer className={classes.outputContainer}>
         <GridItem xs={12} sm={12} md={12} lg={12}>

@@ -14,6 +14,7 @@ import AddIcon from '@material-ui/icons/Add'
 import ReplayIcon from '@material-ui/icons/Replay'
 import ArrowRightAltIcon from '@material-ui/icons/ArrowRightAlt'
 import CompareArrowsIcon from '@material-ui/icons/CompareArrows'
+import CachedIcon from '@material-ui/icons/Cached'
 
 // === Utils === //
 import { useDispatch } from 'react-redux'
@@ -78,6 +79,9 @@ const ApproveArray = props => {
   const [isLoading, setIsLoading] = useState(false)
   const [isStaticCallError, setIsStaticCallError] = useState(false)
   const [isStaticCallLoading, setIsStaticCallLoading] = useState(false)
+  // record if in approve status
+  const [loadingArray, setLoadingArray] = useState(tokens.map(() => false))
+  const [isSwapping, setIsSwapping] = useState(false)
 
   // staticCall resp, if failed set Error in it
   const [staticCallResp, setStaticCallResp] = useState([])
@@ -131,6 +135,8 @@ const ApproveArray = props => {
   const receiveTokenAmount = tokens.find(el => el.address === receiveToken)?.amount || '0'
 
   async function reload(tokens = [], userAddress, exchangeManager) {
+    const loadingArr = loadingArray.map(() => false)
+    setLoadingArray(loadingArr)
     if (isEmpty(tokens) || isEmpty(exchangeManager) || isEmpty(userAddress)) {
       return
     }
@@ -214,6 +220,8 @@ const ApproveArray = props => {
     const decimal = get(decimals, index)
     // ETH no need approve
     if (isEmpty(token) || isNil(value) || value === '0') return
+    const loadingArr = loadingArray.map((item, i) => i === index)
+    setLoadingArray(loadingArr)
     const { address } = token
     const signer = userProvider.getSigner()
     const contract = new Contract(address, IERC20_ABI, userProvider)
@@ -267,7 +275,7 @@ const ApproveArray = props => {
 
   const swap = () => {
     if (isEmpty(swapArray)) return
-
+    setIsSwapping(true)
     const nextSwapArray = compact(
       map(swapArray, i => {
         if (isEmpty(i) || i instanceof Error) return
@@ -313,6 +321,9 @@ const ApproveArray = props => {
             message: tip
           })
         )
+      })
+      .finally(() => {
+        setIsSwapping(false)
       })
   }
 
@@ -517,6 +528,14 @@ const ApproveArray = props => {
     return swapArray.some(el => el instanceof Error)
   }
 
+  const approve = index =>
+    approveValue(index)
+      .then(() => reload(tokens, userAddress, exchangeManager))
+      .finally(() => {
+        const loadingArr = loadingArray.map(() => false)
+        setLoadingArray(loadingArr)
+      })
+
   useEffect(() => {
     if (isEmpty(swapArray) || someNotApprove) return
 
@@ -590,6 +609,7 @@ const ApproveArray = props => {
                   !isEmpty(value) && (new BN(value).multipliedBy(decimal.toString()).gt(balance) || nextFromValueString.toFixed().indexOf('.') !== -1)
                 const isEthAddress = address === ETH_ADDRESS
                 const isOverFlow = new BN(value).multipliedBy(decimal.toString()).lte(allowance.toString())
+                const loading = loadingArray[index]
                 return (
                   <GridItem
                     xs={12}
@@ -622,13 +642,11 @@ const ApproveArray = props => {
                           error={isErrorValue}
                         />
                         {isEthAddress || isReciveToken || (
-                          <Button
-                            className={classes.approveButton}
-                            color="colorfull"
-                            onClick={() => approveValue(index).then(() => reload(tokens, userAddress, exchangeManager))}
-                          >
+                          <Button className={classes.approveButton} color="colorfull" disabled={loading} onClick={() => approve(index)}>
                             {isOverFlow ? (
                               <CheckIcon style={{ marginRight: '0.5rem', color: 'greenyellow' }} />
+                            ) : loading ? (
+                              <CachedIcon className={classes.loading} style={{ marginRight: '0.5rem' }} />
                             ) : (
                               <CompareArrowsIcon style={{ marginRight: '0.5rem' }} />
                             )}
@@ -661,7 +679,15 @@ const ApproveArray = props => {
             <ArrowRightAltIcon style={{ fontSize: 40 }} />
           </GridItem>
           <GridItem xs={12} sm={12} md={3} className={classes.estimateContainer}>
-            <SimpleSelect className={classes.select} value={receiveToken} onChange={setReceiveToken} options={selectOptions} />
+            <SimpleSelect
+              className={classes.select}
+              value={receiveToken}
+              onChange={v => {
+                setSwapArray([])
+                setReceiveToken(v)
+              }}
+              options={selectOptions}
+            />
             <div className={classes.estimateBalance}>
               <Loading loading={isEstimate}>
                 <div className={classes.textOverflow}>{toFixed(receiveAmount, receiveTokenDecimals, 6)}</div>
@@ -693,8 +719,9 @@ const ApproveArray = props => {
           <Button
             color="colorfull"
             onClick={swap}
-            disabled={(!isStaticCallLoading && isStaticCallError) || noNeedSwap || someNotApprove || isEstimate || isSwapError()}
+            disabled={(!isStaticCallLoading && isStaticCallError) || noNeedSwap || someNotApprove || isEstimate || isSwapError() || isSwapping}
             className={classes.okButton}
+            startIcon={isSwapping ? <CachedIcon className={classes.loading} /> : null}
           >
             Swap<Loading loading={isStaticCallLoading}></Loading>
           </Button>
