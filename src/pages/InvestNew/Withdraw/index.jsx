@@ -598,14 +598,14 @@ export default function Withdraw({
         {address && (
           <GridItem xs={12} sm={12} md={12} lg={12}>
             <p className={classes.estimateText} title={toFixed(pegTokenPrice, BN_18)}>
-              <span>1USDi ≈ {toFixed(pegTokenPrice, BN_18, 6)}USD</span>
+              <span>1 USDi ≈ {toFixed(pegTokenPrice, BN_18, 6)} USD</span>
             </p>
           </GridItem>
         )}
       </GridContainer>
       <GridContainer className={classes.outputContainer}>
         <GridItem xs={12} sm={12} md={12} lg={12}>
-          <p className={classes.estimateText}>To recived tokens</p>
+          <p className={classes.estimateText}>To</p>
         </GridItem>
         <GridItem xs={12} sm={12} md={12} lg={12}>
           <div className={classes.selectorlWrapper}>

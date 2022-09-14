@@ -1,6 +1,8 @@
 const lendingSectionStyle = {
   section: {
-    padding: '3.5rem'
+    maxWidth: '93rem',
+    padding: '3.5rem 11rem',
+    margin: '0 auto'
   },
   text: {
     color: '#1cd9ff'
@@ -87,14 +89,14 @@ const lendingSectionStyle = {
   },
   chartInner: {
     padding: '7.5rem 0',
-    backgroundColor: '#070b10',
+    backgroundColor: '#313036',
     borderRadius: '1rem'
   }
 }
 
 export const smStyle = {
   section: {
-    padding: '3.5rem 0.5rem'
+    padding: '3.5rem 3rem'
   },
   bar: {
     width: '1.8rem',

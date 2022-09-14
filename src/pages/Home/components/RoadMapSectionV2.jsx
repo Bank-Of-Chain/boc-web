@@ -23,7 +23,7 @@ const paths = [
   {
     title: 'Q1_2022',
     color: '#95AAB9',
-    background: '#161a1e',
+    background: '#2C2D30',
     data: [
       {
         title: ['Launching', 'test'],
@@ -34,7 +34,7 @@ const paths = [
   {
     title: 'Q2_2022',
     color: '#558CDE',
-    background: '#151b21',
+    background: '#2B2E32',
     data: [
       {
         title: ['BoC USDi &', 'ETHi vault'],
@@ -45,7 +45,7 @@ const paths = [
   {
     title: 'Q4_2022',
     color: '#558CDE',
-    background: '#151b21',
+    background: '#2B2E32',
     data: [
       {
         title: ['External', 'audit'],
@@ -56,7 +56,7 @@ const paths = [
   {
     title: 'Q1_2023',
     color: '#558CDE',
-    background: '#151b21',
+    background: '#2B2E32',
     data: [
       {
         title: ['New', 'blockchains'],
@@ -114,15 +114,24 @@ export default function RoadMapSectionV2() {
       if (length === 2) return 30
       return 12.5 * length
     }
-    return 21 * length
+    return 19 * length
   }
 
   return (
     <div className={classes.roadmap}>
-      <h3 className={classes.title}>Pathway...</h3>
+      <h3 className={classes.title}>Pathway ...</h3>
       <GridContainer>
         {map(paths, (item, i) => {
           const { title, color, data, background } = item
+          let titleStyle = {
+            background,
+            border: `2px dashed ${color}`
+          }
+          if (i === paths.length - 1) {
+            titleStyle.padding = '0 1.25rem'
+            titleStyle.fontSize = '1.25rem'
+            titleStyle.lineHeight = '2rem'
+          }
           return (
             <GridItem style={{ lineHeight: '2rem' }} key={i} xs={12} sm={12} md={12}>
               <div
@@ -134,7 +143,7 @@ export default function RoadMapSectionV2() {
                   width: `${widthCalc(isLayoutSm, data.length)}rem`
                 }}
               >
-                <div className={classes.itemTitle} style={{ background, border: `2px dashed ${color}` }}>
+                <div className={classes.itemTitle} style={titleStyle}>
                   {title}
                 </div>
                 <div className={classes.dataItemContainer}>
@@ -144,7 +153,9 @@ export default function RoadMapSectionV2() {
                     return (
                       <div className={classes.textInner} style={{ color, width: `${100 / data.length}%` }} key={ii}>
                         {title.map(item => (
-                          <div key={item} className={classes.textIn}>{item}</div>
+                          <div key={item} className={classes.textIn}>
+                            {item}
+                          </div>
                         ))}
                         <div className={classes.dot}>{comp}</div>
                       </div>
