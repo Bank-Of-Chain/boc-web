@@ -12,30 +12,22 @@ exports[`Footer Component Render 1`] = `
         class="MuiGrid-root makeStyles-grid-17  MuiGrid-container"
       >
         <div
-          class="MuiGrid-root makeStyles-grid-18 makeStyles-item-3 MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-12 MuiGrid-grid-md-6"
+          class="MuiGrid-root makeStyles-grid-18 makeStyles-item-3 makeStyles-left-5 MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-12 MuiGrid-grid-md-4"
         >
           <a
-            aria-disabled="false"
-            class="MuiButtonBase-root MuiButton-root MuiButton-text makeStyles-title-1"
+            class="makeStyles-title-1"
             href="/#/"
-            tabindex="0"
+            rel="noopener noreferrer"
           >
-            <span
-              class="MuiButton-label"
-            >
-              <img
-                alt=""
-                src="/logo.svg"
-                style="width: 228px; height: 36px;"
-              />
-            </span>
-            <span
-              class="MuiTouchRipple-root"
+            <img
+              alt=""
+              src="/logo.svg"
+              style="width: 228px; height: 36px;"
             />
           </a>
         </div>
         <div
-          class="MuiGrid-root makeStyles-grid-18 makeStyles-item-3 MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-12 MuiGrid-grid-md-6"
+          class="MuiGrid-root makeStyles-grid-18 makeStyles-item-3 makeStyles-right-6 MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-12 MuiGrid-grid-md-8"
         >
           <ul
             class="MuiList-root makeStyles-list-11 MuiList-padding"
@@ -106,7 +98,7 @@ exports[`Footer Component Render 1`] = `
           class="MuiDivider-root"
         />
         <div
-          class="MuiGrid-root makeStyles-grid-18 makeStyles-item-3 MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-12 MuiGrid-grid-md-6"
+          class="MuiGrid-root makeStyles-grid-18 makeStyles-item-3 makeStyles-left-5 MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-12 MuiGrid-grid-md-5"
         >
           <p
             class="makeStyles-text-2"
@@ -115,7 +107,7 @@ exports[`Footer Component Render 1`] = `
           </p>
         </div>
         <div
-          class="MuiGrid-root makeStyles-grid-18 makeStyles-item-3 MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-12 MuiGrid-grid-md-6"
+          class="MuiGrid-root makeStyles-grid-18 makeStyles-item-3 makeStyles-right-6 MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-12 MuiGrid-grid-md-7"
         >
           <p>
             Any further queries? Contact us at 
@@ -130,7 +122,7 @@ exports[`Footer Component Render 1`] = `
           class="MuiDivider-root"
         />
         <div
-          class="MuiGrid-root makeStyles-grid-18 makeStyles-item-3 MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-12 MuiGrid-grid-md-12"
+          class="MuiGrid-root makeStyles-grid-18 makeStyles-item-3 makeStyles-center-14 MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-12 MuiGrid-grid-md-12"
         >
           <ul
             class="MuiList-root makeStyles-list-11 MuiList-padding"

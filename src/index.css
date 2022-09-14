@@ -10,7 +10,8 @@ body {
 
 .MuiButton-root,
 .MuiTab-root,
-.MuiTypography-body1 {
+.MuiTypography-body1,
+.MuiTooltip-tooltip {
   font-family: "DM Sans" !important;
 }
 

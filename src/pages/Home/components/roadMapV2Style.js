@@ -3,7 +3,7 @@ const style = {
     marginBottom: 100
   },
   title: {
-    fontSize: '3.75rem',
+    fontSize: '5rem',
     fontWeight: 700,
     textAlign: 'center',
     color: '#fff'
@@ -18,8 +18,7 @@ const style = {
     width: '18.25rem',
     margin: '0 auto',
     letterSpacing: '0.01em',
-    lineHeight: 2.7,
-    backgroundColor: '#313036'
+    lineHeight: 2.7
   },
   text: {
     fontSize: '1.375rem',
@@ -32,7 +31,7 @@ const style = {
     display: 'inline-block',
     marginBottom: 0,
     fontWeight: 700,
-    fontSize: '1.4rem',
+    fontSize: '1.1875rem',
     lineHeight: '120%',
     letterSpacing: '0.01em'
   },
@@ -40,19 +39,20 @@ const style = {
     padding: '0 10%'
   },
   dataItemContainer: {
-    padding: '2.3rem 2.3rem 0.6rem'
+    padding: '2rem 2.3rem 0.6rem'
   },
   itemTitle: {
     margin: 0,
     display: 'inline-block',
-    padding: '0.5rem 1.5rem',
+    padding: '0 0.5rem',
     borderRadius: '2.5rem',
     position: 'absolute',
     transform: 'translate(-50%,-50%)',
     letterSpacing: '0.01em',
-    lineHeight: '1.5rem',
+    lineHeight: '1.875rem',
     fontWeight: 'bold',
-    fontStyle: 'italic'
+    fontStyle: 'italic',
+    fontSize: '0.875rem'
   },
   dot: {
     marginTop: '0.5rem'
