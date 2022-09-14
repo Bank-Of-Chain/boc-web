@@ -39,6 +39,7 @@ import Loading from '@/components/LoadingComponent'
 
 // === Constants === //
 import { USDT_ADDRESS, USDC_ADDRESS, DAI_ADDRESS, IERC20_ABI } from '@/constants'
+import { BN_18 } from '@/constants/big-number'
 
 // === Styles === //
 import styles from './style'
@@ -268,7 +269,7 @@ export default function Deposit({
         } else if (isDistributing(errorMsg)) {
           tip = 'Vault is in distributing, please try again later!'
         } else if (isLessThanMinValue(errorMsg)) {
-          tip = `Deposit Amount must be greater than ${toFixed(minimumInvestmentAmount, BigNumber.from(10).pow(18), 2)}USD!`
+          tip = `Deposit Amount must be greater than ${toFixed(minimumInvestmentAmount, BN_18, 2)}USD!`
         }
         if (tip) {
           dispatch(
@@ -335,7 +336,7 @@ export default function Deposit({
         } else if (isDistributing(errorMsg)) {
           tip = 'Vault is in distributing, please try again later!'
         } else if (isLessThanMinValue(errorMsg)) {
-          tip = `Deposit Amount must be greater than ${toFixed(minimumInvestmentAmount, BigNumber.from(10).pow(18), 2)}USD!`
+          tip = `Deposit Amount must be greater than ${toFixed(minimumInvestmentAmount, BN_18, 2)}USD!`
         }
         if (tip) {
           dispatch(

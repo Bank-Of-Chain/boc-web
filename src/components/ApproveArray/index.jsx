@@ -11,8 +11,10 @@ import CustomTextField from '@/components/CustomTextField'
 import Loading from '@/components/LoadingComponent'
 import CheckIcon from '@material-ui/icons/Check'
 import AddIcon from '@material-ui/icons/Add'
+import ReplayIcon from '@material-ui/icons/Replay'
 import ArrowRightAltIcon from '@material-ui/icons/ArrowRightAlt'
 import CompareArrowsIcon from '@material-ui/icons/CompareArrows'
+import CachedIcon from '@material-ui/icons/Cached'
 
 // === Utils === //
 import { useDispatch } from 'react-redux'
@@ -20,6 +22,8 @@ import * as ethers from 'ethers'
 import get from 'lodash/get'
 import map from 'lodash/map'
 import some from 'lodash/some'
+import size from 'lodash/size'
+import first from 'lodash/first'
 import isNil from 'lodash/isNil'
 import every from 'lodash/every'
 import assign from 'lodash/assign'
@@ -32,11 +36,12 @@ import { getBestSwapInfo } from 'piggy-finance-utils'
 import BN from 'bignumber.js'
 import { addToken } from '@/helpers/wallet'
 import { warmDialog } from '@/reducers/meta-reducer'
-import { errorTextOutput, isTransferNotEnough } from '@/helpers/error-handler'
+import { errorTextOutput, isTransferNotEnough, isLossMuch } from '@/helpers/error-handler'
 
 // === Constants === //
 import { IERC20_ABI, EXCHANGE_EXTRA_PARAMS, ORACLE_ADDITIONAL_SLIPPAGE, USDT_ADDRESS, USDC_ADDRESS, DAI_ADDRESS } from '@/constants'
-import { ETH_ADDRESS } from '@/constants/tokens'
+import { ETH_ADDRESS, WETH_ADDRESS } from '@/constants/tokens'
+import { BN_6, BN_18 } from '@/constants/big-number'
 
 // === Styles === //
 import styles from './style'
@@ -70,6 +75,13 @@ const ApproveArray = props => {
   const [allowances, setAllowances] = useState([])
   const [swapArray, setSwapArray] = useState([])
   const [isLoading, setIsLoading] = useState(false)
+  const [isStaticCallError, setIsStaticCallError] = useState(false)
+  const [isStaticCallLoading, setIsStaticCallLoading] = useState(false)
+  // record if in approve status
+  const [loadingArray, setLoadingArray] = useState(map(tokens, () => false))
+  const [isSwapping, setIsSwapping] = useState(false)
+
+  const noNeedSwap = size(tokens) === 1 && get(first(tokens), 'address', '') === receiveToken
 
   const getExchangePlatformAdapters = async (exchangeAggregator, userProvider) => {
     const { _exchangeAdapters: adapters } = await exchangeAggregator.getExchangeAdapters()
@@ -87,7 +99,7 @@ const ApproveArray = props => {
           label: 'ETH',
           value: ETH_ADDRESS,
           img: `./images/${ETH_ADDRESS}.png`,
-          decimal: BigNumber.from(10).pow(18)
+          decimal: BN_18
         }
       ]
     : [
@@ -95,19 +107,19 @@ const ApproveArray = props => {
           label: 'USDT',
           value: USDT_ADDRESS,
           img: `./images/${USDT_ADDRESS}.png`,
-          decimal: BigNumber.from(10).pow(6)
+          decimal: BN_6
         },
         {
           label: 'USDC',
           value: USDC_ADDRESS,
           img: `./images/${USDC_ADDRESS}.png`,
-          decimal: BigNumber.from(10).pow(6)
+          decimal: BN_6
         },
         {
           label: 'DAI',
           value: DAI_ADDRESS,
           img: `./images/${DAI_ADDRESS}.png`,
-          decimal: BigNumber.from(10).pow(18)
+          decimal: BN_18
         }
       ]
 
@@ -115,6 +127,8 @@ const ApproveArray = props => {
   const receiveTokenAmount = tokens.find(el => el.address === receiveToken)?.amount || '0'
 
   async function reload(tokens = [], userAddress, exchangeManager) {
+    const loadingArr = map(tokens, () => false)
+    setLoadingArray(loadingArr)
     if (isEmpty(tokens) || isEmpty(exchangeManager) || isEmpty(userAddress)) {
       return
     }
@@ -135,7 +149,6 @@ const ApproveArray = props => {
         const allowance = (await contract.allowance(userAddress, exchangeManager)).toString()
         const balance = (await contract.balanceOf(userAddress)).toString()
         const decimal = await contract.decimals()
-        console.log('decimal', decimal)
         return {
           address,
           amount,
@@ -186,6 +199,8 @@ const ApproveArray = props => {
     const decimal = get(decimals, index)
     // ETH no need approve
     if (isEmpty(token) || isNil(value) || value === '0') return
+    const loadingArr = map(tokens, (item, i) => i === index)
+    setLoadingArray(loadingArr)
     const { address } = token
     const signer = userProvider.getSigner()
     const contract = new Contract(address, IERC20_ABI, userProvider)
@@ -202,6 +217,12 @@ const ApproveArray = props => {
       // If allowance equal 0, approve nextAmount, otherwise approve 0 and approve nextAmount
       if (allowanceAmount.gt(0)) {
         console.log('add allowance:', nextValue.sub(allowanceAmount).toString())
+        if (address === WETH_ADDRESS) {
+          return contractWithUser
+            .approve(exchangeManager, 0)
+            .then(tx => tx.wait())
+            .then(() => contractWithUser.approve(exchangeManager, nextValue).then(tx => tx.wait()))
+        }
         await contractWithUser
           .increaseAllowance(exchangeManager, nextValue.sub(allowanceAmount))
           .then(tx => tx.wait())
@@ -233,16 +254,19 @@ const ApproveArray = props => {
 
   const swap = () => {
     if (isEmpty(swapArray)) return
-
-    const nextSwapArray = map(compact(swapArray), i => {
-      const { bestSwapInfo, info } = i
-      return {
-        platform: bestSwapInfo.platform,
-        method: bestSwapInfo.method,
-        data: bestSwapInfo.encodeExchangeArgs,
-        swapDescription: info
-      }
-    })
+    setIsSwapping(true)
+    const nextSwapArray = compact(
+      map(swapArray, i => {
+        if (isEmpty(i) || i instanceof Error) return
+        const { bestSwapInfo, info } = i
+        return {
+          platform: bestSwapInfo.platform,
+          method: bestSwapInfo.method,
+          data: bestSwapInfo.encodeExchangeArgs,
+          swapDescription: info
+        }
+      })
+    )
     const constract = new Contract(exchangeManager, EXCHANGE_AGGREGATOR_ABI, userProvider)
     const signer = userProvider.getSigner()
     constract
@@ -261,9 +285,13 @@ const ApproveArray = props => {
       })
       .catch(error => {
         const errorMsg = errorTextOutput(error)
-        let tip = 'Swap Failed. Please checking the approved value and try again!'
+        let tip = ''
         if (isTransferNotEnough(errorMsg)) {
-          tip = 'Transfer Not Enough!'
+          tip = 'Transfer Not Enough'
+        } else if (isLossMuch(errorMsg)) {
+          tip = 'Swap Failed, please increase the exchange slippage'
+        } else {
+          tip = errorMsg
         }
         dispatch(
           warmDialog({
@@ -273,12 +301,16 @@ const ApproveArray = props => {
           })
         )
       })
+      .finally(() => {
+        setIsSwapping(false)
+      })
   }
 
   const estimateWithValue = useCallback(
     debounce(async (values = [], decimals = [], receiveToken) => {
       if (isEmpty(receiveToken)) return
       setIsEstimate(true)
+      setIsStaticCallError(false)
       const exchangeManagerContract = new Contract(exchangeManager, EXCHANGE_AGGREGATOR_ABI, userProvider)
       const exchangePlatformAdapters = await getExchangePlatformAdapters(exchangeManagerContract, userProvider)
       const requestArray = map(tokens, async (token, index) => {
@@ -322,7 +354,9 @@ const ApproveArray = props => {
           ORACLE_ADDITIONAL_SLIPPAGE,
           exchangePlatformAdapters,
           assign(EXCHANGE_EXTRA_PARAMS, isEmpty(exchangePlatformAdapters.testAdapter) ? {} : { testAdapter: {} })
-        )
+        ).catch(() => {
+          return {}
+        })
         if (isEmpty(bestSwapInfo)) return new Error('bestSwapInfo fetch error')
         return {
           bestSwapInfo,
@@ -334,17 +368,21 @@ const ApproveArray = props => {
           }
         }
       })
-      const bestSwapInfoArray = await Promise.all(requestArray)
-      const nextReceiveAmount = reduce(
-        bestSwapInfoArray,
-        (rs, item) => {
-          return rs.add(BigNumber.from(get(item, 'bestSwapInfo.toTokenAmount', '0')))
-        },
-        BigNumber.from(0)
-      )
-      setIsEstimate(false)
-      setSwapArray(bestSwapInfoArray)
-      setReceiveAmount(nextReceiveAmount)
+      Promise.all(requestArray)
+        .then(bestSwapInfoArray => {
+          const nextReceiveAmount = reduce(
+            bestSwapInfoArray,
+            (rs, item) => {
+              return rs.add(BigNumber.from(get(item, 'bestSwapInfo.toTokenAmount', '0')))
+            },
+            BigNumber.from(0)
+          )
+          setSwapArray(bestSwapInfoArray)
+          setReceiveAmount(nextReceiveAmount)
+        })
+        .finally(() => {
+          setIsEstimate(false)
+        })
     }, 1500)
   )
 
@@ -386,9 +424,72 @@ const ApproveArray = props => {
   const isValidSlipper = () => {
     if (slipper === '' || isEmpty(slipper.replace(/ /g, ''))) return
     if (isNaN(slipper)) return false
-    if (slipper < 0 || slipper > 45) return false
+    if (slipper < 0.01 || slipper > 45) return false
     return true
   }
+
+  const reloadSwap = () => {
+    setSwapArray([])
+    estimateWithValue(values, decimals, receiveToken)
+  }
+
+  const isSwapError = () => {
+    return swapArray.some(el => el instanceof Error)
+  }
+
+  const approve = index =>
+    approveValue(index)
+      .then(() => reload(tokens, userAddress, exchangeManager))
+      .finally(() => {
+        const loadingArr = map(tokens, () => false)
+        setLoadingArray(loadingArr)
+      })
+
+  useEffect(() => {
+    if (isEmpty(swapArray) || someNotApprove) return
+
+    setIsStaticCallLoading(true)
+    setIsStaticCallError(false)
+    const nextSwapArray = compact(
+      map(swapArray, i => {
+        if (isEmpty(i) || i instanceof Error) return
+        const { bestSwapInfo, info } = i
+        return {
+          platform: bestSwapInfo.platform,
+          method: bestSwapInfo.method,
+          data: bestSwapInfo.encodeExchangeArgs,
+          swapDescription: info
+        }
+      })
+    )
+    const constract = new Contract(exchangeManager, EXCHANGE_AGGREGATOR_ABI, userProvider)
+    const signer = userProvider.getSigner()
+    constract
+      .connect(signer)
+      .callStatic.batchSwap(nextSwapArray)
+      .catch(error => {
+        setIsStaticCallError(true)
+        const errorMsg = errorTextOutput(error)
+        let tip = ''
+        if (isTransferNotEnough(errorMsg)) {
+          tip = 'Transfer Not Enough'
+        } else if (isLossMuch(errorMsg)) {
+          tip = 'Swap Failed, please increase the exchange slippage'
+        } else {
+          tip = errorMsg
+        }
+        dispatch(
+          warmDialog({
+            open: true,
+            type: 'error',
+            message: tip
+          })
+        )
+      })
+      .finally(() => {
+        setIsStaticCallLoading(false)
+      })
+  }, [swapArray, someNotApprove])
 
   return (
     <GridContainer>
@@ -413,6 +514,7 @@ const ApproveArray = props => {
                   !isEmpty(value) && (new BN(value).multipliedBy(decimal.toString()).gt(balance) || nextFromValueString.toFixed().indexOf('.') !== -1)
                 const isEthAddress = address === ETH_ADDRESS
                 const isOverFlow = new BN(value).multipliedBy(decimal.toString()).lte(allowance.toString())
+                const loading = loadingArray[index]
                 return (
                   <GridItem
                     xs={12}
@@ -431,7 +533,7 @@ const ApproveArray = props => {
                           maxEndAdornment
                           InputProps={{
                             startAdornment: (
-                              <div onClick={() => addToken(address)}>
+                              <div className={classes.addToken} onClick={() => addToken(address)}>
                                 <AddIcon fontSize="small" style={{ position: 'absolute', top: 28, left: 35 }} />
                                 <img className={classes.tokenLogo} src={`./images/${address}.png`} />
                               </div>
@@ -445,13 +547,11 @@ const ApproveArray = props => {
                           error={isErrorValue}
                         />
                         {isEthAddress || isReciveToken || (
-                          <Button
-                            className={classes.approveButton}
-                            color="colorfull"
-                            onClick={() => approveValue(index).then(() => reload(tokens, userAddress, exchangeManager))}
-                          >
+                          <Button className={classes.approveButton} color="colorfull" disabled={loading} onClick={() => approve(index)}>
                             {isOverFlow ? (
                               <CheckIcon style={{ marginRight: '0.5rem', color: 'greenyellow' }} />
+                            ) : loading ? (
+                              <CachedIcon className={classes.loading} style={{ marginRight: '0.5rem' }} />
                             ) : (
                               <CompareArrowsIcon style={{ marginRight: '0.5rem' }} />
                             )}
@@ -473,7 +573,12 @@ const ApproveArray = props => {
                           </span>
                         </p>
                       )}
-                      {swapError && <p className={classNames(classes.errorText, classes.balanceText)}>swap path fetch error</p>}
+                      {swapError && (
+                        <div className={classes.swapError}>
+                          <span>swap path fetch error</span>
+                          <ReplayIcon fontSize="small" style={{ cursor: 'pointer' }} onClick={reloadSwap} />
+                        </div>
+                      )}
                     </div>
                   </GridItem>
                 )
@@ -484,10 +589,18 @@ const ApproveArray = props => {
             <ArrowRightAltIcon style={{ fontSize: 40 }} />
           </GridItem>
           <GridItem xs={12} sm={12} md={3} className={classes.estimateContainer}>
-            <SimpleSelect className={classes.select} value={receiveToken} onChange={setReceiveToken} options={selectOptions} />
+            <SimpleSelect
+              className={classes.select}
+              value={receiveToken}
+              onChange={v => {
+                setSwapArray([])
+                setReceiveToken(v)
+              }}
+              options={selectOptions}
+            />
             <div className={classes.estimateBalance}>
               <Loading loading={isEstimate}>
-                {toFixed(receiveAmount, receiveTokenDecimals, 6)}
+                <div className={classes.textOverflow}>{toFixed(receiveAmount, receiveTokenDecimals, 6)}</div>
                 <div>{receiveTokenAmount !== '0' && `+(${toFixed(receiveTokenAmount, receiveTokenDecimals, 6)})`}</div>
               </Loading>
             </div>
@@ -508,12 +621,18 @@ const ApproveArray = props => {
                 const { value } = event.target
                 onSlippageChange(value)
               }}
-              error={!isUndefined(isValidSlipper()) && !isValidSlipper()}
+              error={(!isUndefined(isValidSlipper()) && !isValidSlipper()) || (!isStaticCallLoading && isStaticCallError)}
             />
           </span>
         </h3>
         <div className={classes.buttonGroup}>
-          <Button color="colorfull" onClick={swap} disabled={someNotApprove || isEstimate} className={classes.okButton}>
+          <Button
+            color="colorfull"
+            onClick={swap}
+            disabled={(!isStaticCallLoading && isStaticCallError) || noNeedSwap || someNotApprove || isEstimate || isSwapError() || isSwapping}
+            className={classes.okButton}
+            startIcon={isSwapping ? <CachedIcon className={classes.loading} /> : null}
+          >
             Swap
           </Button>
           <Button color="danger" onClick={handleClose} className={classes.cancelButton}>

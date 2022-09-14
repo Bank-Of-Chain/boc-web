@@ -8,7 +8,7 @@ import AuditedSection from './components/AuditedSection'
 import AmmSection from './components/AmmSection'
 import YieldSection from './components/YieldSection'
 import LendingSection from './components/LendingSection'
-import RoadMapSection from './components/RoadMapSection'
+import RoadMapSectionV2 from './components/RoadMapSectionV2'
 import GridContainer from '@/components/Grid/GridContainer'
 import GridItem from '@/components/Grid/GridItem'
 import Button from '@/components/CustomButtons/Button'
@@ -29,7 +29,7 @@ export default function Home() {
           <h1 className={isLayoutSm ? classes.titleMobile : classes.title}>The Multichain</h1>
           <h1 className={isLayoutSm ? classes.titleMobile : classes.title}>Yield Optimizer</h1>
           <h4 className={classes.text} style={{ marginTop: 40 }}>
-            BOC is a DeFi protocol that
+            BoC is a DeFi protocol that
           </h4>
           <h4 className={classes.text}>
             provides the best long-term
@@ -43,11 +43,11 @@ export default function Home() {
           </p>
         </GridItem>
       </GridContainer>
-      <LendingSection />
       <ProductSection />
+      <LendingSection />
       <YieldSection />
       <AmmSection />
-      <RoadMapSection />
+      <RoadMapSectionV2 />
       <AuditedSection />
     </div>
   )

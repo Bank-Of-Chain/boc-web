@@ -86,6 +86,24 @@ const componentsStyle = () => ({
   cancelButton: {
     flex: 1,
     marginLeft: '1rem'
+  },
+  addToken: {
+    cursor: 'pointer'
+  },
+  swapError: {
+    display: 'flex',
+    alignItems: 'center',
+    marginBottom: '1rem',
+    color: '#ff7875',
+    textAlign: 'left'
+  },
+  textOverflow: {
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+    whiteSpace: 'nowrap'
+  },
+  loading: {
+    animation: 'loading 1s linear infinite'
   }
 })
 

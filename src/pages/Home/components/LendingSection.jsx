@@ -25,7 +25,7 @@ import styles, { smStyle } from './lendingStyle'
 const useStyles = makeStyles(styles)
 const useSmStyles = makeStyles(smStyle)
 
-const bocTitle = 'BOC'
+const bocTitle = 'BoC'
 
 const array = ['Compound', 'Aave', 'Coinbase', 'BlockFi', 'Nexo', 'YearnFinance', 'Gemini', 'Bitfinex']
 const apyType = {
@@ -36,7 +36,7 @@ const apyType = {
   YearnFinance: 'Current Rate',
   Compound: 'Current Rate',
   Aave: 'Current Rate',
-  BOC: 'Current Rate',
+  BoC: 'Current Rate',
   Bitfinex: 'Fixed Rate'
 }
 
@@ -90,16 +90,16 @@ export default function LendingSection() {
   const displayMaxValue = 5 * Math.ceil(maxPercentItem?.percent / 5)
   return (
     <div className={classes.section}>
-      <h2 className={classes.title}>Crypto Lending Interest Rates.</h2>
+      <h2 className={classes.title}>Crypto Lending Interest Rates</h2>
       <div className={classNames(classes.label)}>
         <GridContainer>
           <GridItem style={{ lineHeight: '2rem' }}>
             <div className={classNames(classes.box)}></div>
-            <span style={{ fontSize: '0.75rem' }}>Current Rate</span>
+            <span>Current Rate</span>
           </GridItem>
           <GridItem>
             <div className={classNames(classes.box1)}></div>
-            <span style={{ fontSize: '0.75rem' }}>Fixed Rate</span>
+            <span>Fixed Rate</span>
           </GridItem>
         </GridContainer>
       </div>

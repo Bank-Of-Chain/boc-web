@@ -36,7 +36,7 @@ export default function RoadMapSection() {
   const stepTwo = [
     {
       date: 'May 10, 2022',
-      event: 'BOC 1.5 Version'
+      event: 'BoC 1.5 Version'
     },
     {
       date: 'May 15, 2022',
@@ -48,7 +48,7 @@ export default function RoadMapSection() {
     },
     {
       date: 'August 1, 2022',
-      event: 'BOC 2 Version'
+      event: 'BoC 2 Version'
     }
   ]
   return (

@@ -8,7 +8,7 @@ const MATIC = {
   name: 'Polygon',
   url: 'https://polygonscan.com'
 }
-const CHAINS = [ETH, MATIC]
+const CHAINS = [ETH]
 
 export { ETH, MATIC }
 

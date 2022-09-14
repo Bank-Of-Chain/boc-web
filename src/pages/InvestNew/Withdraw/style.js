@@ -36,6 +36,7 @@ const componentsStyle = () => ({
     borderBottomRightRadius: '1rem'
   },
   estimateText: {
+    height: '1.25rem',
     color: '#A0A0A0',
     margin: 0,
     display: 'flex',

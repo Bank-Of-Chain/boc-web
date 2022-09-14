@@ -8,11 +8,11 @@ import GridContainer from '@/components/Grid/GridContainer'
 import GridItem from '@/components/Grid/GridItem'
 import IconButton from '@material-ui/core/IconButton'
 import SvgIcon from '@material-ui/core/SvgIcon'
-import Button from '@material-ui/core/Button'
 import Divider from '@material-ui/core/Divider'
 
 // === Constants === //
 import { COMMUNITY_URL, DOCUMENT_URL, TELEGRAM_URL, TWITTER_URL, LINKEDIN_URL } from '@/constants'
+import useMediaQuery from '@material-ui/core/useMediaQuery'
 
 import styles from './footerStyle.js'
 
@@ -74,17 +74,26 @@ export default function Footer(props) {
     [classes.footer]: true,
     [classes.footerWhiteFont]: whiteFont
   })
+
+  const isHomePage = window.location.hash === '#/'
+  const isLayoutSm = useMediaQuery('(max-width: 960px)')
+
   return (
     <footer className={footerClasses}>
       <div className={classes.container}>
         <GridContainer>
-          <GridItem xs={12} sm={12} md={6} className={classes.item}>
-            <Button className={classes.title} href="/#/">
-              <img alt="" src="/logo.png" />
-              &nbsp;&nbsp;Bank of Chain
-            </Button>
+          <GridItem xs={12} sm={12} md={4} className={classNames(classes.item, {
+            [classes.left]: !isLayoutSm,
+            [classes.center]: isLayoutSm
+          })}>
+            <a className={classes.title} rel="noopener noreferrer" href="/#/">
+              <img alt="" src="/logo.svg" style={{ width: 228, height: 36 }} />
+            </a>
           </GridItem>
-          <GridItem xs={12} sm={12} md={6} className={classes.item}>
+          <GridItem xs={12} sm={12} md={8} className={classNames(classes.item, {
+            [classes.right]: !isLayoutSm,
+            [classes.center]: isLayoutSm
+          })}>
             <List className={classes.list}>
               <ListItem className={classes.inlineBlock}>
                 <a
@@ -93,7 +102,7 @@ export default function Footer(props) {
                   rel="noopener noreferrer"
                   href={`${DOCUMENT_URL}/docs/protocol-mechanisms/protocol-algorithm-design`}
                 >
-                  BOC Protocol
+                  BoC Protocol
                 </a>
               </ListItem>
               <ListItem className={classes.inlineBlock}>
@@ -121,19 +130,25 @@ export default function Footer(props) {
                   FAQ
                 </a>
               </ListItem>
-            </List>
+            </List> 
           </GridItem>
           <Divider />
-          <GridItem xs={12} sm={12} md={6} className={classes.item}>
+          <GridItem xs={12} sm={12} md={5} className={classNames(classes.item, {
+            [classes.left]: !isLayoutSm,
+            [classes.center]: isLayoutSm
+          })}>
             <p className={classes.text}>@{1900 + new Date().getYear()} Bank of Chain, all rights reserved.</p>
           </GridItem>
-          <GridItem xs={12} sm={12} md={6} className={classes.item}>
+          <GridItem xs={12} sm={12} md={7} className={classNames(classes.item, {
+            [classes.right]: !isLayoutSm,
+            [classes.center]: isLayoutSm
+          })}>
             <p>
-              Any further queries? Contact us at <a className={classes.text}>contact@bankofchian.io</a>
+              Any further queries? Contact us at <a className={classes.email}>contact@bankofchain.io</a>
             </p>
           </GridItem>
           <Divider />
-          <GridItem xs={12} sm={12} md={12} className={classes.item}>
+          <GridItem xs={12} sm={12} md={12} className={classNames(classes.item, classes.center)}>
             <List className={classes.list}>
               <ListItem className={classes.inlineBlock}>
                 <a target="_blank" rel="noopener noreferrer" href={TELEGRAM_URL}>
@@ -157,6 +172,23 @@ export default function Footer(props) {
               </ListItem>
             </List>
           </GridItem>
+          {isHomePage && (
+            <GridItem xs={12} sm={12} md={12} className={classNames(classes.item, classes.disclaimer)}>
+              <p>DISCLAIMER</p>
+              <p>
+                Bank of Chain (“BoC”) is a decentralized yield generation protocol designed for the community to invest in the DeFi investment
+                ecosystem. BoC is a non-audited, open-source protocol, which includes a set of smart contracts that are deployed on the Ethereum
+                Blockchain and Polygon networks respectively. Your use of the BoC protocol involves various risks, including, but not limited to,
+                losses due to the fluctuation of prices of tokens in a vault, trading pair, liquidity pool, lending contracts, or any other smart
+                contracts (“Risks”). Your use of BoC shall be at your own risk. Please remember to not invest more than what you can afford to lose.
+                Before using BoC, you are expected to review the relevant documentation, ensuring that you fully understand how the BoC protocol
+                works. BoC or its affiliates shall not be liable for any losses you may suffer arising from the use of BoC or due to the Risks.
+              </p>
+              <p>
+                BOC OR ITS AFFILIATES, MAKE NO REPRESENTATIONS OR WARRANTIES CONCERNING ANY SERVICES, OR FACILITIES PROVIDED UNDER THE BOC PROTOCOL. ANY AND ALL WARRANTIES, EXPRESS OR IMPLIED (INCLUDING WITHOUT LIMITATION ANY AND ALL WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, AND NON-INFRINGEMENT OF THIRD PARTY RIGHTS) ARE HEREBY. DISCLAIMED TO THE FULLEST EXTENT PERMITTED BY APPLICABLE LAW.
+              </p>
+            </GridItem>
+          )}
         </GridContainer>
       </div>
     </footer>

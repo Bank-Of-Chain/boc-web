@@ -96,7 +96,8 @@ function Invest(props) {
   const { minimumInvestmentAmount, exchangeManager } = useVault(VAULT_ADDRESS, VAULT_ABI, userProvider)
   // load user balance
   const loadBalance = () => {
-    if (isEmpty(address)) return
+    console.log('loadBalance address=', address)
+    if (isEmpty(address) || isEmpty(USDI_ADDRESS) || isEmpty(VAULT_BUFFER_ADDRESS)) return
     const usdtContract = new ethers.Contract(USDT_ADDRESS, IERC20_ABI, userProvider)
     const usdcContract = new ethers.Contract(USDC_ADDRESS, IERC20_ABI, userProvider)
     const daiContract = new ethers.Contract(DAI_ADDRESS, IERC20_ABI, userProvider)
@@ -138,7 +139,7 @@ function Invest(props) {
    * @returns
    */
   const loadCoinsBalance = () => {
-    if (isEmpty(address)) return
+    if (isEmpty(address) || isEmpty(VAULT_BUFFER_ADDRESS) || isEmpty(USDI_ADDRESS)) return
     setIsBalanceLoading(true)
     const usdtContract = new ethers.Contract(USDT_ADDRESS, IERC20_ABI, userProvider)
     const usdcContract = new ethers.Contract(USDC_ADDRESS, IERC20_ABI, userProvider)
@@ -309,8 +310,9 @@ function Invest(props) {
                     placement="right"
                     title={
                       <span>
-                        The USDi ticket is automatically converted to USDi. And was last executed in&nbsp;
-                        <span style={{ color: 'red', fontWeight: 'bold' }}>{moment(lastRebaseTime).format('yyyy-MM-DD HH:mm')}</span>
+                        USDi Ticket functions as parallel USDi that will be converted into USDi after fund allocations have been successful. Last
+                        execution time was&nbsp;
+                        <span style={{ fontWeight: 'bold' }}>{moment(lastRebaseTime).format('yyyy-MM-DD HH:mm')}</span>
                       </span>
                     }
                   >

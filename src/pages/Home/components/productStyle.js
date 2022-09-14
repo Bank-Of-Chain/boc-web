@@ -23,9 +23,14 @@ const productStyle = {
   },
   swiper: {
     position: 'relative',
-    width: 'calc(100% - 6rem)',
-    padding: '0 3rem',
+    width: 'calc(100% - 29.75rem)',
+    padding: '0 4rem',
     margin: '0 auto'
+  },
+  '@media screen and (max-width: 1333px)': {
+    swiper: {
+      width: 'calc(100% - 15rem)'
+    }
   }
 }
 
