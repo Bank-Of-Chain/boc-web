@@ -11,14 +11,26 @@ const componentsStyle = () => ({
     maxHeight: '400px'
   },
   approveItemWrapper: {
-    margin: '0 1rem'
+    padding: '0 1rem'
+  },
+  success: {
+    border: '1px solid forestgreen'
+  },
+  swappingContainer: {
+    background: '#A68EFD'
+  },
+  swapSuccessContainer: {
+    background: 'forestgreen'
+  },
+  swapErrorContainer: {
+    background: '#ff7875'
   },
   approveItem: {
     textAlign: 'left',
     display: 'flex'
   },
   approveButton: {
-    margin: '12px 0 8px 8px'
+    margin: '12px 8px 8px'
   },
   input: {
     flex: 1
@@ -31,7 +43,15 @@ const componentsStyle = () => ({
   },
   errorContainer: {
     border: '1px solid #ff7875',
-    margin: '2px'
+    margin: '2px 0'
+  },
+  successContainer: {
+    border: '1px solid forestgreen',
+    margin: '2px 0'
+  },
+  isSwappingContainer: {
+    border: '1px solid #A68EFE',
+    margin: '2px 0'
   },
   reciveContainer: {
     background: 'linear-gradient(223.3deg, #A68EFD 20.71%, #F4ACF3 103.56%)'
@@ -104,6 +124,10 @@ const componentsStyle = () => ({
   },
   loading: {
     animation: 'loading 1s linear infinite'
+  },
+  reloadIcon: {
+    cursor: 'pointer',
+    verticalAlign: 'text-bottom'
   }
 })
 
