@@ -59,10 +59,6 @@ export default function AmmSection() {
                     <p className={classes.text}>{c.symbol}</p>
                   </div>
                 ))}
-                <div key={'chainlink'} className={classes.item} onClick={() => window.open('https://chain.link')}>
-                  <img className={classes.img} src={`/images/oracles/chainlink.png`} alt={'Chainlink'} />
-                  <p className={classes.text}>{'Chainlink'}</p>
-                </div>
               </GridItem>
             )
           },

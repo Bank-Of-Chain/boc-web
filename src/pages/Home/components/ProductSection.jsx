@@ -20,7 +20,9 @@ const useStyles = makeStyles(styles)
 const data = [
   {
     title: 'Full automation',
-    descriptions: ['Regular yield calibration for the best rates, adjusting for FX and the costs and rewards of reallocation.'],
+    descriptions: [
+      'Regular yield calibration for the best capita allocation, costs/rewards justification of position adjustments, deleverage for price fluctuation.'
+    ],
     imagePath: (
       <svg viewBox="0 0 122 119" xmlns="http://www.w3.org/2000/svg">
         <g filter="url(#filter0_d_1805_2170)">
@@ -72,7 +74,9 @@ const data = [
   },
   {
     title: 'Safe',
-    descriptions: ['Only Chainlink oracles. Only official cross-chain bridges. Only billion-dollar stablecoins and blockchains.'],
+    descriptions: [
+      'Only Chainlink oracles. Only official cross-chain bridges between Ethereum and Layer2s. Only billion-dollar fully collateral stablecoins. Only fully audited protocols with high TVL and good track records'
+    ],
     imagePath: (
       <svg width="109" height="116" viewBox="0 0 109 116" fill="none" xmlns="http://www.w3.org/2000/svg">
         <g filter="url(#filter0_d_1805_2188)">
@@ -112,7 +116,7 @@ const data = [
   },
   {
     title: 'Risk control',
-    descriptions: ['The incorporation of protocols and stablecoins with minimal risk of depegging and suffering from impermanent loss.'],
+    descriptions: ['Protocols and stablecoins with minimal risk of de-pegging and impermanent loss.'],
     imagePath: (
       <svg width="116" height="121" viewBox="0 0 116 121" fill="none" xmlns="http://www.w3.org/2000/svg">
         <g filter="url(#filter0_d_1805_2196)">
@@ -146,7 +150,7 @@ const data = [
   },
   {
     title: 'Diversification',
-    descriptions: ['Investments in a single capital pool or a protocol will be strictly capped, minimizing third-party risks.'],
+    descriptions: ['Investments in a single pool or protocol will be strictly capped,  minimizing third-party risks.'],
     imagePath: (
       <svg width="125" height="122" viewBox="0 0 125 122" fill="none" xmlns="http://www.w3.org/2000/svg">
         <g filter="url(#filter0_d_1805_2203)">
