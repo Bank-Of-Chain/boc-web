@@ -150,7 +150,7 @@ const data = [
   },
   {
     title: 'Diversification',
-    descriptions: ['Investments in a single pool or protocol will be strictly capped,  minimizing third-party risks.'],
+    descriptions: ['Investments in a single pool or protocol will be strictly capped, minimizing third-party risks.'],
     imagePath: (
       <svg width="125" height="122" viewBox="0 0 125 122" fill="none" xmlns="http://www.w3.org/2000/svg">
         <g filter="url(#filter0_d_1805_2203)">
