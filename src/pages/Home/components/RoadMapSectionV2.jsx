@@ -50,39 +50,43 @@ const paths = [
       {
         title: ['External', 'audit'],
         done: false
+      },
+      {
+        title: ['Risk on', 'strategy'],
+        done: false
       }
     ]
   },
   {
     title: 'Q1_2023',
-    color: '#558CDE',
+    color: '#D28EC1',
     background: '#2B2E32',
     data: [
       {
-        title: ['New', 'blockchains'],
+        title: ['Layer2s'],
         done: false
       },
       {
-        title: ['Governance', 'token'],
+        title: ['Governance token'],
         done: false
       }
     ]
   },
-  {
-    title: 'Q2_2023',
-    color: '#D28EC1',
-    background: '#312B33',
-    data: [
-      {
-        title: ['Smart Contracts', 'Insurance'],
-        done: false
-      },
-      {
-        title: ['Alt-coins', 'farming'],
-        done: false
-      }
-    ]
-  },
+  // {
+  //   title: 'Q2_2023',
+  //   color: '#D28EC1',
+  //   background: '#312B33',
+  //   data: [
+  //     {
+  //       title: ['Smart Contracts', 'Insurance'],
+  //       done: false
+  //     },
+  //     {
+  //       title: ['Alt-coins', 'farming'],
+  //       done: false
+  //     }
+  //   ]
+  // },
   {
     title: 'future and beyond',
     color: '#7E6DD2',
