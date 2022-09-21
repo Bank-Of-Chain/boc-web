@@ -118,7 +118,7 @@ export default function HeaderLinks(props) {
   return (
     <>
       <List className={classes.list} classes={{ root: classes.iii }}>
-        <ListItem className={classes.listItem} selected>
+        <ListItem className={classes.listItem}>
           <Button color="transparent" href={'/'} className={classes.navLink}>
             Home
           </Button>
