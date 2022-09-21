@@ -85,20 +85,20 @@ export default function Withdraw({
   const [withdrawError, setWithdrawError] = useState({})
 
   const [burnTokens, setBurnTokens] = useState([
-    {
-      address: USDT_ADDRESS,
-      amount: '223124214'
-    },
-    {
-      address: DAI_ADDRESS,
-      amount: '13212389088888888888888'
-    }
+    // {
+    //   address: USDT_ADDRESS,
+    //   amount: '100000000'
+    // },
     // {
     //   address: USDC_ADDRESS,
-    //   amount: '223124214'
+    //   amount: '10000000'
+    // },
+    // {
+    //   address: DAI_ADDRESS,
+    //   amount: '10000000000000000000'
     // }
   ])
-  const [isShowZipModal, setIsShowZipModal] = useState(true)
+  const [isShowZipModal, setIsShowZipModal] = useState(false)
   const [pegTokenPrice, setPegTokenPrice] = useState(BN_18)
 
   const { value: redeemFeeBps } = useRedeemFeeBps({
@@ -207,8 +207,8 @@ export default function Withdraw({
     ).then(array => {
       const nextBurnTokens = compact(array)
       if (!isEmpty(nextBurnTokens)) {
-        setIsShowZipModal(true)
         setBurnTokens(nextBurnTokens)
+        setIsShowZipModal(true)
       }
     })
   }

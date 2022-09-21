@@ -29,7 +29,9 @@ import assign from 'lodash/assign'
 import reduce from 'lodash/reduce'
 import isEmpty from 'lodash/isEmpty'
 import debounce from 'lodash/debounce'
-import isUndefined from 'lodash/isUndefined'
+import compact from 'lodash/compact'
+import findIndex from 'lodash/findIndex'
+import isEqual from 'lodash/isEqual'
 import { toFixed } from '@/helpers/number-format'
 import { getBestSwapInfo } from 'piggy-finance-utils'
 import BN from 'bignumber.js'
@@ -45,10 +47,11 @@ import { BN_6, BN_18 } from '@/constants/big-number'
 
 // === Styles === //
 import styles from './style'
-import { compact } from 'lodash'
 
 const { Contract, BigNumber } = ethers
 const useStyles = makeStyles(styles)
+
+const MAX_RETRY_TIME = 3
 
 const ApproveArray = props => {
   const classes = useStyles()
@@ -72,31 +75,34 @@ const ApproveArray = props => {
     return {}
   })
   const [receiveToken, setReceiveToken] = useState(isEthi ? ETH_ADDRESS : USDT_ADDRESS)
+  // input values
   const [values, setValues] = useState([])
   const [balances, setBalances] = useState([])
   const [decimals, setDecimals] = useState([])
   const [allowances, setAllowances] = useState([])
-  // record if in approve status
-  const [loadingArray, setLoadingArray] = useState(initBoolValues)
   const [isSwapping, setIsSwapping] = useState(false)
 
-  // encludeArray for 1inch/paraswap
-  const [encludeArray, setEncludeArray] = useState(initObjectValues)
+  // excludeArray for 1inch/paraswap
+  const [excludeArray, setExcludeArray] = useState(initObjectValues)
 
-  // 是否在加载账户的allowance等信息
+  // If it is reloading account base info
   const [isReload, setIsReload] = useState(false)
-  // 存放兑换路径
+  // swap path info of tokens
   const [swapInfoArray, setSwapInfoArray] = useState(initValues)
-  // 是否在获取兑换路径
+  // If it is fetching swap path
   const [isSwapInfoFetching, setIsSwapInfoFetching] = useState(initBoolValues)
-  // 是否在进行staticCall
+  // If it is staticCalling
   const [isStaticCalling, setIsStaticCalling] = useState(initBoolValues)
-  // 是否已经完成兑换路径获取和staticCall
+  // If finish fetching swap path and staticCalling
   const [doneArray, setDoneArray] = useState(initBoolValues)
+  // If all token allowance has approved
+  const [allApprove, setAllApprove] = useState(false)
+  // Each token estimate retry times, less than 3
+  const [retryTimesArray, setRetryTimesArray] = useState(map(tokens, () => 0))
 
-  // 有部分币在获取兑换路径
+  // some tokens is fetching swap path
   const isSwapInfoFetchingSome = some(isSwapInfoFetching)
-  // 有部分币在staticCall
+  // some tokens is staticCalling
   const isStaticCallingSome = some(isStaticCalling)
 
   const receiveAmount = reduce(
@@ -105,18 +111,6 @@ const ApproveArray = props => {
       return rs.add(BigNumber.from(get(item, 'bestSwapInfo.toTokenAmount', '0')))
     },
     BigNumber.from(0)
-  )
-  console.log('--------------------------------------------------')
-  console.log('swapArray=', swapInfoArray, 'doneArray=', doneArray)
-  console.log('isSwapInfoFetching=', isSwapInfoFetching, 'isStaticCalling=', isStaticCalling)
-  console.log('EncludeArray=', encludeArray)
-  console.log(
-    'allowances=',
-    map(allowances, i => i.toString())
-  )
-  console.log(
-    'values=',
-    map(values, i => i.toString())
   )
 
   const noNeedSwap = size(tokens) === 1 && get(first(tokens), 'address', '') === receiveToken
@@ -162,11 +156,11 @@ const ApproveArray = props => {
       ]
 
   const receiveTokenDecimals = selectOptions.find(el => el.value === receiveToken).decimal
-  const receiveTokenAmount = values[tokens.findIndex(el => el.address === receiveToken)] || '0'
+  const receiveTokenAmount = values[findIndex(tokens, el => el.address === receiveToken)] || '0'
 
+  // Get values, balances, decimals, allowances
   const reload = useCallback(async () => {
-    const loadingArr = loadingArray.map(() => false)
-    setLoadingArray(loadingArr)
+    console.log('---reload---')
     if (isEmpty(tokens) || isEmpty(exchangeManager) || isEmpty(userAddress)) {
       return
     }
@@ -249,100 +243,110 @@ const ApproveArray = props => {
     setIsSwapInfoFetching(nextIsSwapInfoFetching)
   }
 
-  const approveValue = useCallback(
-    async index => {
-      const token = get(tokens, index)
-      const value = get(values, index)
-      const decimal = get(decimals, index)
-      // ETH no need approve
-      if (isEmpty(token) || isNil(value) || value === '0') return
-      const loadingArr = loadingArray.map((item, i) => i === index)
-      setLoadingArray(loadingArr)
-      const { address } = token
-      const signer = userProvider.getSigner()
-      const contract = new Contract(address, IERC20_ABI, userProvider)
-      const contractWithUser = contract.connect(signer)
-      let nextValue
-      try {
-        nextValue = BigNumber.from(new BN(value).multipliedBy(decimal.toString()).toFixed())
-      } catch (e) {
-        return
-      }
-      const allowanceAmount = await contractWithUser.allowance(userAddress, exchangeManager)
-      // If deposit amount greater than allow amount, reset amount
-      if (nextValue.gt(allowanceAmount)) {
-        // If allowance equal 0, approve nextAmount, otherwise approve 0 and approve nextAmount
-        if (allowanceAmount.gt(0)) {
-          console.log('add allowance:', nextValue.sub(allowanceAmount).toString())
-          if (address === WETH_ADDRESS) {
+  const approveValue = async index => {
+    console.log(`---approveValue ${index}---`)
+    const token = get(tokens, index)
+    const value = get(values, index)
+    const decimal = get(decimals, index)
+    // ETH no need approve
+    if (isEmpty(token) || isNil(value) || value === '0') return
+    const { address } = token
+    const signer = userProvider.getSigner()
+    const contract = new Contract(address, IERC20_ABI, userProvider)
+    const contractWithUser = contract.connect(signer)
+    let nextValue
+    try {
+      nextValue = BigNumber.from(new BN(value).multipliedBy(decimal.toString()).toFixed())
+    } catch (e) {
+      return
+    }
+    const allowanceAmount = await contractWithUser.allowance(userAddress, exchangeManager)
+    // If deposit amount greater than allow amount, reset amount
+    if (nextValue.gt(allowanceAmount)) {
+      // If allowance equal 0, approve nextAmount, otherwise approve 0 and approve nextAmount
+      if (allowanceAmount.gt(0)) {
+        if (address === WETH_ADDRESS) {
+          return contractWithUser
+            .approve(exchangeManager, 0)
+            .then(tx => tx.wait())
+            .then(() => contractWithUser.approve(exchangeManager, nextValue).then(tx => tx.wait()))
+        }
+        return await contractWithUser
+          .increaseAllowance(exchangeManager, nextValue.sub(allowanceAmount))
+          .then(tx => tx.wait())
+          .catch(e => {
+            // cancel by user
+            if (e.code === 4001) {
+              return Promise.reject(e)
+            }
+            // If increase failed, approve 0 and approve nextAmounts
             return contractWithUser
               .approve(exchangeManager, 0)
               .then(tx => tx.wait())
               .then(() => contractWithUser.approve(exchangeManager, nextValue).then(tx => tx.wait()))
-          }
-          return await contractWithUser
-            .increaseAllowance(exchangeManager, nextValue.sub(allowanceAmount))
-            .then(tx => tx.wait())
-            .catch(e => {
-              // cancel by user
-              if (e.code === 4001) {
-                return Promise.reject(e)
-              }
-              // If increase failed, approve 0 and approve nextAmounts
-              return contractWithUser
-                .approve(exchangeManager, 0)
-                .then(tx => tx.wait())
-                .then(() => contractWithUser.approve(exchangeManager, nextValue).then(tx => tx.wait()))
-            })
-        } else {
-          console.log('current allowance:', allowanceAmount.toString(), 'next allowance:', nextValue.toString())
-          return await contractWithUser
-            .approve(exchangeManager, nextValue)
-            .then(tx => tx.wait())
-            .catch(e => {
-              // cancel by user
-              if (e.code === 4001) {
-                return Promise.reject(e)
-              }
-            })
-        }
+          })
+      } else {
+        return contractWithUser
+          .approve(exchangeManager, nextValue)
+          .then(tx => tx.wait())
+          .catch(e => {
+            // cancel by user
+            if (e.code === 4001) {
+              return Promise.reject(e)
+            }
+          })
       }
-    },
-    [tokens, values, decimals, userAddress, exchangeManager]
-  )
-
-  // check the approve amount is enough
-  const isApproveNotEnough = useCallback(
-    index => {
-      const token = tokens[index]
-      const allowance = allowances[index]
-      const decimal = decimals[index]
-      const value = values[index]
-      if (isEmpty(allowance) || isEmpty(decimal) || isEmpty(value) || token.address === ETH_ADDRESS || isReciveToken(index)) return false
-      try {
-        const nextValue = new BN(value).multipliedBy(decimal.toString())
-        console.log('nextValue=', nextValue.toString(), allowance.toString(), nextValue.gt(allowance))
-        return nextValue.gt(allowance)
-      } catch (error) {
-        return false
-      }
-    },
-    [tokens, allowances, decimals, values, receiveToken]
-  )
-
-  const swap = useCallback(async () => {
-    if (isEmpty(swapInfoArray)) return
-
-    for (let i = 0; i < tokens.length; i++) {
-      if (isReciveToken(i)) continue
-      await approve(i)
     }
+  }
 
+  // check if the approve amount is enough
+  const isApproveNotEnough = index => {
+    const token = tokens[index]
+    const allowance = allowances[index]
+    const decimal = decimals[index]
+    const value = values[index]
+    if (isEmpty(allowance) || isEmpty(decimal) || isEmpty(value) || token.address === ETH_ADDRESS || isReciveToken(index)) return false
+    try {
+      const nextValue = new BN(value).multipliedBy(decimal.toString())
+      return nextValue.gt(allowance)
+    } catch (error) {
+      return false
+    }
+  }
+
+  const approveAll = async () => {
+    console.log('---approveAll---')
+    setIsSwapping(true)
+    setAllApprove(false)
+    try {
+      for (let i = 0; i < tokens.length; i++) {
+        if (isReciveToken(i)) continue
+        await approve(i)
+      }
+    } catch (error) {
+      setIsSwapping(false)
+      const message = errorTextOutput(error)
+      dispatch(
+        warmDialog({
+          open: true,
+          type: 'error',
+          message
+        })
+      )
+      return
+    }
+    setAllApprove(true)
+  }
+
+  const swap = async () => {
+    if (isEmpty(swapInfoArray)) {
+      setIsSwapping(false)
+      setAllApprove(false)
+      return
+    }
     const someApproveNotEnough = some(tokens, (token, index) => {
-      console.log('isApproveNotEnough(index)=', index, isApproveNotEnough(index))
       return isApproveNotEnough(index)
     })
-    console.log('someApproveNotEnoughsomeApproveNotEnoughsomeApproveNotEnoughsomeApproveNotEnough=', someApproveNotEnough)
     if (someApproveNotEnough) {
       dispatch(
         warmDialog({
@@ -351,17 +355,23 @@ const ApproveArray = props => {
           message: 'Please approve the amount of coins to be exchanged in full!'
         })
       )
+      setIsSwapping(false)
+      setAllApprove(false)
       return
     }
-    setIsSwapping(true)
+    console.log('---swap---')
+    console.log('allApprove', allApprove)
     const nextSwapArray = compact(
       map(swapInfoArray, i => {
         if (isEmpty(i) || i instanceof Error) return
-        const { bestSwapInfo, info } = i
+        const {
+          bestSwapInfo: { platform, method, encodeExchangeArgs },
+          info
+        } = i
         return {
-          platform: bestSwapInfo.platform,
-          method: bestSwapInfo.method,
-          data: bestSwapInfo.encodeExchangeArgs,
+          platform,
+          method,
+          data: encodeExchangeArgs,
           swapDescription: info
         }
       })
@@ -372,7 +382,6 @@ const ApproveArray = props => {
       .connect(signer)
       .batchSwap(nextSwapArray)
       .then(tx => tx.wait())
-      .then(handleClose)
       .then(() => {
         dispatch(
           warmDialog({
@@ -381,6 +390,9 @@ const ApproveArray = props => {
             message: 'Swap Success!'
           })
         )
+        setIsSwapping(false)
+        setAllApprove(false)
+        handleClose()
       })
       .catch(error => {
         const errorMsg = errorTextOutput(error)
@@ -399,11 +411,10 @@ const ApproveArray = props => {
             message: tip
           })
         )
-      })
-      .finally(() => {
         setIsSwapping(false)
+        setAllApprove(false)
       })
-  }, [isApproveNotEnough])
+  }
 
   const queryBestSwapInfo = useCallback(
     async (token, value, decimal, index, exchangePlatformAdapters) => {
@@ -439,11 +450,11 @@ const ApproveArray = props => {
           address: receiveToken
         }
       }
-      console.groupCollapsed('查询最佳兑换路径' + fromToken.address + '-' + toToken.address + '-' + index)
+      console.groupCollapsed('fetch best swap path: ' + fromToken.address + '-' + toToken.address + '-' + index)
       let nextExchangeExtraParams = assign({}, EXCHANGE_EXTRA_PARAMS, isEmpty(exchangePlatformAdapters.testAdapter) ? {} : {})
 
-      if (!isEmpty(encludeArray[index])) {
-        const { oneInchV4, paraswap } = encludeArray[index]
+      if (!isEmpty(excludeArray[index])) {
+        const { oneInchV4, paraswap } = excludeArray[index]
         nextExchangeExtraParams = assign({}, nextExchangeExtraParams, {
           oneInchV4: {
             ...nextExchangeExtraParams.oneInchV4,
@@ -466,8 +477,7 @@ const ApproveArray = props => {
       ).catch(() => {
         return {}
       })
-      // const bestSwapInfo = {}
-      console.groupEnd('查询最佳兑换路径' + fromToken.address + '-' + toToken.address + '-' + index)
+      console.groupEnd('fetch best swap path: ' + fromToken.address + '-' + toToken.address + '-' + index)
       if (isEmpty(bestSwapInfo)) return new Error('bestSwapInfo fetch error')
       return {
         bestSwapInfo,
@@ -479,54 +489,60 @@ const ApproveArray = props => {
         }
       }
     },
-    [values, encludeArray, receiveToken]
+    [values, excludeArray, receiveToken, slippage]
   )
 
   const estimateWithValue = useCallback(
     debounce(async refreshIndex => {
       if (isEmpty(receiveToken)) return
-
+      console.log('---estimateWithValue---')
       const exchangeManagerContract = new Contract(exchangeManager, EXCHANGE_AGGREGATOR_ABI, userProvider)
       const exchangePlatformAdapters = await getExchangePlatformAdapters(exchangeManagerContract, userProvider)
-
-      const nextIsSwapInfoFetching = map(swapInfoArray, (swapInfoArrayItem, index) => {
-        if (isReciveToken(index)) return false
-        if (!isNil(refreshIndex)) {
-          return refreshIndex === index
-        } else {
-          if (isEmpty(swapInfoArrayItem) || swapInfoArrayItem instanceof Error) {
-            return true
-          }
+      const nextIsSwapInfoFetching = map(swapInfoArray, (item, index) => {
+        if (isReciveToken(index) || retryTimesArray[index] > MAX_RETRY_TIME) {
           return false
         }
+        if (!isNil(refreshIndex)) {
+          return refreshIndex === index
+        }
+        return isEmpty(item) || item instanceof Error
       })
       setIsSwapInfoFetching(nextIsSwapInfoFetching)
-      const requestArray = map(nextIsSwapInfoFetching, (nextIsSwapInfoFetchingItem, index) => {
-        if (!nextIsSwapInfoFetchingItem) return swapInfoArray[index]
+      const requestArray = map(nextIsSwapInfoFetching, (item, index) => {
+        if (!item) return swapInfoArray[index]
         return queryBestSwapInfo(tokens[index], values[index] || '0', decimals[index], index, exchangePlatformAdapters)
       })
       Promise.all(requestArray)
-        .then(setSwapInfoArray)
+        .then(nextSwapArray => {
+          console.log('SwapArray isEqual', isEqual(nextSwapArray, swapInfoArray))
+          if (!isEqual(nextSwapArray, swapInfoArray)) {
+            setSwapInfoArray(nextSwapArray)
+          }
+        })
         .finally(() => {
-          setTimeout(() => {
-            setIsSwapInfoFetching(initBoolValues)
-          }, 1000)
+          console.log('doneArray', doneArray)
+          const nextIsSwapInfoFetching = map(tokens, (item, index) => {
+            if (isReciveToken(index) || retryTimesArray[index] > MAX_RETRY_TIME) {
+              return false
+            }
+            return !doneArray[index] && !isApproveNotEnough(index)
+          })
+          console.log('nextIsSwapInfoFetching', nextIsSwapInfoFetching)
+          setIsSwapInfoFetching(nextIsSwapInfoFetching)
+
+          // setIsSwapInfoFetching(initBoolValues)
         })
     }, 1500),
-    [receiveToken, exchangeManager, tokens, values, decimals, swapInfoArray]
+    [receiveToken, exchangeManager, tokens, values, decimals, swapInfoArray, retryTimesArray, doneArray, queryBestSwapInfo]
   )
 
   // check the receive token is current index?
-  const isReciveToken = useCallback(
-    index => {
-      return tokens[index]?.address === receiveToken
-    },
-    [tokens, receiveToken]
-  )
+  const isReciveToken = index => {
+    return tokens[index]?.address === receiveToken
+  }
 
   // check the slippage is valid or not
   const isValidSlippage = () => {
-    if (slippage === '' || isEmpty(slippage.replace(/ /g, ''))) return
     if (isNaN(slippage)) return false
     if (slippage < 0.01 || slippage > 45) return false
     return true
@@ -543,8 +559,14 @@ const ApproveArray = props => {
       return false
     })
 
+    const nextRetryTimesArray = map(retryTimesArray, (item, i) => {
+      if (i === index) return 0
+      return item
+    })
+
     setSwapInfoArray(nextSwapInfoArray)
     setIsSwapInfoFetching(nextIsSwapInfoFetching)
+    setRetryTimesArray(nextRetryTimesArray)
     estimateWithValue(index)
   }
 
@@ -554,112 +576,134 @@ const ApproveArray = props => {
   }
 
   // approve the current token with current value
-  const approve = index =>
-    approveValue(index)
-      .then(reload)
-      .finally(() => {
-        const loadingArr = loadingArray.map(() => false)
-        setLoadingArray(loadingArr)
-      })
+  const approve = index => {
+    return approveValue(index).then(reload)
+  }
 
   useEffect(() => {
     if (isEmpty(userAddress)) return
     reload()
-    const timer = setInterval(reload, 10000)
-    return () => clearInterval(timer)
+    // const timer = setInterval(reload, 10000)
+    // return () => clearInterval(timer)
   }, [tokens, userAddress, exchangeManager])
 
   useEffect(() => {
     if (isReload) return
     if (isEmpty(receiveToken)) return
-    const someTokenHasValidValue = some(values, (allo, index) => {
+    const someTokenHasValidValue = some(values, (item, index) => {
       if (isReciveToken(index)) return false
-      return !isEmpty(allo) && allo !== '0'
+      return !isEmpty(item) && item !== '0'
     })
     if (!someTokenHasValidValue) return
     estimateWithValue()
     return () => estimateWithValue.cancel()
-  }, [isReciveToken, isReload, values, receiveToken, slippage])
+  }, [isReload, values, receiveToken, slippage, swapInfoArray, retryTimesArray, doneArray])
 
   useEffect(() => {
-    if (isEmpty(swapInfoArray) || isEmpty(exchangeManager)) return
-    if (every(doneArray, i => i === true)) return
+    const allDone = every(doneArray, (item, index) => {
+      return item || (!item && isReciveToken(index))
+    })
+    console.log('add done', allDone)
+    if (!allDone) {
+      return
+    }
+    swap()
+  }, [doneArray])
 
+  useEffect(() => {
+    if (isEmpty(swapInfoArray) || isEmpty(exchangeManager)) {
+      console.log('empty swapInfoArray', swapInfoArray)
+      return
+    }
+    if (every(doneArray, i => i === true)) {
+      console.log('---all done---')
+      setIsSwapInfoFetching(initBoolValues)
+      return
+    }
     const constract = new Contract(exchangeManager, EXCHANGE_AGGREGATOR_ABI, userProvider)
     const signer = userProvider.getSigner()
     const constractWithSigner = constract.connect(signer)
 
-    const nextSwapInfoArray = map(swapInfoArray, (swapInfoArrayItem, index) => {
+    const staticCallParamsArray = map(swapInfoArray, (swapInfoArrayItem, index) => {
       const doneArrayItem = doneArray[index]
       if (doneArrayItem || isEmpty(swapInfoArrayItem) || swapInfoArrayItem instanceof Error || isApproveNotEnough(index)) return
-      const { bestSwapInfo, info } = swapInfoArrayItem
+      const {
+        bestSwapInfo: { platform, method, encodeExchangeArgs },
+        info
+      } = swapInfoArrayItem
       return {
-        platform: bestSwapInfo.platform,
-        method: bestSwapInfo.method,
-        data: bestSwapInfo.encodeExchangeArgs,
+        platform,
+        method,
+        data: encodeExchangeArgs,
         swapDescription: info
       }
     })
-    const nextIsStaticCalling = map(nextSwapInfoArray, i => !isEmpty(i))
-    console.log('abc nextIsStaticCalling=', nextIsStaticCalling)
+    const nextIsStaticCalling = map(staticCallParamsArray, i => !isEmpty(i))
     setIsStaticCalling(nextIsStaticCalling)
 
-    const staticCallArray = map(nextSwapInfoArray, swapInfoArrayItem => {
-      if (isEmpty(swapInfoArrayItem)) return false
-      const { platform, method, data, swapDescription } = swapInfoArrayItem
+    const staticCallArray = map(staticCallParamsArray, item => {
+      if (isEmpty(item)) return false
+      const { platform, method, data, swapDescription } = item
       return constractWithSigner.callStatic
         .swap(platform, method, data, swapDescription)
         .then(() => true)
-        .catch(() => false)
+        .catch(() => Promise.reject())
     })
-
+    console.log('---staticCall---')
     Promise.allSettled(staticCallArray).then(result => {
       const nextDoneArray = map(doneArray, (doneArrayItem, index) => {
         if (doneArrayItem === true) return true
-        return result[index]?.value
+        return Boolean(result[index]?.value)
       })
-      console.log('abc nextDoneArray=', nextDoneArray, 'encludeArray=', encludeArray)
-      const nextEncludeArray = map(encludeArray, (encludeArrayItem, index) => {
+      const nextSwapInfoArray = []
+      const nextRetryTimesArray = []
+      const nextExcludeArray = map(excludeArray, (excludeArrayItem, index) => {
         const doneArrayItem = doneArray[index]
+        const swapInfoItem = swapInfoArray[index]
+        const retryItem = retryTimesArray[index]
+        if (doneArrayItem) {
+          nextSwapInfoArray.push(swapInfoItem)
+          nextRetryTimesArray.push(retryItem)
+          return excludeArrayItem
+        }
         const resultItem = result[index] || {}
-        if (doneArrayItem === true) return encludeArrayItem
         if (resultItem.status === 'rejected') {
-          const { bestSwapInfo } = swapInfoArray[index]
+          const { bestSwapInfo } = swapInfoItem
           const array = getProtocolsFromBestRouter(bestSwapInfo)
           const { name } = bestSwapInfo
           const nextItem = {
-            ...encludeArrayItem,
-            [name]: array.concat(encludeArrayItem[name])
+            ...excludeArrayItem,
+            [name]: excludeArrayItem[name] ? array.concat(excludeArrayItem[name]) : array
           }
+          nextSwapInfoArray.push(undefined)
+          nextRetryTimesArray.push(retryItem + 1)
           return nextItem
         }
-        return encludeArrayItem
+        nextSwapInfoArray.push(swapInfoItem)
+        nextRetryTimesArray.push(retryItem)
+        return excludeArrayItem
       })
-      console.log('abc nextEncludeArray=', nextEncludeArray)
-      setDoneArray(nextDoneArray)
-      setIsStaticCalling(initBoolValues)
-      setEncludeArray(nextEncludeArray)
-    })
 
-    // constractWithSigner.callStatic.batchSwap(compact(nextSwapInfoArray)).catch(error => {
-    //   const errorMsg = errorTextOutput(error)
-    //   let tip = ''
-    //   if (isTransferNotEnough(errorMsg)) {
-    //     tip = 'Transfer Not Enough'
-    //   } else if (isLossMuch(errorMsg)) {
-    //     tip = 'Swap Failed, please increase the exchange slippage'
-    //   } else {
-    //     tip = errorMsg
-    //   }
-    //   dispatch(
-    //     warmDialog({
-    //       open: true,
-    //       type: 'error',
-    //       message: tip
-    //     })
-    //   )
-    // })
-  }, [exchangeManager, userAddress, swapInfoArray, values])
+      if (!isEqual(nextSwapInfoArray, swapInfoArray)) {
+        console.log('setSwapInfoArray')
+        setSwapInfoArray(nextSwapInfoArray)
+      }
+      if (!isEqual(nextDoneArray, doneArray)) {
+        console.log('nextDoneArray', nextDoneArray)
+        console.log('doneArray', doneArray)
+        setDoneArray(nextDoneArray)
+      }
+      if (!isEqual(nextRetryTimesArray, retryTimesArray)) {
+        console.log('nextRetryTimesArray', nextRetryTimesArray)
+        setRetryTimesArray(nextRetryTimesArray)
+      }
+      if (!isEqual(nextExcludeArray, excludeArray)) {
+        console.log('nextExcludeArray', nextExcludeArray)
+        setExcludeArray(nextExcludeArray)
+      }
+      setIsStaticCalling(initBoolValues)
+    })
+  }, [exchangeManager, userAddress, swapInfoArray, doneArray, retryTimesArray, allowances])
 
   return (
     <GridContainer>
@@ -681,15 +725,17 @@ const ApproveArray = props => {
                 const isSwapping = !isReciveToken(index) && (isSwapInfoFetching[index] || isStaticCalling[index])
                 const isSwapSuccess =
                   !isSwapping && !isReciveToken(index) && ((!isApproveNotEnough(index) && doneArrayItem) || !isEmpty(swapInfoArrayItem))
-                const isSwapError = !isSwapping && !isReciveToken(index) && swapInfoArrayItem instanceof Error
+                const isSwapError =
+                  !isSwapping && !isReciveToken(index) && (swapInfoArrayItem instanceof Error || retryTimesArray[index] > MAX_RETRY_TIME)
                 // const staticCallError = get(staticCallResp, `${index}.status`, '') === 'rejected'
                 // value should be a integer
                 const nextFromValueString = new BN(value).multipliedBy(decimal.toString())
                 const isErrorValue =
-                  !isEmpty(value) && (new BN(value).multipliedBy(decimal.toString()).gt(balance) || nextFromValueString.toFixed().indexOf('.') !== -1)
+                  !isReciveToken(index) &&
+                  !isEmpty(value) &&
+                  (new BN(value).multipliedBy(decimal.toString()).gt(balance) || nextFromValueString.toFixed().indexOf('.') !== -1)
                 // const isEthAddress = address === ETH_ADDRESS
                 // const isOverFlow = new BN(value).multipliedBy(decimal.toString()).lte(allowance.toString())
-                // const loading = loadingArray[index]
                 return (
                   <GridItem
                     xs={12}
@@ -798,18 +844,20 @@ const ApproveArray = props => {
               onMaxClick={() => onSlippageChange('45')}
               onChange={event => {
                 const { value } = event.target
+                setSwapInfoArray(initValues)
+                setDoneArray(initBoolValues)
                 onSlippageChange(value)
               }}
-              // error={(!isUndefined(isValidSlippage()) && !isValidSlippage()) || (!isStaticCallLoading && isStaticCallError)}
-              error={!isUndefined(isValidSlippage()) && !isValidSlippage()}
+              // error={!isValidSlippage() || (!isStaticCallLoading && isStaticCallError)}
+              error={!isValidSlippage()}
             />
           </span>
         </h3>
         <div className={classes.buttonGroup}>
           <Button
             color="colorfull"
-            onClick={swap}
-            disabled={noNeedSwap || isSwapInfoFetchingSome || isStaticCallingSome || isSwapError()}
+            onClick={approveAll}
+            disabled={noNeedSwap || isSwapInfoFetchingSome || isStaticCallingSome || isSwapError() || isSwapping}
             // disabled={(!isStaticCallLoading && isStaticCallError) || noNeedSwap || isSwapInfoFetchingSome || isSwapError() || isSwapping}
             className={classes.okButton}
             startIcon={isSwapping ? <CachedIcon className={classes.loading} /> : null}
