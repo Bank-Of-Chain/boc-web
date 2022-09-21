@@ -34,11 +34,11 @@ const STABLECOINS = [
     symbol: 'BUSD',
     address: BUSD_ADDRESS
   },
-  {
-    id: 'pax-dollar',
-    symbol: 'USDP',
-    address: USDP_ADDRESS
-  },
+  // {
+  //   id: 'pax-dollar',
+  //   symbol: 'USDP',
+  //   address: USDP_ADDRESS
+  // },
   {
     id: 'tusd',
     symbol: 'TUSD',

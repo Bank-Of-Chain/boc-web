@@ -6,14 +6,16 @@ export const STRATEGIES = [
   'DForce',
   'Curve',
   'Aave',
-  'Quickswap',
-  'Sushi',
-  'Synapse',
-  'Stargate',
+  // 'Quickswap',
+  // 'Sushi',
+  // 'Synapse',
+  // 'Stargate',
   'Aura',
   'UniswapV2',
   'UniswapV3',
-  'YearnV2'
+  'YearnV2',
+  'Lido',
+  'RocketPool'
 ]
 
 export const PLATFORM_HOME_URL = {
@@ -35,7 +37,9 @@ export const PLATFORM_HOME_URL = {
   UniswapV2: 'https://app.uniswap.org/',
   Aura: 'https://app.balancer.fi/#/pool/0x06df3b2bbb68adc8b0e302443692037ed9f91b42000000000000000000000063',
   UniswapV3: 'https://info.uniswap.org/#/pools/0x00cef0386ed94d738c8f8a74e8bfd0376926d24c',
-  YearnV2: 'https://yearn.finance/#/vault/0xa258C4606Ca8206D8aA700cE2143D7db854D168c'
+  YearnV2: 'https://yearn.finance/#/vault/0xa258C4606Ca8206D8aA700cE2143D7db854D168c',
+  Lido: 'https://lido.fi/',
+  RocketPool: 'https://rocketpool.net/'
 }
 
 export default STRATEGIES

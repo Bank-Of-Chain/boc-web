@@ -2,15 +2,14 @@ import { container, primaryColor } from '@/assets/jss/material-kit-react.js'
 
 const footerStyle = {
   title: {
-    color: '#fff',
-    textTransform: 'none'
+    display: 'block',
+    marginTop: '0.5rem'
   },
   text: {
     color: '#A0A0A0'
   },
   item: {
-    padding: '2rem 0',
-    borderTop: '1px solid #a0a0a0'
+    padding: '2rem 0'
   },
   '@media (max-width: 1200px)': {
     item: {
@@ -28,20 +27,21 @@ const footerStyle = {
     display: 'block'
   },
   left: {
-    float: 'left!important',
-    display: 'block'
+    textAlign: 'left'
   },
   right: {
-    padding: '15px 0',
-    margin: '0',
-    float: 'right!important'
+    textAlign: 'right'
   },
   footer: {
-    textAlign: 'center',
     display: 'flex',
     zIndex: '2',
     position: 'relative',
-    cursor: 'pointer'
+    padding: '0 8.75rem'
+  },
+  '@media (max-width: 960px)': {
+    footer: {
+      padding: '0 3rem'
+    }
   },
   a: {
     color: primaryColor,
@@ -55,9 +55,8 @@ const footerStyle = {
   },
   container: container,
   list: {
-    marginBottom: '0',
     padding: '0',
-    marginTop: '0'
+    margin: '0 -0.9375rem 0 0'
   },
   inlineBlock: {
     display: 'inline-block',
@@ -71,12 +70,10 @@ const footerStyle = {
     top: '3px'
   },
   center: {
-    color: '#707eac',
-    fontSize: '14px',
-    padding: '15px'
+    textAlign: 'center'
   },
   disclaimer: {
-    padding: '2rem 5rem',
+    padding: '2rem 0',
     color: '#A0A0A0',
     textAlign: 'left',
     fontSize: '0.75rem',
