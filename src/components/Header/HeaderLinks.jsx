@@ -30,6 +30,7 @@ import map from 'lodash/map'
 import get from 'lodash/get'
 import find from 'lodash/find'
 import { isInMobileWalletApp, isInMobileH5 } from '@/helpers/plugin-util'
+import { isMarketingHost } from '@/helpers/location'
 
 // === Constants === //
 import { NET_WORKS, DASHBOARD_URL, DOCUMENT_URL, CHAIN_ID, LEGACYS, POLYGON_HIDDEN } from '@/constants'
@@ -109,7 +110,7 @@ export default function HeaderLinks(props) {
     if (nextVault === 'ethi') {
       nextChainId = '1'
     }
-    return `${DASHBOARD_URL}/#/?chain=${nextChainId}&vault=${nextVault}`
+    return `${isMarketingHost() ? 'https://dashboard.bankofchain.io' : DASHBOARD_URL}/#/?chain=${nextChainId}&vault=${nextVault}`
   }
 
   const handleGoToAccount = () => dispatch(setCurrentTab(INVEST_TAB.account))
@@ -117,7 +118,7 @@ export default function HeaderLinks(props) {
   return (
     <>
       <List className={classes.list} classes={{ root: classes.iii }}>
-        <ListItem className={classes.listItem} selected>
+        <ListItem className={classes.listItem}>
           <Button color="transparent" href={'/'} className={classes.navLink}>
             Home
           </Button>
