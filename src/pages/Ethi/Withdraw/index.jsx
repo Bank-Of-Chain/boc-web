@@ -208,8 +208,8 @@ export default function Withdraw({
           return i.address !== ETH_ADDRESS && i.amount !== '0'
         })
       ) {
-        setIsShowZipModal(true)
         setBurnTokens(nextBurnTokens)
+        setIsShowZipModal(true)
       }
     })
   }
@@ -677,7 +677,12 @@ export default function Withdraw({
           </div>
         </Paper>
       </Modal>
-      <Modal className={classes.modal} open={isShowZipModal} aria-labelledby="simple-modal-title" aria-describedby="simple-modal-description">
+      <Modal
+        className={classes.modal}
+        open={isShowZipModal && !!address}
+        aria-labelledby="simple-modal-title"
+        aria-describedby="simple-modal-description"
+      >
         <Paper elevation={3} className={classes.approvePaper}>
           <div className={classes.modalBody}>
             {!isEmpty(address) && !isEmpty(exchangeManager) && (
@@ -689,7 +694,7 @@ export default function Withdraw({
                 exchangeManager={exchangeManager}
                 EXCHANGE_ADAPTER_ABI={EXCHANGE_ADAPTER_ABI}
                 EXCHANGE_AGGREGATOR_ABI={EXCHANGE_AGGREGATOR_ABI}
-                slipper={slipper}
+                slippage={slipper}
                 onSlippageChange={setSlipper}
                 handleClose={() => setIsShowZipModal(false)}
               />
