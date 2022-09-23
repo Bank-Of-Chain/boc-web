@@ -9,8 +9,13 @@ import { BOC_SERVER, NET_WORKS, ENV_NETWORK_TYPE } from '@/constants'
 
 const ETH = NET_WORKS[0]
 
-export const getDefiRate = async () => {
-  const rs = await axios.get(`${BOC_SERVER}/v1/defi/rate`).then(resp => resp.data)
+export const getDefiRate = async (chain = '1', type) => {
+  if (isEmpty(chain) || isEmpty(type)) return Promise.reject('chainId & type must not be null')
+  const params = {
+    chain,
+    type
+  }
+  const rs = await axios.get(`${BOC_SERVER}/v1/defi/rate`, { params }).then(resp => resp.data)
   if (isEmpty(rs)) throw new Error('fetch error')
   return rs
 }
