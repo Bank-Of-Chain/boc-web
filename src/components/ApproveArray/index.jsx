@@ -32,6 +32,7 @@ import debounce from 'lodash/debounce'
 import compact from 'lodash/compact'
 import findIndex from 'lodash/findIndex'
 import isEqual from 'lodash/isEqual'
+import isNumber from 'lodash/isNumber'
 import min from 'lodash/min'
 import { toFixed } from '@/helpers/number-format'
 import { getBestSwapInfo } from 'piggy-finance-utils'
@@ -42,7 +43,16 @@ import { getProtocolsFromBestRouter } from '@/helpers/swap-util'
 import { errorTextOutput, isLossMuch } from '@/helpers/error-handler'
 
 // === Constants === //
-import { IERC20_ABI, EXCHANGE_EXTRA_PARAMS, ORACLE_ADDITIONAL_SLIPPAGE, USDT_ADDRESS, USDC_ADDRESS, DAI_ADDRESS } from '@/constants'
+import {
+  IERC20_ABI,
+  EXCHANGE_EXTRA_PARAMS,
+  ORACLE_ADDITIONAL_SLIPPAGE,
+  USDT_ADDRESS,
+  USDC_ADDRESS,
+  DAI_ADDRESS,
+  MULTIPLE_OF_GAS,
+  MAX_GAS_LIMIT
+} from '@/constants'
 import { ETH_ADDRESS, WETH_ADDRESS } from '@/constants/tokens'
 import { BN_6, BN_18 } from '@/constants/big-number'
 
@@ -445,36 +455,46 @@ const ApproveArray = props => {
     )
     const constract = new Contract(exchangeManager, EXCHANGE_AGGREGATOR_ABI, userProvider)
     const signer = userProvider.getSigner()
-    constract
-      .connect(signer)
-      .batchSwap(nextSwapArray)
-      .then(tx => tx.wait())
-      .then(() => {
-        dispatch(
-          warmDialog({
-            open: true,
-            type: 'success',
-            message: 'Swap Success!'
-          })
-        )
-        setIsSwapping(false)
-        handleClose()
-      })
-      .catch(error => {
-        const errorMsg = errorTextOutput(error)
-        let message = 'Swap Failed'
-        if (isLossMuch(errorMsg)) {
-          message = 'Swap Failed, please increase the exchange slippage'
-        }
-        dispatch(
-          warmDialog({
-            open: true,
-            type: 'error',
-            message
-          })
-        )
-        setIsSwapping(false)
-      })
+    const contractWithSigner = constract.connect(signer)
+
+    try {
+      let tx
+      // if gasLimit times not 1, need estimateGas
+      if (isNumber(MULTIPLE_OF_GAS) && MULTIPLE_OF_GAS !== 1) {
+        const gas = await contractWithSigner.estimateGas.batchSwap(nextSwapArray)
+        const gasLimit = Math.ceil(gas * MULTIPLE_OF_GAS)
+        // gasLimit not exceed maximum
+        const maxGasLimit = gasLimit < MAX_GAS_LIMIT ? gasLimit : MAX_GAS_LIMIT
+        tx = await contractWithSigner.batchSwap(nextSwapArray, {
+          gasLimit: maxGasLimit
+        })
+      } else {
+        tx = await contractWithSigner.batchSwap(nextSwapArray)
+      }
+      await tx.wait()
+      dispatch(
+        warmDialog({
+          open: true,
+          type: 'success',
+          message: 'Swap Success!'
+        })
+      )
+      handleClose()
+    } catch (error) {
+      const errorMsg = errorTextOutput(error)
+      let message = 'Swap Failed'
+      if (isLossMuch(errorMsg)) {
+        message = 'Swap Failed, please increase the exchange slippage'
+      }
+      dispatch(
+        warmDialog({
+          open: true,
+          type: 'error',
+          message
+        })
+      )
+    }
+    setIsSwapping(false)
   }
 
   const queryBestSwapInfo = useCallback(
