@@ -63,6 +63,7 @@ const { Contract, BigNumber } = ethers
 const useStyles = makeStyles(styles)
 
 const MAX_RETRY_TIME = 2
+const BN_0 = BigNumber.from('0')
 
 const ApproveArray = props => {
   const classes = useStyles()
@@ -247,13 +248,13 @@ const ApproveArray = props => {
             amount,
             decimal: 18,
             allowance: '0',
-            balance: (await userProvider.getBalance(userAddress).catch(() => BigNumber.from('0'))).toString()
+            balance: (await userProvider.getBalance(userAddress).catch(() => BN_0)).toString()
           }
         }
         const contract = new Contract(address, IERC20_ABI, userProvider)
-        const allowance = (await contract.allowance(userAddress, exchangeManager).catch(() => BigNumber.from('0'))).toString()
-        const balance = (await contract.balanceOf(userAddress).catch(() => BigNumber.from('0'))).toString()
-        const decimal = await contract.decimals().catch(() => BigNumber.from('0'))
+        const allowance = (await contract.allowance(userAddress, exchangeManager).catch(() => BN_0)).toString()
+        const balance = (await contract.balanceOf(userAddress).catch(() => BN_0)).toString()
+        const decimal = await contract.decimals().catch(() => BN_0)
         return {
           address,
           amount,
@@ -295,16 +296,16 @@ const ApproveArray = props => {
     if (!(num >= 0)) {
       return
     }
-    const nextValue = map(tokens, (v, i) => {
+    const nextValues = map(tokens, (v, i) => {
       if (i === index) return val
       return values[i]
     })
-    setValues(nextValue)
-    debounceUpdate(num, index)
+    setValues(nextValues)
+    debounceUpdate(num, index, nextValues)
   }
 
   const debounceUpdate = useCallback(
-    debounce((val, index) => {
+    debounce((val, index, nextValues) => {
       const nextSwapInfoArray = map(swapInfoArray, (item, i) => {
         if (i === index) return undefined
         return item
@@ -329,8 +330,9 @@ const ApproveArray = props => {
       setIsSwapInfoFetching(nextIsSwapInfoFetching)
       setRetryTimesArray(initNumberValues)
       setExcludeArray(nextExcludeArray)
+      estimateWithValue(nextValues, index)
     }, 1500),
-    []
+    [swapInfoArray, doneArray, isSwapInfoFetching, excludeArray]
   )
 
   const approveValue = async index => {
@@ -353,15 +355,19 @@ const ApproveArray = props => {
     const allowanceAmount = await contractWithUser.allowance(userAddress, exchangeManager)
     // If deposit amount greater than allow amount, reset amount
     if (nextValue.gt(allowanceAmount)) {
-      // If allowance equal 0, approve nextAmount, otherwise approve 0 and approve nextAmount
+      // If allowance equal 0, approve nextAmount, otherwise increaseAllowance
       if (allowanceAmount.gt(0)) {
         if (address === WETH_ADDRESS) {
+          // WETH don't support increaseAllowance
           return contractWithUser
             .approve(exchangeManager, 0)
             .then(tx => tx.wait())
-            .then(() => contractWithUser.approve(exchangeManager, nextValue).then(tx => tx.wait()))
+            .then(() => {
+              reload()
+              return contractWithUser.approve(exchangeManager, nextValue).then(tx => tx.wait())
+            })
         }
-        return await contractWithUser
+        return contractWithUser
           .increaseAllowance(exchangeManager, nextValue.sub(allowanceAmount))
           .then(tx => tx.wait())
           .catch(e => {
@@ -373,7 +379,10 @@ const ApproveArray = props => {
             return contractWithUser
               .approve(exchangeManager, 0)
               .then(tx => tx.wait())
-              .then(() => contractWithUser.approve(exchangeManager, nextValue).then(tx => tx.wait()))
+              .then(() => {
+                reload()
+                return contractWithUser.approve(exchangeManager, nextValue).then(tx => tx.wait())
+              })
           })
       } else {
         return contractWithUser
@@ -411,6 +420,7 @@ const ApproveArray = props => {
     }
   }
 
+  // swap triggered by useEffect
   const swap = async () => {
     if (!isSwapping) {
       return
@@ -436,6 +446,7 @@ const ApproveArray = props => {
     realSwap()
   }
 
+  // All done, swap
   const realSwap = async () => {
     console.log('---realSwap---')
     const nextSwapArray = compact(
@@ -485,6 +496,8 @@ const ApproveArray = props => {
       let message = 'Swap Failed'
       if (isLossMuch(errorMsg)) {
         message = 'Swap Failed, please increase the exchange slippage'
+      } else if (error.code === 4001) {
+        message = errorMsg
       }
       dispatch(
         warmDialog({
@@ -493,8 +506,8 @@ const ApproveArray = props => {
           message
         })
       )
+      setIsSwapping(false)
     }
-    setIsSwapping(false)
   }
 
   const queryBestSwapInfo = useCallback(
@@ -577,7 +590,7 @@ const ApproveArray = props => {
   )
 
   const estimateWithValue = useCallback(
-    debounce(async refreshIndex => {
+    debounce(async (newValues, refreshIndex) => {
       if (isEmpty(receiveToken)) return
       console.log('---estimateWithValue---')
       const exchangeManagerContract = new Contract(exchangeManager, EXCHANGE_AGGREGATOR_ABI, userProvider)
@@ -598,7 +611,7 @@ const ApproveArray = props => {
       setIsSwapInfoFetching(nextIsSwapInfoFetching)
       const requestArray = map(nextIsSwapInfoFetching, (item, index) => {
         if (!item) return swapInfoArray[index]
-        return queryBestSwapInfo(tokens[index], values[index] || '0', decimals[index], index, exchangePlatformAdapters).catch(() => {
+        return queryBestSwapInfo(tokens[index], newValues[index] || '0', decimals[index], index, exchangePlatformAdapters).catch(() => {
           return
         })
       })
@@ -619,19 +632,18 @@ const ApproveArray = props => {
             setRetryTimesArray(nextRetryTimesArray)
           }
           const nextIsSwapInfoFetching = map(tokens, (item, index) => {
-            if (isReciveToken(index) || retryTimesArray[index] > MAX_RETRY_TIME || values[index] === '0') {
+            if (isReciveToken(index) || retryTimesArray[index] > MAX_RETRY_TIME || isErrorValue(index) || isEmptyValue(index)) {
               return false
             }
             return !doneArray[index] && !isApproveNotEnough(index)
           })
-          console.log('nextIsSwapInfoFetching', nextIsSwapInfoFetching)
           setIsSwapInfoFetching(nextIsSwapInfoFetching)
         })
         .catch(() => {
           setIsSwapInfoFetching(initBoolValues)
         })
     }, 1500),
-    [receiveToken, exchangeManager, tokens, values, decimals, swapInfoArray, retryTimesArray, doneArray, queryBestSwapInfo]
+    [receiveToken, exchangeManager, tokens, decimals, swapInfoArray, retryTimesArray, doneArray, queryBestSwapInfo]
   )
 
   const reloadSwap = index => {
@@ -650,16 +662,10 @@ const ApproveArray = props => {
       return item
     })
 
-    const nextExcludeArray = map(excludeArray, (item, i) => {
-      if (i === index) return {}
-      return item
-    })
-
     setSwapInfoArray(nextSwapInfoArray)
     setIsSwapInfoFetching(nextIsSwapInfoFetching)
     setRetryTimesArray(nextRetryTimesArray)
-    setExcludeArray(nextExcludeArray)
-    estimateWithValue(index)
+    estimateWithValue(values, index)
   }
 
   // approve the current token with current value
@@ -698,7 +704,7 @@ const ApproveArray = props => {
     if (isReload || isEmpty(receiveToken) || !isValidSlippage() || !someTokenHasValidValue()) {
       return
     }
-    estimateWithValue()
+    estimateWithValue(values)
     return () => estimateWithValue.cancel()
   }, [isReload, estimateWithValue])
 
@@ -721,7 +727,7 @@ const ApproveArray = props => {
       !someTokenHasValidValue() ||
       isEmpty(swapInfoArray) ||
       every(swapInfoArray, item => isEmpty(item)) ||
-      some(tokens, (item, i) => isApproveNotEnough(i))
+      every(tokens, (item, i) => !isReciveToken(i) && isApproveNotEnough(i))
     ) {
       console.log('staticCall return')
       setIsSwapInfoFetching(initBoolValues)
@@ -734,7 +740,7 @@ const ApproveArray = props => {
 
     const staticCallParamsArray = map(swapInfoArray, (item, index) => {
       const doneArrayItem = doneArray[index]
-      if (doneArrayItem || isEmpty(item) || item instanceof Error || retryTimesArray[index] > MAX_RETRY_TIME) {
+      if (doneArrayItem || isEmpty(item) || item instanceof Error || isApproveNotEnough(index) || retryTimesArray[index] > MAX_RETRY_TIME) {
         return
       }
       const {
@@ -759,6 +765,7 @@ const ApproveArray = props => {
         .then(() => true)
         .catch(error => Promise.reject(error))
     })
+    console.log('staticCallArray', staticCallArray)
     Promise.allSettled(staticCallArray).then(result => {
       console.log('result', result)
       const nextDoneArray = map(doneArray, (item, i) => {
@@ -827,6 +834,7 @@ const ApproveArray = props => {
         console.log('nextRetryTimesArray', nextRetryTimesArray)
         setRetryTimesArray(nextRetryTimesArray)
       }
+      // setIsSwapping(false)
       setIsStaticCalling(initBoolValues)
     })
   }, [swapInfoArray, allowances])
@@ -937,7 +945,7 @@ const ApproveArray = props => {
             <SimpleSelect
               className={classes.select}
               options={selectOptions}
-              disabled={isSwapping || isSwapInfoFetchingSome || isStaticCallingSome}
+              disabled={selectOptions.length <= 1 || isSwapping || isSwapInfoFetchingSome || isStaticCallingSome}
               value={receiveToken}
               onChange={v => {
                 setSwapInfoArray(initValues)
@@ -987,7 +995,8 @@ const ApproveArray = props => {
               isSwapping ||
               isSwapError() ||
               someStaticCallError() ||
-              !isValidSlippage()
+              !isValidSlippage() ||
+              receiveAmount.lte(0)
             }
             className={classes.okButton}
             startIcon={isSwapping ? <CachedIcon className={classes.loading} /> : null}
