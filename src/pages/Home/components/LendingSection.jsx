@@ -116,7 +116,8 @@ export default function LendingSection() {
 
   const renderJsx = (array = []) => {
     const maxPercentItem = maxBy(array, 'percent')
-    const displayMaxValue = 5 * Math.ceil(maxPercentItem?.percent / 5)
+    // left 25% percent width for text render
+    const displayMaxValue = 1.25 * maxPercentItem?.percent
     return (
       <GridContainer className={classes.block}>
         {map(
@@ -152,6 +153,7 @@ export default function LendingSection() {
                     <Tooltip title={text}>
                       <div
                         className={classNames(classes.bar, text === 'Fixed Rate' && classes.fixed, title === bocTitle && classes.checked)}
+                        // style={{ width: `calc(${percentText} - 4rem)` }}
                         style={{ width: percentText }}
                       >
                         <p className={classes.percent}>{percent}%</p>

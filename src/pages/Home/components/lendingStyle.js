@@ -41,7 +41,7 @@ const lendingSectionStyle = {
   },
   percent: {
     float: 'right',
-    marginRight: '-3.5rem'
+    marginRight: '-4rem'
   },
   fixed: {
     background: '#A68EFE'
