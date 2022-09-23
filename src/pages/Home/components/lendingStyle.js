@@ -1,8 +1,16 @@
+import { gradientText } from '@/assets/jss/common.js'
+
 const lendingSectionStyle = {
   section: {
     maxWidth: '93rem',
-    padding: '3.5rem 11rem',
+    padding: '3.5rem 4rem',
     margin: '0 auto'
+  },
+  colorful: {
+    ...gradientText,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    fontSize: '1.5rem'
   },
   text: {
     color: '#1cd9ff'
@@ -15,33 +23,25 @@ const lendingSectionStyle = {
     paddingRight: 0
   },
   body: {
-    height: '20rem',
     marginLeft: 0,
-    marginRight: 0
+    marginRight: 0,
+    paddingTop: '1.5rem'
   },
   header: {
-    height: '18.75rem',
     paddingLeft: 0,
     paddingRight: 0
   },
   bar: {
-    width: '3rem',
-    background: '#FE3DCE',
-    margin: 'auto',
+    height: '3.4rem',
+    float: 'left',
     cursor: 'pointer',
-    position: 'absolute',
-    left: 0,
-    bottom: 0,
-    right: 0,
-    borderRadius: '0.3rem',
-    '&>p': {
-      position: 'absolute',
-      top: '-3rem',
-      left: '50%',
-      transform: 'translate(-50%, 0)',
-      zIndex: 1,
-      fontSize: '1rem'
-    }
+    margin: 'auto',
+    background: '#FE3DCE',
+    borderRadius: '0.3rem'
+  },
+  percent: {
+    float: 'right',
+    marginRight: '-4rem'
   },
   fixed: {
     background: '#A68EFE'
@@ -53,18 +53,19 @@ const lendingSectionStyle = {
     '&>img': {
       width: '3rem',
       height: '3rem',
-      borderRadius: '1.5rem',
-      marginTop: '1.25rem'
+      borderRadius: '1.5rem'
+      // marginTop: '1.25rem'
     },
     '&>p': {
-      fontSize: '1rem'
+      fontSize: '1rem',
+      margin: 0
     }
   },
   label: {
     float: 'right',
-    textAlign: 'left',
     width: '10rem',
-    paddingTop: '2rem'
+    textAlign: 'left',
+    marginTop: '-6rem'
   },
   box: {
     height: '0.6rem',
@@ -88,9 +89,12 @@ const lendingSectionStyle = {
     padding: '2px'
   },
   chartInner: {
-    padding: '7.5rem 0',
     backgroundColor: '#313036',
     borderRadius: '1rem'
+  },
+  block: {
+    width: '100%',
+    marginBottom: '2rem'
   }
 }
 
@@ -111,11 +115,11 @@ export const smStyle = {
       borderRadius: '0.9rem'
     },
     '&>p': {
-      transform: 'rotateZ(45deg)',
-      fontSize: '0.875rem',
-      paddingBottom: '0.6rem',
-      paddingLeft: '0.6rem',
-      textAlign: 'left'
+      // transform: 'rotateZ(45deg)',
+      // fontSize: '0.875rem',
+      // paddingBottom: '0.6rem',
+      // paddingLeft: '0.6rem',
+      // textAlign: 'left'
     }
   }
 }

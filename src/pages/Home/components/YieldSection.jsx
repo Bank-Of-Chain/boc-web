@@ -25,7 +25,7 @@ export default function YieldSection() {
         {yieldSources.map(item => (
           <li key={item} className={classes.sourceItem}>
             <CheckIcon className={classes.checkIcon} />
-            <span>{item}</span>
+            <span className={classes.text}>{item}</span>
           </li>
         ))}
       </ul>
