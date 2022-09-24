@@ -46,6 +46,7 @@ import { isAd, isEs, isRp, isMaxLoss, isLossMuch, isExchangeFail, errorTextOutpu
 
 // === Constants === //
 import { MULTIPLE_OF_GAS, MAX_GAS_LIMIT, IERC20_ABI } from '@/constants'
+// import { WETH_ADDRESS } from '@/constants/tokens'
 import { BN_18 } from '@/constants/big-number'
 
 // === Styles === //
@@ -85,7 +86,16 @@ export default function Withdraw({
   const [currentStep, setCurrentStep] = useState(0)
   const [withdrawError, setWithdrawError] = useState({})
 
-  const [burnTokens, setBurnTokens] = useState([])
+  const [burnTokens, setBurnTokens] = useState([
+    // {
+    //   address: ETH_ADDRESS,
+    //   amount: '10000000000000000000'
+    // },
+    // {
+    //   address: WETH_ADDRESS,
+    //   amount: '1000000000000000000'
+    // }
+  ])
   const [isShowZipModal, setIsShowZipModal] = useState(false)
 
   const [pegTokenPrice, setPegTokenPrice] = useState(BN_18)
@@ -683,24 +693,22 @@ export default function Withdraw({
         aria-labelledby="simple-modal-title"
         aria-describedby="simple-modal-description"
       >
-        <Paper elevation={3} className={classes.approvePaper}>
-          <div className={classes.modalBody}>
-            {!isEmpty(address) && !isEmpty(exchangeManager) && (
-              <ApproveArray
-                isEthi
-                address={address}
-                tokens={burnTokens}
-                userProvider={userProvider}
-                exchangeManager={exchangeManager}
-                EXCHANGE_ADAPTER_ABI={EXCHANGE_ADAPTER_ABI}
-                EXCHANGE_AGGREGATOR_ABI={EXCHANGE_AGGREGATOR_ABI}
-                slippage={slipper}
-                onSlippageChange={setSlipper}
-                handleClose={() => setIsShowZipModal(false)}
-              />
-            )}
-          </div>
-        </Paper>
+        <div className={classes.modalBody}>
+          {!isEmpty(address) && !isEmpty(exchangeManager) && (
+            <ApproveArray
+              isEthi
+              address={address}
+              tokens={burnTokens}
+              userProvider={userProvider}
+              exchangeManager={exchangeManager}
+              EXCHANGE_ADAPTER_ABI={EXCHANGE_ADAPTER_ABI}
+              EXCHANGE_AGGREGATOR_ABI={EXCHANGE_AGGREGATOR_ABI}
+              slippage={slipper}
+              onSlippageChange={setSlipper}
+              handleClose={() => setIsShowZipModal(false)}
+            />
+          )}
+        </div>
       </Modal>
     </>
   )

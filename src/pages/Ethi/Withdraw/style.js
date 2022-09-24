@@ -20,16 +20,8 @@ const componentsStyle = () => ({
     justifyContent: 'center'
   },
   modalBody: {
-    textAlign: 'center'
-  },
-  approvePaper: {
-    padding: '1rem',
-    maxWidth: '46rem',
-    color: 'rgba(255, 255, 255, 0.87)',
-    border: '1px solid #A68EFE',
-    backgroundColor: '#000',
-    borderRadius: '1rem',
-    width: '100%'
+    width: '42rem',
+    outline: 0
   },
   withdrawContainer: {
     padding: '2.6875rem 2.25rem',

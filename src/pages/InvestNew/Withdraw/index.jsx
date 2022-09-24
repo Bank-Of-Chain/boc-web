@@ -715,23 +715,21 @@ export default function Withdraw({
         aria-labelledby="simple-modal-title"
         aria-describedby="simple-modal-description"
       >
-        <Paper elevation={3} className={classes.approvePaper}>
-          <div className={classes.modalBody}>
-            {!isEmpty(address) && !isEmpty(exchangeManager) && (
-              <ApproveArray
-                address={address}
-                tokens={burnTokens}
-                userProvider={userProvider}
-                exchangeManager={exchangeManager}
-                EXCHANGE_ADAPTER_ABI={EXCHANGE_ADAPTER_ABI}
-                EXCHANGE_AGGREGATOR_ABI={EXCHANGE_AGGREGATOR_ABI}
-                slippage={slipper}
-                onSlippageChange={setSlipper}
-                handleClose={() => setIsShowZipModal(false)}
-              />
-            )}
-          </div>
-        </Paper>
+        <div className={classes.modalBody}>
+          {!isEmpty(address) && !isEmpty(exchangeManager) && (
+            <ApproveArray
+              address={address}
+              tokens={burnTokens}
+              userProvider={userProvider}
+              exchangeManager={exchangeManager}
+              EXCHANGE_ADAPTER_ABI={EXCHANGE_ADAPTER_ABI}
+              EXCHANGE_AGGREGATOR_ABI={EXCHANGE_AGGREGATOR_ABI}
+              slippage={slipper}
+              onSlippageChange={setSlipper}
+              handleClose={() => setIsShowZipModal(false)}
+            />
+          )}
+        </div>
       </Modal>
     </>
   )

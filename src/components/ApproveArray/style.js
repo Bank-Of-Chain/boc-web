@@ -2,28 +2,64 @@ import { container } from '@/assets/jss/material-kit-react.js'
 
 const componentsStyle = () => ({
   container,
+  main: {
+    padding: '2rem 3rem',
+    color: '#A0A0A0',
+    background: 'linear-gradient(111.68deg, #2C2F36 7.59%, #333437 102.04%)',
+    borderRadius: '2.5rem'
+  },
+  title: {
+    paddingBottom: '1.5rem',
+    fontSize: '1.5rem',
+    lineHeight: '1.5rem',
+    textAlign: 'center'
+  },
   tokenLogo: {
     width: 30,
     borderRadius: '50%',
     marginRight: 8
   },
   approveContainer: {
-    maxHeight: '400px'
+    maxHeight: '20rem',
+    padding: '2rem 1.25rem',
+    border: '1px solid #A68EFD',
+    borderRadius: '0.5rem 0.5rem 0px 0px',
+    backgroundColor: '#1F2023',
+    overflowY: 'auto'
   },
   approveItemWrapper: {
-    padding: '0 1rem'
+    paddingBottom: '0.5rem',
+    '&:last-child': {
+      padding: 0
+    }
   },
   success: {
     border: '1px solid forestgreen'
   },
   swappingContainer: {
-    background: '#A68EFD'
+    margin: 0,
+    color: '#A68EFD',
+    textAlign: 'center',
+    fontSize: '0.875rem',
+    lineHeight: '0.875rem'
   },
   swapSuccessContainer: {
-    background: 'forestgreen'
+    margin: 0,
+    color: '#56CC8C',
+    textAlign: 'center',
+    fontSize: '0.875rem',
+    lineHeight: '0.875rem'
   },
   swapErrorContainer: {
-    background: '#ff7875'
+    height: '2rem',
+    border: '1px solid #F36767',
+    borderRadius: '0.625rem',
+    margin: 0,
+    color: '#F36767',
+    textAlign: 'center',
+    fontSize: '0.875rem',
+    lineHeight: '2rem',
+    cursor: 'pointer'
   },
   approveItem: {
     textAlign: 'left',
@@ -32,11 +68,10 @@ const componentsStyle = () => ({
   approveButton: {
     margin: '12px 8px 8px'
   },
-  input: {
-    flex: 1
-  },
   balanceText: {
-    textAlign: 'left'
+    textAlign: 'left',
+    fontSize: '0.875rem',
+    lineHeight: '0.875rem'
   },
   errorText: {
     color: '#ff7875'
@@ -56,32 +91,31 @@ const componentsStyle = () => ({
   reciveContainer: {
     background: 'linear-gradient(223.3deg, #A68EFD 20.71%, #F4ACF3 103.56%)'
   },
-  left: {
-    marginBottom: '1rem',
+  slippage: {
+    padding: '0 1.25rem',
+    border: '1px solid #A68EFD',
+    borderRadius: '0px 0px 0.5rem 0.5rem',
+    marginTop: '0.625rem',
+    backgroundColor: '#1F2023'
+  },
+  slippageTitlte: {
     display: 'flex',
-    justifyContent: 'space-between',
     alignItems: 'center'
   },
-  right: {
-    width: '12.5rem'
-  },
-  slippage: {
-    marginRight: '0.5rem'
-  },
-  select: {
-    width: '90%',
-    margin: '0 auto'
-  },
   estimateContainer: {
-    display: 'flex',
-    justifyContent: 'center',
-    flexDirection: 'column',
-    minHeight: '10rem'
+    padding: '2rem 1.25rem',
+    border: '1px solid #A68EFD',
+    marginTop: '0.625rem',
+    backgroundColor: '#1F2023'
+  },
+  estimateTitle: {
+    paddingBottom: '0.75rem'
   },
   estimateBalance: {
-    marginTop: '1rem',
-    color: '#A0A0A0',
-    fontSize: '18px'
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'flex-end'
   },
   tokenList: {
     padding: '0.5rem',
@@ -94,18 +128,17 @@ const componentsStyle = () => ({
     justifyContent: 'center',
     alignItems: 'center'
   },
-  bottom: {
-    padding: '0 10rem'
-  },
   buttonGroup: {
-    display: 'flex'
+    marginTop: '0.625rem'
+  },
+  okWrapper: {
+    paddingLeft: '1rem'
   },
   okButton: {
-    flex: 3
+    width: '100%'
   },
   cancelButton: {
-    flex: 1,
-    marginLeft: '1rem'
+    width: '100%'
   },
   addToken: {
     cursor: 'pointer'

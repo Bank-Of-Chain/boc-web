@@ -10,8 +10,7 @@ import Button from '@/components/CustomButtons/Button'
 import CustomTextField from '@/components/CustomTextField'
 import Loading from '@/components/LoadingComponent'
 import AddIcon from '@material-ui/icons/Add'
-import ReplayIcon from '@material-ui/icons/Replay'
-import ArrowRightAltIcon from '@material-ui/icons/ArrowRightAlt'
+import RefreshIcon from '@material-ui/icons/Refresh'
 import CachedIcon from '@material-ui/icons/Cached'
 
 // === Utils === //
@@ -121,6 +120,12 @@ const ApproveArray = props => {
       return !isFetching && !isReciveToken(i) && (swapInfoArray[i] instanceof Error || retryTimesArray[i] > MAX_RETRY_TIME)
     })
   }
+  // all tokens done
+  const allDone = () => {
+    return every(doneArray, (item, index) => {
+      return item || isReciveToken(index) || isEmptyValue(index)
+    })
+  }
   // check if the approve amount is enough
   const isApproveNotEnough = index => {
     const token = tokens[index]
@@ -170,6 +175,12 @@ const ApproveArray = props => {
     const balance = balances[index]
     const nextFromValueString = new BN(value).multipliedBy(decimal.toString())
     return !isReciveToken(index) && !isEmpty(value) && (nextFromValueString.gt(balance) || nextFromValueString.toFixed().indexOf('.') !== -1)
+  }
+  // some error input value
+  const someErrorValue = () => {
+    return some(tokens, (item, index) => {
+      return isErrorValue(index)
+    })
   }
   // Check if value is empty
   const isEmptyValue = (index, value) => {
@@ -674,10 +685,7 @@ const ApproveArray = props => {
   }
 
   const clickSwap = () => {
-    const allDone = every(doneArray, (item, index) => {
-      return item || isReciveToken(index)
-    })
-    if (allDone) {
+    if (allDone()) {
       setIsSwapping(true)
       realSwap()
     } else {
@@ -685,11 +693,15 @@ const ApproveArray = props => {
     }
   }
 
-  const changeSlippage = value => {
+  const resetState = () => {
     setSwapInfoArray(initValues)
     setDoneArray(initBoolValues)
     setRetryTimesArray(initNumberValues)
     setExcludeArray(initObjectValues)
+  }
+
+  const changeSlippage = value => {
+    resetState()
     onSlippageChange(value)
   }
 
@@ -706,14 +718,10 @@ const ApproveArray = props => {
     }
     estimateWithValue(values)
     return () => estimateWithValue.cancel()
-  }, [isReload, estimateWithValue])
+  }, [isReload, values, estimateWithValue])
 
   useEffect(() => {
-    const allDone = every(doneArray, (item, index) => {
-      return item || isReciveToken(index)
-    })
-    console.log('all done', allDone)
-    if (!allDone) {
+    if (!allDone()) {
       return
     }
     swap()
@@ -823,7 +831,6 @@ const ApproveArray = props => {
       }
       if (!isEqual(nextDoneArray, doneArray)) {
         console.log('nextDoneArray', nextDoneArray)
-        console.log('doneArray', doneArray)
         setDoneArray(nextDoneArray)
       }
       if (!isEqual(nextExcludeArray, excludeArray)) {
@@ -839,151 +846,132 @@ const ApproveArray = props => {
   }, [swapInfoArray, allowances])
 
   return (
-    <GridContainer>
-      <GridItem xs={12} sm={12} md={12}>
-        <h2>Swap to single token</h2>
-      </GridItem>
-      <GridItem xs={12} sm={12} md={12} style={{ padding: '1rem 0' }}>
-        <GridContainer>
-          <GridItem xs={12} sm={12} md={8} className={classes.tokenList}>
-            <GridContainer className={classes.approveContainer}>
-              {map(tokens, ({ address, amount }, index) => {
-                if (amount === '0') return
-                const value = values[index] || ''
-                const balance = balances[index] || '0'
-                const decimal = decimals[index] || BigNumber.from(0)
-                const allowance = allowances[index] || BigNumber.from(0)
-                const doneArrayItem = doneArray[index]
-                const swapInfoArrayItem = swapInfoArray[index]
-                const isFetching = !isReciveToken(index) && (isSwapInfoFetching[index] || isStaticCalling[index])
-                const isSwapSuccess =
-                  !isFetching &&
-                  !isReciveToken(index) &&
-                  ((!isApproveNotEnough(index) && doneArrayItem) || !isEmpty(swapInfoArrayItem)) &&
-                  retryTimesArray[index] <= MAX_RETRY_TIME
-                const isSwapError =
-                  !isFetching && !isReciveToken(index) && (swapInfoArrayItem instanceof Error || retryTimesArray[index] > MAX_RETRY_TIME)
-
-                return (
-                  <GridItem
-                    xs={12}
-                    sm={12}
-                    md={12}
-                    key={index}
-                    className={classNames({
-                      [classes.isSwappingContainer]: isFetching,
-                      [classes.successContainer]: isSwapSuccess,
-                      [classes.errorContainer]: isSwapError,
-                      [classes.reciveContainer]: isReciveToken(index)
-                    })}
-                  >
-                    <div className={classNames(classes.approveItemWrapper)}>
-                      <div className={classes.approveItem}>
-                        <CustomTextField
-                          classes={{ root: classes.input }}
-                          placeholder="approve amount"
-                          maxEndAdornment
-                          InputProps={{
-                            startAdornment: (
-                              <div className={classes.addToken} onClick={() => addToken(address)}>
-                                {address !== ETH_ADDRESS && <AddIcon fontSize="small" style={{ position: 'absolute', top: 28, left: 35 }} />}
-                                <img className={classes.tokenLogo} src={`./images/${address}.png`} />
-                              </div>
-                            )
-                          }}
-                          disabled={isReciveToken(index) || isSwapping || isFetching}
-                          error={isErrorValue(index)}
-                          value={value}
-                          onChange={event => handleInputChange(event.target.value, index)}
-                          onMaxClick={() => {
-                            if (isReciveToken(index)) return
-                            handleInputChange(toFixed(balance, decimal), index)
-                          }}
-                        />
+    <div className={classes.main}>
+      <div className={classes.title}>Swap to single token</div>
+      <div className={classes.approveContainer}>
+        <div>Swap tokens:</div>
+        {map(tokens, ({ address, amount }, index) => {
+          if (amount === '0' || isReciveToken(index)) return
+          const value = values[index] || ''
+          const balance = balances[index] || '0'
+          const decimal = decimals[index] || BigNumber.from(0)
+          const allowance = allowances[index] || BigNumber.from(0)
+          const doneArrayItem = doneArray[index]
+          const swapInfoArrayItem = swapInfoArray[index]
+          const isFetching = !isReciveToken(index) && (isSwapInfoFetching[index] || isStaticCalling[index])
+          const isSwapSuccess =
+            !isFetching &&
+            !isReciveToken(index) &&
+            ((!isApproveNotEnough(index) && doneArrayItem) || !isEmpty(swapInfoArrayItem)) &&
+            retryTimesArray[index] <= MAX_RETRY_TIME
+          const isSwapError = !isFetching && !isReciveToken(index) && (swapInfoArrayItem instanceof Error || retryTimesArray[index] > MAX_RETRY_TIME)
+          return (
+            <div key={address} className={classNames(classes.approveItemWrapper)}>
+              <div className={classes.approveItem}>
+                <CustomTextField
+                  classes={{ root: classes.input }}
+                  placeholder="approve amount"
+                  maxEndAdornment
+                  InputProps={{
+                    startAdornment: (
+                      <div className={classes.addToken} onClick={() => addToken(address)}>
+                        {address !== ETH_ADDRESS && <AddIcon fontSize="small" style={{ position: 'absolute', top: 28, left: 35 }} />}
+                        <img className={classes.tokenLogo} src={`./images/${address}.png`} />
                       </div>
-                      {!isReciveToken(index) && (
-                        <p className={classes.balanceText}>
-                          balance:{' '}
-                          <Loading loading={isReload} className={classes.reloadIcon}>
-                            <span title={toFixed(balances[index], decimal)}>{toFixed(balances[index], decimal, 6)}</span>
-                          </Loading>
-                          <span style={{ float: 'right' }} className={classNames({ [classes.errorText]: isSwapError })}>
-                            allowance:{' '}
-                            <Loading loading={isReload} className={classes.reloadIcon}>
-                              <span title={toFixed(allowance, decimal)}>{toFixed(allowance, decimal, 6)}</span>
-                            </Loading>
-                          </span>
-                        </p>
-                      )}
-                      {!isReciveToken(index) && isSwapSuccess && (
-                        <p className={classes.swapSuccessContainer}>
-                          Swap into {toFixed(swapInfoArrayItem?.bestSwapInfo?.toTokenAmount, receiveTokenDecimals)}
-                        </p>
-                      )}
-                      {!isReciveToken(index) && isSwapError && (
-                        <p className={classes.swapErrorContainer}>
-                          <span>Swap path fetch error</span>&nbsp;&nbsp;
-                          <ReplayIcon className={classes.reloadIcon} fontSize="small" onClick={() => reloadSwap(index)} />
-                        </p>
-                      )}
-                      {!isReciveToken(index) && isFetching && (
-                        <p className={classes.swappingContainer}>
-                          <Loading className={classes.reloadIcon} loading /> &nbsp;&nbsp;<span>Swap path fetching</span>
-                        </p>
-                      )}
-                    </div>
-                  </GridItem>
-                )
-              })}
-            </GridContainer>
-          </GridItem>
-          <GridItem xs={12} sm={12} md={1} className={classes.arrow}>
-            <ArrowRightAltIcon style={{ fontSize: 40 }} />
-          </GridItem>
-          <GridItem xs={12} sm={12} md={3} className={classes.estimateContainer}>
+                    )
+                  }}
+                  disabled={isReciveToken(index) || isSwapping || isFetching}
+                  error={isErrorValue(index)}
+                  value={value}
+                  onChange={event => handleInputChange(event.target.value, index)}
+                  onMaxClick={() => {
+                    if (isReciveToken(index)) return
+                    handleInputChange(toFixed(balance, decimal), index)
+                  }}
+                />
+              </div>
+              {!isReciveToken(index) && (
+                <p className={classes.balanceText}>
+                  Balance:{' '}
+                  <Loading loading={isReload} className={classes.reloadIcon}>
+                    <span title={toFixed(balances[index], decimal)}>{toFixed(balances[index], decimal, 6)}</span>
+                  </Loading>
+                  <span style={{ float: 'right' }} className={classNames({ [classes.errorText]: isSwapError })}>
+                    Allowance:{' '}
+                    <Loading loading={isReload} className={classes.reloadIcon}>
+                      <span title={toFixed(allowance, decimal)}>{toFixed(allowance, decimal, 6)}</span>
+                    </Loading>
+                  </span>
+                </p>
+              )}
+              {!isReciveToken(index) && isSwapSuccess && (
+                <p className={classes.swapSuccessContainer}>
+                  Swap into {toFixed(swapInfoArrayItem?.bestSwapInfo?.toTokenAmount, receiveTokenDecimals)}
+                </p>
+              )}
+              {!isReciveToken(index) && isSwapError && (
+                <div className={classes.swapErrorContainer} onClick={() => reloadSwap(index)}>
+                  <span>Swap path fetch error</span>&nbsp;&nbsp;
+                  <RefreshIcon className={classes.reloadIcon} fontSize="small" />
+                </div>
+              )}
+              {!isReciveToken(index) && isFetching && (
+                <p className={classes.swappingContainer}>
+                  <Loading className={classes.reloadIcon} loading /> &nbsp;&nbsp;<span>Swap path fetching</span>
+                </p>
+              )}
+            </div>
+          )
+        })}
+      </div>
+      <div className={classes.estimateContainer}>
+        <div className={classes.estimateTitle}>To receive estimated:</div>
+        <GridContainer>
+          <GridItem xs={4} sm={4} md={4}>
             <SimpleSelect
-              className={classes.select}
               options={selectOptions}
               disabled={selectOptions.length <= 1 || isSwapping || isSwapInfoFetchingSome || isStaticCallingSome}
               value={receiveToken}
               onChange={v => {
-                setSwapInfoArray(initValues)
-                setDoneArray(initBoolValues)
-                setRetryTimesArray(initNumberValues)
-                setExcludeArray(initObjectValues)
+                resetState()
                 setReceiveToken(v)
               }}
             />
-            <div className={classes.estimateBalance}>
-              <Loading loading={isSwapInfoFetchingSome} className={classes.reloadIcon}>
-                <div className={classes.textOverflow}>{toFixed(receiveAmount, receiveTokenDecimals, 6)}</div>
-                <div>{receiveTokenAmount !== '0' && `+(${toFixed(receiveTokenAmount, 1, 6)})`}</div>
-              </Loading>
-            </div>
+          </GridItem>
+          <GridItem xs={8} sm={8} md={8} className={classes.estimateBalance}>
+            <Loading loading={isSwapInfoFetchingSome} className={classes.reloadIcon}>
+              <div className={classes.textOverflow}>{toFixed(receiveAmount, receiveTokenDecimals, 6)} by Swapped</div>
+              <div>{receiveTokenAmount !== '0' && `+${toFixed(receiveTokenAmount, 1, 6)}`} by Withdrawed</div>
+            </Loading>
           </GridItem>
         </GridContainer>
-      </GridItem>
-      <GridItem xs={12} sm={12} md={12} className={classes.bottom}>
-        <h3 className={classes.left}>
-          <span>Slippage tolerance: </span>
-          <span className={classes.right}>
-            <CustomTextField
-              classes={{ root: classes.input }}
-              value={slippage}
-              placeholder="Allow slippage percent"
-              maxEndAdornment
-              disabled={isSwapping || isSwapInfoFetchingSome || isStaticCallingSome}
-              onMaxClick={() => changeSlippage('45')}
-              onChange={event => {
-                const { value } = event.target
-                changeSlippage(value)
-              }}
-              // error={!isValidSlippage() || (!isStaticCallLoading && isStaticCallError)}
-              error={!isValidSlippage()}
-            />
-          </span>
-        </h3>
-        <div className={classes.buttonGroup}>
+      </div>
+      <GridContainer className={classes.slippage}>
+        <GridItem xs={4} sm={4} md={4} className={classes.slippageTitlte}>
+          Slippage tolerance:
+        </GridItem>
+        <GridItem xs={8} sm={8} md={8}>
+          <CustomTextField
+            value={slippage}
+            placeholder="Allow slippage percent"
+            maxEndAdornment
+            disabled={isSwapping || isSwapInfoFetchingSome || isStaticCallingSome}
+            onMaxClick={() => changeSlippage('45')}
+            onChange={event => {
+              const { value } = event.target
+              changeSlippage(value)
+            }}
+            error={!isValidSlippage()}
+          />
+        </GridItem>
+      </GridContainer>
+      <GridContainer className={classes.buttonGroup}>
+        <GridItem xs={4} sm={4} md={4}>
+          <Button color="danger" onClick={handleClose} className={classes.cancelButton}>
+            Cancel
+          </Button>
+        </GridItem>
+        <GridItem xs={8} sm={8} md={8} className={classes.okWrapper}>
           <Button
             color="colorfull"
             onClick={clickSwap}
@@ -995,19 +983,17 @@ const ApproveArray = props => {
               isSwapError() ||
               someStaticCallError() ||
               !isValidSlippage() ||
-              receiveAmount.lte(0)
+              receiveAmount.lte(0) ||
+              someErrorValue()
             }
             className={classes.okButton}
             startIcon={isSwapping ? <CachedIcon className={classes.loading} /> : null}
           >
             Swap
           </Button>
-          <Button color="danger" onClick={handleClose} className={classes.cancelButton}>
-            Cancel
-          </Button>
-        </div>
-      </GridItem>
-    </GridContainer>
+        </GridItem>
+      </GridContainer>
+    </div>
   )
 }
 
