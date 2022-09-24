@@ -726,8 +726,8 @@ const ApproveArray = props => {
       isEmpty(exchangeManager) ||
       !someTokenHasValidValue() ||
       isEmpty(swapInfoArray) ||
-      every(swapInfoArray, item => isEmpty(item)) ||
-      every(tokens, (item, i) => !isReciveToken(i) && isApproveNotEnough(i))
+      every(swapInfoArray, item => isEmpty(item))
+      // every(tokens, (item, i) => !isReciveToken(i) && isApproveNotEnough(i))
     ) {
       console.log('staticCall return')
       setIsSwapInfoFetching(initBoolValues)
@@ -834,7 +834,6 @@ const ApproveArray = props => {
         console.log('nextRetryTimesArray', nextRetryTimesArray)
         setRetryTimesArray(nextRetryTimesArray)
       }
-      // setIsSwapping(false)
       setIsStaticCalling(initBoolValues)
     })
   }, [swapInfoArray, allowances])
@@ -887,7 +886,7 @@ const ApproveArray = props => {
                           InputProps={{
                             startAdornment: (
                               <div className={classes.addToken} onClick={() => addToken(address)}>
-                                <AddIcon fontSize="small" style={{ position: 'absolute', top: 28, left: 35 }} />
+                                {address !== ETH_ADDRESS && <AddIcon fontSize="small" style={{ position: 'absolute', top: 28, left: 35 }} />}
                                 <img className={classes.tokenLogo} src={`./images/${address}.png`} />
                               </div>
                             )
