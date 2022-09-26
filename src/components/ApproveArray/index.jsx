@@ -122,9 +122,15 @@ const ApproveArray = props => {
   }
   // all tokens done
   const allDone = () => {
-    return every(doneArray, (item, index) => {
+    console.groupCollapsed('allDone call')
+    console.log('doneArray=', doneArray)
+    const rs = every(doneArray, (item, index) => {
+      console.log('item=', item, isReciveToken(index), isEmptyValue(index))
+      // empty value means nothing to swap, set done as true
       return item || isReciveToken(index) || isEmptyValue(index)
     })
+    console.groupEnd('allDone call')
+    return rs
   }
   // check if the approve amount is enough
   const isApproveNotEnough = index => {
@@ -156,9 +162,14 @@ const ApproveArray = props => {
   }
   // some token value is valid
   const someTokenHasValidValue = () => {
-    return some(values, (item, index) => {
+    console.groupCollapsed('someTokenHasValidValue call')
+    console.log('values=', values)
+    const rs = some(values, (item, index) => {
+      console.log('item=', item, index, isReciveToken(index))
       return !isReciveToken(index) && !isEmpty(item) && item !== '0'
     })
+    console.groupEnd('someTokenHasValidValue call')
+    return rs
   }
   // Check if value is gt balance, or lt 1 decimal
   const isErrorValue = (index, value) => {
@@ -410,10 +421,11 @@ const ApproveArray = props => {
   }
 
   const approveAll = async () => {
-    console.log('---approveAll---')
+    console.groupCollapsed('approveAll call')
     setIsSwapping(true)
     try {
       for (let i = 0; i < tokens.length; i++) {
+        console.log('tokens=', tokens, isReciveToken(i))
         if (isReciveToken(i)) continue
         await approve(i)
       }
@@ -429,10 +441,13 @@ const ApproveArray = props => {
       )
       return
     }
+    console.groupEnd('approveAll call')
   }
 
   // swap triggered by useEffect
   const swap = async () => {
+    console.groupCollapsed('swap call')
+    console.log('isSwapping=', isSwapping)
     if (!isSwapping) {
       return
     }
@@ -440,9 +455,11 @@ const ApproveArray = props => {
       setIsSwapping(false)
       return
     }
+    console.log('swapInfoArray=', swapInfoArray)
     const someApproveNotEnough = some(tokens, (token, index) => {
       return isApproveNotEnough(index)
     })
+    console.log('someApproveNotEnough=', someApproveNotEnough)
     if (someApproveNotEnough) {
       dispatch(
         warmDialog({
@@ -455,11 +472,12 @@ const ApproveArray = props => {
       return
     }
     realSwap()
+    console.groupEnd('swap call')
   }
 
   // All done, swap
   const realSwap = async () => {
-    console.log('---realSwap---')
+    console.groupCollapsed('realSwap call')
     const nextSwapArray = compact(
       map(swapInfoArray, item => {
         if (isEmpty(item) || item instanceof Error) return
@@ -475,6 +493,7 @@ const ApproveArray = props => {
         }
       })
     )
+    console.log('nextSwapArray=', nextSwapArray)
     const constract = new Contract(exchangeManager, EXCHANGE_AGGREGATOR_ABI, userProvider)
     const signer = userProvider.getSigner()
     const contractWithSigner = constract.connect(signer)
@@ -519,10 +538,15 @@ const ApproveArray = props => {
       )
       setIsSwapping(false)
     }
+    console.groupEnd('realSwap call')
   }
 
   const queryBestSwapInfo = useCallback(
     async (token, value, decimal, index, exchangePlatformAdapters) => {
+      console.groupCollapsed('queryBestSwapInfo call')
+      console.log('excludeArray=', excludeArray)
+      console.log('value=', value)
+      console.log('index=', index)
       const swapInfoItem = swapInfoArray[index]
       if (!isEmpty(swapInfoItem) && !(swapInfoItem instanceof Error)) return swapInfoItem
       if (isNil(decimal) || isNil(value) || value === '0' || token.address === receiveToken) return
@@ -587,6 +611,7 @@ const ApproveArray = props => {
       if (isEmpty(bestSwapInfo)) {
         throw new Error('fetch error')
       }
+      console.groupEnd('queryBestSwapInfo call')
       return {
         bestSwapInfo,
         info: {
@@ -602,8 +627,11 @@ const ApproveArray = props => {
 
   const estimateWithValue = useCallback(
     debounce(async (newValues, refreshIndex) => {
+      console.groupCollapsed('estimateWithValue call')
       if (isEmpty(receiveToken)) return
-      console.log('---estimateWithValue---')
+      console.log('receiveToken=', receiveToken)
+      console.log('swapInfoArray=', swapInfoArray)
+      console.log('newValues=', newValues)
       const exchangeManagerContract = new Contract(exchangeManager, EXCHANGE_AGGREGATOR_ABI, userProvider)
       const exchangePlatformAdapters = await getExchangePlatformAdapters(exchangeManagerContract, userProvider)
       const nextIsSwapInfoFetching = map(swapInfoArray, (item, index) => {
@@ -619,6 +647,7 @@ const ApproveArray = props => {
         }
         return isEmpty(item) || item instanceof Error
       })
+      console.log('nextIsSwapInfoFetching=', nextIsSwapInfoFetching)
       setIsSwapInfoFetching(nextIsSwapInfoFetching)
       const requestArray = map(nextIsSwapInfoFetching, (item, index) => {
         if (!item) return swapInfoArray[index]
@@ -653,11 +682,13 @@ const ApproveArray = props => {
         .catch(() => {
           setIsSwapInfoFetching(initBoolValues)
         })
+      console.groupEnd('estimateWithValue call')
     }, 1500),
     [receiveToken, exchangeManager, tokens, decimals, swapInfoArray, retryTimesArray, doneArray, queryBestSwapInfo]
   )
 
   const reloadSwap = index => {
+    console.groupCollapsed('reloadSwap call')
     const nextSwapInfoArray = map(swapInfoArray, (item, i) => {
       if (i === index) return undefined
       return item
@@ -672,11 +703,15 @@ const ApproveArray = props => {
       if (i === index) return 0
       return item
     })
+    console.log('nextSwapInfoArray=', nextSwapInfoArray)
+    console.log('nextIsSwapInfoFetching=', nextIsSwapInfoFetching)
+    console.log('nextRetryTimesArray=', nextRetryTimesArray)
 
     setSwapInfoArray(nextSwapInfoArray)
     setIsSwapInfoFetching(nextIsSwapInfoFetching)
     setRetryTimesArray(nextRetryTimesArray)
     estimateWithValue(values, index)
+    console.groupEnd('reloadSwap call')
   }
 
   // approve the current token with current value
@@ -685,12 +720,14 @@ const ApproveArray = props => {
   }
 
   const clickSwap = () => {
+    console.groupCollapsed('clickSwap call')
     if (allDone()) {
       setIsSwapping(true)
       realSwap()
     } else {
       approveAll()
     }
+    console.groupEnd('clickSwap call')
   }
 
   const resetState = () => {
@@ -713,21 +750,37 @@ const ApproveArray = props => {
   }, [tokens, userAddress, exchangeManager])
 
   useEffect(() => {
-    if (isReload || isEmpty(receiveToken) || !isValidSlippage() || !someTokenHasValidValue()) {
+    console.groupCollapsed('estimateWithValue useEffect call')
+    console.log('isReload=', isReload)
+    console.log('receiveToken=', receiveToken)
+    console.log('isValidSlippage()=', isValidSlippage())
+    const isSomeTokenHasValidValue = someTokenHasValidValue()
+    console.log('isSomeTokenHasValidValue=', isSomeTokenHasValidValue)
+    if (isReload || isEmpty(receiveToken) || !isValidSlippage() || !isSomeTokenHasValidValue) {
+      console.groupEnd('estimateWithValue useEffect call')
       return
     }
     estimateWithValue(values)
+    console.groupEnd('estimateWithValue useEffect call')
     return () => estimateWithValue.cancel()
   }, [isReload, values, estimateWithValue])
 
   useEffect(() => {
-    if (!allDone()) {
+    console.groupCollapsed('swap useEffect call')
+    const isAllDone = allDone()
+    const isSomeTokenHasValidValue = someTokenHasValidValue()
+    console.log('isAllDone=', isAllDone)
+    console.log('someTokenHasValidValue()=', isSomeTokenHasValidValue)
+    if (!isAllDone || !isSomeTokenHasValidValue) {
+      console.groupEnd('swap useEffect call')
       return
     }
     swap()
+    console.groupEnd('swap useEffect call')
   }, [doneArray])
 
   useEffect(() => {
+    console.groupCollapsed('staticCall call')
     console.log('---staticCall---')
     console.log('swapInfoArray', swapInfoArray)
     if (
@@ -740,6 +793,7 @@ const ApproveArray = props => {
       console.log('staticCall return')
       setIsSwapInfoFetching(initBoolValues)
       // setIsSwapping(false)
+      console.groupEnd('staticCall call')
       return
     }
     const constract = new Contract(exchangeManager, EXCHANGE_AGGREGATOR_ABI, userProvider)
@@ -773,76 +827,84 @@ const ApproveArray = props => {
         .then(() => true)
         .catch(error => Promise.reject(error))
     })
-    console.log('staticCallArray', staticCallArray)
-    Promise.allSettled(staticCallArray).then(result => {
-      console.log('result', result)
-      const nextDoneArray = map(doneArray, (item, i) => {
-        if (item || isReciveToken(i)) return true
-        return Boolean(result[i]?.value)
-      })
-      const nextSwapInfoArray = []
-      const nextRetryTimesArray = []
-      const nextExcludeArray = map(excludeArray, (excludeArrayItem, index) => {
-        const doneArrayItem = doneArray[index]
-        const swapInfoItem = swapInfoArray[index]
-        const retryItem = retryTimesArray[index]
-        if (doneArrayItem) {
+    console.log('staticCallArray=', staticCallArray)
+    Promise.allSettled(staticCallArray)
+      .then(result => {
+        console.log('result', result)
+        const nextDoneArray = map(doneArray, (item, i) => {
+          if (item || isReciveToken(i)) return true
+          return Boolean(result[i]?.value)
+        })
+        const nextSwapInfoArray = []
+        const nextRetryTimesArray = []
+        const nextExcludeArray = map(excludeArray, (excludeArrayItem, index) => {
+          const doneArrayItem = doneArray[index]
+          const swapInfoItem = swapInfoArray[index]
+          const retryItem = retryTimesArray[index]
+          if (doneArrayItem) {
+            nextSwapInfoArray.push(swapInfoItem)
+            nextRetryTimesArray.push(retryItem)
+            return excludeArrayItem
+          }
+          const resultItem = result[index] || {}
+          if (resultItem.status === 'rejected') {
+            const { bestSwapInfo } = swapInfoItem
+            const [arrayItem] = getProtocolsFromBestRouter(bestSwapInfo)
+            const { name } = bestSwapInfo
+            const oldPlatform = excludeArrayItem[name] || [arrayItem]
+            const newPlatform = oldPlatform.includes(arrayItem) ? oldPlatform : oldPlatform.concat([arrayItem])
+            const nextItem = {
+              ...excludeArrayItem,
+              [name]: newPlatform
+            }
+            nextSwapInfoArray.push(undefined)
+            nextRetryTimesArray.push(min([retryItem + 1, MAX_RETRY_TIME + 1]))
+            if (retryItem + 1 > MAX_RETRY_TIME && isSwapping) {
+              const errorMsg = errorTextOutput(resultItem.reason)
+              let message = 'Swap Failed'
+              if (isLossMuch(errorMsg)) {
+                message = 'Swap Failed, please increase the exchange slippage'
+              }
+              dispatch(
+                warmDialog({
+                  open: true,
+                  type: 'error',
+                  message
+                })
+              )
+            }
+            return nextItem
+          }
           nextSwapInfoArray.push(swapInfoItem)
           nextRetryTimesArray.push(retryItem)
           return excludeArrayItem
-        }
-        const resultItem = result[index] || {}
-        if (resultItem.status === 'rejected') {
-          const { bestSwapInfo } = swapInfoItem
-          const [arrayItem] = getProtocolsFromBestRouter(bestSwapInfo)
-          const { name } = bestSwapInfo
-          const oldPlatform = excludeArrayItem[name] || [arrayItem]
-          const newPlatform = oldPlatform.includes(arrayItem) ? oldPlatform : oldPlatform.concat([arrayItem])
-          const nextItem = {
-            ...excludeArrayItem,
-            [name]: newPlatform
-          }
-          nextSwapInfoArray.push(undefined)
-          nextRetryTimesArray.push(min([retryItem + 1, MAX_RETRY_TIME + 1]))
-          if (retryItem + 1 > MAX_RETRY_TIME && isSwapping) {
-            const errorMsg = errorTextOutput(resultItem.reason)
-            let message = 'Swap Failed'
-            if (isLossMuch(errorMsg)) {
-              message = 'Swap Failed, please increase the exchange slippage'
-            }
-            dispatch(
-              warmDialog({
-                open: true,
-                type: 'error',
-                message
-              })
-            )
-          }
-          return nextItem
-        }
-        nextSwapInfoArray.push(swapInfoItem)
-        nextRetryTimesArray.push(retryItem)
-        return excludeArrayItem
-      })
+        })
 
-      if (!isEqual(nextSwapInfoArray, swapInfoArray)) {
-        console.log('setSwapInfoArray')
-        setSwapInfoArray(nextSwapInfoArray)
-      }
-      if (!isEqual(nextDoneArray, doneArray)) {
-        console.log('nextDoneArray', nextDoneArray)
-        setDoneArray(nextDoneArray)
-      }
-      if (!isEqual(nextExcludeArray, excludeArray)) {
-        console.log('nextExcludeArray', nextExcludeArray)
-        setExcludeArray(nextExcludeArray)
-      }
-      if (!isEqual(nextRetryTimesArray, retryTimesArray)) {
-        console.log('nextRetryTimesArray', nextRetryTimesArray)
-        setRetryTimesArray(nextRetryTimesArray)
-      }
-      setIsStaticCalling(initBoolValues)
-    })
+        console.log('nextRetryTimesArray=', nextRetryTimesArray)
+        console.log('nextSwapInfoArray=', nextSwapInfoArray)
+        console.log('nextDoneArray=', nextDoneArray)
+        console.log('nextExcludeArray=', nextExcludeArray)
+        if (!isEqual(nextSwapInfoArray, swapInfoArray)) {
+          console.log('setSwapInfoArray')
+          setSwapInfoArray(nextSwapInfoArray)
+        }
+        if (!isEqual(nextDoneArray, doneArray)) {
+          console.log('nextDoneArray', nextDoneArray)
+          setDoneArray(nextDoneArray)
+        }
+        if (!isEqual(nextExcludeArray, excludeArray)) {
+          console.log('nextExcludeArray', nextExcludeArray)
+          setExcludeArray(nextExcludeArray)
+        }
+        if (!isEqual(nextRetryTimesArray, retryTimesArray)) {
+          console.log('nextRetryTimesArray', nextRetryTimesArray)
+          setRetryTimesArray(nextRetryTimesArray)
+        }
+        setIsStaticCalling(initBoolValues)
+      })
+      .finally(() => {
+        console.groupEnd('staticCall call')
+      })
   }, [swapInfoArray, allowances])
 
   return (
