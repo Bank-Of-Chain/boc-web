@@ -20,6 +20,9 @@ const componentsStyle = () => ({
     justifyContent: 'center'
   },
   modalBody: {
+    textAlign: 'center'
+  },
+  swapBody: {
     width: '42rem',
     outline: 0
   },

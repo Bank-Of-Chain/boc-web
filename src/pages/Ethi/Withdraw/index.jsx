@@ -693,7 +693,7 @@ export default function Withdraw({
         aria-labelledby="simple-modal-title"
         aria-describedby="simple-modal-description"
       >
-        <div className={classes.modalBody}>
+        <div className={classes.swapBody}>
           {!isEmpty(address) && !isEmpty(exchangeManager) && (
             <ApproveArray
               isEthi
