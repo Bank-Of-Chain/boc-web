@@ -896,7 +896,7 @@ const ApproveArray = props => {
                   <Loading loading={isReload} className={classes.reloadIcon}>
                     <span title={toFixed(balances[index], decimal)}>{toFixed(balances[index], decimal, 6)}</span>
                   </Loading>
-                  <span style={{ float: 'right' }} className={classNames({ [classes.errorText]: isSwapError })}>
+                  <span style={{ float: 'right' }}>
                     Allowance:{' '}
                     <Loading loading={isReload} className={classes.reloadIcon}>
                       <span title={toFixed(allowance, decimal)}>{toFixed(allowance, decimal, 6)}</span>
@@ -940,8 +940,8 @@ const ApproveArray = props => {
           </GridItem>
           <GridItem xs={8} sm={8} md={8} className={classes.estimateBalance}>
             <Loading loading={isSwapInfoFetchingSome} className={classes.reloadIcon}>
-              <div className={classes.textOverflow}>{toFixed(receiveAmount, receiveTokenDecimals, 6)} by Swapped</div>
-              <div>{receiveTokenAmount !== '0' && `+${toFixed(receiveTokenAmount, 1, 6)}`} by Withdrawed</div>
+              <div className={classes.textOverflow}>{toFixed(receiveAmount, receiveTokenDecimals, 6)} from token swap</div>
+              <div>{receiveTokenAmount !== '0' && `+${toFixed(receiveTokenAmount, 1, 6)}`} from withdrawal</div>
             </Loading>
           </GridItem>
         </GridContainer>
