@@ -114,10 +114,7 @@ export default function LendingSection() {
       })
   }, [])
 
-  const renderJsx = (array = []) => {
-    const maxPercentItem = maxBy(array, 'percent')
-    // left 25% percent width for text render
-    const displayMaxValue = 1.25 * maxPercentItem?.percent
+  const renderJsx = (array = [], displayMaxValue) => {
     return (
       <GridContainer className={classes.block}>
         {map(
@@ -168,6 +165,10 @@ export default function LendingSection() {
       </GridContainer>
     )
   }
+
+  const maxPercentItem = maxBy([...data, ...ethiData], 'percent')
+  // left 25% percent width for text render
+  const displayMaxValue = 1.25 * maxPercentItem?.percent
   return (
     <div className={classes.section}>
       <h2 className={classes.title}>Crypto Lending Interest Rates</h2>
@@ -182,11 +183,11 @@ export default function LendingSection() {
             <GridContainer className={classes.block} style={{ margin: '0 auto' }} justify="center">
               <GridItem sm={12} xs={6} md={6} lg={6} style={{ backgroundColor: 'rgba(0,0,0,0.1)' }}>
                 <p className={classes.colorful}>USDi</p>
-                {renderJsx(data)}
+                {renderJsx(data, displayMaxValue)}
               </GridItem>
               <GridItem sm={12} xs={6} md={6} lg={6}>
                 <p className={classes.colorful}>ETHi</p>
-                {renderJsx(ethiData)}
+                {renderJsx(ethiData, displayMaxValue)}
               </GridItem>
             </GridContainer>
           )}
