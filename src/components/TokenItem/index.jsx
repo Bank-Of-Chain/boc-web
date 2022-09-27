@@ -4,15 +4,10 @@ import classNames from 'classnames'
 import { makeStyles } from '@material-ui/core/styles'
 
 // === Components === //
-import GridContainer from '@/components/Grid/GridContainer'
-import GridItem from '@/components/Grid/GridItem'
-import SimpleSelect from '@/components/SimpleSelect'
-import Button from '@/components/CustomButtons/Button'
 import CustomTextField from '@/components/CustomTextField'
 import Loading from '@/components/LoadingComponent'
 import AddIcon from '@material-ui/icons/Add'
 import RefreshIcon from '@material-ui/icons/Refresh'
-import CachedIcon from '@material-ui/icons/Cached'
 
 // === Utils === //
 import * as ethers from 'ethers'
@@ -91,11 +86,8 @@ const TokenItem = (props, ref) => {
   const [retryTimes, setRetryTimes] = useState(0)
   const [isApproving, setIsApproving] = useState(false)
 
-  const isApproveEnough = () => {}
-
   const isReciveToken = token.address === receiveToken
   const isFetching = !isReciveToken && (isSwapInfoFetching || isStaticCalling)
-  const isSwapSuccess = !isFetching && !isReciveToken && ((isApproveEnough() && done) || !isEmpty(swapInfo)) && retryTimes <= MAX_RETRY_TIME
 
   console.groupCollapsed(`init state:${address}`)
   console.log('isReload=', isReload)
@@ -136,11 +128,22 @@ const TokenItem = (props, ref) => {
     console.groupEnd(`resetState call:${address}`)
   }, [])
 
-  const staticCall = () => {
+  const isApproveEnough = useCallback(() => {
+    if (token.address === ETH_ADDRESS || isReciveToken) return true
+    try {
+      const nextValue = new BN(value).multipliedBy(decimals.toString())
+      return nextValue.lte(allowances)
+    } catch (error) {
+      return false
+    }
+  }, [token, value, allowances, decimals, isReciveToken])
+
+  const staticCall = useCallback(() => {
     console.groupCollapsed(`staticCall call:${address}`)
     console.log('swapInfo=', swapInfo)
-    if (isEmpty(exchangeManager) || isEmpty(swapInfo)) {
+    if (isEmpty(exchangeManager) || isEmpty(swapInfo) || !isApproveEnough()) {
       console.log('staticCall return')
+      console.groupEnd(`staticCall call:${address}`)
       setIsSwapInfoFetching(false)
       // setIsSwapping(false)
       return
@@ -163,13 +166,11 @@ const TokenItem = (props, ref) => {
       .swap(platform, method, encodeExchangeArgs, info)
       .then(() => {
         setDone(true)
-        setIsStaticCalling(false)
       })
       .finally(() => {
         setIsStaticCalling(false)
       })
-    console.groupEnd(`staticCall call:${address}`)
-  }
+  }, [exchangeManager, userProvider, retryTimes, swapInfo, done])
 
   const approve = async () => {
     // ETH no need approve
@@ -231,9 +232,16 @@ const TokenItem = (props, ref) => {
     console.groupEnd(`approve call:${address}`)
   }
 
-  // has some item fetch swap path failed
+  // item fetch swap path failed
   const isSwapError = () => {
-    return !isFetching && !isReciveToken && (swapInfo instanceof Error || retryTimes > MAX_RETRY_TIME)
+    console.groupCollapsed(`isSwapError call:${address}`)
+    console.log('isFetching=', isFetching)
+    console.log('isReciveToken=', isReciveToken)
+    console.log('swapInfo=', swapInfo)
+    console.log('retryTimes=', retryTimes)
+    const result = !isFetching && !isReciveToken && (swapInfo instanceof Error || retryTimes > MAX_RETRY_TIME)
+    console.groupEnd(`isSwapError call:${address}`)
+    return result
   }
 
   // Check if value is gt balance, or lt 1 decimal
@@ -248,11 +256,31 @@ const TokenItem = (props, ref) => {
     return !isReciveToken && !isEmpty(value) && (nextFromValueString.gt(balance) || nextFromValueString.toFixed().indexOf('.') !== -1)
   }
 
+  // Check if value is empty
+  const isEmptyValue = () => {
+    return !isReciveToken && (isEmpty(value) || value === '0')
+  }
+
   // check the slippage is valid or not
   const isValidSlippage = () => {
     if (isNaN(slippage)) return false
     if (slippage < 0.01 || slippage > 45) return false
     return true
+  }
+
+  const handleInputChange = value => {
+    const num = Number(value)
+    // Maybe num is NaN
+    if (!(num >= 0)) {
+      return
+    }
+    setSwapInfo(undefined)
+    setIsSwapInfoFetching(!isErrorValue() && !isEmptyValue())
+    setIsStaticCalling(false)
+    setRetryTimes(0)
+    setExclude({})
+    setDone(false)
+    setValue(value)
   }
 
   const reload = useCallback(async () => {
@@ -291,7 +319,6 @@ const TokenItem = (props, ref) => {
     console.log('exclude=', exclude)
     console.log('value=', value)
     console.log('swapInfo=', swapInfo)
-    if (!isEmpty(swapInfo) && !(swapInfo instanceof Error)) return swapInfo
     if (isNil(decimals) || isNil(value) || value === '0' || token.address === receiveToken) return
     const nextFromValueString = new BN(value).multipliedBy(decimals.toString()).toFixed()
     if (nextFromValueString.indexOf('.') !== -1) return
@@ -371,52 +398,54 @@ const TokenItem = (props, ref) => {
       if (isEmpty(receiveToken)) return
       console.groupCollapsed(`estimateWithValue call:${address}`)
       console.log('receiveToken=', receiveToken)
-      console.log('swapInfo=', swapInfo)
-      if (isEmpty(swapInfo)) {
-        setIsSwapInfoFetching(true)
-        await queryBestSwapInfo()
-          .then(nextSwapInfo => {
-            setSwapInfo(nextSwapInfo)
-          })
-          .finally(() => {
-            setIsSwapInfoFetching(false)
-          })
-      }
+      setIsSwapInfoFetching(true)
+      await queryBestSwapInfo()
+        .then(nextSwapInfo => {
+          setSwapInfo(nextSwapInfo)
+        })
+        .finally(() => {
+          setIsSwapInfoFetching(false)
+        })
       console.groupEnd(`estimateWithValue call:${address}`)
     }, 1500),
-    [exchangeManager, token, decimals, swapInfo, retryTimes, done, queryBestSwapInfo]
+    [exchangeManager, token, decimals, retryTimes, done, queryBestSwapInfo]
   )
   useEffect(resetState, [receiveToken])
 
   useEffect(() => {
     if (isEmpty(userAddress)) return
     reload()
-    // const timer = setInterval(reload, 10000)
+    // TODO: 待开启
+    // const timer = setInterval(reload, 3000)
     // return () => clearInterval(timer)
   }, [token, userAddress, exchangeManager, receiveToken])
+
+  const isSwapSuccess = !isFetching && !isReciveToken && ((isApproveEnough() && done) || !isEmpty(swapInfo)) && retryTimes <= MAX_RETRY_TIME
 
   useEffect(() => {
     console.groupCollapsed('estimateWithValue useEffect call')
     const isValidSlippageValue = isValidSlippage()
-    if (isReload || isEmpty(receiveToken) || !isValidSlippageValue || isEmpty(exchangePlatformAdapters)) {
+    if (isReload || isEmpty(receiveToken) || !isValidSlippageValue || isEmpty(exchangePlatformAdapters) || isSwapSuccess) {
       console.log('estimateWithValue useEffect call return')
       console.groupEnd('estimateWithValue useEffect call')
       return
     }
+    console.log('swapInfo=', swapInfo)
     console.log('isReload=', isReload)
     console.log('receiveToken=', receiveToken)
     console.log('isValidSlippage()=', isValidSlippageValue)
+    console.log('isSwapSuccess=', isSwapSuccess)
     estimateWithValue()
     console.groupEnd('estimateWithValue useEffect call')
     return () => estimateWithValue.cancel()
-  }, [isReload, value, estimateWithValue])
+  }, [isReload, value, swapInfo, estimateWithValue, isSwapSuccess])
 
   // useEffect(() => {
   //   resetState()
   //   estimateWithValue()
   // }, [resetState, estimateWithValue])
 
-  // useEffect(() => staticCall(), [staticCall])
+  useEffect(() => staticCall(), [staticCall])
 
   useImperativeHandle(ref, () => {
     return {
@@ -444,13 +473,13 @@ const TokenItem = (props, ref) => {
               </div>
             )
           }}
-          disabled={isReciveToken || isFetching}
+          disabled={isReciveToken}
           error={isErrorValue()}
           value={value}
-          onChange={event => setValue(event.target.value)}
+          onChange={event => handleInputChange(event.target.value)}
           onMaxClick={() => {
             if (isReciveToken) return
-            setValue(toFixed(balance, decimals))
+            handleInputChange(toFixed(balance, decimals))
           }}
         />
       </div>
