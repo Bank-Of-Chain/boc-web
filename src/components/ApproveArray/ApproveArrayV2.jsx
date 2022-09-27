@@ -100,15 +100,19 @@ const ApproveArrayV2 = props => {
 
   const swapInfoArray = map(refArray, item => get(item, 'current.swapInfo', {}))
   // TODO: some tokens is fetching swap path
-  const isSwapInfoFetchingSome = false
+  const isSwapInfoFetchingSome = some(refArray, item => {
+    return get(item, 'current.isSwapInfoFetching')
+  })
   // TODO: some tokens is staticCalling
-  const isStaticCallingSome = false
+  const isStaticCallingSome = some(refArray, item => {
+    return get(item, 'current.isStaticCalling')
+  })
   // some tokens approve enough but not done
   const someStaticCallError = () => {
     // TODO
     return false
   }
-  // all tokens done
+  // TODO: all tokens done
   const allDone = () => {
     console.groupCollapsed('allDone call')
     map(refArray, (item, index) => {
@@ -127,39 +131,18 @@ const ApproveArrayV2 = props => {
     if (slippage < 0.01 || slippage > 45) return false
     return true
   }
-  // has some item fetch swap path failed
+  // TODO: has some item fetch swap path failed
   const isSwapError = () => {
     return some(swapInfoArray, el => el instanceof Error)
   }
-  // some token value is valid
-  const someTokenHasValidValue = () => {
-    console.groupCollapsed('someTokenHasValidValue call')
-    console.log('values=', values)
-    const rs = some(values, (item, index) => {
-      console.log('item=', item, index, isReciveToken(index))
-      return !isReciveToken(index) && !isEmpty(item) && item !== '0'
-    })
-    console.groupEnd('someTokenHasValidValue call')
-    return rs
-  }
   // some error input value
-  const someErrorValue = () => {
-    return some(tokens, (item, index) => {
-      const isErrorValue = get(refArray[index], 'current.isErrorValue')
-      console.log('isErrorValue', isErrorValue)
-      if (typeof isErrorValue !== 'function') {
-        return false
-      }
-      return isErrorValue()
-    })
-  }
-  // Check if value is empty
-  const isEmptyValue = (index, value) => {
-    if (!value) {
-      value = values[index]
+  const someErrorValue = some(refArray, item => {
+    const isErrorValue = get(item, 'current.isErrorValue')
+    if (typeof isErrorValue !== 'function') {
+      return false
     }
-    return !isReciveToken(index) && (isEmpty(value) || value === '0')
-  }
+    return isErrorValue()
+  })
 
   const receiveAmount = reduce(
     refArray,
@@ -421,7 +404,7 @@ const ApproveArrayV2 = props => {
               someStaticCallError() ||
               !isValidSlippage() ||
               receiveAmount.lte(0) ||
-              someErrorValue()
+              someErrorValue
             }
             className={classes.okButton}
             startIcon={isSwapping ? <CachedIcon className={classes.loading} /> : null}
