@@ -392,7 +392,7 @@ const ApproveArrayV2 = props => {
         {map(tokens, (token, index) => {
           return (
             <TokenItem
-              // ref={refArray[index]}
+              ref={refArray[index]}
               key={token.address}
               userAddress={userAddress}
               userProvider={userProvider}
@@ -402,6 +402,7 @@ const ApproveArrayV2 = props => {
               exchangeManager={exchangeManager}
               exchangePlatformAdapters={exchangePlatformAdapters}
               receiveTokenDecimals={receiveTokenDecimals}
+              EXCHANGE_AGGREGATOR_ABI={EXCHANGE_AGGREGATOR_ABI}
             />
           )
         })}

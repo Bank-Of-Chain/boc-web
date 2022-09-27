@@ -1,5 +1,5 @@
 /* eslint-disable */
-import React, { useCallback, useState, useEffect } from 'react'
+import React, { useCallback, useState, useEffect, forwardRef, useImperativeHandle } from 'react'
 import classNames from 'classnames'
 import { makeStyles } from '@material-ui/core/styles'
 
@@ -63,9 +63,19 @@ const useStyles = makeStyles(styles)
 const MAX_RETRY_TIME = 2
 const BN_0 = BigNumber.from('0')
 
-const TokenItem = props => {
+const TokenItem = (props, ref) => {
   const classes = useStyles()
-  const { token = {}, userAddress, userProvider, slippage, receiveToken, exchangePlatformAdapters, exchangeManager, receiveTokenDecimals } = props
+  const {
+    token = {},
+    userAddress,
+    userProvider,
+    slippage,
+    receiveToken,
+    exchangePlatformAdapters,
+    exchangeManager,
+    receiveTokenDecimals,
+    EXCHANGE_AGGREGATOR_ABI
+  } = props
   const { address, amount } = token
 
   const [isReload, setIsReload] = useState(false)
@@ -75,7 +85,7 @@ const TokenItem = props => {
   const [allowances, setAllowances] = useState(BN_0)
   const [exclude, setExclude] = useState({})
   const [swapInfo, setSwapInfo] = useState(undefined)
-  const [isSwapInfoFetching, setSsSwapInfoFetching] = useState(false)
+  const [isSwapInfoFetching, setIsSwapInfoFetching] = useState(false)
   const [isStaticCalling, setIsStaticCalling] = useState(false)
   const [done, setDone] = useState(false)
   const [retryTimes, setRetryTimes] = useState(0)
@@ -118,7 +128,7 @@ const TokenItem = props => {
     setAllowances(BN_0)
     setExclude({})
     setSwapInfo(undefined)
-    setSsSwapInfoFetching(false)
+    setIsSwapInfoFetching(false)
     setIsStaticCalling(false)
     setDone(false)
     setRetryTimes(0)
@@ -128,18 +138,122 @@ const TokenItem = props => {
 
   const staticCall = () => {
     console.groupCollapsed(`staticCall call:${address}`)
+    console.log('swapInfo=', swapInfo)
+    if (isEmpty(exchangeManager) || isEmpty(swapInfo)) {
+      console.log('staticCall return')
+      setIsSwapInfoFetching(false)
+      // setIsSwapping(false)
+      return
+    }
+    const constract = new Contract(exchangeManager, EXCHANGE_AGGREGATOR_ABI, userProvider)
+    const signer = userProvider.getSigner()
+    const constractWithSigner = constract.connect(signer)
+
+    if (done || isEmpty(swapInfo) || swapInfo instanceof Error || isApproveEnough() || retryTimes > MAX_RETRY_TIME) {
+      console.groupEnd(`staticCall call:${address}`)
+      return
+    }
+    const {
+      bestSwapInfo: { platform, method, encodeExchangeArgs },
+      info
+    } = swapInfo
+
+    setIsStaticCalling(true)
+    constractWithSigner.callStatic
+      .swap(platform, method, encodeExchangeArgs, info)
+      .then(() => {
+        setDone(true)
+        setIsStaticCalling(false)
+      })
+      .finally(() => {
+        setIsStaticCalling(false)
+      })
     console.groupEnd(`staticCall call:${address}`)
   }
 
-  const approve = () => {
+  const approve = async () => {
+    // ETH no need approve
+    if (isEmpty(token) || isNil(value) || value === '0') return
     console.groupCollapsed(`approve call:${address}`)
+    const signer = userProvider.getSigner()
+    const contract = new Contract(address, IERC20_ABI, userProvider)
+    const contractWithUser = contract.connect(signer)
+    let nextValue
+    try {
+      nextValue = BigNumber.from(new BN(value).multipliedBy(decimals.toString()).toFixed())
+    } catch (e) {
+      return
+    }
+    const allowanceAmount = await contractWithUser.allowance(userAddress, exchangeManager)
+    // If deposit amount greater than allow amount, reset amount
+    if (nextValue.gt(allowanceAmount)) {
+      // If allowance equal 0, approve nextAmount, otherwise increaseAllowance
+      if (allowanceAmount.gt(0)) {
+        if (address === WETH_ADDRESS) {
+          // WETH don't support increaseAllowance
+          return contractWithUser
+            .approve(exchangeManager, 0)
+            .then(tx => tx.wait())
+            .then(() => {
+              reload()
+              return contractWithUser.approve(exchangeManager, nextValue).then(tx => tx.wait())
+            })
+        }
+        return contractWithUser
+          .increaseAllowance(exchangeManager, nextValue.sub(allowanceAmount))
+          .then(tx => tx.wait())
+          .catch(e => {
+            // cancel by user
+            if (e.code === 4001) {
+              return Promise.reject(e)
+            }
+            // If increase failed, approve 0 and approve nextAmounts
+            return contractWithUser
+              .approve(exchangeManager, 0)
+              .then(tx => tx.wait())
+              .then(() => {
+                reload()
+                return contractWithUser.approve(exchangeManager, nextValue).then(tx => tx.wait())
+              })
+          })
+      } else {
+        return contractWithUser
+          .approve(exchangeManager, nextValue)
+          .then(tx => tx.wait())
+          .catch(e => {
+            // cancel by user
+            if (e.code === 4001) {
+              return Promise.reject(e)
+            }
+          })
+      }
+    }
     console.groupEnd(`approve call:${address}`)
   }
 
+  // has some item fetch swap path failed
   const isSwapError = () => {
     return !isFetching && !isReciveToken && (swapInfo instanceof Error || retryTimes > MAX_RETRY_TIME)
   }
-  const isErrorValue = () => {}
+
+  // Check if value is gt balance, or lt 1 decimal
+  const isErrorValue = () => {
+    if (!value) {
+      return false
+    }
+    if (!decimals) {
+      return false
+    }
+    const nextFromValueString = new BN(value).multipliedBy(decimals.toString())
+    return !isReciveToken && !isEmpty(value) && (nextFromValueString.gt(balance) || nextFromValueString.toFixed().indexOf('.') !== -1)
+  }
+
+  // check the slippage is valid or not
+  const isValidSlippage = () => {
+    if (isNaN(slippage)) return false
+    if (slippage < 0.01 || slippage > 45) return false
+    return true
+  }
 
   const reload = useCallback(async () => {
     if (isEmpty(token) || isEmpty(exchangeManager) || isEmpty(userAddress)) {
@@ -176,8 +290,8 @@ const TokenItem = props => {
     console.groupCollapsed('queryBestSwapInfo call')
     console.log('exclude=', exclude)
     console.log('value=', value)
-    const swapInfoItem = swapInfo
-    if (!isEmpty(swapInfoItem) && !(swapInfoItem instanceof Error)) return swapInfoItem
+    console.log('swapInfo=', swapInfo)
+    if (!isEmpty(swapInfo) && !(swapInfo instanceof Error)) return swapInfo
     if (isNil(decimals) || isNil(value) || value === '0' || token.address === receiveToken) return
     const nextFromValueString = new BN(value).multipliedBy(decimals.toString()).toFixed()
     if (nextFromValueString.indexOf('.') !== -1) return
@@ -253,7 +367,23 @@ const TokenItem = props => {
   }, [token, value, decimals, exchangePlatformAdapters, exclude, receiveToken, slippage])
 
   const estimateWithValue = useCallback(
-    debounce(() => {}, 1500),
+    debounce(async () => {
+      if (isEmpty(receiveToken)) return
+      console.groupCollapsed(`estimateWithValue call:${address}`)
+      console.log('receiveToken=', receiveToken)
+      console.log('swapInfo=', swapInfo)
+      if (isEmpty(swapInfo)) {
+        setIsSwapInfoFetching(true)
+        await queryBestSwapInfo()
+          .then(nextSwapInfo => {
+            setSwapInfo(nextSwapInfo)
+          })
+          .finally(() => {
+            setIsSwapInfoFetching(false)
+          })
+      }
+      console.groupEnd(`estimateWithValue call:${address}`)
+    }, 1500),
     [exchangeManager, token, decimals, swapInfo, retryTimes, done, queryBestSwapInfo]
   )
   useEffect(resetState, [receiveToken])
@@ -265,12 +395,39 @@ const TokenItem = props => {
     // return () => clearInterval(timer)
   }, [token, userAddress, exchangeManager, receiveToken])
 
+  useEffect(() => {
+    console.groupCollapsed('estimateWithValue useEffect call')
+    const isValidSlippageValue = isValidSlippage()
+    if (isReload || isEmpty(receiveToken) || !isValidSlippageValue || isEmpty(exchangePlatformAdapters)) {
+      console.log('estimateWithValue useEffect call return')
+      console.groupEnd('estimateWithValue useEffect call')
+      return
+    }
+    console.log('isReload=', isReload)
+    console.log('receiveToken=', receiveToken)
+    console.log('isValidSlippage()=', isValidSlippageValue)
+    estimateWithValue()
+    console.groupEnd('estimateWithValue useEffect call')
+    return () => estimateWithValue.cancel()
+  }, [isReload, value, estimateWithValue])
+
   // useEffect(() => {
   //   resetState()
   //   estimateWithValue()
   // }, [resetState, estimateWithValue])
 
   // useEffect(() => staticCall(), [staticCall])
+
+  useImperativeHandle(ref, () => {
+    return {
+      approve,
+      value,
+      isApproving,
+      isFetching,
+      swapInfo,
+      done
+    }
+  })
 
   return (
     <div key={address} className={classNames(classes.approveItemWrapper)}>
@@ -329,4 +486,4 @@ const TokenItem = props => {
   )
 }
 
-export default TokenItem
+export default forwardRef(TokenItem)
