@@ -31,6 +31,7 @@ import reduce from 'lodash/reduce'
 import isEmpty from 'lodash/isEmpty'
 import debounce from 'lodash/debounce'
 import compact from 'lodash/compact'
+import find from 'lodash/find'
 import findIndex from 'lodash/findIndex'
 import isEqual from 'lodash/isEqual'
 import isNumber from 'lodash/isNumber'
@@ -63,9 +64,6 @@ import styles from './style'
 const { Contract, BigNumber } = ethers
 const useStyles = makeStyles(styles)
 
-const MAX_RETRY_TIME = 2
-const BN_0 = BigNumber.from('0')
-
 const ApproveArrayV2 = props => {
   const classes = useStyles()
   const dispatch = useDispatch()
@@ -76,16 +74,11 @@ const ApproveArrayV2 = props => {
     address: userAddress,
     exchangeManager,
     EXCHANGE_AGGREGATOR_ABI,
-    slippage,
     EXCHANGE_ADAPTER_ABI,
     handleClose,
     onSlippageChange
   } = props
 
-  const refArray = map(tokens, () => useRef(null))
-  console.groupCollapsed('init state')
-  console.log('refArray=', refArray)
-  console.groupEnd('init state')
   const initValues = map(tokens, () => undefined)
   const initBoolValues = map(tokens, () => false)
   const initNumberValues = map(tokens, () => 0)
@@ -93,65 +86,36 @@ const ApproveArrayV2 = props => {
     return {}
   })
 
+  const refArray = map(tokens, () => useRef(null))
   const [exchangePlatformAdapters, setExchangePlatformAdapters] = useState({})
   const [receiveToken, setReceiveToken] = useState(isEthi ? ETH_ADDRESS : USDT_ADDRESS)
+  const [slippage, setSlippage] = useState('0.3')
+
   // input values
   const [values, setValues] = useState([])
   const [balances, setBalances] = useState([])
   const [decimals, setDecimals] = useState([])
-  const [allowances, setAllowances] = useState([])
   const [isSwapping, setIsSwapping] = useState(false)
-  // excludeArray for 1inch/paraswap
-  const [excludeArray, setExcludeArray] = useState(initObjectValues)
-  // If it is reloading account base info
-  const [isReload, setIsReload] = useState(false)
-  // swap path info of tokens
-  const [swapInfoArray, setSwapInfoArray] = useState(initValues)
-  // If it is fetching swap path
-  const [isSwapInfoFetching, setIsSwapInfoFetching] = useState(initBoolValues)
-  // If it is staticCalling
-  const [isStaticCalling, setIsStaticCalling] = useState(initBoolValues)
-  // If finish fetching swap path and staticCalling
-  const [doneArray, setDoneArray] = useState(initBoolValues)
-  // Each token estimate retry times, less than 3
-  const [retryTimesArray, setRetryTimesArray] = useState(initNumberValues)
+  const [count, setCount] = useState(0)
 
-  // some tokens is fetching swap path
-  const isSwapInfoFetchingSome = some(isSwapInfoFetching)
-  // some tokens is staticCalling
-  const isStaticCallingSome = some(isStaticCalling)
+  const swapInfoArray = map(refArray, item => get(item, 'current.swapInfo', {}))
+  // TODO: some tokens is fetching swap path
+  const isSwapInfoFetchingSome = false
+  // TODO: some tokens is staticCalling
+  const isStaticCallingSome = false
   // some tokens approve enough but not done
   const someStaticCallError = () => {
-    return some(tokens, (item, i) => {
-      const isFetching = !isReciveToken(i) && (isSwapInfoFetching[i] || isStaticCalling[i])
-      return !isFetching && !isReciveToken(i) && (swapInfoArray[i] instanceof Error || retryTimesArray[i] > MAX_RETRY_TIME)
-    })
+    // TODO
+    return false
   }
   // all tokens done
   const allDone = () => {
     console.groupCollapsed('allDone call')
-    console.log('doneArray=', doneArray)
-    const rs = every(doneArray, (item, index) => {
-      console.log('item=', item, isReciveToken(index), isEmptyValue(index))
-      // empty value means nothing to swap, set done as true
-      return item || isReciveToken(index) || isEmptyValue(index)
+    map(refArray, (item, index) => {
+      console.log('item', item)
     })
     console.groupEnd('allDone call')
-    return rs
-  }
-  // check if the approve amount is enough
-  const isApproveNotEnough = index => {
-    const token = tokens[index]
-    const allowance = allowances[index]
-    const decimal = decimals[index]
-    const value = values[index]
-    if (isEmpty(allowance) || isEmpty(decimal) || isEmpty(value) || token.address === ETH_ADDRESS || isReciveToken(index)) return false
-    try {
-      const nextValue = new BN(value).multipliedBy(decimal.toString())
-      return nextValue.gt(allowance)
-    } catch (error) {
-      return false
-    }
+    return false
   }
   // check the receive token is current index?
   const isReciveToken = index => {
@@ -178,26 +142,15 @@ const ApproveArrayV2 = props => {
     console.groupEnd('someTokenHasValidValue call')
     return rs
   }
-  // Check if value is gt balance, or lt 1 decimal
-  const isErrorValue = (index, value) => {
-    if (!value) {
-      value = values[index]
-    }
-    if (!value) {
-      return false
-    }
-    const decimal = decimals[index]
-    if (!decimal) {
-      return false
-    }
-    const balance = balances[index]
-    const nextFromValueString = new BN(value).multipliedBy(decimal.toString())
-    return !isReciveToken(index) && !isEmpty(value) && (nextFromValueString.gt(balance) || nextFromValueString.toFixed().indexOf('.') !== -1)
-  }
   // some error input value
   const someErrorValue = () => {
     return some(tokens, (item, index) => {
-      return isErrorValue(index)
+      const isErrorValue = get(refArray[index], 'current.isErrorValue')
+      console.log('isErrorValue', isErrorValue)
+      if (typeof isErrorValue !== 'function') {
+        return false
+      }
+      return isErrorValue()
     })
   }
   // Check if value is empty
@@ -209,9 +162,9 @@ const ApproveArrayV2 = props => {
   }
 
   const receiveAmount = reduce(
-    swapInfoArray,
+    refArray,
     (rs, item) => {
-      return rs.add(BigNumber.from(get(item, 'bestSwapInfo.toTokenAmount', '0')))
+      return rs.add(BigNumber.from(get(item, 'current.swapInfo.bestSwapInfo.toTokenAmount', '0')))
     },
     BigNumber.from(0)
   )
@@ -225,7 +178,7 @@ const ApproveArrayV2 = props => {
       const contract = new ethers.Contract(address, EXCHANGE_ADAPTER_ABI, userProvider)
       exchangeAdapters[await contract.identifier()] = address
     }
-    setExchangePlatformAdapters(exchangeAdapters)
+    return exchangeAdapters
   }
 
   const selectOptions = isEthi
@@ -259,7 +212,7 @@ const ApproveArrayV2 = props => {
       ]
 
   const receiveTokenDecimals = selectOptions.find(el => el.value === receiveToken).decimal
-  const receiveTokenAmount = values[findIndex(tokens, el => el.address === receiveToken)] || '0'
+  const receiveTokenAmount = find(tokens, el => el.address === receiveToken)?.amount || '0'
 
   const approveAll = async () => {
     console.groupCollapsed('approveAll call')
@@ -268,7 +221,7 @@ const ApproveArrayV2 = props => {
       for (let i = 0; i < tokens.length; i++) {
         console.log('tokens=', tokens, isReciveToken(i))
         if (isReciveToken(i)) continue
-        await approve(i)
+        await refArray[i].current.approve()
       }
     } catch (error) {
       setIsSwapping(false)
@@ -286,8 +239,8 @@ const ApproveArrayV2 = props => {
   }
 
   // All done, swap
-  const realSwap = async () => {
-    console.groupCollapsed('realSwap call')
+  const batchSwap = async () => {
+    console.groupCollapsed('batchSwap call')
     const nextSwapArray = compact(
       map(swapInfoArray, item => {
         if (isEmpty(item) || item instanceof Error) return
@@ -348,7 +301,7 @@ const ApproveArrayV2 = props => {
       )
       setIsSwapping(false)
     }
-    console.groupEnd('realSwap call')
+    console.groupEnd('batchSwap call')
   }
 
   // approve the current token with current value
@@ -360,28 +313,33 @@ const ApproveArrayV2 = props => {
     console.groupCollapsed('clickSwap call')
     if (allDone()) {
       setIsSwapping(true)
-      realSwap()
+      batchSwap()
     } else {
       approveAll()
     }
     console.groupEnd('clickSwap call')
   }
 
-  const resetState = () => {
-    setSwapInfoArray(initValues)
-    setDoneArray(initBoolValues)
-    setRetryTimesArray(initNumberValues)
-    setExcludeArray(initObjectValues)
-  }
+  const resetState = () => {}
 
   const changeSlippage = value => {
-    resetState()
     onSlippageChange(value)
   }
 
+  const onChildStateChange = () => {
+    setCount(count + 1)
+  }
+
   useEffect(() => {
-    const exchangeManagerContract = new Contract(exchangeManager, EXCHANGE_AGGREGATOR_ABI, userProvider)
-    getExchangePlatformAdapters(exchangeManagerContract, userProvider)
+    async function getAdapters() {
+      console.groupCollapsed('getAdapters useEffect call')
+      const exchangeManagerContract = new Contract(exchangeManager, EXCHANGE_AGGREGATOR_ABI, userProvider)
+      const exchangeAdapters = await getExchangePlatformAdapters(exchangeManagerContract, userProvider)
+      console.log('exchangeAdapters', exchangeAdapters)
+      setExchangePlatformAdapters(exchangeAdapters)
+      console.groupEnd('getAdapters useEffect call')
+    }
+    getAdapters()
   }, [exchangeManager])
 
   return (
@@ -390,6 +348,7 @@ const ApproveArrayV2 = props => {
       <div className={classes.approveContainer}>
         <div>Swap tokens:</div>
         {map(tokens, (token, index) => {
+          if (token.amount === '0' || isReciveToken(index)) return
           return (
             <TokenItem
               ref={refArray[index]}
@@ -403,6 +362,7 @@ const ApproveArrayV2 = props => {
               exchangePlatformAdapters={exchangePlatformAdapters}
               receiveTokenDecimals={receiveTokenDecimals}
               EXCHANGE_AGGREGATOR_ABI={EXCHANGE_AGGREGATOR_ABI}
+              onChange={onChildStateChange}
             />
           )
         })}
@@ -415,16 +375,13 @@ const ApproveArrayV2 = props => {
               options={selectOptions}
               disabled={selectOptions.length <= 1 || isSwapping || isSwapInfoFetchingSome || isStaticCallingSome}
               value={receiveToken}
-              onChange={v => {
-                resetState()
-                setReceiveToken(v)
-              }}
+              onChange={v => setReceiveToken(v)}
             />
           </GridItem>
           <GridItem xs={8} sm={8} md={8} className={classes.estimateBalance}>
             <Loading loading={isSwapInfoFetchingSome} className={classes.reloadIcon}>
               <div className={classes.textOverflow}>{toFixed(receiveAmount, receiveTokenDecimals, 6)} from token swap</div>
-              <div>{receiveTokenAmount !== '0' && `+${toFixed(receiveTokenAmount, 1, 6)}`} from withdrawal</div>
+              {receiveTokenAmount !== '0' && <div>{`+${toFixed(receiveTokenAmount, receiveTokenDecimals, 6)}`} from withdrawal</div>}
             </Loading>
           </GridItem>
         </GridContainer>
@@ -439,11 +396,8 @@ const ApproveArrayV2 = props => {
             placeholder="Allow slippage percent"
             maxEndAdornment
             disabled={isSwapping || isSwapInfoFetchingSome || isStaticCallingSome}
-            onMaxClick={() => changeSlippage('45')}
-            onChange={event => {
-              const { value } = event.target
-              changeSlippage(value)
-            }}
+            onMaxClick={() => setSlippage('45')}
+            onChange={e => setSlippage(e.target.value)}
             error={!isValidSlippage()}
           />
         </GridItem>
