@@ -27,7 +27,7 @@ import Button from '@/components/CustomButtons/Button'
 import Popover from '@material-ui/core/Popover'
 import Loading from '@/components/LoadingComponent'
 import PopupState, { bindTrigger, bindPopover } from 'material-ui-popup-state'
-import ApproveArray from '@/components/ApproveArray'
+import ApproveArray from '@/components/ApproveArray/ApproveArrayV2'
 
 // === Constants === //
 import { warmDialog } from '@/reducers/meta-reducer'
@@ -93,12 +93,12 @@ export default function Withdraw({
     //   address: USDC_ADDRESS,
     //   amount: '10000000'
     // },
-    // {
-    //   address: DAI_ADDRESS,
-    //   amount: '10000000000000000000'
-    // }
+    {
+      address: DAI_ADDRESS,
+      amount: '10000000000000000000'
+    }
   ])
-  const [isShowZipModal, setIsShowZipModal] = useState(false)
+  const [isShowZipModal, setIsShowZipModal] = useState(true)
   const [pegTokenPrice, setPegTokenPrice] = useState(BN_18)
 
   const { value: redeemFeeBps } = useRedeemFeeBps({
