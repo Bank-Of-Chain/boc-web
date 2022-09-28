@@ -69,7 +69,8 @@ const TokenItem = (props, ref) => {
     exchangePlatformAdapters,
     exchangeManager,
     receiveTokenDecimals,
-    EXCHANGE_AGGREGATOR_ABI
+    EXCHANGE_AGGREGATOR_ABI,
+    onChange
   } = props
   const { address, amount } = token
 
@@ -399,16 +400,18 @@ const TokenItem = (props, ref) => {
       console.groupCollapsed(`estimateWithValue call:${address}`)
       console.log('receiveToken=', receiveToken)
       setIsSwapInfoFetching(true)
+      onChange()
       await queryBestSwapInfo()
         .then(nextSwapInfo => {
           setSwapInfo(nextSwapInfo)
         })
         .finally(() => {
           setIsSwapInfoFetching(false)
+          onChange()
         })
       console.groupEnd(`estimateWithValue call:${address}`)
     }, 1500),
-    [exchangeManager, token, decimals, retryTimes, done, queryBestSwapInfo]
+    [exchangeManager, token, decimals, retryTimes, done, queryBestSwapInfo, onChange]
   )
   useEffect(resetState, [receiveToken])
 
