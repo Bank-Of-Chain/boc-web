@@ -1,6 +1,7 @@
 /* eslint-disable */
 import React, { useEffect, useState, useCallback, useRef } from 'react'
 import { makeStyles } from '@material-ui/core/styles'
+import PropTypes from 'prop-types'
 import classNames from 'classnames'
 
 // === Components === //
@@ -415,6 +416,11 @@ const ApproveArrayV2 = props => {
       </GridContainer>
     </div>
   )
+}
+
+ApproveArrayV2.propTypes = {
+  address: PropTypes.string.isRequired,
+  exchangeManager: PropTypes.string.isRequired
 }
 
 export default ApproveArrayV2
