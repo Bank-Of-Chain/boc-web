@@ -413,7 +413,6 @@ const TokenItem = (props, ref) => {
   useEffect(resetState, [receiveToken])
 
   useEffect(() => {
-    if (isEmpty(userAddress)) return
     reload()
     // TODO: 待开启
     // const timer = setInterval(reload, 3000)
@@ -475,7 +474,7 @@ const TokenItem = (props, ref) => {
           }}
           disabled={isReciveToken}
           error={isErrorValue()}
-          value={value}
+          value={isReload ? '' : value}
           onChange={event => handleInputChange(event.target.value)}
           onMaxClick={() => {
             if (isReciveToken) return
