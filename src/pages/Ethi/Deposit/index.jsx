@@ -6,6 +6,7 @@ import isUndefined from 'lodash/isUndefined'
 import debounce from 'lodash/debounce'
 import isEmpty from 'lodash/isEmpty'
 import map from 'lodash/map'
+import isNumber from 'lodash/isNumber'
 import moment from 'moment'
 import { makeStyles } from '@material-ui/core/styles'
 
@@ -35,6 +36,7 @@ import noop from 'lodash/noop'
 import { getLastPossibleRebaseTime } from '@/helpers/time-util'
 import { isAd, isEs, isRp, isDistributing, errorTextOutput, isLessThanMinValue } from '@/helpers/error-handler'
 import { BN_18 } from '@/constants/big-number'
+import { MULTIPLE_OF_GAS, MAX_GAS_LIMIT } from '@/constants'
 
 import styles from './style'
 
@@ -150,8 +152,18 @@ export default function Deposit({
     const nVaultWithUser = vaultContract.connect(signer)
     let isSuccess = false
 
+    const extendObj = {}
+    // if gasLimit times not 1, need estimateGas
+    if (isNumber(MULTIPLE_OF_GAS) && MULTIPLE_OF_GAS !== 1) {
+      const gas = await nVaultWithUser.estimateGas.mint(ETH_ADDRESS, amount, 0, { from: address, value: amount })
+      const gasLimit = Math.ceil(gas * MULTIPLE_OF_GAS)
+      // gasLimit not exceed maximum
+      const maxGasLimit = gasLimit < MAX_GAS_LIMIT ? gasLimit : MAX_GAS_LIMIT
+      extendObj.gasLimit = maxGasLimit
+    }
     await nVaultWithUser
       .mint(ETH_ADDRESS, amount, 0, {
+        ...extendObj,
         from: address,
         value: amount
       })
