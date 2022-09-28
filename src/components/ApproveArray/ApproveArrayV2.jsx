@@ -80,33 +80,19 @@ const ApproveArrayV2 = props => {
     onSlippageChange
   } = props
 
-  const initValues = map(tokens, () => undefined)
-  const initBoolValues = map(tokens, () => false)
-  const initNumberValues = map(tokens, () => 0)
-  const initObjectValues = map(tokens, () => {
-    return {}
-  })
-
   const refArray = map(tokens, () => useRef(null))
   const [exchangePlatformAdapters, setExchangePlatformAdapters] = useState({})
   const [receiveToken, setReceiveToken] = useState(isEthi ? ETH_ADDRESS : USDT_ADDRESS)
   const [slippage, setSlippage] = useState('0.3')
-
-  // input values
-  const [values, setValues] = useState([])
-  const [balances, setBalances] = useState([])
-  const [decimals, setDecimals] = useState([])
   const [isSwapping, setIsSwapping] = useState(false)
   const [count, setCount] = useState(0)
 
   const swapInfoArray = map(refArray, item => get(item, 'current.swapInfo', {}))
   // TODO: some tokens is fetching swap path
-  const isSwapInfoFetchingSome = some(refArray, item => {
-    return get(item, 'current.isSwapInfoFetching')
-  })
-  // TODO: some tokens is staticCalling
-  const isStaticCallingSome = some(refArray, item => {
-    return get(item, 'current.isStaticCalling')
+  const someFetching = some(refArray, item => {
+    const fetching = get(item, 'current.isFetching')
+    console.log('fetching', fetching)
+    return fetching
   })
   // some tokens approve enough but not done
   const someStaticCallError = () => {
@@ -115,12 +101,9 @@ const ApproveArrayV2 = props => {
   }
   // TODO: all tokens done
   const allDone = () => {
-    console.groupCollapsed('allDone call')
-    map(refArray, (item, index) => {
-      console.log('item', item)
+    return every(refArray, item => {
+      return get(item, 'current.done')
     })
-    console.groupEnd('allDone call')
-    return false
   }
   // check the receive token is current index?
   const isReciveToken = index => {
@@ -288,11 +271,6 @@ const ApproveArrayV2 = props => {
     console.groupEnd('batchSwap call')
   }
 
-  // approve the current token with current value
-  const approve = index => {
-    return
-  }
-
   const clickSwap = () => {
     console.groupCollapsed('clickSwap call')
     if (allDone()) {
@@ -304,15 +282,14 @@ const ApproveArrayV2 = props => {
     console.groupEnd('clickSwap call')
   }
 
-  const resetState = () => {}
-
   const changeSlippage = value => {
     onSlippageChange(value)
   }
 
-  const onChildStateChange = () => {
+  // when child state change, reRender component
+  const onChildStateChange = useCallback(() => {
     setCount(count + 1)
-  }
+  }, [count])
 
   useEffect(() => {
     async function getAdapters() {
@@ -357,13 +334,13 @@ const ApproveArrayV2 = props => {
           <GridItem xs={4} sm={4} md={4}>
             <SimpleSelect
               options={selectOptions}
-              disabled={selectOptions.length <= 1 || isSwapping || isSwapInfoFetchingSome || isStaticCallingSome}
+              disabled={selectOptions.length <= 1 || isSwapping || someFetching}
               value={receiveToken}
               onChange={v => setReceiveToken(v)}
             />
           </GridItem>
           <GridItem xs={8} sm={8} md={8} className={classes.estimateBalance}>
-            <Loading loading={isSwapInfoFetchingSome} className={classes.reloadIcon}>
+            <Loading loading={someFetching} className={classes.reloadIcon}>
               <div className={classes.textOverflow}>{toFixed(receiveAmount, receiveTokenDecimals, 6)} from token swap</div>
               {receiveTokenAmount !== '0' && <div>{`+${toFixed(receiveTokenAmount, receiveTokenDecimals, 6)}`} from withdrawal</div>}
             </Loading>
@@ -379,7 +356,7 @@ const ApproveArrayV2 = props => {
             value={slippage}
             placeholder="Allow slippage percent"
             maxEndAdornment
-            disabled={isSwapping || isSwapInfoFetchingSome || isStaticCallingSome}
+            disabled={isSwapping || someFetching}
             onMaxClick={() => setSlippage('45')}
             onChange={e => setSlippage(e.target.value)}
             error={!isValidSlippage()}
@@ -398,8 +375,7 @@ const ApproveArrayV2 = props => {
             onClick={clickSwap}
             disabled={
               noNeedSwap ||
-              isSwapInfoFetchingSome ||
-              isStaticCallingSome ||
+              someFetching ||
               isSwapping ||
               isSwapError() ||
               someStaticCallError() ||
