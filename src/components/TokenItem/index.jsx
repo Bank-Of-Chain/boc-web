@@ -131,9 +131,13 @@ const TokenItem = (props, ref) => {
 
   const isApproveEnough = useCallback(() => {
     if (token.address === ETH_ADDRESS || isReciveToken) return true
+    console.groupCollapsed(`isApproveEnough call:${address}`)
     try {
       const nextValue = new BN(value).multipliedBy(decimals.toString())
-      return nextValue.lte(allowances)
+      const result = nextValue.lte(allowances)
+      console.log('result=', result)
+      console.groupEnd(`isApproveEnough call:${address}`)
+      return result
     } catch (error) {
       return false
     }
@@ -142,21 +146,10 @@ const TokenItem = (props, ref) => {
   const staticCall = useCallback(() => {
     console.groupCollapsed(`staticCall call:${address}`)
     console.log('swapInfo=', swapInfo)
-    if (isEmpty(exchangeManager) || isEmpty(swapInfo) || !isApproveEnough()) {
-      console.log('staticCall return')
-      console.groupEnd(`staticCall call:${address}`)
-      setIsSwapInfoFetching(false)
-      // setIsSwapping(false)
-      return
-    }
     const constract = new Contract(exchangeManager, EXCHANGE_AGGREGATOR_ABI, userProvider)
     const signer = userProvider.getSigner()
     const constractWithSigner = constract.connect(signer)
 
-    if (done || isEmpty(swapInfo) || swapInfo instanceof Error || isApproveEnough() || retryTimes > MAX_RETRY_TIME) {
-      console.groupEnd(`staticCall call:${address}`)
-      return
-    }
     const {
       bestSwapInfo: { platform, method, encodeExchangeArgs },
       info
@@ -171,7 +164,7 @@ const TokenItem = (props, ref) => {
       .finally(() => {
         setIsStaticCalling(false)
       })
-  }, [exchangeManager, userProvider, retryTimes, swapInfo, done])
+  }, [userProvider, swapInfo])
 
   const approve = async () => {
     // ETH no need approve
@@ -447,11 +440,24 @@ const TokenItem = (props, ref) => {
   //   estimateWithValue()
   // }, [resetState, estimateWithValue])
 
-  useEffect(() => staticCall(), [staticCall])
+  useEffect(() => {
+    console.groupCollapsed(`staticCall useEffect call:${address}`)
+    const isApproveEnoughValue = isApproveEnough()
+    if (done || isEmpty(swapInfo) || !isApproveEnoughValue || swapInfo instanceof Error || retryTimes > MAX_RETRY_TIME) {
+      console.log('done=', done)
+      console.log('swapInfo=', swapInfo)
+      console.log('retryTimes=', retryTimes)
+      console.log('isApproveEnoughValue=', isApproveEnoughValue)
+      console.groupEnd(`staticCall useEffect call:${address}`)
+      return
+    }
+    staticCall()
+    console.groupEnd(`staticCall useEffect call:${address}`)
+  }, [done, swapInfo, retryTimes, staticCall, isApproveEnough])
 
   useImperativeHandle(ref, () => {
     return {
-      approve,
+      approve: () => approve().then(reload),
       value,
       isApproving,
       isFetching,
