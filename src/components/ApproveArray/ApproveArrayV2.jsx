@@ -61,9 +61,11 @@ import { BN_6, BN_18 } from '@/constants/big-number'
 
 // === Styles === //
 import styles from './style'
+import { current } from '@reduxjs/toolkit'
 
 const { Contract, BigNumber } = ethers
 const useStyles = makeStyles(styles)
+let sycIndex = 0
 
 const ApproveArrayV2 = props => {
   const classes = useStyles()
@@ -184,24 +186,57 @@ const ApproveArrayV2 = props => {
   const approveAll = async () => {
     console.groupCollapsed('approveAll call')
     setIsSwapping(true)
-    try {
-      for (let i = 0; i < tokens.length; i++) {
-        console.log('tokens=', tokens, isReciveToken(i))
-        if (isReciveToken(i)) continue
-        await refArray[i].current.approve()
-      }
-    } catch (error) {
-      setIsSwapping(false)
-      const message = errorTextOutput(error)
-      dispatch(
-        warmDialog({
-          open: true,
-          type: 'error',
-          message
-        })
-      )
-      return
-    }
+    const promiseArray = map(refArray, refItem => {
+      return refItem.current.approve()
+    })
+    Promise.allSettled(promiseArray)
+      .then(respArray => {
+        console.log('respArray=', respArray)
+        if (some(refArray, i => !i.current.isApproveEnough())) {
+          setIsSwapping(false)
+          dispatch(
+            warmDialog({
+              open: true,
+              type: 'error',
+              message: 'Allowance not enough'
+            })
+          )
+        }
+      })
+      .catch(error => {
+        setIsSwapping(false)
+        const message = errorTextOutput(error)
+        dispatch(
+          warmDialog({
+            open: true,
+            type: 'error',
+            message
+          })
+        )
+      })
+      .finally(() => {
+        console.groupEnd('approveAll call')
+      })
+    // try {
+    //   for (let i = 0; i < tokens.length; i++) {
+    //     // for (const [i, token] of tokens) {
+    //     console.log('tokens=', tokens, isReciveToken(i))
+    //     if (isReciveToken(i)) continue
+    //     await refArray[i].current.approve().then(rs => console.error('rsrs=', rs))
+    //   }
+    // } catch (error) {
+    //   console.log('errorerror=', error)
+    //   setIsSwapping(false)
+    //   const message = errorTextOutput(error)
+    //   dispatch(
+    //     warmDialog({
+    //       open: true,
+    //       type: 'error',
+    //       message
+    //     })
+    //   )
+    //   return
+    // }
     console.groupEnd('approveAll call')
   }
 
@@ -291,14 +326,15 @@ const ApproveArrayV2 = props => {
     setCount(count + 1)
   }, [count])
 
+  console.log('allDone=', allDone())
   useEffect(() => {
     async function getAdapters() {
-      console.groupCollapsed('getAdapters useEffect call')
+      console.groupCollapsed(`getAdapters useEffect call:${++sycIndex}`)
       const exchangeManagerContract = new Contract(exchangeManager, EXCHANGE_AGGREGATOR_ABI, userProvider)
       const exchangeAdapters = await getExchangePlatformAdapters(exchangeManagerContract, userProvider)
       console.log('exchangeAdapters', exchangeAdapters)
       setExchangePlatformAdapters(exchangeAdapters)
-      console.groupEnd('getAdapters useEffect call')
+      console.groupEnd(`getAdapters useEffect call:${sycIndex}`)
     }
     getAdapters()
   }, [exchangeManager])
