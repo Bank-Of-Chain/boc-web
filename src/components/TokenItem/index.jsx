@@ -250,8 +250,7 @@ const TokenItem = (props, ref) => {
 
   // item fetch swap path failed
   const isSwapError = () => {
-    const result = !isFetching && !isReciveToken && (swapInfo instanceof Error || isOverMaxRetry)
-    return result
+    return !isFetching && !isReciveToken && (swapInfo instanceof Error || isOverMaxRetry)
   }
 
   // Check if value is gt balance, or lt 1 decimal
@@ -452,7 +451,8 @@ const TokenItem = (props, ref) => {
   const isGetSwapInfoSuccess = !isSwapInfoFetching && !isEmpty(swapInfo) && !isOverMaxRetry
 
   // staticcall success or getswapinfo success
-  const isSwapSuccess = !isFetching && !isReciveToken && ((isApproveEnough() && done) || !isEmpty(swapInfo)) && !isOverMaxRetry
+  const isSwapSuccess =
+    !isFetching && !isReciveToken && ((isApproveEnough() && done) || (!isApproveEnough() && !isEmpty(swapInfo))) && !isOverMaxRetry
 
   useEffect(() => {
     console.groupCollapsed(`estimateWithValue useEffect call:${address}:${++sycIndex}`)
@@ -460,7 +460,6 @@ const TokenItem = (props, ref) => {
     console.log('isReload=', isReload)
     console.log('swapInfo=', swapInfo)
     console.log('isValidSlippage()=', isValidSlippageValue)
-    console.log('isSwapSuccess=', isSwapSuccess)
     console.log('isGetSwapInfoSuccess=', isGetSwapInfoSuccess)
     if (
       isReload ||
@@ -523,14 +522,11 @@ const TokenItem = (props, ref) => {
               </div>
             )
           }}
-          disabled={isReciveToken}
+          disabled={isReciveToken || isFetching}
           error={isErrorValue()}
           value={value}
           onChange={event => handleInputChange(event.target.value)}
-          onMaxClick={() => {
-            if (isReciveToken) return
-            handleInputChange(toFixed(balance, decimals))
-          }}
+          onMaxClick={() => handleInputChange(toFixed(balance, decimals))}
         />
       </div>
       {!isReciveToken && (
