@@ -38,6 +38,8 @@ export const LEGACYS = config.legacys
 export const RPC_URL = config.rpc_url
 export const TWITTER_URL = config.twitter_url
 export const LINKEDIN_URL = config.linkedin_url
+export const YOUTUBE_URL = config.youtube_url
+export const MEDIUM_URL = config.medium_url
 
 export const POLYGON_HIDDEN = true
 

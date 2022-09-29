@@ -21,13 +21,15 @@ const configBase = {
   dai_address: '0x6B175474E89094C44Da98b954EedeAC495271d0F',
   chain_browser_url: '',
   abi_version: 'beta-v1.5',
-  community_url: 'https://discord.com/channels/910840145039749141',
-  telegram_url: 'https://t.me/joinchat/mSxXlD_it0QyNzll',
+  community_url: 'https://discord.gg/y9RZVaGFEf',
+  telegram_url: 'https://t.me/bankofchain',
   aboutus_url: 'https://piggyfinance.github.io/docs/zh/aboutus/',
   blog_url: 'https://piggyfinance.github.io/docs/zh/blog/',
   licenses_url: 'https://piggyfinance.github.io/docs/zh/licenses/',
   twitter_url: 'https://twitter.com/bankofchain_dao',
-  linkedin_url: 'https://www.linkedin.com/company/bank-of-chain',
+  linkedin_url: 'https://www.linkedin.com/company/bank-of-chain/',
+  youtube_url: 'https://www.youtube.com/channel/UCnACZpYuAksuSeoLniDXlOQ/featured',
+  medium_url: 'https://medium.com/bankofchain',
   document_url: 'https://docs.bankofchain.io',
   boc_server: 'https://service-pr02-sg.bankofchain.io',
   rpc_url: {
@@ -102,6 +104,7 @@ const config1 = {
         'Uniswap,Kyber,Bancor,Oasis,Compound,Fulcrum,0x,MakerDAO,Chai,Aave,Aave2,MultiPath,MegaPath,Curve,Curve3,Saddle,IronV2,BDai,idle,Weth,Beth,UniswapV2,Balancer,0xRFQt,SushiSwap,LINKSWAP,Synthetix,DefiSwap,Swerve,CoFiX,Shell,DODOV1,DODOV2,OnChainPricing,PancakeSwap,PancakeSwapV2,ApeSwap,Wbnb,streetswap,bakeryswap,julswap,vswap,vpegswap,beltfi,ellipsis,QuickSwap,COMETH,Wmatic,Nerve,Dfyn,UniswapV3,Smoothy,PantherSwap,OMM1,OneInchLP,CurveV2,mStable,WaultFinance,MDEX,ShibaSwap,CoinSwap,SakeSwap,JetSwap,Biswap,BProtocol'
     }
   },
+  multiple_of_gas: 1.2,
   max_gas_limit: 2700 * 10 ** 4,
   chain_id: 1,
   vaults: [

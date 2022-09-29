@@ -12,6 +12,7 @@ import every from 'lodash/every'
 import reduce from 'lodash/reduce'
 import debounce from 'lodash/debounce'
 import isEmpty from 'lodash/isEmpty'
+import isNumber from 'lodash/isNumber'
 import moment from 'moment'
 import { getLastPossibleRebaseTime } from '@/helpers/time-util'
 import { isAd, isEs, isRp, isDistributing, errorTextOutput, isLessThanMinValue } from '@/helpers/error-handler'
@@ -38,7 +39,7 @@ import { toFixed, formatBalance } from '@/helpers/number-format'
 import Loading from '@/components/LoadingComponent'
 
 // === Constants === //
-import { USDT_ADDRESS, USDC_ADDRESS, DAI_ADDRESS, IERC20_ABI } from '@/constants'
+import { USDT_ADDRESS, USDC_ADDRESS, DAI_ADDRESS, IERC20_ABI, MULTIPLE_OF_GAS, MAX_GAS_LIMIT } from '@/constants'
 import { BN_18 } from '@/constants/big-number'
 
 // === Styles === //
@@ -251,8 +252,17 @@ export default function Deposit({
     const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider)
     const nVaultWithUser = vaultContract.connect(signer)
     let isSuccess = false
+    const extendObj = {}
+    // if gasLimit times not 1, need estimateGas
+    if (isNumber(MULTIPLE_OF_GAS) && MULTIPLE_OF_GAS !== 1) {
+      const gas = await nVaultWithUser.estimateGas.mint(nextTokens, nextAmounts, 0)
+      const gasLimit = Math.ceil(gas * MULTIPLE_OF_GAS)
+      // gasLimit not exceed maximum
+      const maxGasLimit = gasLimit < MAX_GAS_LIMIT ? gasLimit : MAX_GAS_LIMIT
+      extendObj.gasLimit = maxGasLimit
+    }
     await nVaultWithUser
-      .mint(nextTokens, nextAmounts, 0)
+      .mint(nextTokens, nextAmounts, 0, extendObj)
       .then(tx => tx.wait())
       .then(() => {
         isSuccess = true
