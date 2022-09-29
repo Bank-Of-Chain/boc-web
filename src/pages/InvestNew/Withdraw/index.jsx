@@ -93,12 +93,12 @@ export default function Withdraw({
     //   address: USDC_ADDRESS,
     //   amount: '10000000'
     // },
-    {
-      address: DAI_ADDRESS,
-      amount: '10000000000000000000'
-    }
+    // {
+    //   address: DAI_ADDRESS,
+    //   amount: '10000000000000000000'
+    // }
   ])
-  const [isShowZipModal, setIsShowZipModal] = useState(true)
+  const [isShowZipModal, setIsShowZipModal] = useState(false)
   const [pegTokenPrice, setPegTokenPrice] = useState(BN_18)
 
   const { value: redeemFeeBps } = useRedeemFeeBps({
