@@ -91,6 +91,7 @@ const TokenItem = (props, ref) => {
 
   const isReciveToken = token.address === receiveToken
   const isFetching = !isReciveToken && (isSwapInfoFetching || isStaticCalling)
+  const isOverMaxRetry = retryTimes > MAX_RETRY_TIME
 
   console.groupCollapsed(`init state:${address}:${sycIndex++}`)
   console.log('isReload=', isReload)
@@ -249,7 +250,7 @@ const TokenItem = (props, ref) => {
 
   // item fetch swap path failed
   const isSwapError = () => {
-    const result = !isFetching && !isReciveToken && (swapInfo instanceof Error || retryTimes > MAX_RETRY_TIME)
+    const result = !isFetching && !isReciveToken && (swapInfo instanceof Error || isOverMaxRetry)
     return result
   }
 
@@ -421,10 +422,11 @@ const TokenItem = (props, ref) => {
         .catch(() => {
           console.log('estimateWithValue call error')
           console.groupEnd(`estimateWithValue call:${address}:${sycIndex}`)
-          if (retryTimes > MAX_RETRY_TIME) {
+          if (isOverMaxRetry) {
             setIsSwapInfoFetching(false)
           } else {
             setRetryTimes(retryTimes + 1)
+            setIsSwapInfoFetching(retryTimes + 1 <= MAX_RETRY_TIME)
           }
         })
         .finally(() => {
@@ -447,10 +449,10 @@ const TokenItem = (props, ref) => {
     // return () => clearInterval(timer)
   }, [reload])
 
-  const isGetSwapInfoSuccess = !isSwapInfoFetching && !isEmpty(swapInfo) && retryTimes <= MAX_RETRY_TIME
+  const isGetSwapInfoSuccess = !isSwapInfoFetching && !isEmpty(swapInfo) && !isOverMaxRetry
 
   // staticcall success or getswapinfo success
-  const isSwapSuccess = !isFetching && !isReciveToken && ((isApproveEnough() && done) || !isEmpty(swapInfo)) && retryTimes <= MAX_RETRY_TIME
+  const isSwapSuccess = !isFetching && !isReciveToken && ((isApproveEnough() && done) || !isEmpty(swapInfo)) && !isOverMaxRetry
 
   useEffect(() => {
     console.groupCollapsed(`estimateWithValue useEffect call:${address}:${++sycIndex}`)
@@ -465,7 +467,7 @@ const TokenItem = (props, ref) => {
       !isValidSlippageValue ||
       isEmpty(exchangePlatformAdapters) ||
       isGetSwapInfoSuccess ||
-      retryTimes > MAX_RETRY_TIME ||
+      isOverMaxRetry ||
       isErrorValue() ||
       isEmptyValue()
     ) {
@@ -484,7 +486,7 @@ const TokenItem = (props, ref) => {
     console.log('done=', done)
     console.log('retryTimes=', retryTimes)
     console.log('isApproveEnoughValue=', isApproveEnoughValue)
-    if (done || isEmpty(swapInfo) || !isApproveEnoughValue || isStaticCalling || retryTimes > MAX_RETRY_TIME) {
+    if (done || isEmpty(swapInfo) || !isApproveEnoughValue || isStaticCalling || isOverMaxRetry) {
       console.log('staticCall useEffect return')
       console.groupEnd(`staticCall useEffect call:${address}:${sycIndex}`)
       return
