@@ -8,7 +8,7 @@ export const toFixed = (value, precision = 1, ...args) => {
   if (isNull(precision)) return value.toString()
   const precisionBN = BN(precision.toString())
   if (isEmpty(value) || precisionBN.isZero()) {
-    return 0
+    return '0'
   }
   const results = BN(value.toString()).div(precisionBN)
   if (results.isInteger()) {
