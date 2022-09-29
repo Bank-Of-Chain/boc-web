@@ -66,6 +66,7 @@ import { current } from '@reduxjs/toolkit'
 const { Contract, BigNumber } = ethers
 const useStyles = makeStyles(styles)
 let sycIndex = 0
+const MAX_RETRY_TIME = 2
 
 const ApproveArrayV2 = props => {
   const classes = useStyles()
@@ -88,23 +89,26 @@ const ApproveArrayV2 = props => {
   const [slippage, setSlippage] = useState('0.3')
   const [isSwapping, setIsSwapping] = useState(false)
   const [count, setCount] = useState(0)
+  const [callStateArray, setCallStateArray] = useState(map(tokens, () => undefined))
 
   const swapInfoArray = map(refArray, item => get(item, 'current.swapInfo', {}))
   // TODO: some tokens is fetching swap path
   const someFetching = some(refArray, item => {
-    const fetching = get(item, 'current.isFetching')
-    console.log('fetching', fetching)
-    return fetching
+    return get(item, 'current.isFetching')
   })
   // some tokens approve enough but not done
-  const someStaticCallError = () => {
-    // TODO
-    return false
+  const someSwapError = () => {
+    return some(refArray, item => {
+      if (!item.current?.retryTimes) {
+        return false
+      }
+      return item.current.retryTimes > MAX_RETRY_TIME
+    })
   }
   // TODO: all tokens done
   const allDone = () => {
     return every(refArray, item => {
-      return get(item, 'current.done')
+      return get(item, 'current.done', true)
     })
   }
   // check the receive token is current index?
@@ -116,10 +120,6 @@ const ApproveArrayV2 = props => {
     if (isNaN(slippage)) return false
     if (slippage < 0.01 || slippage > 45) return false
     return true
-  }
-  // TODO: has some item fetch swap path failed
-  const isSwapError = () => {
-    return some(swapInfoArray, el => el instanceof Error)
   }
   // some error input value
   const someErrorValue = some(refArray, item => {
@@ -133,7 +133,10 @@ const ApproveArrayV2 = props => {
   const receiveAmount = reduce(
     refArray,
     (rs, item) => {
-      return rs.add(BigNumber.from(get(item, 'current.swapInfo.bestSwapInfo.toTokenAmount', '0')))
+      if (!item.current?.swapInfo?.bestSwapInfo?.toTokenAmount) {
+        return rs
+      }
+      return rs.add(BigNumber.from(item.current.swapInfo.bestSwapInfo.toTokenAmount))
     },
     BigNumber.from(0)
   )
@@ -185,58 +188,64 @@ const ApproveArrayV2 = props => {
 
   const approveAll = async () => {
     console.groupCollapsed('approveAll call')
-    setIsSwapping(true)
-    const promiseArray = map(refArray, refItem => {
-      return refItem.current.approve()
-    })
-    Promise.allSettled(promiseArray)
-      .then(respArray => {
-        console.log('respArray=', respArray)
-        if (some(refArray, i => !i.current.isApproveEnough())) {
-          setIsSwapping(false)
-          dispatch(
-            warmDialog({
-              open: true,
-              type: 'error',
-              message: 'Allowance not enough'
-            })
-          )
-        }
-      })
-      .catch(error => {
-        setIsSwapping(false)
-        const message = errorTextOutput(error)
-        dispatch(
-          warmDialog({
-            open: true,
-            type: 'error',
-            message
-          })
-        )
-      })
-      .finally(() => {
-        console.groupEnd('approveAll call')
-      })
-    // try {
-    //   for (let i = 0; i < tokens.length; i++) {
-    //     // for (const [i, token] of tokens) {
-    //     console.log('tokens=', tokens, isReciveToken(i))
-    //     if (isReciveToken(i)) continue
-    //     await refArray[i].current.approve().then(rs => console.error('rsrs=', rs))
-    //   }
-    // } catch (error) {
-    //   console.log('errorerror=', error)
-    //   setIsSwapping(false)
-    //   const message = errorTextOutput(error)
-    //   dispatch(
-    //     warmDialog({
-    //       open: true,
-    //       type: 'error',
-    //       message
+    // const promiseArray = map(refArray, refItem => {
+    //   return refItem.current?.approve()
+    // })
+    // Promise.all(promiseArray)
+    //   .then(() => {
+    //     const someApproveNotEnough = some(refArray, item => {
+    //       if (!item.current) {
+    //         return false
+    //       }
+    //       return !item.current.isApproveEnough()
     //     })
-    //   )
-    //   return
-    // }
+    //     if (someApproveNotEnough) {
+    //       setIsSwapping(false)
+    //       dispatch(
+    //         warmDialog({
+    //           open: true,
+    //           type: 'error',
+    //           message: 'Allowance not enough'
+    //         })
+    //       )
+    //     }
+    //   })
+    //   .catch(error => {
+    //     setIsSwapping(false)
+    //     const message = errorTextOutput(error)
+    //     dispatch(
+    //       warmDialog({
+    //         open: true,
+    //         type: 'error',
+    //         message
+    //       })
+    //     )
+    //   })
+    //   .finally(() => {
+    //     console.groupEnd('approveAll call')
+    //   })
+    try {
+      for (let i = 0; i < tokens.length; i++) {
+        console.log(`tokens[${i}] isReciveToken=`, isReciveToken(i))
+        if (isReciveToken(i)) continue
+        const enough = refArray[i].current.isApproveEnough()
+        console.log(`refArray[${i}] isApproveEnough=`, enough)
+        if (enough) continue
+        await refArray[i].current.approve()
+      }
+    } catch (error) {
+      setIsSwapping(false)
+      const message = errorTextOutput(error)
+      dispatch(
+        warmDialog({
+          open: true,
+          type: 'error',
+          message
+        })
+      )
+      console.groupEnd('approveAll call')
+      return
+    }
     console.groupEnd('approveAll call')
   }
 
@@ -308,8 +317,8 @@ const ApproveArrayV2 = props => {
 
   const clickSwap = () => {
     console.groupCollapsed('clickSwap call')
+    setIsSwapping(true)
     if (allDone()) {
-      setIsSwapping(true)
       batchSwap()
     } else {
       approveAll()
@@ -323,10 +332,52 @@ const ApproveArrayV2 = props => {
 
   // when child state change, reRender component
   const onChildStateChange = useCallback(() => {
-    setCount(count + 1)
+    // setCount(count + 1)
+    setCount(Math.random())
   }, [count])
 
-  console.log('allDone=', allDone())
+  const onStaticCallFinish = (index, bool) => {
+    console.groupCollapsed(`onStaticCallFinish call ${index} ${bool}`)
+    const nextArray = map(callStateArray, (item, i) => {
+      if (isReciveToken(i)) {
+        return true
+      }
+      if (i === index) {
+        return bool
+      }
+      return item
+    })
+    setCallStateArray(nextArray)
+    console.log('nextArray', nextArray)
+    if (!isSwapping) {
+      console.log('isSwapping', isSwapping)
+      console.groupEnd(`onStaticCallFinish call ${index} ${bool}`)
+      return
+    }
+    const allFinish = every(nextArray, item => item !== undefined)
+    if (!allFinish) {
+      console.log('allFinish', allFinish)
+      console.groupEnd(`onStaticCallFinish call ${index} ${bool}`)
+      return
+    }
+    const someError = some(nextArray, item => item === false)
+    if (someError) {
+      console.log('someError', someError)
+      setIsSwapping(false)
+      dispatch(
+        warmDialog({
+          open: true,
+          type: 'error',
+          message: 'Swap Failed'
+        })
+      )
+      console.groupEnd(`onStaticCallFinish call ${index} ${bool}`)
+      return
+    }
+    console.groupEnd(`onStaticCallFinish call ${index} ${bool}`)
+    batchSwap()
+  }
+
   useEffect(() => {
     async function getAdapters() {
       console.groupCollapsed(`getAdapters useEffect call:${++sycIndex}`)
@@ -360,6 +411,9 @@ const ApproveArrayV2 = props => {
               receiveTokenDecimals={receiveTokenDecimals}
               EXCHANGE_AGGREGATOR_ABI={EXCHANGE_AGGREGATOR_ABI}
               onChange={onChildStateChange}
+              onStaticCallFinish={bool => {
+                onStaticCallFinish(index, bool)
+              }}
             />
           )
         })}
@@ -409,16 +463,7 @@ const ApproveArrayV2 = props => {
           <Button
             color="colorfull"
             onClick={clickSwap}
-            disabled={
-              noNeedSwap ||
-              someFetching ||
-              isSwapping ||
-              isSwapError() ||
-              someStaticCallError() ||
-              !isValidSlippage() ||
-              receiveAmount.lte(0) ||
-              someErrorValue
-            }
+            disabled={noNeedSwap || someFetching || isSwapping || someSwapError() || !isValidSlippage() || receiveAmount.lte(0) || someErrorValue}
             className={classes.okButton}
             startIcon={isSwapping ? <CachedIcon className={classes.loading} /> : null}
           >

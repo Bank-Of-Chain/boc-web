@@ -71,7 +71,8 @@ const TokenItem = (props, ref) => {
     exchangeManager,
     receiveTokenDecimals,
     EXCHANGE_AGGREGATOR_ABI,
-    onChange
+    onChange,
+    onStaticCallFinish
   } = props
   const { address, amount } = token
 
@@ -149,13 +150,19 @@ const TokenItem = (props, ref) => {
       } = swapInfo
 
       setIsStaticCalling(true)
+      setIsSwapInfoFetching(false)
       onChange()
       constractWithSigner.callStatic
         .swap(platform, method, encodeExchangeArgs, info)
         .then(() => {
+          console.log('staticCall success')
+          console.groupEnd(`staticCall call:${address}:${sycIndex}`)
           setDone(true)
+          onStaticCallFinish(true)
         })
-        .catch(() => {
+        .catch(error => {
+          console.log('staticCall error', error)
+          console.groupEnd(`staticCall call:${address}:${sycIndex}`)
           const { bestSwapInfo } = swapInfo
           const [arrayItem] = getProtocolsFromBestRouter(bestSwapInfo)
           const { name } = bestSwapInfo
@@ -169,6 +176,8 @@ const TokenItem = (props, ref) => {
           setSwapInfo(undefined)
           setRetryTimes(retryTimes + 1)
           setDone(false)
+          setIsSwapInfoFetching(retryTimes + 1 <= MAX_RETRY_TIME)
+          onStaticCallFinish(false)
         })
         .finally(() => {
           setIsStaticCalling(false)
@@ -258,7 +267,7 @@ const TokenItem = (props, ref) => {
 
   // Check if value is empty
   const isEmptyValue = () => {
-    return !isReciveToken && (isEmpty(value) || value === '0')
+    return !isReciveToken && (isEmpty(value) || Number(value) === 0)
   }
 
   // check the slippage is valid or not
@@ -268,7 +277,7 @@ const TokenItem = (props, ref) => {
     return true
   }
 
-  const handleInputChange = useCallback(value => {
+  const handleInputChange = value => {
     const num = Number(value)
     if (isNaN(num) || num < 0) {
       return
@@ -279,7 +288,10 @@ const TokenItem = (props, ref) => {
     setExclude({})
     setDone(false)
     setValue(value)
-  })
+    setTimeout(() => {
+      onChange()
+    })
+  }
 
   const reload = useCallback(async () => {
     const { address } = token
@@ -303,7 +315,8 @@ const TokenItem = (props, ref) => {
     setSwapInfo(undefined)
     setIsSwapInfoFetching(true)
     setRetryTimes(0)
-    console.groupCollapsed(`reloadSwap call:${address}:${sycIndex}`)
+    onStaticCallFinish(undefined)
+    console.groupEnd(`reloadSwap call:${address}:${sycIndex}`)
   }
 
   const queryBestSwapInfo = useCallback(async () => {
@@ -398,12 +411,16 @@ const TokenItem = (props, ref) => {
       onChange()
       await queryBestSwapInfo()
         .then(nextSwapInfo => {
+          console.log('estimateWithValue call success')
+          console.groupEnd(`estimateWithValue call:${address}:${sycIndex}`)
           setSwapInfo(nextSwapInfo)
           if (!isApproveEnough()) {
             setIsSwapInfoFetching(false)
           }
         })
         .catch(() => {
+          console.log('estimateWithValue call error')
+          console.groupEnd(`estimateWithValue call:${address}:${sycIndex}`)
           if (retryTimes > MAX_RETRY_TIME) {
             setIsSwapInfoFetching(false)
           } else {
@@ -413,10 +430,10 @@ const TokenItem = (props, ref) => {
         .finally(() => {
           onChange()
         })
-      console.groupEnd(`estimateWithValue call:${address}:${sycIndex}`)
     }, 500),
     [exchangeManager, token, decimals, retryTimes, queryBestSwapInfo, onChange]
   )
+
   useEffect(resetState, [receiveToken, slippage])
 
   useEffect(() => {
@@ -436,40 +453,45 @@ const TokenItem = (props, ref) => {
   const isSwapSuccess = !isFetching && !isReciveToken && ((isApproveEnough() && done) || !isEmpty(swapInfo)) && retryTimes <= MAX_RETRY_TIME
 
   useEffect(() => {
-    const isValidSlippageValue = isValidSlippage()
-    if (
-      isReload ||
-      isSwapInfoFetching ||
-      !isValidSlippageValue ||
-      isEmpty(exchangePlatformAdapters) ||
-      isGetSwapInfoSuccess ||
-      retryTimes > MAX_RETRY_TIME
-    ) {
-      return
-    }
     console.groupCollapsed(`estimateWithValue useEffect call:${address}:${++sycIndex}`)
+    const isValidSlippageValue = isValidSlippage()
     console.log('isReload=', isReload)
     console.log('swapInfo=', swapInfo)
     console.log('isValidSlippage()=', isValidSlippageValue)
     console.log('isSwapSuccess=', isSwapSuccess)
     console.log('isGetSwapInfoSuccess=', isGetSwapInfoSuccess)
-    estimateWithValue()
-    console.groupEnd(`estimateWithValue useEffect call:${address}:${sycIndex}`)
-    return () => estimateWithValue.cancel()
-  }, [isReload, value, swapInfo, estimateWithValue, retryTimes])
-
-  useEffect(() => {
-    const isApproveEnoughValue = isApproveEnough()
-    if (done || isEmpty(swapInfo) || !isApproveEnoughValue || isStaticCalling || retryTimes > MAX_RETRY_TIME) {
+    if (
+      isReload ||
+      !isValidSlippageValue ||
+      isEmpty(exchangePlatformAdapters) ||
+      isGetSwapInfoSuccess ||
+      retryTimes > MAX_RETRY_TIME ||
+      isErrorValue() ||
+      isEmptyValue()
+    ) {
+      console.log('estimateWithValue useEffect return')
+      console.groupEnd(`estimateWithValue useEffect call:${address}:${sycIndex}`)
       return
     }
+    console.groupEnd(`estimateWithValue useEffect call:${address}:${sycIndex}`)
+    estimateWithValue()
+    return () => estimateWithValue.cancel()
+  }, [isReload, value, swapInfo, estimateWithValue, retryTimes, isSwapInfoFetching])
+
+  useEffect(() => {
     console.groupCollapsed(`staticCall useEffect call:${address}:${++sycIndex}`)
+    const isApproveEnoughValue = isApproveEnough()
     console.log('done=', done)
     console.log('retryTimes=', retryTimes)
     console.log('isApproveEnoughValue=', isApproveEnoughValue)
-    staticCall()
+    if (done || isEmpty(swapInfo) || !isApproveEnoughValue || isStaticCalling || retryTimes > MAX_RETRY_TIME) {
+      console.log('staticCall useEffect return')
+      console.groupEnd(`staticCall useEffect call:${address}:${sycIndex}`)
+      return
+    }
     console.groupEnd(`staticCall useEffect call:${address}:${sycIndex}`)
-  }, [done, retryTimes, swapInfo, staticCall])
+    staticCall()
+  }, [done, retryTimes, swapInfo, staticCall, isStaticCalling, isApproveEnough])
 
   useImperativeHandle(ref, () => {
     return {
@@ -479,7 +501,8 @@ const TokenItem = (props, ref) => {
       isFetching,
       swapInfo,
       done,
-      isApproveEnough
+      isApproveEnough,
+      retryTimes
     }
   })
 
@@ -524,8 +547,7 @@ const TokenItem = (props, ref) => {
       )}
       {!isReciveToken && isSwapSuccess && (
         <p className={classes.swapSuccessContainer}>
-          Swap into {toFixed(swapInfo?.bestSwapInfo?.toTokenAmount, receiveTokenDecimals)}
-          {`done:${done}`}
+          {`Swap into ${toFixed(swapInfo?.bestSwapInfo?.toTokenAmount, receiveTokenDecimals)} (done: ${done})`}
         </p>
       )}
       {!isReciveToken && isSwapError() && (
@@ -537,9 +559,7 @@ const TokenItem = (props, ref) => {
       {!isReciveToken && isFetching && (
         <p className={classes.swappingContainer}>
           <Loading className={classes.reloadIcon} loading /> &nbsp;&nbsp;
-          <span>
-            Swap path fetching,retryTimes:{retryTimes}fetching:{`${isSwapInfoFetching}`},calling:{`${isStaticCalling}`}
-          </span>
+          <span>{`Swap path fetching (retryTimes: ${retryTimes}, fetching: ${isSwapInfoFetching}, calling: ${isStaticCalling})`}</span>
         </p>
       )}
     </div>
