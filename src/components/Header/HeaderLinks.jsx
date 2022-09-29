@@ -104,10 +104,10 @@ export default function HeaderLinks(props) {
 
   const dashboardUrlRender = () => {
     let nextChainId = CHAIN_ID || '1'
-    let nextVault = window.location.hash === '#/ethi' ? 'ETHi' : 'USDi'
+    let nextVault = window.location.hash === '#/ethi' ? 'ethi' : 'usdi'
 
     // If it's in ETHi, jump to eth chain
-    if (nextVault === 'ETHi') {
+    if (nextVault === 'ethi') {
       nextChainId = '1'
     }
     return `${isMarketingHost() ? 'https://dashboard.bankofchain.io' : DASHBOARD_URL}/#/?chain=${nextChainId}&vault=${nextVault}`
