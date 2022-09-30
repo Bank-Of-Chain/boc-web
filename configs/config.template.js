@@ -39,7 +39,10 @@ const configBase = {
   },
   multiple_of_gas: 2,
   dashboard_url: '{{{DASHBOARD_ROOT}}}',
-  oracle_additional_slippage: 20
+  oracle_additional_slippage: 20,
+  env: '{{{env}}}',
+  publish_branch: '{{{PUBLISH_BRANCH}}}',
+  publish_time: '{{{PUBLISH_TIME}}}'
 }
 
 const config137 = {

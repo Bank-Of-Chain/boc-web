@@ -3,6 +3,8 @@ const argv = require('minimist')(process.argv.slice(2))
 const axios = require('axios')
 const inquirer = require('inquirer')
 const { isEmpty } = require('lodash')
+const moment = require('moment')
+const { execSync } = require('child_process')
 
 const { env, chain } = argv
 let nextEnv = env
@@ -66,7 +68,9 @@ const start = async () => {
       RPC_FOR_31337: getRpcFor31337(),
       KEEPER_FOR_ETH_ETHI: getKeeperForEthEthi(),
       KEEPER_FOR_ETH_USDI: getKeeperForEthUsdi(),
-      KEEPER_FOR_MATIC_USDI: getKeeperForMaticUsdi()
+      KEEPER_FOR_MATIC_USDI: getKeeperForMaticUsdi(),
+      PUBLISH_TIME: moment().utcOffset(8).format('YYYY-MM-DD HH:mm:ss'),
+      PUBLISH_BRANCH: getGitBranch()
     }
 
     fs.writeFileSync(`./configs/address.json`, JSON.stringify(config, undefined, 2))
@@ -132,6 +136,11 @@ const getKeeperForEthEthi = () => {
   if (isDevLocal()) return 'http://localhost:6000'
   if (isPrSg()) return 'https://v1-keeper-ethi.bankofchain.io'
   return `https://${nextEnv}-keeper-ethi.bankofchain.io`
+}
+
+function getGitBranch() {
+  const res = execSync('git symbolic-ref --short HEAD').toString()
+  return res.replace('\n', '')
 }
 
 const chooseEnv = () => {

@@ -39,7 +39,10 @@ const configBase = {
   },
   multiple_of_gas: 2,
   dashboard_url: 'https://dashboard-v2.bankofchain.io',
-  oracle_additional_slippage: 20
+  oracle_additional_slippage: 20,
+  env: 'pr02-sg',
+  publish_branch: 'feature/publish-details',
+  publish_time: '2022-09-30 17:47:09'
 }
 
 const config137 = {

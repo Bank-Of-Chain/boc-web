@@ -37,6 +37,9 @@ export const TWITTER_URL = config.twitter_url
 export const LINKEDIN_URL = config.linkedin_url
 export const YOUTUBE_URL = config.youtube_url
 export const MEDIUM_URL = config.medium_url
+export const ENV = config.env
+export const PUBLISH_TIME = config.publish_time
+export const PUBLISH_BRANCH = config.publish_branch
 
 export const POLYGON_HIDDEN = true
 
