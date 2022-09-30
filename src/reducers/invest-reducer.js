@@ -3,7 +3,7 @@ import { createSlice } from '@reduxjs/toolkit'
 export const metaStore = createSlice({
   name: 'investStore',
   initialState: {
-    currentTab: 2
+    currentTab: 0
   },
   reducers: {
     setCurrentTab: (state, action) => {

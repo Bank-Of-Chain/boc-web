@@ -246,6 +246,23 @@ const ApproveArrayV2 = props => {
       console.groupEnd('approveAll call')
       return
     }
+    const someApproveNotEnough = some(refArray, item => {
+      if (!item.current) {
+        return false
+      }
+      return !item.current.isApproveEnough()
+    })
+    if (someApproveNotEnough) {
+      setIsSwapping(false)
+      dispatch(
+        warmDialog({
+          open: true,
+          type: 'error',
+          message: 'Allowance not enough'
+        })
+      )
+      return
+    }
     console.groupEnd('approveAll call')
   }
 
@@ -396,7 +413,7 @@ const ApproveArrayV2 = props => {
       <div className={classes.approveContainer}>
         <div>Swap tokens:</div>
         {map(tokens, (token, index) => {
-          if (token.amount === '0' || isReciveToken(index)) return
+          if (token.amount === '0' || (tokens.length > 1 && isReciveToken(index))) return
           return (
             <TokenItem
               ref={refArray[index]}

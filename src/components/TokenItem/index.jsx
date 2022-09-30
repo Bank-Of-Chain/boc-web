@@ -503,7 +503,8 @@ const TokenItem = (props, ref) => {
       swapInfo,
       done,
       isApproveEnough,
-      retryTimes
+      retryTimes,
+      isErrorValue
     }
   })
 
