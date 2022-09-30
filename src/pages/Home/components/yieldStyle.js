@@ -24,6 +24,12 @@ const yieldStyle = {
     ...gradientText,
     fontWeight: 'bold'
   },
+  text: {
+    display: 'inline-block',
+    whiteSpace: 'nowrap',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis'
+  },
   subTitle: {
     fontSize: '26px',
     lineHeight: '36px',

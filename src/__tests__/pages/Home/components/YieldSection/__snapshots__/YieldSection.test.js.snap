@@ -16,33 +16,33 @@ exports[`YieldSection Component Render 1`] = `
       </span>
     </h2>
     <h3
-      class="makeStyles-subTitle-5"
+      class="makeStyles-subTitle-6"
     >
       The best long-term 
       <strong>
-        risk-free
+        "risk-free"
       </strong>
        return
     </h3>
     <p
-      class="makeStyles-description-6"
+      class="makeStyles-description-7"
     >
       Bank of Chain maximizes returns in a scalable and safe manner by only interacting with rigorously-evaluated protocols.
     </p>
     <p
-      class="makeStyles-description-6"
+      class="makeStyles-description-7"
     >
-      Yields are obtained from three sources:
+      Yields are obtained from four sources:
     </p>
     <ul
-      class="makeStyles-sourceList-7"
+      class="makeStyles-sourceList-8"
     >
       <li
-        class="makeStyles-sourceItem-8"
+        class="makeStyles-sourceItem-9"
       >
         <svg
           aria-hidden="true"
-          class="MuiSvgIcon-root makeStyles-checkIcon-9"
+          class="MuiSvgIcon-root makeStyles-checkIcon-10"
           focusable="false"
           viewBox="0 0 24 24"
         >
@@ -50,16 +50,18 @@ exports[`YieldSection Component Render 1`] = `
             d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"
           />
         </svg>
-        <span>
+        <span
+          class="makeStyles-text-5"
+        >
           Market-making fees.
         </span>
       </li>
       <li
-        class="makeStyles-sourceItem-8"
+        class="makeStyles-sourceItem-9"
       >
         <svg
           aria-hidden="true"
-          class="MuiSvgIcon-root makeStyles-checkIcon-9"
+          class="MuiSvgIcon-root makeStyles-checkIcon-10"
           focusable="false"
           viewBox="0 0 24 24"
         >
@@ -67,16 +69,18 @@ exports[`YieldSection Component Render 1`] = `
             d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"
           />
         </svg>
-        <span>
+        <span
+          class="makeStyles-text-5"
+        >
           Interest from over-collateralized lending.
         </span>
       </li>
       <li
-        class="makeStyles-sourceItem-8"
+        class="makeStyles-sourceItem-9"
       >
         <svg
           aria-hidden="true"
-          class="MuiSvgIcon-root makeStyles-checkIcon-9"
+          class="MuiSvgIcon-root makeStyles-checkIcon-10"
           focusable="false"
           viewBox="0 0 24 24"
         >
@@ -84,8 +88,29 @@ exports[`YieldSection Component Render 1`] = `
             d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"
           />
         </svg>
-        <span>
+        <span
+          class="makeStyles-text-5"
+        >
           Governance token rewards.
+        </span>
+      </li>
+      <li
+        class="makeStyles-sourceItem-9"
+      >
+        <svg
+          aria-hidden="true"
+          class="MuiSvgIcon-root makeStyles-checkIcon-10"
+          focusable="false"
+          viewBox="0 0 24 24"
+        >
+          <path
+            d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"
+          />
+        </svg>
+        <span
+          class="makeStyles-text-5"
+        >
+          Rewards from staking.
         </span>
       </li>
     </ul>

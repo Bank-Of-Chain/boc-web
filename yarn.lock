@@ -11107,12 +11107,12 @@ param-case@^3.0.3:
     dot-case "^3.0.4"
     tslib "^2.0.3"
 
-paraswap-core@1.0.2, paraswap-core@^1.0.2:
+paraswap-core@1.0.2:
   version "1.0.2"
   resolved "https://registry.npmjs.org/paraswap-core/-/paraswap-core-1.0.2.tgz#9e2ae35bc393b6f3bb9407bd097f21d498abb5a7"
   integrity sha512-/PyonrjBsv9xOsFk4mVr0rh7BENrQtYYvvZMwu6QFN4qcca2VgmqOgpNWZPvfyBpKY+fUqmbBNlhqlaMQ3TMzQ==
 
-paraswap@^5.0.0:
+paraswap@^5.2.0:
   version "5.2.0"
   resolved "https://registry.npmjs.org/paraswap/-/paraswap-5.2.0.tgz#07649e4cc18e911f01629d52efeca85596c79db1"
   integrity sha512-SYGhP7/ReHPwyLmCUuHh3mHqSK91r7HRcAs8siE7xOZ+omcUsyRwmvnlK9L5jsIwXkYZ/Rn6q3BTwCTLmw+4bA==
@@ -11336,18 +11336,17 @@ pify@^5.0.0:
   resolved "https://registry.npmjs.org/pify/-/pify-5.0.0.tgz#1f5eca3f5e87ebec28cc6d54a0e4aaf00acc127f"
   integrity sha512-eW/gHNMlxdSP6dmG6uJip6FXN0EQBwm2clYYd8Wul42Cwu/DK8HEftzsapcNdYe2MfLiIwZqsDk2RDEsTE79hA==
 
-piggy-finance-utils@1.0.58:
-  version "1.0.58"
-  resolved "https://registry.npmjs.org/piggy-finance-utils/-/piggy-finance-utils-1.0.58.tgz#5ada5e0e5b9c2970cdd04ab19a5f2a53e5f0a551"
-  integrity sha512-3ZjxcOVFGanYrrQkVnaHkW5NYADZhvGgJ9jY5vE3odULnFoFN7hPax5jPv+KB8Tfsraq4+QY65Tj/0uas2saaw==
+piggy-finance-utils@1.0.62:
+  version "1.0.62"
+  resolved "https://registry.npmjs.org/piggy-finance-utils/-/piggy-finance-utils-1.0.62.tgz#f42e77c84557acece511eb364e6f1f3c549f741e"
+  integrity sha512-K4ZHFgzMS+J5LcwhIDBImIm2r0NsDQeOKMcj5VHI8ZkMeVVlRWbRoksUNPgwxzP4C29bF1Xh04Mzj5Cb+n+5lQ==
   dependencies:
     "@babel/runtime" "^7.11.4"
     axios "^0.21.4"
     axios-cache-adapter "^2.7.3"
     ethers "^5.4.7"
     lodash "^4.17.21"
-    paraswap "^5.0.0"
-    paraswap-core "^1.0.2"
+    paraswap "^5.2.0"
     tiny-retry "^1.6.5"
 
 pinkie-promise@^2.0.0:

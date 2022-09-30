@@ -33,7 +33,7 @@ export default function Home() {
           </h4>
           <h4 className={classes.text}>
             provides the best long-term
-            <b> risk-free </b>
+            <b> &quot;risk-free&quot; </b>
             return
           </h4>
           <p className={classes.text} style={{ marginTop: 40 }}>

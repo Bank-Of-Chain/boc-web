@@ -6,48 +6,19 @@ exports[`LendingSection Component Render 1`] = `
     class="makeStyles-section-4"
   >
     <h2
-      class="makeStyles-title-6"
+      class="makeStyles-title-7"
     >
       Crypto Lending Interest Rates
     </h2>
     <div
-      class="makeStyles-label-13"
+      class="makeStyles-chart-18"
     >
       <div
-        class="MuiGrid-root makeStyles-grid-18  MuiGrid-container"
+        class="makeStyles-chartInner-19"
       >
         <div
-          class="MuiGrid-root makeStyles-grid-19  MuiGrid-item"
-          style="line-height: 2rem;"
-        >
-          <div
-            class="makeStyles-box-14"
-          />
-          <span>
-            Current Rate
-          </span>
-        </div>
-        <div
-          class="MuiGrid-root makeStyles-grid-19  MuiGrid-item"
-        >
-          <div
-            class="makeStyles-box1-15"
-          />
-          <span>
-            Fixed Rate
-          </span>
-        </div>
-      </div>
-    </div>
-    <div
-      class="makeStyles-chart-16"
-    >
-      <div
-        class="makeStyles-chartInner-17"
-      >
-        <div
-          class="MuiGrid-root makeStyles-grid-18  MuiGrid-container MuiGrid-justify-xs-center"
-          style="margin: 0px auto;"
+          class="MuiGrid-root makeStyles-grid-21  MuiGrid-container MuiGrid-justify-xs-center"
+          style="margin: 0px auto; padding: 10rem;"
         >
           <div
             class="MuiCircularProgress-root MuiCircularProgress-colorPrimary MuiCircularProgress-indeterminate"
