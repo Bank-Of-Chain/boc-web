@@ -250,9 +250,7 @@ const TokenItem = (props, ref) => {
   }
 
   // item fetch swap path failed
-  const isSwapError = () => {
-    return !isFetching && !isReciveToken && (swapInfo instanceof Error || isOverMaxRetry)
-  }
+  const isSwapError = !isFetching && !isReciveToken && isOverMaxRetry
 
   // Check if value is gt balance, or lt 1 decimal
   const isErrorValue = () => {
@@ -551,7 +549,7 @@ const TokenItem = (props, ref) => {
           {`Swap into ${toFixed(swapInfo?.bestSwapInfo?.toTokenAmount, receiveTokenDecimals)} (done: ${done})`}
         </p>
       )}
-      {!isReciveToken && isSwapError() && (
+      {!isReciveToken && isSwapError && (
         <div className={classes.swapErrorContainer} onClick={reloadSwap}>
           <span>Swap path fetch error</span>&nbsp;&nbsp;
           <RefreshIcon className={classes.reloadIcon} fontSize="small" />
