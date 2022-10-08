@@ -126,6 +126,9 @@ const TokenItem = (props, ref) => {
     setDone(false)
     setRetryTimes(0)
     setIsApproving(false)
+    setTimeout(() => {
+      onChange()
+    })
   }, [])
 
   const isApproveEnough = useCallback(() => {

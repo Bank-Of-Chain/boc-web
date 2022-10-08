@@ -92,7 +92,7 @@ const ApproveArrayV2 = props => {
   const [callStateArray, setCallStateArray] = useState(map(tokens, () => undefined))
 
   const swapInfoArray = map(refArray, item => get(item, 'current.swapInfo', {}))
-  // TODO: some tokens is fetching swap path
+  // some tokens is fetching swap path
   const someFetching = some(refArray, item => {
     return get(item, 'current.isFetching')
   })
