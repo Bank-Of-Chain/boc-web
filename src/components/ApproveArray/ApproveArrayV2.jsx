@@ -413,9 +413,13 @@ const ApproveArrayV2 = props => {
       <div className={classes.approveContainer}>
         <div>Swap tokens:</div>
         {map(tokens, (token, index) => {
-          if (token.amount === '0' || (tokens.length > 1 && isReciveToken(index))) return
+          const style = {}
+          if (token.amount === '0' || (tokens.length > 1 && isReciveToken(index))) {
+            style.display = 'none'
+          }
           return (
             <TokenItem
+              style={style}
               ref={refArray[index]}
               key={token.address}
               userAddress={userAddress}

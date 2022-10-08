@@ -25,7 +25,7 @@ import GridContainer from '@/components/Grid/GridContainer'
 import GridItem from '@/components/Grid/GridItem'
 import Button from '@/components/CustomButtons/Button'
 import Loading from '@/components/LoadingComponent'
-import ApproveArray from '@/components/ApproveArray'
+import ApproveArrayV2 from '@/components/ApproveArray/ApproveArrayV2'
 
 // === Hooks === //
 import { warmDialog } from '@/reducers/meta-reducer'
@@ -695,7 +695,7 @@ export default function Withdraw({
       >
         <div className={classes.swapBody}>
           {!isEmpty(address) && !isEmpty(exchangeManager) && (
-            <ApproveArray
+            <ApproveArrayV2
               isEthi
               address={address}
               tokens={burnTokens}

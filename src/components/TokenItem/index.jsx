@@ -71,6 +71,7 @@ const TokenItem = (props, ref) => {
     exchangeManager,
     receiveTokenDecimals,
     EXCHANGE_AGGREGATOR_ABI,
+    style,
     onChange,
     onStaticCallFinish
   } = props
@@ -462,6 +463,7 @@ const TokenItem = (props, ref) => {
     console.log('isValidSlippage()=', isValidSlippageValue)
     console.log('isGetSwapInfoSuccess=', isGetSwapInfoSuccess)
     if (
+      isReciveToken ||
       isReload ||
       !isValidSlippageValue ||
       isEmpty(exchangePlatformAdapters) ||
@@ -485,7 +487,7 @@ const TokenItem = (props, ref) => {
     console.log('done=', done)
     console.log('retryTimes=', retryTimes)
     console.log('isApproveEnoughValue=', isApproveEnoughValue)
-    if (done || isEmpty(swapInfo) || !isApproveEnoughValue || isStaticCalling || isOverMaxRetry) {
+    if (isReciveToken || done || isEmpty(swapInfo) || !isApproveEnoughValue || isStaticCalling || isOverMaxRetry) {
       console.log('staticCall useEffect return')
       console.groupEnd(`staticCall useEffect call:${address}:${sycIndex}`)
       return
@@ -509,7 +511,7 @@ const TokenItem = (props, ref) => {
   })
 
   return (
-    <div key={address} className={classNames(classes.approveItemWrapper)}>
+    <div key={address} className={classNames(classes.approveItemWrapper)} style={style}>
       <div className={classes.approveItem}>
         <CustomTextField
           classes={{ root: classes.input }}
