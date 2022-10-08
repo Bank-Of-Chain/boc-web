@@ -107,7 +107,10 @@ const ApproveArrayV2 = props => {
   }
   // TODO: all tokens done
   const allDone = () => {
-    return every(refArray, item => {
+    return every(refArray, (item, index) => {
+      if (isReciveToken(index)) {
+        return true
+      }
       return get(item, 'current.done', true)
     })
   }
@@ -395,6 +398,13 @@ const ApproveArrayV2 = props => {
     batchSwap()
   }
 
+  const onReceiveChange = v => {
+    if (someFetching) {
+      return
+    }
+    setReceiveToken(v)
+  }
+
   useEffect(() => {
     async function getAdapters() {
       console.groupCollapsed(`getAdapters useEffect call:${++sycIndex}`)
@@ -431,6 +441,7 @@ const ApproveArrayV2 = props => {
               exchangePlatformAdapters={exchangePlatformAdapters}
               receiveTokenDecimals={receiveTokenDecimals}
               EXCHANGE_AGGREGATOR_ABI={EXCHANGE_AGGREGATOR_ABI}
+              disabled={isSwapping}
               onChange={onChildStateChange}
               onStaticCallFinish={bool => {
                 onStaticCallFinish(index, bool)
@@ -447,7 +458,7 @@ const ApproveArrayV2 = props => {
               options={selectOptions}
               disabled={selectOptions.length <= 1 || isSwapping || someFetching}
               value={receiveToken}
-              onChange={v => setReceiveToken(v)}
+              onChange={v => onReceiveChange(v)}
             />
           </GridItem>
           <GridItem xs={8} sm={8} md={8} className={classes.estimateBalance}>

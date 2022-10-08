@@ -72,6 +72,7 @@ const TokenItem = (props, ref) => {
     receiveTokenDecimals,
     EXCHANGE_AGGREGATOR_ABI,
     style,
+    disabled,
     onChange,
     onStaticCallFinish
   } = props
@@ -523,7 +524,7 @@ const TokenItem = (props, ref) => {
               </div>
             )
           }}
-          disabled={isReciveToken || isFetching}
+          disabled={disabled || isReciveToken || isFetching}
           error={isErrorValue()}
           value={value}
           onChange={event => handleInputChange(event.target.value)}
