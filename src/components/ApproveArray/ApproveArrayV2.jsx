@@ -354,7 +354,7 @@ const ApproveArrayV2 = props => {
   const onChildStateChange = useCallback(() => {
     // setCount(count + 1)
     setCount(Math.random())
-  }, [count])
+  }, [])
 
   const onStaticCallFinish = (index, bool) => {
     console.groupCollapsed(`onStaticCallFinish call ${index} ${bool}`)
@@ -431,7 +431,7 @@ const ApproveArrayV2 = props => {
             <TokenItem
               style={style}
               ref={refArray[index]}
-              key={token.address}
+              key={`${token.address}-${receiveToken}`}
               userAddress={userAddress}
               userProvider={userProvider}
               token={token}

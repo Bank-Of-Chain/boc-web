@@ -285,12 +285,12 @@ const TokenItem = (props, ref) => {
     if (isNaN(num) || num < 0) {
       return
     }
+    setValue(value)
     setSwapInfo(undefined)
     setIsStaticCalling(false)
     setRetryTimes(0)
     setExclude({})
     setDone(false)
-    setValue(value)
     setTimeout(() => {
       onChange()
     })
@@ -489,14 +489,27 @@ const TokenItem = (props, ref) => {
     console.log('done=', done)
     console.log('retryTimes=', retryTimes)
     console.log('isApproveEnoughValue=', isApproveEnoughValue)
-    if (isReciveToken || done || isEmpty(swapInfo) || !isApproveEnoughValue || isStaticCalling || isOverMaxRetry) {
+    console.log('swapInfo=', swapInfo)
+    console.log('isStaticCalling=', isStaticCalling)
+    console.log('isOverMaxRetry=', isOverMaxRetry)
+    console.log('isReciveToken=', isReciveToken)
+    if (
+      isReciveToken ||
+      done ||
+      isEmpty(swapInfo) ||
+      !isApproveEnoughValue ||
+      isStaticCalling ||
+      isOverMaxRetry ||
+      isErrorValue() ||
+      isEmptyValue()
+    ) {
       console.log('staticCall useEffect return')
       console.groupEnd(`staticCall useEffect call:${address}:${sycIndex}`)
       return
     }
     console.groupEnd(`staticCall useEffect call:${address}:${sycIndex}`)
     staticCall()
-  }, [done, retryTimes, swapInfo, staticCall, isStaticCalling, isApproveEnough])
+  }, [done, value, retryTimes, swapInfo, staticCall, isStaticCalling, isApproveEnough])
 
   useImperativeHandle(ref, () => {
     return {
