@@ -190,7 +190,7 @@ const TokenItem = (props, ref) => {
           onChange()
         })
     }, 500),
-    [userProvider, swapInfo, onChange, exclude, retryTimes]
+    [userProvider, swapInfo, onChange, exclude, retryTimes, onStaticCallFinish]
   )
 
   const approve = async () => {
