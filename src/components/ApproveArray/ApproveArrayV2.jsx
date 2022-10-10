@@ -105,10 +105,10 @@ const ApproveArrayV2 = props => {
       return item.current.retryTimes > MAX_RETRY_TIME
     })
   }
-  // TODO: all tokens done
+  // all tokens done
   const allDone = () => {
     return every(refArray, (item, index) => {
-      if (isReciveToken(index)) {
+      if (isReciveToken(index) || item.current.isEmptyValue()) {
         return true
       }
       return get(item, 'current.done', true)
@@ -191,42 +191,6 @@ const ApproveArrayV2 = props => {
 
   const approveAll = async () => {
     console.groupCollapsed('approveAll call')
-    // const promiseArray = map(refArray, refItem => {
-    //   return refItem.current?.approve()
-    // })
-    // Promise.all(promiseArray)
-    //   .then(() => {
-    //     const someApproveNotEnough = some(refArray, item => {
-    //       if (!item.current) {
-    //         return false
-    //       }
-    //       return !item.current.isApproveEnough()
-    //     })
-    //     if (someApproveNotEnough) {
-    //       setIsSwapping(false)
-    //       dispatch(
-    //         warmDialog({
-    //           open: true,
-    //           type: 'error',
-    //           message: 'Allowance not enough'
-    //         })
-    //       )
-    //     }
-    //   })
-    //   .catch(error => {
-    //     setIsSwapping(false)
-    //     const message = errorTextOutput(error)
-    //     dispatch(
-    //       warmDialog({
-    //         open: true,
-    //         type: 'error',
-    //         message
-    //       })
-    //     )
-    //   })
-    //   .finally(() => {
-    //     console.groupEnd('approveAll call')
-    //   })
     try {
       for (let i = 0; i < tokens.length; i++) {
         console.log(`tokens[${i}] isReciveToken=`, isReciveToken(i))
@@ -359,7 +323,7 @@ const ApproveArrayV2 = props => {
   const onStaticCallFinish = (index, bool) => {
     console.groupCollapsed(`onStaticCallFinish call ${index} ${bool}`)
     const nextArray = map(callStateArray, (item, i) => {
-      if (isReciveToken(i)) {
+      if (isReciveToken(i) || refArray[i].current.isEmptyValue()) {
         return true
       }
       if (i === index) {

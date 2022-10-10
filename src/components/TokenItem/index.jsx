@@ -521,7 +521,8 @@ const TokenItem = (props, ref) => {
       done,
       isApproveEnough,
       retryTimes,
-      isErrorValue
+      isErrorValue,
+      isEmptyValue
     }
   })
 
