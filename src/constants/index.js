@@ -1,7 +1,10 @@
 import genConfig from '@/config/config'
 
+// === Utils === //
+import get from 'lodash/get'
+
 // EXTERNAL CONTRACTS
-export const ENV_NETWORK_TYPE = process.env.REACT_APP_NETWORK_TYPE || localStorage.REACT_APP_NETWORK_TYPE
+export const ENV_NETWORK_TYPE = get(process, 'env.REACT_APP_NETWORK_TYPE', localStorage.REACT_APP_NETWORK_TYPE)
 const config = genConfig[ENV_NETWORK_TYPE] || genConfig[undefined]
 console.log('env config=', ENV_NETWORK_TYPE, config)
 

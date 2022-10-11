@@ -27,7 +27,7 @@ import Button from '@/components/CustomButtons/Button'
 import Popover from '@material-ui/core/Popover'
 import Loading from '@/components/LoadingComponent'
 import PopupState, { bindTrigger, bindPopover } from 'material-ui-popup-state'
-import ApproveArray from '@/components/ApproveArray'
+import ApproveArray from '@/components/ApproveArray/ApproveArrayV2'
 
 // === Constants === //
 import { warmDialog } from '@/reducers/meta-reducer'
@@ -84,7 +84,20 @@ export default function Withdraw({
   const [currentStep, setCurrentStep] = useState(0)
   const [withdrawError, setWithdrawError] = useState({})
 
-  const [burnTokens, setBurnTokens] = useState([])
+  const [burnTokens, setBurnTokens] = useState([
+    // {
+    //   address: USDT_ADDRESS,
+    //   amount: '100000000'
+    // },
+    // {
+    //   address: USDC_ADDRESS,
+    //   amount: '10000000'
+    // },
+    // {
+    //   address: DAI_ADDRESS,
+    //   amount: '10000000000000000000'
+    // }
+  ])
   const [isShowZipModal, setIsShowZipModal] = useState(false)
   const [pegTokenPrice, setPegTokenPrice] = useState(BN_18)
 
@@ -194,8 +207,8 @@ export default function Withdraw({
     ).then(array => {
       const nextBurnTokens = compact(array)
       if (!isEmpty(nextBurnTokens)) {
-        setIsShowZipModal(true)
         setBurnTokens(nextBurnTokens)
+        setIsShowZipModal(true)
       }
     })
   }
@@ -696,24 +709,27 @@ export default function Withdraw({
           </div>
         </Paper>
       </Modal>
-      <Modal className={classes.modal} open={isShowZipModal} aria-labelledby="simple-modal-title" aria-describedby="simple-modal-description">
-        <Paper elevation={3} className={classes.approvePaper}>
-          <div className={classes.modalBody}>
-            {!isEmpty(address) && !isEmpty(exchangeManager) && (
-              <ApproveArray
-                address={address}
-                onSlippageChange={setSlipper}
-                tokens={burnTokens}
-                userProvider={userProvider}
-                exchangeManager={exchangeManager}
-                EXCHANGE_ADAPTER_ABI={EXCHANGE_ADAPTER_ABI}
-                EXCHANGE_AGGREGATOR_ABI={EXCHANGE_AGGREGATOR_ABI}
-                slipper={slipper}
-                handleClose={() => setIsShowZipModal(false)}
-              />
-            )}
-          </div>
-        </Paper>
+      <Modal
+        className={classes.modal}
+        open={isShowZipModal && !!address}
+        aria-labelledby="simple-modal-title"
+        aria-describedby="simple-modal-description"
+      >
+        <div className={classes.swapBody}>
+          {!isEmpty(address) && !isEmpty(exchangeManager) && (
+            <ApproveArray
+              address={address}
+              tokens={burnTokens}
+              userProvider={userProvider}
+              exchangeManager={exchangeManager}
+              EXCHANGE_ADAPTER_ABI={EXCHANGE_ADAPTER_ABI}
+              EXCHANGE_AGGREGATOR_ABI={EXCHANGE_AGGREGATOR_ABI}
+              slippage={slipper}
+              onSlippageChange={setSlipper}
+              handleClose={() => setIsShowZipModal(false)}
+            />
+          )}
+        </div>
       </Modal>
     </>
   )
