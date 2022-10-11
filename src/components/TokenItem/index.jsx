@@ -513,7 +513,7 @@ const TokenItem = (props, ref) => {
 
   useImperativeHandle(ref, () => {
     return {
-      approve: () => approve().then(onChange).then(reload),
+      approve: () => approve().then(reload),
       value,
       isApproving,
       isFetching,
