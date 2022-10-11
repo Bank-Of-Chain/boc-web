@@ -56,7 +56,7 @@ export default function LendingSection() {
         return {
           title: bocTitle,
           imagePath: '/logo.png',
-          percent: parseFloat(data).toFixed(2),
+          percent: 1 * parseFloat(data).toFixed(2),
           text: get(apyType, bocTitle, '')
         }
       }),
@@ -71,7 +71,7 @@ export default function LendingSection() {
         return {
           title: bocTitle,
           imagePath: '/logo.png',
-          percent: parseFloat(data).toFixed(2),
+          percent: 1 * parseFloat(data).toFixed(2),
           text: get(apyType, bocTitle, '')
         }
       }),

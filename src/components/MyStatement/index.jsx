@@ -51,6 +51,8 @@ const MyStatement = props => {
   const [data, setData] = useState([])
   const [loading, setLoading] = useState(false)
   const [segmentType, setSegmentType] = useState(DAY)
+  const [optionForLineChart, setOptionForLineChart] = useState({})
+  const [optionForBarChart, setOptionForBarChart] = useState({})
   const { dataSource, loading: chartLoading } = usePersonalData(chain, type, address, type)
 
   const titleRender = (title = '') => {
@@ -103,89 +105,96 @@ const MyStatement = props => {
     return Math.abs(item.balance - reverseArray[index - 1].balance) > item.balance * 0.005
   })
   const startPercent = continuousIndex === -1 ? 0 : 100.5 - (100 * continuousIndex) / tvls.length
-  const option1 = getLineEchartOpt(tvls, 'balance', dataSource.token, {
-    format: 'MM-DD',
-    dataZoom: [
-      {
-        start: startPercent,
-        end: 100
-      }
-    ],
-    xAxis: {
-      axisTick: {
-        alignWithLabel: true
-      }
-    }
-  })
 
-  const option = {
-    title: {
-      show: true,
+  useEffect(() => {
+    const option1 = getLineEchartOpt(tvls, 'balance', dataSource.token, {
+      format: 'MM-DD',
+      dataZoom: [
+        {
+          start: startPercent,
+          end: 100
+        }
+      ],
+      xAxis: {
+        axisTick: {
+          alignWithLabel: true
+        }
+      }
+    })
+    setOptionForLineChart(option1)
+  }, [tvls, address])
+
+  useEffect(() => {
+    const option = {
+      title: {
+        show: true,
+        textStyle: {
+          color: 'rgb(157 157 157)',
+          fontSize: 25
+        },
+        text: isEmpty(data) ? 'No Data' : '',
+        left: 'center',
+        top: 'center'
+      },
       textStyle: {
-        color: 'rgb(157 157 157)',
-        fontSize: 25
+        color: '#fff'
       },
-      text: isEmpty(data) ? 'No Data' : '',
-      left: 'center',
-      top: 'center'
-    },
-    textStyle: {
-      color: '#fff'
-    },
-    color: ['#A68EFE', '#5470c6'],
-    tooltip: {
-      trigger: 'axis',
-      axisPointer: {
-        type: 'shadow'
+      color: ['#A68EFE', '#5470c6'],
+      tooltip: {
+        trigger: 'axis',
+        axisPointer: {
+          type: 'shadow'
+        },
+        formatter: function (params) {
+          const param = params[0]
+          console.log('params=', param)
+          let message = ''
+          message += `${param.name}`
+          message += `<br/>${param.marker}${param.seriesName}: ${toFixed(
+            `${param.value}`,
+            1,
+            isUSDi ? TOKEN_DISPLAY_DECIMALS : ETHI_PROFITS_DISPLAY_DECIMALS
+          )}`
+          if (segmentType === WEEK) {
+            message += `<br/>${getMarker('#fff')}Begin: ${param.data.segmentBegin}`
+            message += `<br/>${getMarker('#fff')}End: ${param.data.segmentEnd}`
+          }
+          return message
+        }
       },
-      formatter: function (params) {
-        const param = params[0]
-        console.log('params=', param)
-        let message = ''
-        message += `${param.name}`
-        message += `<br/>${param.marker}${param.seriesName}: ${toFixed(
-          `${param.value}`,
-          1,
-          isUSDi ? TOKEN_DISPLAY_DECIMALS : ETHI_PROFITS_DISPLAY_DECIMALS
-        )}`
-        if (segmentType === WEEK) {
-          message += `<br/>${getMarker('#fff')}Begin: ${param.data.segmentBegin}`
-          message += `<br/>${getMarker('#fff')}End: ${param.data.segmentEnd}`
+      grid: {
+        left: '3%',
+        right: '4%',
+        bottom: '3%',
+        top: '3%',
+        containLabel: true
+      },
+      xAxis: {
+        data: map(data, 'segmentTime'),
+        axisLine: { onZero: true },
+        splitLine: { show: false },
+        splitArea: { show: false },
+        axisTick: {
+          alignWithLabel: true
         }
-        return message
-      }
-    },
-    grid: {
-      left: '3%',
-      right: '4%',
-      bottom: '3%',
-      top: '3%',
-      containLabel: true
-    },
-    xAxis: {
-      data: map(data, 'segmentTime'),
-      axisLine: { onZero: true },
-      splitLine: { show: false },
-      splitArea: { show: false },
-      axisTick: {
-        alignWithLabel: true
-      }
-    },
-    yAxis: {
-      splitLine: {
-        lineStyle: {
-          color: '#454459'
+      },
+      yAxis: {
+        splitLine: {
+          lineStyle: {
+            color: '#454459'
+          }
         }
-      }
-    },
-    series: [
-      {
-        name: 'Profits',
-        type: 'bar',
-        data: data
-      }
-    ]
-  }
+      },
+      series: [
+        {
+          name: 'Profits',
+          type: 'bar',
+          data: data
+        }
+      ]
+    }
+    setOptionForBarChart(option)
+  }, [data, address])
 
   const { day7Apy, day30Apy, profit, latestProfit = { profit: '0', tokenType: '' } } = dataSource
   const cardProps = [
@@ -275,8 +284,8 @@ const MyStatement = props => {
               loading={chartLoading}
               title={
                 <span>
-                  ETHi variation curve
-                  <Tooltip title="Curve of daily change in the total ETHi held by the user.">
+                  {isUSDi ? 'USDi' : 'ETHi'} variation curve
+                  <Tooltip title={`Curve of daily change in the total ${isUSDi ? 'USDi' : 'ETHi'} held by the user.`}>
                     <InfoIcon style={{ marginLeft: 8, fontSize: '1rem' }} />
                   </Tooltip>
                 </span>
@@ -286,7 +295,7 @@ const MyStatement = props => {
                 height: '2rem'
               }}
             >
-              <LineEchart option={option1} style={{ minHeight: '20rem' }} />
+              <LineEchart option={optionForLineChart} style={{ minHeight: '20rem' }} />
             </Card>
           </GridItem>
         </GridContainer>
@@ -320,7 +329,7 @@ const MyStatement = props => {
                 height: '2rem'
               }}
             >
-              <BarEchart option={option} style={{ minHeight: '20rem', width: '100%' }} />
+              <BarEchart option={optionForBarChart} style={{ minHeight: '20rem', width: '100%' }} />
             </Card>
           </GridItem>
         </GridContainer>
