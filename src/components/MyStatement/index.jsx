@@ -96,17 +96,16 @@ const MyStatement = props => {
       )
   }, [chain, address, type, segmentType])
 
-  const { tvls = [] } = dataSource
-  // https://github.com/PiggyFinance/dashboard/issues/166
-  const reverseArray = reverse([...tvls])
-  const continuousIndex = findIndex(reverseArray, (item, index) => {
-    if (index <= 2) return false
-    if (index === reverseArray.length) return true
-    return Math.abs(item.balance - reverseArray[index - 1].balance) > item.balance * 0.005
-  })
-  const startPercent = continuousIndex === -1 ? 0 : 100.5 - (100 * continuousIndex) / tvls.length
-
   useEffect(() => {
+    const { tvls = [] } = dataSource
+    // https://github.com/PiggyFinance/dashboard/issues/166
+    const reverseArray = reverse([...tvls])
+    const continuousIndex = findIndex(reverseArray, (item, index) => {
+      if (index <= 2) return false
+      if (index === reverseArray.length) return true
+      return Math.abs(item.balance - reverseArray[index - 1].balance) > item.balance * 0.005
+    })
+    const startPercent = continuousIndex === -1 ? 0 : 100.5 - (100 * continuousIndex) / tvls.length
     const option1 = getLineEchartOpt(tvls, 'balance', dataSource.token, {
       format: 'MM-DD',
       dataZoom: [
@@ -121,8 +120,9 @@ const MyStatement = props => {
         }
       }
     })
+    console.log('option1=', option1)
     setOptionForLineChart(option1)
-  }, [tvls, address])
+  }, [dataSource, address])
 
   useEffect(() => {
     const option = {
@@ -147,7 +147,6 @@ const MyStatement = props => {
         },
         formatter: function (params) {
           const param = params[0]
-          console.log('params=', param)
           let message = ''
           message += `${param.name}`
           message += `<br/>${param.marker}${param.seriesName}: ${toFixed(
