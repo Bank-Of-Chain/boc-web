@@ -520,7 +520,7 @@ export default function Withdraw({
 
   useEffect(() => {
     if (isEmpty(address) || isEmpty(VAULT_ADDRESS) || isEmpty(VAULT_ABI)) return
-    const timer = setInterval(getPegTokenPrice(), 1000000)
+    const timer = setInterval(getPegTokenPrice(), 10000)
     return () => clearInterval(timer)
   }, [address, VAULT_ADDRESS, VAULT_ABI])
 

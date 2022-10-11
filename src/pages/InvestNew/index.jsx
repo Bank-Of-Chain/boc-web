@@ -180,7 +180,7 @@ function Invest(props) {
           }
         })
         .catch(noop)
-    const timer = setInterval(loadTotalAssetsFn, 300000)
+    const timer = setInterval(loadTotalAssetsFn, 3000)
     return () => clearInterval(timer)
   }, [totalValue.toString()])
 
