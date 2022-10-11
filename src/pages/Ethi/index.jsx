@@ -290,8 +290,9 @@ function Ethi(props) {
                     placement="right"
                     title={
                       <span>
-                        The ETHi ticket is automatically converted to ETHi. And was last executed in&nbsp;
-                        <span style={{ color: 'red', fontWeight: 'bold' }}>{moment(lastRebaseTime).format('yyyy-MM-DD HH:mm')}</span>
+                        ETHi Ticket functions as parallel ETHi that will be converted into ETHi after fund allocations have been successful. Last
+                        execution time was&nbsp;
+                        <span style={{ fontWeight: 'bold' }}>{moment(lastRebaseTime).format('yyyy-MM-DD HH:mm')}</span>
                       </span>
                     }
                   >
