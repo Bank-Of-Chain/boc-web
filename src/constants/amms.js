@@ -36,8 +36,8 @@ export const PLATFORM_HOME_URL = {
   DForce: 'https://dforce.network/',
   UniswapV2: 'https://app.uniswap.org/',
   Aura: 'https://aura.finance/',
-  UniswapV3: 'https://info.uniswap.org/#/pools/0x00cef0386ed94d738c8f8a74e8bfd0376926d24c',
-  YearnV2: 'https://yearn.finance/#/vault/0xa258C4606Ca8206D8aA700cE2143D7db854D168c',
+  UniswapV3: 'https://info.uniswap.org/',
+  YearnV2: 'https://yearn.finance/',
   Lido: 'https://lido.fi/',
   RocketPool: 'https://rocketpool.net/'
 }
