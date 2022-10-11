@@ -98,7 +98,6 @@ function Invest(props) {
   const { minimumInvestmentAmount, exchangeManager } = useVault(VAULT_ADDRESS, VAULT_ABI, userProvider)
   // load user balance
   const loadBalance = () => {
-    console.log('loadBalance address=', address)
     if (isEmpty(address) || isEmpty(USDI_ADDRESS) || isEmpty(VAULT_BUFFER_ADDRESS)) return
     const usdtContract = new ethers.Contract(USDT_ADDRESS, IERC20_ABI, userProvider)
     const usdcContract = new ethers.Contract(USDC_ADDRESS, IERC20_ABI, userProvider)
@@ -186,7 +185,7 @@ function Invest(props) {
   }, [totalValue.toString()])
 
   function handleMint(...eventArgs) {
-    console.log('Mint=', eventArgs)
+    // console.log('Mint=', eventArgs)
     const block = last(eventArgs)
     block &&
       block
@@ -195,7 +194,7 @@ function Invest(props) {
         .then(loadBalance)
   }
   function handleBurn(...eventArgs) {
-    console.log('Burn=', eventArgs)
+    // console.log('Burn=', eventArgs)
     const block = last(eventArgs)
     block &&
       block
