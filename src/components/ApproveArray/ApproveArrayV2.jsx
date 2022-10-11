@@ -234,7 +234,7 @@ const ApproveArrayV2 = props => {
   }
 
   // All done, swap
-  const batchSwap = async () => {
+  const batchSwap = debounce(async () => {
     console.groupCollapsed('batchSwap call')
     const nextSwapArray = compact(
       map(swapInfoArray, item => {
@@ -297,8 +297,7 @@ const ApproveArrayV2 = props => {
       setIsSwapping(false)
     }
     console.groupEnd('batchSwap call')
-  }
-  // debounce(, 500)
+  }, 500)
 
   const clickSwap = () => {
     console.groupCollapsed('clickSwap call')
