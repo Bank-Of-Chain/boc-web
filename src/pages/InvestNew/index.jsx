@@ -10,6 +10,7 @@ import List from '@material-ui/core/List'
 import ListItem from '@material-ui/core/ListItem'
 import ListItemIcon from '@material-ui/core/ListItemIcon'
 import ListItemText from '@material-ui/core/ListItemText'
+import InsertChartIcon from '@material-ui/icons/InsertChart'
 import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline'
 import Tooltip from '@material-ui/core/Tooltip'
 import InfoIcon from '@material-ui/icons/Info'
@@ -22,6 +23,7 @@ import GridItem from '@/components/Grid/GridItem'
 import GridContainer from '@/components/Grid/GridContainer'
 import Deposit from './Deposit'
 import Withdraw from './Withdraw'
+import MyStatement from '@/components/MyStatement'
 
 // === Reducers === //
 import { useDispatch, useSelector } from 'react-redux'
@@ -248,27 +250,39 @@ function Invest(props) {
               </ListItemIcon>
               {!isLayoutSm && <ListItemText primary={'My Account'} className={classNames(current === 0 ? classes.check : classes.text)} />}
             </ListItem>
+            <ListItem key="My Statement" button className={classNames(classes.item)} onClick={() => setCurrent(INVEST_TAB.statement)}>
+              <ListItemIcon>
+                <InsertChartIcon style={{ color: current === INVEST_TAB.statement ? '#A68EFE' : '#fff' }} />
+              </ListItemIcon>
+              {!isLayoutSm && (
+                <ListItemText primary={'My Statement'} className={classNames(current === INVEST_TAB.statement ? classes.check : classes.text)} />
+              )}
+            </ListItem>
             <ListItem
               key="Deposit"
               button
-              className={classNames(classes.item, current === 1 && classes.check)}
+              className={classNames(classes.item, current === INVEST_TAB.deposit && classes.check)}
               onClick={() => setCurrent(INVEST_TAB.deposit)}
             >
               <ListItemIcon>
-                <SaveAltIcon style={{ color: current === 1 ? '#A68EFE' : '#fff' }} />
+                <SaveAltIcon style={{ color: current === INVEST_TAB.deposit ? '#A68EFE' : '#fff' }} />
               </ListItemIcon>
-              {!isLayoutSm && <ListItemText primary={'Deposit'} className={classNames(current === 1 ? classes.check : classes.text)} />}
+              {!isLayoutSm && (
+                <ListItemText primary={'Deposit'} className={classNames(current === INVEST_TAB.deposit ? classes.check : classes.text)} />
+              )}
             </ListItem>
             <ListItem
               key="Withdraw"
               button
-              className={classNames(classes.item, current === 2 && classes.check)}
+              className={classNames(classes.item, current === INVEST_TAB.withdraw && classes.check)}
               onClick={() => setCurrent(INVEST_TAB.withdraw)}
             >
               <ListItemIcon>
-                <UndoIcon style={{ color: current === 2 ? '#A68EFE' : '#fff' }} />
+                <UndoIcon style={{ color: current === INVEST_TAB.withdraw ? '#A68EFE' : '#fff' }} />
               </ListItemIcon>
-              {!isLayoutSm && <ListItemText primary={'Withdraw'} className={classNames(current === 2 ? classes.check : classes.text)} />}
+              {!isLayoutSm && (
+                <ListItemText primary={'Withdraw'} className={classNames(current === INVEST_TAB.withdraw ? classes.check : classes.text)} />
+              )}
             </ListItem>
             <ListItem key="Switch to ETHi" button className={classNames(classes.item, classes.check)} onClick={() => changeRouter('#/ethi')}>
               <ListItemIcon>
@@ -278,8 +292,8 @@ function Invest(props) {
             </ListItem>
           </List>
         </GridItem>
-        <GridItem xs={9} sm={9} md={6}>
-          {current === 0 && (
+        {current === INVEST_TAB.account && (
+          <GridItem xs={9} sm={9} md={6}>
             <Card className={classes.balanceCard}>
               <div className={classes.balanceCardItem}>
                 <div className={classes.balanceCardValue}>
@@ -321,8 +335,10 @@ function Invest(props) {
                 <div className={classes.balanceCardLabel}>AVAILABLE BALANCE</div>
               </div>
             </Card>
-          )}
-          {current === 1 && (
+          </GridItem>
+        )}
+        {current === INVEST_TAB.deposit && (
+          <GridItem xs={9} sm={9} md={6}>
             <div className={isLayoutSm ? classes.wrapperMobile : classes.wrapper}>
               <Deposit
                 address={address}
@@ -346,8 +362,10 @@ function Invest(props) {
                 minimumInvestmentAmount={minimumInvestmentAmount}
               />
             </div>
-          )}
-          {current === 2 && (
+          </GridItem>
+        )}
+        {current === INVEST_TAB.withdraw && (
+          <GridItem xs={9} sm={9} md={6}>
             <div className={isLayoutSm ? classes.wrapperMobile : classes.wrapper}>
               <Withdraw
                 address={address}
@@ -364,8 +382,15 @@ function Invest(props) {
                 reloadBalance={loadCoinsBalance}
               />
             </div>
-          )}
-        </GridItem>
+          </GridItem>
+        )}
+        {current === INVEST_TAB.statement && (
+          <GridItem xs={9} sm={9} md={9}>
+            <div className={isLayoutSm ? classes.wrapperMobile : classes.wrapper} style={{ background: 'none', paddingTop: '1rem', paddingLeft: 0 }}>
+              <MyStatement address={address} chain={`${CHAIN_ID}`} VAULT_ADDRESS={VAULT_ADDRESS} type={'USDi'} />
+            </div>
+          </GridItem>
+        )}
       </GridContainer>
     </div>
   )
