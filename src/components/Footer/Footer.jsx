@@ -3,6 +3,9 @@ import classNames from 'classnames'
 import { List, ListItem } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
 
+// === Services === //
+import { isProEnv } from '@/services/env-service'
+
 // === Components === //
 import GridContainer from '@/components/Grid/GridContainer'
 import GridItem from '@/components/Grid/GridItem'
@@ -11,7 +14,18 @@ import SvgIcon from '@material-ui/core/SvgIcon'
 import Divider from '@material-ui/core/Divider'
 
 // === Constants === //
-import { COMMUNITY_URL, DOCUMENT_URL, TELEGRAM_URL, TWITTER_URL, LINKEDIN_URL, YOUTUBE_URL, MEDIUM_URL } from '@/constants'
+import {
+  COMMUNITY_URL,
+  DOCUMENT_URL,
+  TELEGRAM_URL,
+  TWITTER_URL,
+  LINKEDIN_URL,
+  YOUTUBE_URL,
+  MEDIUM_URL,
+  ENV,
+  PUBLISH_BRANCH,
+  PUBLISH_TIME
+} from '@/constants'
 import useMediaQuery from '@material-ui/core/useMediaQuery'
 
 import styles from './footerStyle.js'
@@ -276,6 +290,15 @@ export default function Footer(props) {
                 PARTICULAR PURPOSE, AND NON-INFRINGEMENT OF THIRD PARTY RIGHTS) ARE HEREBY. DISCLAIMED TO THE FULLEST EXTENT PERMITTED BY APPLICABLE
                 LAW.
               </p>
+            </GridItem>
+          )}
+          {!isProEnv(ENV) && (
+            <GridItem xs={12} sm={12} md={12} style={{ borderTop: '1px solid #ccc' }} className={classNames(classes.item, classes.center)}>
+              <List className={classes.list}>
+                <ListItem className={classes.inlineBlock}>Branch&nbsp;:&nbsp;{PUBLISH_BRANCH}&nbsp;</ListItem>
+                <ListItem className={classes.inlineBlock}>Date&nbsp;:&nbsp;{PUBLISH_TIME}&nbsp;</ListItem>
+                <ListItem className={classes.inlineBlock}>Env&nbsp;:&nbsp;{ENV}&nbsp;</ListItem>
+              </List>
             </GridItem>
           )}
         </GridContainer>
