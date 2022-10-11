@@ -563,9 +563,10 @@ const TokenItem = (props, ref) => {
         </p>
       )}
       {!isReciveToken && isSwapSuccess && (
-        <p className={classes.swapSuccessContainer}>
-          {`Swap into ${toFixed(swapInfo?.bestSwapInfo?.toTokenAmount, receiveTokenDecimals)} (done: ${done})`}
-        </p>
+        // <p className={classes.swapSuccessContainer}>
+        //   {`Swap into ${toFixed(swapInfo?.bestSwapInfo?.toTokenAmount, receiveTokenDecimals)} (done: ${done})`}
+        // </p>
+        <p className={classes.swapSuccessContainer}>{`Swap into ${toFixed(swapInfo?.bestSwapInfo?.toTokenAmount, receiveTokenDecimals)}`}</p>
       )}
       {!isReciveToken && isSwapError && (
         <div className={classes.swapErrorContainer} onClick={reloadSwap}>
@@ -576,7 +577,8 @@ const TokenItem = (props, ref) => {
       {!isReciveToken && isFetching && (
         <p className={classes.swappingContainer}>
           <Loading className={classes.reloadIcon} loading /> &nbsp;&nbsp;
-          <span>{`Swap path fetching (retryTimes: ${retryTimes}, fetching: ${isSwapInfoFetching}, calling: ${isStaticCalling})`}</span>
+          {/* <span>{`Swap path fetching (retryTimes: ${retryTimes}, fetching: ${isSwapInfoFetching}, calling: ${isStaticCalling})`}</span> */}
+          <span>Swap path fetching</span>
         </p>
       )}
     </div>

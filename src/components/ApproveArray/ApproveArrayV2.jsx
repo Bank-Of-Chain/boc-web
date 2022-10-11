@@ -320,47 +320,50 @@ const ApproveArrayV2 = props => {
     setCount(Math.random())
   }, [])
 
-  const onStaticCallFinish = (index, bool) => {
-    console.groupCollapsed(`onStaticCallFinish call ${index} ${bool}`)
-    const nextArray = map(callStateArray, (item, i) => {
-      if (isReciveToken(i) || refArray[i].current.isEmptyValue()) {
-        return true
+  const onStaticCallFinish = useCallback(
+    (index, bool) => {
+      console.groupCollapsed(`onStaticCallFinish call ${index} ${bool}`)
+      const nextArray = map(callStateArray, (item, i) => {
+        if (isReciveToken(i) || refArray[i].current.isEmptyValue()) {
+          return true
+        }
+        if (i === index) {
+          return bool
+        }
+        return item
+      })
+      setCallStateArray(nextArray)
+      console.log('nextArray', nextArray)
+      if (!isSwapping) {
+        console.log('isSwapping', isSwapping)
+        console.groupEnd(`onStaticCallFinish call ${index} ${bool}`)
+        return
       }
-      if (i === index) {
-        return bool
+      const allFinish = every(nextArray, item => item !== undefined)
+      if (!allFinish) {
+        console.log('allFinish', allFinish)
+        console.groupEnd(`onStaticCallFinish call ${index} ${bool}`)
+        return
       }
-      return item
-    })
-    setCallStateArray(nextArray)
-    console.log('nextArray', nextArray)
-    if (!isSwapping) {
-      console.log('isSwapping', isSwapping)
+      const someError = some(nextArray, item => item === false)
+      if (someError) {
+        console.log('someError', someError)
+        setIsSwapping(false)
+        dispatch(
+          warmDialog({
+            open: true,
+            type: 'error',
+            message: 'Swap Failed'
+          })
+        )
+        console.groupEnd(`onStaticCallFinish call ${index} ${bool}`)
+        return
+      }
       console.groupEnd(`onStaticCallFinish call ${index} ${bool}`)
-      return
-    }
-    const allFinish = every(nextArray, item => item !== undefined)
-    if (!allFinish) {
-      console.log('allFinish', allFinish)
-      console.groupEnd(`onStaticCallFinish call ${index} ${bool}`)
-      return
-    }
-    const someError = some(nextArray, item => item === false)
-    if (someError) {
-      console.log('someError', someError)
-      setIsSwapping(false)
-      dispatch(
-        warmDialog({
-          open: true,
-          type: 'error',
-          message: 'Swap Failed'
-        })
-      )
-      console.groupEnd(`onStaticCallFinish call ${index} ${bool}`)
-      return
-    }
-    console.groupEnd(`onStaticCallFinish call ${index} ${bool}`)
-    batchSwap()
-  }
+      batchSwap()
+    },
+    [callStateArray, isSwapping]
+  )
 
   const onReceiveChange = v => {
     if (someFetching) {
