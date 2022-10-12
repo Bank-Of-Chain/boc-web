@@ -16,7 +16,7 @@ const style = {
     paddingRight: 24
   },
   disabled: {
-    backgroundColor: 'ivory'
+    backgroundColor: '#313036'
   },
   triggerLabelWrapper: {
     display: 'flex',

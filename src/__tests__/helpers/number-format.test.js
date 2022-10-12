@@ -25,6 +25,11 @@ test('number-format toFixed with decimals null', () => {
   expect(text).toBe('10000')
 })
 
+test('number-format toFixed with decimals isZero', () => {
+  const text = toFixed('10000', 0)
+  expect(text).toBe('0')
+})
+
 test('number-format toFixed formatBalance', () => {
   const text = formatBalance('10000', 2)
   expect(text).toBe('100')

@@ -1,9 +1,9 @@
 import React from 'react'
 
 const Loading = props => {
-  const { loading, children = '', width = 20, height = 20, background } = props
+  const { loading, children = '', width = '20px', height = '20px', background, className } = props
   const loadingElement = (
-    <svg style={{ background: background }} width={`${width}px`} height={`${height}px`} viewBox="0 0 100 100" preserveAspectRatio="xMidYMid">
+    <svg className={className} style={{ background: background }} width={width} height={height} viewBox="0 0 100 100" preserveAspectRatio="xMidYMid">
       <circle cx="16" cy="50" r="10" fill="#e15b64">
         <animate
           attributeName="r"

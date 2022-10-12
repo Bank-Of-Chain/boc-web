@@ -27,6 +27,9 @@ const style = {
     '& .MuiOutlinedInput-root.Mui-error .MuiOutlinedInput-notchedOutline': {
       borderWidth: '1px',
       borderColor: dangerColor
+    },
+    '& .MuiOutlinedInput-root.Mui-disabled .MuiOutlinedInput-notchedOutline': {
+      borderColor: '#666'
     }
   },
   endAdornment: {

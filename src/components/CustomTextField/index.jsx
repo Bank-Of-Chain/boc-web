@@ -13,6 +13,7 @@ function CustomTextField({
   onMaxClick = () => {},
   isMax = false,
   InputProps,
+  disabled,
   ...restProps
 }) {
   const styleClasses = useStyles()
@@ -31,13 +32,19 @@ function CustomTextField({
             className={classNames(styleClasses.endAdornment, {
               [styleClasses.endAdornmentActive]: isMax
             })}
-            onClick={onMaxClick}
+            onClick={() => {
+              if (disabled) {
+                return
+              }
+              onMaxClick()
+            }}
           >
             Max
           </span>
         ) : null
       }}
       variant={variant}
+      disabled={!!disabled}
       {...restProps}
     />
   )

@@ -38,8 +38,8 @@ export default function AmmSection() {
     <div className={classes.section}>
       <h2>Major integrations</h2>
       <h4 className={classes.title}>
-        Bank of Chain integrates with the {CHAINS.length} major {CHAINS.length > 1 ? 'chains' : 'chain'} of DeFi and the world’s top{' '}
-        {STABLECOINS.length} stablecoins, optimizing {AMMS.length} AMM and lending pools.
+        Bank of Chain integrates with the major {CHAINS.length > 1 ? 'chains' : 'chain'} of DeFi and the world’s top {STABLECOINS.length} stablecoins,
+        optimizing {AMMS.length} AMM and lending pools.
       </h4>
       <Tabs
         centered
@@ -63,7 +63,7 @@ export default function AmmSection() {
             )
           },
           {
-            tabName: 'Major chains',
+            tabName: 'Major chain(s)',
             tabContent: (
               <GridItem xs={12} sm={12} md={12} className={classes.iconContainer}>
                 {map(CHAINS, c => (
