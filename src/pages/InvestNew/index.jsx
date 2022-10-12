@@ -250,14 +250,16 @@ function Invest(props) {
               </ListItemIcon>
               {!isLayoutSm && <ListItemText primary={'My Account'} className={classNames(current === 0 ? classes.check : classes.text)} />}
             </ListItem>
-            <ListItem key="My Statement" button className={classNames(classes.item)} onClick={() => setCurrent(INVEST_TAB.statement)}>
-              <ListItemIcon>
-                <InsertChartIcon style={{ color: current === INVEST_TAB.statement ? '#A68EFE' : '#fff' }} />
-              </ListItemIcon>
-              {!isLayoutSm && (
-                <ListItemText primary={'My Statement'} className={classNames(current === INVEST_TAB.statement ? classes.check : classes.text)} />
-              )}
-            </ListItem>
+            {!isEmpty(address) && (
+              <ListItem key="My Statement" button className={classNames(classes.item)} onClick={() => setCurrent(INVEST_TAB.statement)}>
+                <ListItemIcon>
+                  <InsertChartIcon style={{ color: current === INVEST_TAB.statement ? '#A68EFE' : '#fff' }} />
+                </ListItemIcon>
+                {!isLayoutSm && (
+                  <ListItemText primary={'My Statement'} className={classNames(current === INVEST_TAB.statement ? classes.check : classes.text)} />
+                )}
+              </ListItem>
+            )}
             <ListItem
               key="Deposit"
               button

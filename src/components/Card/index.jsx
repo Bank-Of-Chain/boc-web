@@ -51,6 +51,10 @@ const useStyles = makeStyles({
   },
   footer: {
     paddingTop: '1rem'
+  },
+  header: {
+    paddingTop: '2rem',
+    paddingBottom: 0
   }
 })
 
@@ -63,7 +67,8 @@ const CardComponent = props => {
       <CardHeader
         classes={{
           action: classes.action,
-          title: classes.title
+          title: classes.title,
+          root: classes.header
         }}
         action={tip}
         title={title}
@@ -71,7 +76,7 @@ const CardComponent = props => {
       <CardContent>
         {!isEmpty(content) && (
           <Loading loading={loading}>
-            <Typography className={classes.content} variant="h5" component="h2">
+            <Typography className={classes.content} style={{ fontFamily: 'DM Sans' }} variant="h5" component="h2">
               {content}
               <span className={classes.unit}>{unit}</span>
             </Typography>

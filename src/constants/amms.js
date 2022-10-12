@@ -34,9 +34,9 @@ export const PLATFORM_HOME_URL = {
   Synapse: 'https://synapseprotocol.com',
   Stargate: 'https://stargate.finance/',
   DForce: 'https://dforce.network/',
-  UniswapV2: 'https://app.uniswap.org/',
+  UniswapV2: 'https://uniswap.org/',
   Aura: 'https://aura.finance/',
-  UniswapV3: 'https://info.uniswap.org/',
+  UniswapV3: 'https://uniswap.org/',
   YearnV2: 'https://yearn.finance/',
   Lido: 'https://lido.fi/',
   RocketPool: 'https://rocketpool.net/'

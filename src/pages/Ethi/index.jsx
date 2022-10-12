@@ -222,14 +222,16 @@ function Ethi(props) {
                 <ListItemText primary={'My Account'} className={classNames(current === INVEST_TAB.account ? classes.check : classes.text)} />
               )}
             </ListItem>
-            <ListItem key="My Statement" button className={classNames(classes.item)} onClick={() => setCurrent(INVEST_TAB.statement)}>
-              <ListItemIcon>
-                <InsertChartIcon style={{ color: current === INVEST_TAB.statement ? '#A68EFE' : '#fff' }} />
-              </ListItemIcon>
-              {!isLayoutSm && (
-                <ListItemText primary={'My Statement'} className={classNames(current === INVEST_TAB.statement ? classes.check : classes.text)} />
-              )}
-            </ListItem>
+            {!isEmpty(address) && (
+              <ListItem key="My Statement" button className={classNames(classes.item)} onClick={() => setCurrent(INVEST_TAB.statement)}>
+                <ListItemIcon>
+                  <InsertChartIcon style={{ color: current === INVEST_TAB.statement ? '#A68EFE' : '#fff' }} />
+                </ListItemIcon>
+                {!isLayoutSm && (
+                  <ListItemText primary={'My Statement'} className={classNames(current === INVEST_TAB.statement ? classes.check : classes.text)} />
+                )}
+              </ListItem>
+            )}
             <ListItem
               key="Deposit"
               button
@@ -290,8 +292,9 @@ function Ethi(props) {
                     placement="right"
                     title={
                       <span>
-                        The ETHi ticket is automatically converted to ETHi. And was last executed in&nbsp;
-                        <span style={{ color: 'red', fontWeight: 'bold' }}>{moment(lastRebaseTime).format('yyyy-MM-DD HH:mm')}</span>
+                        ETHi Ticket functions as parallel ETHi that will be converted into ETHi after fund allocations have been successful. Last
+                        execution time was&nbsp;
+                        <span style={{ fontWeight: 'bold' }}>{moment(lastRebaseTime).format('yyyy-MM-DD HH:mm')}</span>
                       </span>
                     }
                   >
