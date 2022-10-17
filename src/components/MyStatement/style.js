@@ -4,11 +4,11 @@ const componentsStyle = () => ({
   container,
   lineChart: {
     minHeight: '20rem',
-    paddingTop: '2rem'
+    paddingTop: '1rem'
   },
   barChart: {
     minHeight: '20rem',
-    paddingTop: '2rem'
+    paddingTop: '1rem'
   },
   groupedOutlinedPrimary: {
     border: '2px solid #a0a0a0',

@@ -61,7 +61,7 @@ const componentsStyle = theme => ({
   balanceCard: {
     position: 'relative',
     display: 'flex',
-    marginTop: '0.5rem',
+    margin: '0 1rem 1rem 0',
     alignItems: 'center',
     justifyContent: 'flex-start',
     textAlign: 'left',

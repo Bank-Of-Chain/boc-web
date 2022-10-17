@@ -33,6 +33,8 @@ import './App.css'
 const Home = lazy(() => import('./pages/Home/index'))
 const InvestNew = lazy(() => import('./pages/InvestNew/index'))
 const Ethi = lazy(() => import('./pages/Ethi/index'))
+const Ethr = lazy(() => import('./pages/Ethr/index'))
+const Usdr = lazy(() => import('./pages/Usdr/index'))
 
 const useStyles = makeStyles(theme => ({
   backdrop: {
@@ -288,6 +290,32 @@ function App() {
             >
               <Frame {...nextProps}>
                 <Ethi {...nextProps} />
+              </Frame>
+            </Suspense>
+          </Route>
+          <Route path="/ethr">
+            <Suspense
+              fallback={
+                <Backdrop className={classes.backdrop} open>
+                  <CircularProgress color="inherit" />
+                </Backdrop>
+              }
+            >
+              <Frame {...nextProps}>
+                <Ethr {...nextProps} />
+              </Frame>
+            </Suspense>
+          </Route>
+          <Route path="/usdr">
+            <Suspense
+              fallback={
+                <Backdrop className={classes.backdrop} open>
+                  <CircularProgress color="inherit" />
+                </Backdrop>
+              }
+            >
+              <Frame {...nextProps}>
+                <Usdr {...nextProps} />
               </Frame>
             </Suspense>
           </Route>

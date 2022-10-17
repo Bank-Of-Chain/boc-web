@@ -51,7 +51,7 @@ import styles from './style'
 const useStyles = makeStyles(styles)
 const { BigNumber } = ethers
 
-function Ethi(props) {
+function Usdr(props) {
   const classes = useStyles()
   const dispatch = useDispatch()
   const isLayoutSm = useMediaQuery('(max-width: 960px)')
@@ -299,7 +299,7 @@ function Ethi(props) {
                     >
                       <Loading loading={isBalanceLoading}>{formatBalance(ethiBalance, ethiDecimals)}</Loading>
                     </span>
-                    <span className={classes.symbol}>ETHi</span>
+                    <span className={classes.symbol}>USDr</span>
                     {userProvider && (
                       <span title="Add token address to wallet">
                         <AddCircleOutlineIcon className={classes.addTokenIcon} onClick={handleAddETHi} fontSize="small" />
@@ -339,4 +339,4 @@ function Ethi(props) {
   )
 }
 
-export default useVersionWapper(Ethi, 'ethi')
+export default useVersionWapper(Usdr, 'Usdr')

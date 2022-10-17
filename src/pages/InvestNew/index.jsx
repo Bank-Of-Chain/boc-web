@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import classNames from 'classnames'
 import { makeStyles } from '@material-ui/core/styles'
-import { useHistory } from 'react-router-dom'
 import useMediaQuery from '@material-ui/core/useMediaQuery'
 
 // === Components === //
@@ -10,11 +9,9 @@ import List from '@material-ui/core/List'
 import ListItem from '@material-ui/core/ListItem'
 import ListItemIcon from '@material-ui/core/ListItemIcon'
 import ListItemText from '@material-ui/core/ListItemText'
-import InsertChartIcon from '@material-ui/icons/InsertChart'
 import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline'
 import Tooltip from '@material-ui/core/Tooltip'
 import InfoIcon from '@material-ui/icons/Info'
-import SwapHorizIcon from '@material-ui/icons/SwapHoriz'
 import AccountBalanceWalletIcon from '@material-ui/icons/AccountBalanceWallet'
 import SaveAltIcon from '@material-ui/icons/SaveAlt'
 import UndoIcon from '@material-ui/icons/Undo'
@@ -31,7 +28,7 @@ import { warmDialog } from '@/reducers/meta-reducer'
 import { setCurrentTab } from '@/reducers/invest-reducer'
 
 // === constants === //
-import { USDT_ADDRESS, USDC_ADDRESS, DAI_ADDRESS, NET_WORKS, CHAIN_ID, IERC20_ABI } from '@/constants'
+import { USDT_ADDRESS, USDC_ADDRESS, DAI_ADDRESS, CHAIN_ID, IERC20_ABI } from '@/constants'
 import { INVEST_TAB } from '@/constants/invest'
 
 // === Utils === //
@@ -55,7 +52,6 @@ const { BigNumber } = ethers
 function Invest(props) {
   const classes = useStyles()
   const dispatch = useDispatch()
-  const history = useHistory()
   const isLayoutSm = useMediaQuery('(max-width: 960px)')
 
   const {
@@ -230,15 +226,6 @@ function Invest(props) {
     addToken(USDI_ADDRESS, 'USDi', usdiDecimals)
   }
 
-  const changeRouter = path => {
-    let promise = Promise.resolve({})
-    if (path === '#/ethi' && CHAIN_ID !== 1) {
-      promise = props.changeNetwork(NET_WORKS[0])
-    }
-    promise.then(() => {
-      history.push(path.slice(1))
-    })
-  }
   return (
     <div className={classes.container}>
       <GridContainer spacing={0} style={{ paddingTop: '100px' }}>
@@ -250,16 +237,6 @@ function Invest(props) {
               </ListItemIcon>
               {!isLayoutSm && <ListItemText primary={'My Account'} className={classNames(current === 0 ? classes.check : classes.text)} />}
             </ListItem>
-            {!isEmpty(address) && (
-              <ListItem key="My Statement" button className={classNames(classes.item)} onClick={() => setCurrent(INVEST_TAB.statement)}>
-                <ListItemIcon>
-                  <InsertChartIcon style={{ color: current === INVEST_TAB.statement ? '#A68EFE' : '#fff' }} />
-                </ListItemIcon>
-                {!isLayoutSm && (
-                  <ListItemText primary={'My Statement'} className={classNames(current === INVEST_TAB.statement ? classes.check : classes.text)} />
-                )}
-              </ListItem>
-            )}
             <ListItem
               key="Deposit"
               button
@@ -286,57 +263,54 @@ function Invest(props) {
                 <ListItemText primary={'Withdraw'} className={classNames(current === INVEST_TAB.withdraw ? classes.check : classes.text)} />
               )}
             </ListItem>
-            <ListItem key="Switch to ETHi" button className={classNames(classes.item, classes.check)} onClick={() => changeRouter('#/ethi')}>
-              <ListItemIcon>
-                <SwapHorizIcon style={{ color: '#fff' }} />
-              </ListItemIcon>
-              {!isLayoutSm && <ListItemText primary={'Switch to ETHi'} className={classNames(classes.text)} />}
-            </ListItem>
           </List>
         </GridItem>
         {current === INVEST_TAB.account && (
-          <GridItem xs={9} sm={9} md={6}>
-            <Card className={classes.balanceCard}>
-              <div className={classes.balanceCardItem}>
-                <div className={classes.balanceCardValue}>
-                  <span
-                    title={formatBalance(toBalance, usdiDecimals, {
-                      showAll: true
-                    })}
-                  >
-                    <Loading loading={isBalanceLoading}>{formatBalance(toBalance, usdiDecimals)}</Loading>
-                  </span>
-                  <span className={classes.symbol}>USDi</span>
-                  {userProvider && (
-                    <span title="Add token address to wallet">
-                      <AddCircleOutlineIcon className={classes.addTokenIcon} onClick={handleAddUSDi} fontSize="small" />
+          <GridItem xs={9} sm={9} md={9}>
+            <div className={isLayoutSm ? classes.wrapperMobile : classes.wrapper} style={{ background: 'none', paddingTop: '1rem', paddingLeft: 0 }}>
+              <Card className={classes.balanceCard}>
+                <div className={classes.balanceCardItem}>
+                  <div className={classes.balanceCardValue}>
+                    <span
+                      title={formatBalance(toBalance, usdiDecimals, {
+                        showAll: true
+                      })}
+                    >
+                      <Loading loading={isBalanceLoading}>{formatBalance(toBalance, usdiDecimals)}</Loading>
                     </span>
-                  )}
-                </div>
-                <div className={classes.balanceCardValue} style={{ fontSize: '1rem' }}>
-                  <span title={formatBalance(vaultBufferBalance, vaultBufferDecimals, { showAll: true })}>
-                    <Loading loading={isBalanceLoading}>{formatBalance(vaultBufferBalance, vaultBufferDecimals)}</Loading>
-                  </span>
-                  <span className={classes.symbol}>USDi Ticket&nbsp;&nbsp;</span>
-                  <Tooltip
-                    classes={{
-                      tooltip: classes.tooltip
-                    }}
-                    placement="right"
-                    title={
-                      <span>
-                        USDi Ticket functions as parallel USDi that will be converted into USDi after fund allocations have been successful. Last
-                        execution time was&nbsp;
-                        <span style={{ fontWeight: 'bold' }}>{moment(lastRebaseTime).format('yyyy-MM-DD HH:mm')}</span>
+                    <span className={classes.symbol}>USDi</span>
+                    {userProvider && (
+                      <span title="Add token address to wallet">
+                        <AddCircleOutlineIcon className={classes.addTokenIcon} onClick={handleAddUSDi} fontSize="small" />
                       </span>
-                    }
-                  >
-                    <InfoIcon style={{ fontSize: '1rem' }} />
-                  </Tooltip>
+                    )}
+                  </div>
+                  <div className={classes.balanceCardValue} style={{ fontSize: '1rem' }}>
+                    <span title={formatBalance(vaultBufferBalance, vaultBufferDecimals, { showAll: true })}>
+                      <Loading loading={isBalanceLoading}>{formatBalance(vaultBufferBalance, vaultBufferDecimals)}</Loading>
+                    </span>
+                    <span className={classes.symbol}>USDi Ticket&nbsp;&nbsp;</span>
+                    <Tooltip
+                      classes={{
+                        tooltip: classes.tooltip
+                      }}
+                      placement="right"
+                      title={
+                        <span>
+                          USDi Ticket functions as parallel USDi that will be converted into USDi after fund allocations have been successful. Last
+                          execution time was&nbsp;
+                          <span style={{ fontWeight: 'bold' }}>{moment(lastRebaseTime).format('yyyy-MM-DD HH:mm')}</span>
+                        </span>
+                      }
+                    >
+                      <InfoIcon style={{ fontSize: '1rem' }} />
+                    </Tooltip>
+                  </div>
+                  <div className={classes.balanceCardLabel}>AVAILABLE BALANCE</div>
                 </div>
-                <div className={classes.balanceCardLabel}>AVAILABLE BALANCE</div>
-              </div>
-            </Card>
+              </Card>
+              {!isEmpty(address) && <MyStatement address={address} chain={`${CHAIN_ID}`} VAULT_ADDRESS={VAULT_ADDRESS} type={'USDi'} />}
+            </div>
           </GridItem>
         )}
         {current === INVEST_TAB.deposit && (
@@ -383,13 +357,6 @@ function Invest(props) {
                 isBalanceLoading={isBalanceLoading}
                 reloadBalance={loadCoinsBalance}
               />
-            </div>
-          </GridItem>
-        )}
-        {current === INVEST_TAB.statement && (
-          <GridItem xs={9} sm={9} md={9}>
-            <div className={isLayoutSm ? classes.wrapperMobile : classes.wrapper} style={{ background: 'none', paddingTop: '1rem', paddingLeft: 0 }}>
-              <MyStatement address={address} chain={`${CHAIN_ID}`} VAULT_ADDRESS={VAULT_ADDRESS} type={'USDi'} />
             </div>
           </GridItem>
         )}

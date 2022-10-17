@@ -129,6 +129,30 @@ export default function HeaderLinks(props) {
           </Button>
         </ListItem>
         <ListItem className={classes.listItem}>
+          <CustomDropdown
+            noLiPadding
+            buttonText={'Vaults'}
+            buttonProps={{
+              className: classes.navLink,
+              color: 'transparent'
+            }}
+            dropdownList={[
+              <a key="1" href="/#/mutils" className={classes.dropdownLink}>
+                USDi
+              </a>,
+              <a key="2" href="/#/ethi" className={classes.dropdownLink}>
+                ETHi
+              </a>,
+              <a key="3" href="/#/usdr" className={classes.dropdownLink}>
+                USDr
+              </a>,
+              <a key="4" href="/#/ethr" className={classes.dropdownLink}>
+                ETHr
+              </a>
+            ]}
+          />
+        </ListItem>
+        <ListItem className={classes.listItem}>
           <Button color="transparent" target="_blank" href={DOCUMENT_URL} className={classes.navLink}>
             Docs
           </Button>
