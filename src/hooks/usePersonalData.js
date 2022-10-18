@@ -93,6 +93,7 @@ export default function usePersonalData(chain, vault, address, tokenType) {
     dataMerge(address?.toLowerCase(), chain, vault, tokenType)
       .then(setData)
       .finally(() => setLoading(false))
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [address, chain, vault])
 
   return {

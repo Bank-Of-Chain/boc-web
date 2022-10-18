@@ -94,6 +94,7 @@ const MyStatement = props => {
           setLoading(false)
         }, 500)
       )
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [chain, address, type, segmentType])
 
   useEffect(() => {
@@ -193,6 +194,7 @@ const MyStatement = props => {
       ]
     }
     setOptionForBarChart(option)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data, address])
 
   const { day7Apy, day30Apy, profit, latestProfit = { profit: '0', tokenType: '' } } = dataSource

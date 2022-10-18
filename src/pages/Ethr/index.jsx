@@ -157,6 +157,7 @@ function Usdr(props) {
         .catch(noop)
     const timer = setInterval(loadTotalAssetsFn, 3000)
     return () => clearInterval(timer)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [totalValue.toString()])
 
   function handleMint(...eventArgs) {
@@ -194,6 +195,7 @@ function Usdr(props) {
       }
     }
     return listener()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [address, VAULT_ADDRESS, VAULT_ABI, userProvider])
 
   const loadTotalAssets = () => {

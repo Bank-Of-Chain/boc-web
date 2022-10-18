@@ -172,7 +172,7 @@ export default function HeaderLinks(props) {
                   target="_blank"
                   href="https://wallet.polygon.technology/bridge"
                   className={classes.dropdownLink}
-                  rel="noreferrer"
+                  rel="noopener noreferrer"
                 >
                   Polygon Bridge
                 </a>
@@ -190,9 +190,9 @@ export default function HeaderLinks(props) {
                 color: 'transparent'
               }}
               dropdownList={map(NET_WORKS, i => (
-                <a onClick={() => props.changeNetwork(i)} className={classes.dropdownLink}>
+                <span onClick={() => props.changeNetwork(i)} className={classes.dropdownLink}>
                   {i.name}
-                </a>
+                </span>
               ))}
             />
           </ListItem>
@@ -240,19 +240,19 @@ export default function HeaderLinks(props) {
                 dropdownList={[
                   <div key="My Account" className={classes.dropdownLink} onClick={handleGoToAccount}>
                     <AccountBalanceWalletOutlinedIcon className={classes.dropdownLinkIcon} />
-                    <a>My Account</a>
+                    <span>My Account</span>
                   </div>,
                   <div key="Copy Addres" onClick={handleCopyAddress} className={classes.dropdownLink}>
                     <FileCopyOutlinedIcon className={classes.dropdownLinkIcon} />
-                    <a>Copy Address</a>
+                    <span>Copy Address</span>
                   </div>,
                   <div key="Change Wallet" onClick={handleClickConnect} className={classes.dropdownLink}>
                     <PaymentOutlinedIcon className={classes.dropdownLinkIcon} />
-                    <a>Change Wallet</a>
+                    <span>Change Wallet</span>
                   </div>,
                   <div key="Disconnect" onClick={disconnect} className={classes.dropdownLink}>
                     <ExitToAppOutlinedIcon className={classes.dropdownLinkIcon} />
-                    <a>Disconnect</a>
+                    <span>Disconnect</span>
                   </div>
                 ]}
               />

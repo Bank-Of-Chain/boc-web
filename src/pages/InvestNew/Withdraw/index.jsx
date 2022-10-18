@@ -411,6 +411,7 @@ export default function Withdraw({
       setEstimateWithdrawArray([])
       return estimateWithdraw.cancel()
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [toValue, allowMaxLoss, slipper, shouldExchange, token])
 
   const handleAmountChange = event => {
@@ -522,6 +523,7 @@ export default function Withdraw({
     if (isEmpty(address) || isEmpty(VAULT_ADDRESS) || isEmpty(VAULT_ABI)) return
     const timer = setInterval(getPegTokenPrice(), 10000)
     return () => clearInterval(timer)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [address, VAULT_ADDRESS, VAULT_ABI])
 
   return (
