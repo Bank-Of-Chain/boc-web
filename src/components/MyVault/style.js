@@ -4,7 +4,8 @@ const componentsStyle = () => ({
     alignItems: 'center',
     padding: '2rem',
     borderRadius: '1rem',
-    background: 'linear-gradient(111.68deg, rgba(87, 97, 125, 0.2) 7.59%, rgba(255, 255, 255, 0.078) 102.04%)'
+    background: 'linear-gradient(111.68deg, rgba(87, 97, 125, 0.2) 7.59%, rgba(255, 255, 255, 0.078) 102.04%)',
+    cursor: 'pointer'
   },
   vault: {
     padding: '2rem',
@@ -19,7 +20,11 @@ const componentsStyle = () => ({
     marginTop: '1rem'
   },
   logo: {
-    width: '30px'
+    width: '30px',
+    borderRadius: '50%'
+  },
+  checked: {
+    border: '2px solid #A68EFD'
   },
   token: {
     display: 'flex',

@@ -12,8 +12,6 @@ import ListItemText from '@material-ui/core/ListItemText'
 import AccountBalanceWalletIcon from '@material-ui/icons/AccountBalanceWallet'
 import SaveAltIcon from '@material-ui/icons/SaveAlt'
 import UndoIcon from '@material-ui/icons/Undo'
-import Tooltip from '@material-ui/core/Tooltip'
-import InfoIcon from '@material-ui/icons/Info'
 import Loading from '@/components/LoadingComponent'
 import useMediaQuery from '@material-ui/core/useMediaQuery'
 
@@ -22,6 +20,8 @@ import Deposit from './Deposit'
 import Withdraw from './Withdraw'
 import MyStatement from '@/components/MyStatement'
 import MyVault from '@/components/MyVault'
+import Modal from '@material-ui/core/Modal'
+import Paper from '@material-ui/core/Paper'
 
 import { useSelector, useDispatch } from 'react-redux'
 
@@ -35,7 +35,6 @@ import { INVEST_TAB } from '@/constants/invest'
 import { IERC20_ABI, CHAIN_ID } from '@/constants'
 
 // === Utils === //
-import moment from 'moment'
 import { formatBalance } from '@/helpers/number-format'
 import isEmpty from 'lodash/isEmpty'
 import last from 'lodash/last'
@@ -43,7 +42,6 @@ import noop from 'lodash/noop'
 import * as ethers from 'ethers'
 import useVersionWapper from '@/hooks/useVersionWapper'
 import { addToken } from '@/helpers/wallet'
-import { getLastPossibleRebaseTime } from '@/helpers/time-util'
 import useVault from '@/hooks/useVault'
 
 // === Styles === //
@@ -56,6 +54,9 @@ function Usdr(props) {
   const classes = useStyles()
   const dispatch = useDispatch()
   const isLayoutSm = useMediaQuery('(max-width: 960px)')
+
+  const [personalVaultAddress, setPersonalVaultAddress] = useState()
+  const [isVisiable, setIsVisiable] = useState(true)
 
   const {
     address,
@@ -82,8 +83,6 @@ function Usdr(props) {
   const [vaultBufferDecimals, setVaultBufferDecimals] = useState(0)
 
   const [isBalanceLoading, setIsBalanceLoading] = useState(false)
-
-  const lastRebaseTime = getLastPossibleRebaseTime()
 
   const current = useSelector(state => state.investReducer.currentTab)
   const setCurrent = tab => {
@@ -219,12 +218,6 @@ function Usdr(props) {
                 <ListItemText primary={'My Account'} className={classNames(current === INVEST_TAB.account ? classes.check : classes.text)} />
               )}
             </ListItem>
-            <ListItem key="My Vault" button className={classNames(classes.item)} onClick={() => setCurrent(INVEST_TAB.vault)}>
-              <ListItemIcon>
-                <AccountBalanceWalletIcon style={{ color: current === INVEST_TAB.vault ? '#A68EFE' : '#fff' }} />
-              </ListItemIcon>
-              {!isLayoutSm && <ListItemText primary="My Vault" className={classNames(current === INVEST_TAB.vault ? classes.check : classes.text)} />}
-            </ListItem>
             <ListItem
               key="Deposit"
               button
@@ -313,7 +306,7 @@ function Usdr(props) {
                       </span>
                     )}
                   </div>
-                  <div className={classes.balanceCardValue} style={{ fontSize: '1rem' }}>
+                  {/* <div className={classes.balanceCardValue} style={{ fontSize: '1rem' }}>
                     <span title={formatBalance(vaultBufferBalance, vaultBufferDecimals, { showAll: true })}>
                       <Loading loading={isBalanceLoading}>{formatBalance(vaultBufferBalance, vaultBufferDecimals)}</Loading>
                     </span>
@@ -333,19 +326,26 @@ function Usdr(props) {
                     >
                       <InfoIcon style={{ fontSize: '1rem' }} />
                     </Tooltip>
-                  </div>
+                  </div> */}
                   <div className={classes.balanceCardLabel}>AVAILABLE BALANCE</div>
                 </div>
               </Card>
-              {!isEmpty(address) && <MyStatement address={address} chain={`${CHAIN_ID}`} VAULT_ADDRESS={VAULT_ADDRESS} type={'ETHi'} />}
+              {!isEmpty(address) && !isEmpty(personalVaultAddress) && (
+                <MyStatement address={address} chain={`${CHAIN_ID}`} VAULT_ADDRESS={VAULT_ADDRESS} type={'ETHi'} />
+              )}
             </div>
           </GridItem>
         )}
-        {current === INVEST_TAB.vault && (
-          <GridItem xs={9} sm={9} md={8}>
-            <MyVault />
-          </GridItem>
-        )}
+        <Modal className={classes.modal} open={isVisiable} aria-labelledby="simple-modal-title" aria-describedby="simple-modal-description">
+          <Paper elevation={3}>
+            <MyVault
+              setPersonalVaultAddress={v => {
+                setIsVisiable(false)
+                setPersonalVaultAddress(v)
+              }}
+            />
+          </Paper>
+        </Modal>
       </GridContainer>
     </div>
   )
