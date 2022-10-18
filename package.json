@@ -6,7 +6,7 @@
     }
   },
   "version": "1.0.0",
-  "homepage": ".",
+  "homepage": "https://bank-of-chain.github.io/boc-web",
   "browserslist": {
     "production": [
       ">0.2%",

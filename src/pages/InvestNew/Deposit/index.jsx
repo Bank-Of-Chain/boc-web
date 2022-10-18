@@ -367,6 +367,7 @@ export default function Deposit({
   useEffect(() => {
     estimateMint()
     return () => estimateMint.cancel()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [usdcValue, usdtValue, daiValue])
 
   const isLogin = !isEmpty(userProvider)

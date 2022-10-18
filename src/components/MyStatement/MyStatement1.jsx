@@ -41,7 +41,7 @@ const MyStatement1 = props => {
     const tvls = [
       {
         date: '2022-10-11',
-        balance: '0'
+        balance: '1'
       },
       {
         date: '2022-10-12',

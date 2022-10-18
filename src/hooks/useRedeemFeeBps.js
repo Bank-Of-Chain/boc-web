@@ -29,6 +29,7 @@ const useRedeemFeeBps = props => {
       return
     }
     reload()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userProvider, VAULT_ADDRESS])
 
   return {

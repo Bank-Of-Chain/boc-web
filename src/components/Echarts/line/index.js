@@ -23,6 +23,7 @@ function Line({ theme = 'light', style = {}, option = {} }) {
     if (echartRef) {
       echartRef.getEchartsInstance().setOption(option)
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [option])
   return (
     <ReactEChartsCore

@@ -266,6 +266,7 @@ export default function Deposit({
   useEffect(() => {
     estimateMint()
     return () => estimateMint.cancel()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ethValue])
 
   // get gasprice per 15s
@@ -295,6 +296,7 @@ export default function Deposit({
       })
       .then(setMintGasLimit)
       .catch(noop)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userProvider, VAULT_ADDRESS, ethBalance, VAULT_ABI])
 
   const isLogin = !isEmpty(userProvider)

@@ -220,7 +220,7 @@ export default function Footer(props) {
             })}
           >
             <p>
-              Any further queries? Contact us at <a className={classes.email}>contact@bankofchain.io</a>
+              Any further queries? Contact us at <span className={classes.email}>contact@bankofchain.io</span>
             </p>
           </GridItem>
           <Divider />

@@ -105,6 +105,7 @@ const useVault = (VAULT_ADDRESS, VAULT_ABI, userProvider) => {
       return
     }
     queryBaseInfo()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [address, VAULT_ADDRESS, VAULT_ABI, userProvider])
 
   return {
