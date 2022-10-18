@@ -18,7 +18,7 @@ import useMediaQuery from '@material-ui/core/useMediaQuery'
 // === Components === //
 import Deposit from './Deposit'
 import Withdraw from './Withdraw'
-import MyStatement from '@/components/MyStatement'
+import MyStatement from '@/components/MyStatement/MyStatement1'
 import MyVault from '@/components/MyVault'
 import Modal from '@material-ui/core/Modal'
 import Paper from '@material-ui/core/Paper'

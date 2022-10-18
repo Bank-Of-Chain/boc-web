@@ -66,7 +66,7 @@ const componentsStyle = theme => ({
     justifyContent: 'flex-start',
     textAlign: 'left',
     padding: '2.8125rem 2.4375rem',
-    background: 'linear-gradient(111.68deg, rgba(87, 97, 125, 0.2) 7.59%, rgba(255, 255, 255, 0.078) 102.04%)',
+    background: '#323338',
     color: '#fff',
     borderRadius: '1.25rem'
   },

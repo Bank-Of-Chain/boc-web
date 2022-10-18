@@ -1,0 +1,26 @@
+name: Release
+on:
+  pull_request:
+    branches:
+      - feature/risk-on
+jobs:
+  deploy-web:
+    name: Deploy Web Site
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout 🛎️
+        uses: actions/checkout@master
+      - name: Install
+        uses: borales/actions-yarn@master
+        with:
+          cmd: install
+      - name: Build
+        uses: borales/actions-yarn@master
+        with:
+          cmd: build
+      - name: Deploy 🚀
+        uses: JamesIves/github-pages-deploy-action@3.7.1
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BRANCH: gh-pages
+          FOLDER: build

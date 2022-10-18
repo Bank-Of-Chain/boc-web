@@ -12,15 +12,16 @@ import ListItemText from '@material-ui/core/ListItemText'
 import AccountBalanceWalletIcon from '@material-ui/icons/AccountBalanceWallet'
 import SaveAltIcon from '@material-ui/icons/SaveAlt'
 import UndoIcon from '@material-ui/icons/Undo'
-import Tooltip from '@material-ui/core/Tooltip'
-import InfoIcon from '@material-ui/icons/Info'
 import Loading from '@/components/LoadingComponent'
 import useMediaQuery from '@material-ui/core/useMediaQuery'
 
 // === Components === //
 import Deposit from './Deposit'
 import Withdraw from './Withdraw'
-import MyStatement from '@/components/MyStatement'
+import MyStatement from '@/components/MyStatement/MyStatement1'
+import MyVault from '@/components/MyVault'
+import Modal from '@material-ui/core/Modal'
+import Paper from '@material-ui/core/Paper'
 
 import { useSelector, useDispatch } from 'react-redux'
 
@@ -34,7 +35,6 @@ import { INVEST_TAB } from '@/constants/invest'
 import { IERC20_ABI, CHAIN_ID } from '@/constants'
 
 // === Utils === //
-import moment from 'moment'
 import { formatBalance } from '@/helpers/number-format'
 import isEmpty from 'lodash/isEmpty'
 import last from 'lodash/last'
@@ -42,7 +42,6 @@ import noop from 'lodash/noop'
 import * as ethers from 'ethers'
 import useVersionWapper from '@/hooks/useVersionWapper'
 import { addToken } from '@/helpers/wallet'
-import { getLastPossibleRebaseTime } from '@/helpers/time-util'
 import useVault from '@/hooks/useVault'
 
 // === Styles === //
@@ -51,10 +50,13 @@ import styles from './style'
 const useStyles = makeStyles(styles)
 const { BigNumber } = ethers
 
-function Ethr(props) {
+function Usdr(props) {
   const classes = useStyles()
   const dispatch = useDispatch()
   const isLayoutSm = useMediaQuery('(max-width: 960px)')
+
+  const [personalVaultAddress, setPersonalVaultAddress] = useState()
+  const [isVisiable, setIsVisiable] = useState(true)
 
   const {
     address,
@@ -81,8 +83,6 @@ function Ethr(props) {
   const [vaultBufferDecimals, setVaultBufferDecimals] = useState(0)
 
   const [isBalanceLoading, setIsBalanceLoading] = useState(false)
-
-  const lastRebaseTime = getLastPossibleRebaseTime()
 
   const current = useSelector(state => state.investReducer.currentTab)
   const setCurrent = tab => {
@@ -299,44 +299,35 @@ function Ethr(props) {
                     >
                       <Loading loading={isBalanceLoading}>{formatBalance(ethiBalance, ethiDecimals)}</Loading>
                     </span>
-                    <span className={classes.symbol}>ETHr</span>
+                    <span className={classes.symbol}>WETH</span>
                     {userProvider && (
                       <span title="Add token address to wallet">
                         <AddCircleOutlineIcon className={classes.addTokenIcon} onClick={handleAddETHi} fontSize="small" />
                       </span>
                     )}
                   </div>
-                  <div className={classes.balanceCardValue} style={{ fontSize: '1rem' }}>
-                    <span title={formatBalance(vaultBufferBalance, vaultBufferDecimals, { showAll: true })}>
-                      <Loading loading={isBalanceLoading}>{formatBalance(vaultBufferBalance, vaultBufferDecimals)}</Loading>
-                    </span>
-                    <span className={classes.symbol}>ETHi Ticket&nbsp;&nbsp;</span>
-                    <Tooltip
-                      classes={{
-                        tooltip: classes.tooltip
-                      }}
-                      placement="right"
-                      title={
-                        <span>
-                          ETHi Ticket functions as parallel ETHi that will be converted into ETHi after fund allocations have been successful. Last
-                          execution time was&nbsp;
-                          <span style={{ fontWeight: 'bold' }}>{moment(lastRebaseTime).format('yyyy-MM-DD HH:mm')}</span>
-                        </span>
-                      }
-                    >
-                      <InfoIcon style={{ fontSize: '1rem' }} />
-                    </Tooltip>
-                  </div>
                   <div className={classes.balanceCardLabel}>AVAILABLE BALANCE</div>
                 </div>
               </Card>
-              {!isEmpty(address) && <MyStatement address={address} chain={`${CHAIN_ID}`} VAULT_ADDRESS={VAULT_ADDRESS} type={'ETHi'} />}
+              {!isEmpty(address) && !isEmpty(personalVaultAddress) && (
+                <MyStatement address={address} chain={`${CHAIN_ID}`} VAULT_ADDRESS={VAULT_ADDRESS} type={'ETHi'} />
+              )}
             </div>
           </GridItem>
         )}
+        <Modal className={classes.modal} open={isVisiable} aria-labelledby="simple-modal-title" aria-describedby="simple-modal-description">
+          <Paper elevation={3}>
+            <MyVault
+              setPersonalVaultAddress={v => {
+                setIsVisiable(false)
+                setPersonalVaultAddress(v)
+              }}
+            />
+          </Paper>
+        </Modal>
       </GridContainer>
     </div>
   )
 }
 
-export default useVersionWapper(Ethr, 'Ethr')
+export default useVersionWapper(Usdr, 'Usdr')

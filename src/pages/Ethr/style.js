@@ -190,7 +190,20 @@ const componentsStyle = theme => ({
   modal: {
     display: 'flex',
     alignItems: 'center',
-    justifyContent: 'center'
+    justifyContent: 'center',
+    '& .MuiPaper-root': {
+      minWidth: 430,
+      minHeight: 120,
+      padding: '32px 24px',
+      fontSize: 16,
+      border: 0,
+      color: '#fff',
+      boxShadow: '0px 15px 15px rgba(0, 0, 0, 0.05)',
+      borderRadius: '20px',
+      background: '#292B2E',
+      outline: 0,
+      width: '550px'
+    }
   },
   modalBody: {
     textAlign: 'center'
