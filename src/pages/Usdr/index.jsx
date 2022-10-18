@@ -299,34 +299,13 @@ function Usdr(props) {
                     >
                       <Loading loading={isBalanceLoading}>{formatBalance(ethiBalance, ethiDecimals)}</Loading>
                     </span>
-                    <span className={classes.symbol}>USDr</span>
+                    <span className={classes.symbol}>WETH</span>
                     {userProvider && (
                       <span title="Add token address to wallet">
                         <AddCircleOutlineIcon className={classes.addTokenIcon} onClick={handleAddETHi} fontSize="small" />
                       </span>
                     )}
                   </div>
-                  {/* <div className={classes.balanceCardValue} style={{ fontSize: '1rem' }}>
-                    <span title={formatBalance(vaultBufferBalance, vaultBufferDecimals, { showAll: true })}>
-                      <Loading loading={isBalanceLoading}>{formatBalance(vaultBufferBalance, vaultBufferDecimals)}</Loading>
-                    </span>
-                    <span className={classes.symbol}>ETHi Ticket&nbsp;&nbsp;</span>
-                    <Tooltip
-                      classes={{
-                        tooltip: classes.tooltip
-                      }}
-                      placement="right"
-                      title={
-                        <span>
-                          ETHi Ticket functions as parallel ETHi that will be converted into ETHi after fund allocations have been successful. Last
-                          execution time was&nbsp;
-                          <span style={{ fontWeight: 'bold' }}>{moment(lastRebaseTime).format('yyyy-MM-DD HH:mm')}</span>
-                        </span>
-                      }
-                    >
-                      <InfoIcon style={{ fontSize: '1rem' }} />
-                    </Tooltip>
-                  </div> */}
                   <div className={classes.balanceCardLabel}>AVAILABLE BALANCE</div>
                 </div>
               </Card>
