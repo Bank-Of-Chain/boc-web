@@ -575,7 +575,7 @@ export default function Withdraw({
         <GridItem xs={12} sm={12} md={12} lg={12}>
           <div className={classes.inputLabelWrapper}>
             <div className={classes.tokenInfo}>
-              <span className={classes.tokenName}>ETHi</span>
+              <span className={classes.tokenName}>WETH</span>
             </div>
             <CustomTextField
               classes={{ root: classes.input }}
@@ -608,17 +608,12 @@ export default function Withdraw({
         </GridItem>
         <GridItem xs={12} sm={12} md={12} lg={12}>
           <div className={classes.selectorlWrapper}>
-            <p className={classes.estimateBalanceTitle}>ETH</p>
+            <p className={classes.estimateBalanceTitle}>WETH</p>
           </div>
         </GridItem>
         <GridItem xs={12} sm={12} md={12} lg={12}>
           {renderEstimate()}
         </GridItem>
-        {isEmpty(VAULT_ADDRESS) && (
-          <GridItem xs={12} sm={12} md={12} lg={12}>
-            <p style={{ textAlign: 'center', color: 'red' }}>Switch to the ETH chain firstly!</p>
-          </GridItem>
-        )}
       </GridContainer>
       <GridContainer>
         <GridItem xs={12} sm={12} md={12} lg={12}>

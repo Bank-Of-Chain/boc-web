@@ -54,8 +54,6 @@ export default function Deposit({
   VAULT_ABI,
   VAULT_ADDRESS,
   ETH_ADDRESS,
-  vaultBufferBalance,
-  vaultBufferDecimals,
   isBalanceLoading,
   minimumInvestmentAmount
 }) {
@@ -65,7 +63,6 @@ export default function Deposit({
   const [mintGasLimit, setMintGasLimit] = useState(BigNumber.from('174107'))
   const [gasPriceCurrent, setGasPriceCurrent] = useState()
   const [isLoading, setIsLoading] = useState(false)
-  const [isEstimate, setIsEstimate] = useState(false)
   const [isOpenEstimateModal, setIsOpenEstimateModal] = useState(false)
   const [estimateVaultBuffValue, setEstimateVaultBuffValue] = useState(BigNumber.from(0))
   const loadingTimer = useRef()
@@ -108,7 +105,6 @@ export default function Deposit({
   }
 
   const handleInputChange = event => {
-    setIsEstimate(true)
     setEthValue(event.target.value)
   }
 
@@ -220,7 +216,6 @@ export default function Deposit({
     debounce(async () => {
       const isValid = isValidValue()
       if (!isValid) {
-        setIsEstimate(false)
         setEstimateVaultBuffValue(BigNumber.from(0))
         return
       }
@@ -252,7 +247,6 @@ export default function Deposit({
         return BigNumber.from(0)
       })
       setEstimateVaultBuffValue(result)
-      setIsEstimate(false)
     }, 1500)
   )
 
@@ -309,8 +303,8 @@ export default function Deposit({
             <GridItem xs={12} sm={12} md={12} lg={12}>
               <div className={classes.inputLabelWrapper}>
                 <div className={classes.tokenInfo}>
-                  <img className={classes.tokenLogo} alt="" src={`./images/0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE.png`} />
-                  <span className={classes.tokenName}>ETH</span>
+                  <img className={classes.tokenLogo} alt="" src={`./images/0x7ceB23fD6bC0adD59E62ac25578270cFf1b9f619.png`} />
+                  <span className={classes.tokenName}>WETH</span>
                 </div>
                 <CustomTextField
                   classes={{ root: classes.input }}
@@ -336,29 +330,6 @@ export default function Deposit({
             </GridItem>
           </GridContainer>
         </GridItem>
-      </GridContainer>
-      <GridContainer classes={{ root: classes.estimateContainer }}>
-        <GridItem xs={12} sm={12} md={12} lg={12}>
-          <p className={classes.estimateText}>To</p>
-          <p className={classes.estimateBalanceTitle}>
-            ETHi Ticket:
-            <span className={classes.estimateBalanceNum}>
-              <Loading loading={isEstimate}>{toFixed(estimateVaultBuffValue, BigNumber.from(10).pow(ethiDecimals))}</Loading>
-            </span>
-          </p>
-          <p className={classes.estimateText}>Estimated Gas Fee: {toFixed(getGasFee(), BigNumber.from(10).pow(ethDecimals), 6)} ETH</p>
-          <p className={classes.estimateText} style={{ marginTop: '1rem' }}>
-            Balance:&nbsp;&nbsp;
-            <span>
-              <Loading loading={isBalanceLoading}>{formatBalance(vaultBufferBalance, vaultBufferDecimals)}</Loading>
-            </span>
-          </p>
-        </GridItem>
-        {isEmpty(VAULT_ADDRESS) && (
-          <GridItem xs={12} sm={12} md={12} lg={12}>
-            <p style={{ textAlign: 'center', color: 'red' }}>Switch to the ETH chain firstly!</p>
-          </GridItem>
-        )}
       </GridContainer>
       <GridContainer>
         <GridItem xs={12} sm={12} md={12} lg={12}>

@@ -21,6 +21,7 @@ import useMediaQuery from '@material-ui/core/useMediaQuery'
 import Deposit from './Deposit'
 import Withdraw from './Withdraw'
 import MyStatement from '@/components/MyStatement'
+import MyVault from '@/components/MyVault'
 
 import { useSelector, useDispatch } from 'react-redux'
 
@@ -218,6 +219,12 @@ function Usdr(props) {
                 <ListItemText primary={'My Account'} className={classNames(current === INVEST_TAB.account ? classes.check : classes.text)} />
               )}
             </ListItem>
+            <ListItem key="My Vault" button className={classNames(classes.item)} onClick={() => setCurrent(INVEST_TAB.vault)}>
+              <ListItemIcon>
+                <AccountBalanceWalletIcon style={{ color: current === INVEST_TAB.vault ? '#A68EFE' : '#fff' }} />
+              </ListItemIcon>
+              {!isLayoutSm && <ListItemText primary="My Vault" className={classNames(current === INVEST_TAB.vault ? classes.check : classes.text)} />}
+            </ListItem>
             <ListItem
               key="Deposit"
               button
@@ -332,6 +339,11 @@ function Usdr(props) {
               </Card>
               {!isEmpty(address) && <MyStatement address={address} chain={`${CHAIN_ID}`} VAULT_ADDRESS={VAULT_ADDRESS} type={'ETHi'} />}
             </div>
+          </GridItem>
+        )}
+        {current === INVEST_TAB.vault && (
+          <GridItem xs={9} sm={9} md={8}>
+            <MyVault />
           </GridItem>
         )}
       </GridContainer>
