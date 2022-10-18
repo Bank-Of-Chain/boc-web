@@ -14,7 +14,7 @@
 importScripts("https://storage.googleapis.com/workbox-cdn/releases/4.3.1/workbox-sw.js");
 
 importScripts(
-  "/boc-web/precache-manifest.08783d4256690df9609d07785a7f4637.js"
+  "https://bank-of-chain.github.io/boc-web/precache-manifest.a2ef7a84f5d0833467407500c32c524f.js"
 );
 
 self.addEventListener('message', (event) => {

@@ -15,8 +15,8 @@
     "main.css": "/boc-web/static/css/main.412ecd55.chunk.css",
     "main.js": "/boc-web/static/js/main.4794e2d8.chunk.js",
     "main.js.map": "/boc-web/static/js/main.4794e2d8.chunk.js.map",
-    "runtime-main.js": "/boc-web/static/js/runtime-main.729dd8cf.js",
-    "runtime-main.js.map": "/boc-web/static/js/runtime-main.729dd8cf.js.map",
+    "runtime-main.js": "/boc-web/static/js/runtime-main.95ef4456.js",
+    "runtime-main.js.map": "/boc-web/static/js/runtime-main.95ef4456.js.map",
     "static/js/8.726ff963.chunk.js": "/boc-web/static/js/8.726ff963.chunk.js",
     "static/js/8.726ff963.chunk.js.map": "/boc-web/static/js/8.726ff963.chunk.js.map",
     "static/css/9.17bbdf38.chunk.css": "/boc-web/static/css/9.17bbdf38.chunk.css",
@@ -45,7 +45,7 @@
     "static/js/20.e0b71ec2.chunk.js": "/boc-web/static/js/20.e0b71ec2.chunk.js",
     "static/js/20.e0b71ec2.chunk.js.map": "/boc-web/static/js/20.e0b71ec2.chunk.js.map",
     "index.html": "/boc-web/index.html",
-    "precache-manifest.08783d4256690df9609d07785a7f4637.js": "/boc-web/precache-manifest.08783d4256690df9609d07785a7f4637.js",
+    "precache-manifest.a2ef7a84f5d0833467407500c32c524f.js": "/boc-web/precache-manifest.a2ef7a84f5d0833467407500c32c524f.js",
     "service-worker.js": "/boc-web/service-worker.js",
     "static/css/9.17bbdf38.chunk.css.map": "/boc-web/static/css/9.17bbdf38.chunk.css.map",
     "static/css/main.412ecd55.chunk.css.map": "/boc-web/static/css/main.412ecd55.chunk.css.map",
@@ -62,7 +62,7 @@
     "static/js/main.4794e2d8.chunk.js.LICENSE.txt": "/boc-web/static/js/main.4794e2d8.chunk.js.LICENSE.txt"
   },
   "entrypoints": [
-    "static/js/runtime-main.729dd8cf.js",
+    "static/js/runtime-main.95ef4456.js",
     "static/js/8.726ff963.chunk.js",
     "static/css/main.412ecd55.chunk.css",
     "static/js/main.4794e2d8.chunk.js"
