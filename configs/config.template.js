@@ -15,6 +15,8 @@ const VAULT_BUFFER_FOR_ETHI_ETH = '{{VAULT_BUFFER_FOR_ETHI_ETH}}'
 const VAULT_BUFFER_FOR_USDI_ETH = '{{VAULT_BUFFER_FOR_USDI_ETH}}'
 const VAULT_BUFFER_FOR_USDI_MATIC = '{{VAULT_BUFFER_FOR_USDI_MATIC}}'
 
+const VAULT_FACTORY_ADDRESS = '{{USDI_VAULT_FOR_ETH}}'
+
 const configBase = {
   usdt_address: '0xdAC17F958D2ee523a2206206994597C13D831ec7',
   usdc_address: '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48',
@@ -79,6 +81,21 @@ const config137 = {
       VAULT_ADDRESS: '',
       ETHI_ADDRESS: '',
       VAULT_BUFFER_ADDRESS: ''
+    },
+    {
+      id: 'ethr',
+      name: 'Vault for ethr',
+      path: '#/ethr',
+      abi_version: 'ethr',
+      VAULT_FACTORY_ADDRESS: VAULT_FACTORY_ADDRESS
+    },
+    {
+      id: 'usdr',
+      name: 'Vault for usdr',
+      description: 'Vault for usdr',
+      path: '#/usdr',
+      abi_version: 'usdr',
+      VAULT_FACTORY_ADDRESS: VAULT_FACTORY_ADDRESS
     }
   ]
 }

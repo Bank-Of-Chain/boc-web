@@ -17,5 +17,6 @@
   "RPC_FOR_31337": "",
   "KEEPER_FOR_ETH_ETHI": "https://pr02-sg-keeper-ethi.bankofchain.io",
   "KEEPER_FOR_ETH_USDI": "https://pr02-sg-keeper-eth.bankofchain.io",
-  "KEEPER_FOR_MATIC_USDI": "https://pr02-sg-keeper-polygon.bankofchain.io"
+  "KEEPER_FOR_MATIC_USDI": "https://pr02-sg-keeper-polygon.bankofchain.io",
+  "VAULT_FACTORY_ADDRESS": "0x4054765d35be9b4b27C4A1db3B269ae40f0541Ad"
 }
