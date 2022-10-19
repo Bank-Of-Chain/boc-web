@@ -50,7 +50,7 @@ exports[`AmmSection Component Render 1`] = `
             <span
               class="MuiTab-wrapper makeStyles-tabWrapper-16"
             >
-              Major chains
+              Major chain(s)
             </span>
             <span
               class="MuiTouchRipple-root"
