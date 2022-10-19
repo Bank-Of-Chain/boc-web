@@ -50,7 +50,7 @@ import styles from './style'
 const useStyles = makeStyles(styles)
 const { BigNumber } = ethers
 
-function Usdr(props) {
+function Ethr(props) {
   const classes = useStyles()
   const dispatch = useDispatch()
   const isLayoutSm = useMediaQuery('(max-width: 960px)')
@@ -68,8 +68,11 @@ function Usdr(props) {
     EXCHANGE_ADAPTER_ABI,
     PRICE_ORCALE_ABI,
     VAULT_BUFFER_ADDRESS,
-    VAULT_BUFFER_ABI
+    VAULT_BUFFER_ABI,
+    VAULT_FACTORY_ADDRESS
   } = props
+
+  console.log('Usdr VAULT_FACTORY_ADDRESS=', VAULT_FACTORY_ADDRESS)
 
   const [ethBalance, setEthBalance] = useState(BigNumber.from(0))
   const [ethiBalance, setEthiBalance] = useState(BigNumber.from(0))
@@ -332,4 +335,4 @@ function Usdr(props) {
   )
 }
 
-export default useVersionWapper(Usdr, 'Usdr')
+export default useVersionWapper(Ethr, 'ethr')

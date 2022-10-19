@@ -1,0 +1,296 @@
+[
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "uint8",
+          "name": "version",
+          "type": "uint8"
+        }
+      ],
+      "name": "Initialized",
+      "type": "event"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_account",
+          "type": "address"
+        }
+      ],
+      "name": "borrowInfo",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "_totalCollateralBase",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_totalDebtBase",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_availableBorrowsBase",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_currentLiquidationThreshold",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_ltv",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_healthFactor",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "_amount",
+          "type": "uint256"
+        },
+        {
+          "internalType": "address",
+          "name": "_quoteAsset",
+          "type": "address"
+        }
+      ],
+      "name": "calcAaveBaseCurrencyValueInAsset",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_baseAsset",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_amount",
+          "type": "uint256"
+        },
+        {
+          "internalType": "address",
+          "name": "_quoteAsset",
+          "type": "address"
+        }
+      ],
+      "name": "calcCanonicalAssetValue",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_asset",
+          "type": "address"
+        }
+      ],
+      "name": "getAToken",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_borrowToken",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_interestRateMode",
+          "type": "uint256"
+        },
+        {
+          "internalType": "address",
+          "name": "_account",
+          "type": "address"
+        }
+      ],
+      "name": "getCurrentBorrow",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_borrowToken",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_interestRateMode",
+          "type": "uint256"
+        }
+      ],
+      "name": "getDebtToken",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "int24",
+          "name": "_tick",
+          "type": "int24"
+        },
+        {
+          "internalType": "int24",
+          "name": "_tickSpacing",
+          "type": "int24"
+        },
+        {
+          "internalType": "int24",
+          "name": "_baseThreshold",
+          "type": "int24"
+        }
+      ],
+      "name": "getSpecifiedRangesOfTick",
+      "outputs": [
+        {
+          "internalType": "int24",
+          "name": "_tickFloor",
+          "type": "int24"
+        },
+        {
+          "internalType": "int24",
+          "name": "_tickCeil",
+          "type": "int24"
+        },
+        {
+          "internalType": "int24",
+          "name": "_tickLower",
+          "type": "int24"
+        },
+        {
+          "internalType": "int24",
+          "name": "_tickUpper",
+          "type": "int24"
+        }
+      ],
+      "stateMutability": "pure",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_account",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "_collateralToken",
+          "type": "address"
+        }
+      ],
+      "name": "getTotalCollateralTokenAmount",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "_totalCollateralToken",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_pool",
+          "type": "address"
+        },
+        {
+          "internalType": "uint32",
+          "name": "_twapDuration",
+          "type": "uint32"
+        }
+      ],
+      "name": "getTwap",
+      "outputs": [
+        {
+          "internalType": "int24",
+          "name": "",
+          "type": "int24"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "initialize",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "pool",
+      "outputs": [
+        {
+          "internalType": "contract IUniswapV3Pool",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    }
+  ]

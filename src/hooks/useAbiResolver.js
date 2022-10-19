@@ -22,7 +22,14 @@ function abiLoader(version, file) {
 function useAbiResolver(abiPrefix) {
   if (isEmpty(abiPrefix)) return {}
 
-  let VAULT_BUFFER_ABI, VAULT_ABI, EXCHANGE_ADAPTER_ABI, PRICE_ORCALE_ABI, EXCHANGE_AGGREGATOR_ABI
+  let VAULT_BUFFER_ABI,
+    VAULT_ABI,
+    EXCHANGE_ADAPTER_ABI,
+    PRICE_ORCALE_ABI,
+    EXCHANGE_AGGREGATOR_ABI,
+    VAULT_FACTORY_ABI,
+    UNISWAPV3_RISK_ON_VAULT,
+    UNISWAPV3_RISK_ON_HELPER
 
   try {
     VAULT_ABI = abiLoader(abiPrefix, 'vault-abi.json')
@@ -54,12 +61,33 @@ function useAbiResolver(abiPrefix) {
     VAULT_BUFFER_ABI = []
   }
 
+  try {
+    VAULT_FACTORY_ABI = abiLoader(abiPrefix, 'vault-factory.json')
+  } catch (error) {
+    VAULT_FACTORY_ABI = []
+  }
+
+  try {
+    UNISWAPV3_RISK_ON_VAULT = abiLoader(abiPrefix, 'uniswapv3-risk-on-vault.json')
+  } catch (error) {
+    UNISWAPV3_RISK_ON_VAULT = []
+  }
+
+  try {
+    UNISWAPV3_RISK_ON_HELPER = abiLoader(abiPrefix, 'uniswapv3-risk-on-helper.json')
+  } catch (error) {
+    UNISWAPV3_RISK_ON_HELPER = []
+  }
+
   return {
     VAULT_ABI,
     VAULT_BUFFER_ABI,
     PRICE_ORCALE_ABI,
+    VAULT_FACTORY_ABI,
     EXCHANGE_ADAPTER_ABI,
-    EXCHANGE_AGGREGATOR_ABI
+    EXCHANGE_AGGREGATOR_ABI,
+    UNISWAPV3_RISK_ON_VAULT,
+    UNISWAPV3_RISK_ON_HELPER
   }
 }
 
