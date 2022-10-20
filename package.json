@@ -45,6 +45,7 @@
     "piggy-finance-utils": "1.0.62",
     "prop-types": "^15.8.1",
     "react": "16.9.0",
+    "react-async-hook": "^4.0.0",
     "react-dom": "16.9.0",
     "react-redux": "^7.2.6",
     "react-router-dom": "^5.2.0",

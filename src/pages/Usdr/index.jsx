@@ -18,7 +18,7 @@ import useMediaQuery from '@material-ui/core/useMediaQuery'
 // === Components === //
 import Deposit from './Deposit'
 import Withdraw from './Withdraw'
-import MyStatement from '@/components/MyStatement/MyStatement1'
+import MyStatementForRiskOn from '@/components/MyStatement/MyStatementForRiskOn'
 import MyVault from '@/components/MyVault'
 import Modal from '@material-ui/core/Modal'
 import Paper from '@material-ui/core/Paper'
@@ -31,7 +31,7 @@ import { setCurrentTab } from '@/reducers/invest-reducer'
 // === constants === //
 import { USDC_ADDRESS_MATIC } from '@/constants/tokens'
 import { INVEST_TAB } from '@/constants/invest'
-import { IERC20_ABI, CHAIN_ID } from '@/constants'
+import { IERC20_ABI } from '@/constants'
 
 // === Utils === //
 import { formatBalance } from '@/helpers/number-format'
@@ -57,14 +57,7 @@ function Usdr(props) {
   const dispatch = useDispatch()
   const isLayoutSm = useMediaQuery('(max-width: 960px)')
 
-  const {
-    address,
-    userProvider,
-    VAULT_ADDRESS,
-    VAULT_FACTORY_ADDRESS,
-    VAULT_FACTORY_ABI,
-    UNISWAPV3_RISK_ON_VAULT,
-  } = props
+  const { address, userProvider, VAULT_FACTORY_ADDRESS, VAULT_FACTORY_ABI, UNISWAPV3_RISK_ON_VAULT, UNISWAPV3_RISK_ON_HELPER } = props
 
   const [isBalanceLoading, setIsBalanceLoading] = useState(false)
   const [personalVaultAddress, setPersonalVaultAddress] = useState()
@@ -81,8 +74,14 @@ function Usdr(props) {
     loadData()
     dispatch(setCurrentTab(tab))
   }
-  const { minimumInvestmentAmount, totalAsset } = useVaultOnRisk(personalVaultAddress, UNISWAPV3_RISK_ON_VAULT, userProvider)
-  console.log('minimumInvestmentAmount, exchangeManage', totalAsset?.toString())
+  const { minimumInvestmentAmount, baseInfo } = useVaultOnRisk(
+    VAULT_FACTORY_ADDRESS,
+    VAULT_FACTORY_ABI,
+    personalVaultAddress,
+    UNISWAPV3_RISK_ON_VAULT,
+    userProvider
+  )
+  const { netMarketMakingAmount } = baseInfo
 
   const handleAddToken = useCallback(() => {
     addToken(wantTokenForVault, wantTokenSymbol, wantTokenDecimals)
@@ -171,7 +170,7 @@ function Usdr(props) {
             <div className={isLayoutSm ? classes.wrapperMobile : classes.wrapper}>
               <Withdraw
                 userProvider={userProvider}
-                totalAsset={totalAsset}
+                totalAsset={netMarketMakingAmount}
                 wantTokenDecimals={wantTokenDecimals}
                 wantTokenSymbol={wantTokenSymbol}
                 VAULT_ADDRESS={personalVaultAddress}
@@ -189,11 +188,11 @@ function Usdr(props) {
                 <div className={classes.balanceCardItem}>
                   <div className={classes.balanceCardValue}>
                     <span
-                      title={formatBalance(totalAsset, wantTokenDecimals, {
+                      title={formatBalance(netMarketMakingAmount, wantTokenDecimals, {
                         showAll: true
                       })}
                     >
-                      <Loading loading={isBalanceLoading}>{formatBalance(totalAsset, wantTokenDecimals)}</Loading>
+                      <Loading loading={isBalanceLoading}>{formatBalance(netMarketMakingAmount, wantTokenDecimals)}</Loading>
                     </span>
                     <span className={classes.symbol}>
                       <Loading loading={isEmpty(wantTokenSymbol) && isBalanceLoading}>{wantTokenSymbol}</Loading>
@@ -208,7 +207,15 @@ function Usdr(props) {
                 </div>
               </Card>
               {!isEmpty(address) && !isEmpty(personalVaultAddress) && (
-                <MyStatement address={address} chain={`${CHAIN_ID}`} VAULT_ADDRESS={VAULT_ADDRESS} />
+                <MyStatementForRiskOn
+                  userProvider={userProvider}
+                  VAULT_FACTORY_ABI={VAULT_FACTORY_ABI}
+                  personalVaultAddress={personalVaultAddress}
+                  wantTokenSymbol={wantTokenSymbol}
+                  VAULT_FACTORY_ADDRESS={VAULT_FACTORY_ADDRESS}
+                  UNISWAPV3_RISK_ON_VAULT={UNISWAPV3_RISK_ON_VAULT}
+                  UNISWAPV3_RISK_ON_HELPER={UNISWAPV3_RISK_ON_HELPER}
+                />
               )}
             </div>
           </GridItem>

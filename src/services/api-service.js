@@ -2,6 +2,8 @@ import axios from 'axios'
 
 // === Utils === //
 import map from 'lodash/map'
+import get from 'lodash/get'
+import isNil from 'lodash/isNil'
 import isEmpty from 'lodash/isEmpty'
 
 // === Constants === //
@@ -139,4 +141,22 @@ export const getSegmentProfit = (address, chainId, tokenType, segmentType) => {
       }
     })
     .then(resp => resp.data)
+}
+
+/**
+ * fetch mystatement data by type
+ * @param {*} chainId
+ * @param {*} vaultAddress
+ * @param {*} type
+ * @param {*} params
+ * @returns
+ */
+export const getDataByType = (chainId, vaultAddress, type, params = { limit: 30 }) => {
+  if (isNil(chainId) || isEmpty(vaultAddress) || isEmpty(type)) return Promise.reject('chainId & vaultAddress & type must not be null')
+
+  return axios
+    .get(`${BOC_SERVER}/chains/${chainId}/vaults/${vaultAddress}/data_collects/types/${type}`, {
+      params
+    })
+    .then(resp => get(resp, 'data.content', []))
 }

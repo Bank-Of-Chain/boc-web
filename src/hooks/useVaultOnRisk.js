@@ -7,14 +7,15 @@ import isEmpty from 'lodash/isEmpty'
 // === Hooks === //
 import useUserAddress from './useUserAddress'
 
+// === Constants === //
+import { IERC20_ABI } from '@/constants'
+
 const { Contract, BigNumber } = ethers
 
-const useVaultOnRisk = (VAULT_ADDRESS, VAULT_ABI, userProvider) => {
+const useVaultOnRisk = (VAULT_FACTORY_ADDRESS, VAULT_FACTORY_ABI, VAULT_ADDRESS, VAULT_ABI, UNISWAPV3_RISK_ON_HELPER, userProvider) => {
   const [error, setError] = useState()
   const [loading, setLoading] = useState(false)
-  const [totalAsset, setTotalAsset] = useState(BigNumber.from(0))
-  const [underlyingUnitsPerShare, setUnderlyingUnitsPerShare] = useState(BigNumber.from(0))
-  const [minimumInvestmentAmount, setMinimumInvestmentAmount] = useState(BigNumber.from(0))
+  const [baseInfo, setBaseInfo] = useState({})
 
   const address = useUserAddress(userProvider)
 
@@ -32,31 +33,53 @@ const useVaultOnRisk = (VAULT_ADDRESS, VAULT_ABI, userProvider) => {
     const error = valid()
     if (error) return setError(error)
     setLoading(true)
-    const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider)
-    const requestArray = [
-      vaultContract.depositTo3rdPoolTotalAssets().catch(() => BigNumber.from(0)),
-      // vaultContract.minimumInvestmentAmount().catch(() => BigNumber.from(0))
-    ]
-    return Promise.all(requestArray)
-      .then(([totalAsset, minimumInvestmentAmount]) => {
-        setTotalAsset(totalAsset)
-        setMinimumInvestmentAmount(minimumInvestmentAmount)
-        return {
-          totalAsset
-        }
-      })
-      .catch(setError)
-      .finally(() => setLoading(false))
-  }
-
-  const fetchUnderlyingUnitsPerShare = () => {
-    const vaultContract = new Contract(VAULT_ADDRESS, VAULT_ABI, userProvider)
-    setLoading(true)
-    vaultContract
-      .underlyingUnitsPerShare()
-      .catch(setError)
-      .then(setUnderlyingUnitsPerShare)
-      .finally(() => setLoading(false))
+    const vaultFactoryContract = new Contract(VAULT_FACTORY_ADDRESS, VAULT_FACTORY_ABI, userProvider)
+    vaultFactoryContract.uniswapV3RiskOnHelper().then(helperAddress => {
+      const contract = new Contract(VAULT_ADDRESS, VAULT_ABI, userProvider)
+      const helperContract = new Contract(helperAddress, UNISWAPV3_RISK_ON_HELPER, userProvider)
+      return Promise.all([
+        contract.borrowToken().then(async i => {
+          const tokenContract = new Contract(i, IERC20_ABI, userProvider)
+          return { borrowToken: i, name: await tokenContract.symbol(), borrowTokenDecimals: BigNumber.from(10).pow(await tokenContract.decimals()) }
+        }),
+        contract.wantToken().then(async i => {
+          const tokenContract = new Contract(i, IERC20_ABI, userProvider)
+          return { wantToken: i, name: await tokenContract.symbol(), wantTokenDecimals: BigNumber.from(10).pow(await tokenContract.decimals()) }
+        })
+      ])
+        .then(([borrowInfo, wantInfo]) => {
+          const { borrowToken } = borrowInfo
+          const { wantToken } = wantInfo
+          return Promise.all([
+            contract.netMarketMakingAmount(),
+            helperContract.getCurrentBorrow(borrowToken, 2, VAULT_ADDRESS),
+            helperContract.getTotalCollateralTokenAmount(VAULT_ADDRESS, wantToken),
+            contract.depositTo3rdPoolTotalAssets(),
+            contract.estimatedTotalAssets()
+          ]).then(([netMarketMakingAmount, currentBorrow, totalCollateralTokenAmount, depositTo3rdPoolTotalAssets, estimatedTotalAssets]) => {
+            return helperContract.calcCanonicalAssetValue(borrowToken, currentBorrow, wantToken).then(currentBorrowWithCanonical => {
+              const nextBaseInfo = {
+                netMarketMakingAmount,
+                currentBorrow,
+                currentBorrowWithCanonical,
+                depositTo3rdPoolTotalAssets,
+                totalCollateralTokenAmount,
+                estimatedTotalAssets,
+                wantInfo,
+                borrowInfo,
+                result: depositTo3rdPoolTotalAssets.add(totalCollateralTokenAmount).sub(netMarketMakingAmount).sub(currentBorrowWithCanonical)
+              }
+              setBaseInfo(nextBaseInfo)
+              return nextBaseInfo
+            })
+          })
+        })
+        .finally(() => {
+          setTimeout(() => {
+            setLoading(false)
+          }, 300)
+        })
+    })
   }
 
   useEffect(() => {
@@ -73,11 +96,8 @@ const useVaultOnRisk = (VAULT_ADDRESS, VAULT_ABI, userProvider) => {
   return {
     loading,
     error,
-    totalAsset,
-    minimumInvestmentAmount,
-    fetchUnderlyingUnitsPerShare,
-    queryBaseInfo,
-    underlyingUnitsPerShare
+    baseInfo,
+    queryBaseInfo
   }
 }
 

@@ -30,7 +30,22 @@ test('number-format toFixed with decimals isZero', () => {
   expect(text).toBe('0')
 })
 
-test('number-format toFixed formatBalance', () => {
+test('number-format formatBalance', () => {
   const text = formatBalance('10000', 2)
   expect(text).toBe('100')
+})
+
+test('number-format formatBalance with value undefined', () => {
+  const text = formatBalance(undefined, 2)
+  expect(text).toBe(undefined)
+})
+
+test('number-format formatBalance with value null', () => {
+  const text = formatBalance(null, 2)
+  expect(text).toBe(undefined)
+})
+
+test('number-format formatBalance with decimals undefined', () => {
+  const text = formatBalance('10000', undefined)
+  expect(text).toBe('10000')
 })
