@@ -14,29 +14,56 @@ import getLineEchartOpt from '@/components/Echarts/options/line/getLineEchartOpt
 
 // === Hooks === //
 import usePersonalData from '@/hooks/usePersonalData'
+import useVaultOnRisk from '@/hooks/useVaultOnRisk'
 
 // === Utils === //
 import numeral from 'numeral'
 import map from 'lodash/map'
 import { toFixed } from '@/helpers/number-format'
+import * as ethers from 'ethers'
 
 // === Constants === //
-import { ETHI_BN_DECIMALS, ETHI_DISPLAY_DECIMALS } from '@/constants/ethi'
+import { ETHI_DISPLAY_DECIMALS } from '@/constants/ethi'
 import { TOKEN_DISPLAY_DECIMALS } from '@/constants/vault'
 
 // === Styles === //
 import styles from './style'
 
+const { BigNumber } = ethers
 const useStyles = makeStyles(styles)
 
-const MyStatement1 = props => {
-  const { address, type, chain } = props
+const MyStatementForRiskOn = props => {
+  const {
+    address,
+    type,
+    chain,
+    userProvider,
+    wantTokenSymbol,
+    VAULT_FACTORY_ADDRESS,
+    VAULT_FACTORY_ABI,
+    personalVaultAddress,
+    UNISWAPV3_RISK_ON_VAULT,
+    UNISWAPV3_RISK_ON_HELPER
+  } = props
 
   const isUSDi = type === 'USDi'
   const classes = useStyles()
   const [optionForLineChart, setOptionForLineChart] = useState({})
   const { dataSource, loading: chartLoading } = usePersonalData(chain, type, address, type)
+  const { baseInfo } = useVaultOnRisk(
+    VAULT_FACTORY_ADDRESS,
+    VAULT_FACTORY_ABI,
+    personalVaultAddress,
+    UNISWAPV3_RISK_ON_VAULT,
+    UNISWAPV3_RISK_ON_HELPER,
+    userProvider
+  )
 
+  const { netMarketMakingAmount, result, estimatedTotalAssets, wantInfo = {}, borrowInfo = {} } = baseInfo
+  const { wantTokenDecimals = BigNumber.from(0) } = wantInfo
+  const { borrowTokenDecimals = BigNumber.from(0) } = borrowInfo
+
+  console.log('borrowTokenDecimals=', borrowTokenDecimals)
   useEffect(() => {
     const tvls = [
       {
@@ -76,7 +103,6 @@ const MyStatement1 = props => {
         }
       }
     })
-    console.log('option1=', option1)
     setOptionForLineChart(option1)
   }, [dataSource, address])
 
@@ -94,10 +120,10 @@ const MyStatement1 = props => {
           <InfoIcon style={{ fontSize: '1.375rem', color: 'rgba(255,255,255,0.45)' }} />
         </Tooltip>
       ),
-      content: numeral(toFixed('41231231231224141414', ETHI_BN_DECIMALS, isUSDi ? TOKEN_DISPLAY_DECIMALS : ETHI_DISPLAY_DECIMALS)).format(
+      content: numeral(toFixed(netMarketMakingAmount, wantTokenDecimals, isUSDi ? TOKEN_DISPLAY_DECIMALS : ETHI_DISPLAY_DECIMALS)).format(
         isUSDi ? '0,0.[00]' : '0,0.[0000]'
       ),
-      unit: 'WETH'
+      unit: wantTokenSymbol
     },
     {
       title: 'Current Value',
@@ -112,14 +138,14 @@ const MyStatement1 = props => {
           <InfoIcon style={{ fontSize: '1.375rem', color: 'rgba(255,255,255,0.45)' }} />
         </Tooltip>
       ),
-      content: numeral(toFixed('55231231231224141414', ETHI_BN_DECIMALS, isUSDi ? TOKEN_DISPLAY_DECIMALS : ETHI_DISPLAY_DECIMALS)).format(
+      content: numeral(toFixed(estimatedTotalAssets, wantTokenDecimals, isUSDi ? TOKEN_DISPLAY_DECIMALS : ETHI_DISPLAY_DECIMALS)).format(
         isUSDi ? '0,0.[00]' : '0,0.[0000]'
       ),
       isAPY: true,
-      unit: 'WETH'
+      unit: wantTokenSymbol
     },
     {
-      title: 'IRR',
+      title: 'Profit',
       tip: (
         <Tooltip
           classes={{
@@ -131,9 +157,11 @@ const MyStatement1 = props => {
           <InfoIcon style={{ fontSize: '1.375rem', color: 'rgba(255,255,255,0.45)' }} />
         </Tooltip>
       ),
-      content: numeral('6.21').format('0,0.00'),
+      content: numeral(toFixed(result, wantTokenDecimals, isUSDi ? TOKEN_DISPLAY_DECIMALS : ETHI_DISPLAY_DECIMALS)).format(
+        isUSDi ? '0,0.[00]' : '0,0.[0000]'
+      ),
       isAPY: true,
-      unit: '%'
+      unit: wantTokenSymbol
     }
   ]
 
@@ -239,7 +267,7 @@ const MyStatement1 = props => {
               loading={chartLoading}
               title={
                 <span>
-                  Unrealized Profit
+                  Profits
                   <Tooltip title={`Curve of daily change in the total ${isUSDi ? 'USDi' : 'ETHi'} held by the user.`}>
                     <InfoIcon style={{ marginLeft: 8, fontSize: '1rem' }} />
                   </Tooltip>
@@ -259,4 +287,4 @@ const MyStatement1 = props => {
   )
 }
 
-export default MyStatement1
+export default MyStatementForRiskOn
