@@ -11,10 +11,12 @@ import Tooltip from '@material-ui/core/Tooltip'
 
 // === Services === //
 import getLineEchartOpt from '@/components/Echarts/options/line/getLineEchartOpt'
+import { getDataByType } from '@/services/api-service'
 
 // === Hooks === //
 import usePersonalData from '@/hooks/usePersonalData'
 import useVaultOnRisk from '@/hooks/useVaultOnRisk'
+import { useAsync } from 'react-async-hook'
 
 // === Utils === //
 import numeral from 'numeral'
@@ -25,6 +27,7 @@ import * as ethers from 'ethers'
 // === Constants === //
 import { ETHI_DISPLAY_DECIMALS } from '@/constants/ethi'
 import { TOKEN_DISPLAY_DECIMALS } from '@/constants/vault'
+import { CHAIN_ID } from '@/constants'
 
 // === Styles === //
 import styles from './style'
@@ -49,6 +52,15 @@ const MyStatementForRiskOn = props => {
   const isUSDi = type === 'USDi'
   const classes = useStyles()
   const [optionForLineChart, setOptionForLineChart] = useState({})
+
+  // api datas fetching
+  const aaaa = useAsync(() => getDataByType(CHAIN_ID, personalVaultAddress, 'aave-outstanding-loan'), [personalVaultAddress])
+  const bbbb = useAsync(() => getDataByType(CHAIN_ID, personalVaultAddress, 'aave-collateral'), [personalVaultAddress])
+  const cccc = useAsync(() => getDataByType(CHAIN_ID, personalVaultAddress, 'aave-health-ratio'), [personalVaultAddress])
+  const dddd = useAsync(() => getDataByType(CHAIN_ID, personalVaultAddress, 'uniswap-position-value'), [personalVaultAddress])
+  const eeee = useAsync(() => getDataByType(CHAIN_ID, personalVaultAddress, 'profit'), [personalVaultAddress])
+  const ffff = useAsync(() => getDataByType(CHAIN_ID, personalVaultAddress, 'net-deposit'), [personalVaultAddress])
+  console.log('aaaa=', aaaa, bbbb, cccc, dddd, eeee, ffff)
   const { dataSource, loading: chartLoading } = usePersonalData(chain, type, address, type)
   const { baseInfo } = useVaultOnRisk(
     VAULT_FACTORY_ADDRESS,
