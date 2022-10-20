@@ -15,6 +15,10 @@ const componentsStyle = () => ({
   vaultTitle: {
     textAlign: 'center'
   },
+  icon: {
+    width: '100%',
+    borderRadius: '50%'
+  },
   button: {
     width: '100%',
     marginTop: '1rem'
