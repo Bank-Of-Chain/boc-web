@@ -20,6 +20,10 @@ export const toFixed = (value, precision = 1, ...args) => {
 const DISPLAY_DECIMALS = 6
 const MATH_FLOOR_SIGN = 1
 export const formatBalance = (balance, decimals, options = {}) => {
+  if (isNil(balance)) return
+  if (isNil(decimals)) {
+    decimals = 0
+  }
   const { displayDecimals = DISPLAY_DECIMALS, showAll = false } = options
   const value = BN(balance.toString())
   const decimalsValue = BN(10).pow(decimals)
