@@ -12,8 +12,7 @@ import GridContainer from '@/components/Grid/GridContainer'
 import GridItem from '@/components/Grid/GridItem'
 import CustomTextField from '@/components/CustomTextField'
 import Button from '@/components/CustomButtons/Button'
-import { warmDialog } from '@/reducers/meta-reducer'
-import { toFixed, formatBalance } from '@/helpers/number-format'
+import SettingsOutlinedIcon from '@material-ui/icons/SettingsOutlined'
 
 // === Utils === //
 import isUndefined from 'lodash/isUndefined'
@@ -22,6 +21,8 @@ import isEmpty from 'lodash/isEmpty'
 import isNumber from 'lodash/isNumber'
 import * as ethers from 'ethers'
 import BN from 'bignumber.js'
+import { warmDialog } from '@/reducers/meta-reducer'
+import { toFixed, formatBalance } from '@/helpers/number-format'
 
 // === Constants === //
 import { isAd, isEs, isRp, isDistributing, errorTextOutput, isLessThanMinValue } from '@/helpers/error-handler'
@@ -45,7 +46,8 @@ export default function Deposit({
   wantTokenBalance,
   wantTokenDecimals,
   wantTokenSymbol,
-  wantTokenForVault
+  wantTokenForVault,
+  modalOpenHandle
 }) {
   const classes = useStyles()
   const dispatch = useDispatch()
@@ -239,6 +241,9 @@ export default function Deposit({
   return (
     <>
       <GridContainer classes={{ root: classes.depositContainer }}>
+        <div className={classes.setting}>
+          <SettingsOutlinedIcon style={{ color: '#A0A0A0' }} onClick={modalOpenHandle} />
+        </div>
         <p className={classes.estimateText}>From</p>
         <GridItem xs={12} sm={12} md={12} lg={12} className={classes.tokenInputWrapper}>
           <GridContainer>

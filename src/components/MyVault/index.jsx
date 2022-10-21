@@ -1,13 +1,14 @@
 import React from 'react'
 import { makeStyles } from '@material-ui/core/styles'
-import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline'
-import CompareArrowsIcon from '@material-ui/icons/CompareArrows'
 
 // === Components === //
 import GridContainer from '@/components/Grid/GridContainer'
 import GridItem from '@/components/Grid/GridItem'
 import Button from '@/components/CustomButtons/Button'
 import BuildIcon from '@material-ui/icons/Build'
+import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline'
+import CompareArrowsIcon from '@material-ui/icons/CompareArrows'
+import HighlightOffOutlinedIcon from '@material-ui/icons/HighlightOffOutlined'
 
 // === Hooks === //
 import useVaultFactory from '@/hooks/useVaultFactory'
@@ -23,7 +24,7 @@ import { isEmpty } from 'lodash'
 const useStyles = makeStyles(styles)
 
 const MyVault = props => {
-  const { vaultChangeHandle, userProvider, VAULT_FACTORY_ADDRESS, VAULT_FACTORY_ABI, tokens } = props
+  const { vaultChangeHandle, userProvider, VAULT_FACTORY_ADDRESS, VAULT_FACTORY_ABI, tokens, modalCloseHandle } = props
   const { personalVault, addVault } = useVaultFactory(VAULT_FACTORY_ADDRESS, VAULT_FACTORY_ABI, userProvider)
   const classes = useStyles()
 
@@ -32,6 +33,12 @@ const MyVault = props => {
   vaults.length = 2
   return (
     <GridContainer spacing={2}>
+      <GridItem md={12}>
+        <div className={classes.setting}>
+          <HighlightOffOutlinedIcon style={{ color: '#A0A0A0' }} onClick={modalCloseHandle} />
+        </div>
+      </GridItem>
+
       {map(vaults, (item, index) => {
         return (
           <GridItem md={6} key={index}>
@@ -60,7 +67,12 @@ const MyVault = props => {
                     Deposit
                   </Button>
                 ) : (
-                  <Button color="colorfull" startIcon={<AddCircleOutlineIcon />} className={classes.button} onClick={() => addVault(item.token, item.type)}>
+                  <Button
+                    color="colorfull"
+                    startIcon={<AddCircleOutlineIcon />}
+                    className={classes.button}
+                    onClick={() => addVault(item.token, item.type)}
+                  >
                     Create
                   </Button>
                 )}

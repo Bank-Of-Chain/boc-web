@@ -12,6 +12,7 @@ import Step from '@material-ui/core/Step'
 import WarningIcon from '@material-ui/icons/Warning'
 import Tooltip from '@material-ui/core/Tooltip'
 import InfoIcon from '@material-ui/icons/Info'
+import SettingsOutlinedIcon from '@material-ui/icons/SettingsOutlined';
 
 import CustomTextField from '@/components/CustomTextField'
 import BocStepper from '@/components/Stepper/Stepper'
@@ -59,7 +60,8 @@ export default function Withdraw({
   reloadBalance,
   totalAsset,
   wantTokenDecimals,
-  wantTokenSymbol
+  wantTokenSymbol,
+  modalOpenHandle
 }) {
   const classes = useStyles()
   const dispatch = useDispatch()
@@ -439,6 +441,9 @@ export default function Withdraw({
   return (
     <>
       <GridContainer className={classes.withdrawContainer}>
+        <div className={classes.setting}>
+          <SettingsOutlinedIcon style={{ color: '#A0A0A0' }} onClick={modalOpenHandle} />
+        </div>
         <GridItem xs={12} sm={12} md={12} lg={12}>
           <p className={classes.estimateText}>From</p>
         </GridItem>
