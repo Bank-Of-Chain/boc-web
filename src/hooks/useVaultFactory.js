@@ -20,6 +20,7 @@ const useVaultFactory = (vaultFactoryAddress, VAULT_FACTORY_ABI, userProvider) =
   const [vaultImplList, setVaultImplList] = useState([])
   const [personalVault, setPersonalVault] = useState([])
   const [adding, setAdding] = useState(false)
+  const [loading, setLoading] = useState(false)
 
   const userAddress = useUserAddress(userProvider)
 
@@ -31,6 +32,7 @@ const useVaultFactory = (vaultFactoryAddress, VAULT_FACTORY_ABI, userProvider) =
 
   const getVaultImplListByUser = useCallback(() => {
     if (isEmpty(vaultFactoryAddress) || isEmpty(userProvider) || isEmpty(vaultImplList) || isEmpty(userAddress)) return
+    setLoading(true)
     const vaultFactoryContract = new Contract(vaultFactoryAddress, VAULT_FACTORY_ABI, userProvider)
     const requestArray = map(vaultImplList, implAddress => {
       return Promise.all(
@@ -48,7 +50,10 @@ const useVaultFactory = (vaultFactoryAddress, VAULT_FACTORY_ABI, userProvider) =
       )
     })
     Promise.all(requestArray).then(resp => {
-      setPersonalVault(flatten(resp))
+      setTimeout(() => {
+        setLoading(false)
+        setPersonalVault(flatten(resp))
+      }, 1000)
     })
   }, [userAddress, vaultFactoryAddress, userProvider, vaultImplList, VAULT_FACTORY_ABI])
 
@@ -93,6 +98,7 @@ const useVaultFactory = (vaultFactoryAddress, VAULT_FACTORY_ABI, userProvider) =
     vaultImplList,
     personalVault,
     adding,
+    loading,
     // functions
     addVault,
     deleteVault

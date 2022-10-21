@@ -149,12 +149,6 @@ const componentsStyle = () => ({
     color: '#A0A0A0',
     paddingTop: '35px'
   },
-  setting: {
-    position: 'absolute',
-    right: '1rem',
-    top: '1rem',
-    cursor: 'pointer'
-  },
   popover: {
     width: '15rem',
     background: '#292B2E',

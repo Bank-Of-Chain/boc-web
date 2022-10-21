@@ -12,7 +12,6 @@ import GridContainer from '@/components/Grid/GridContainer'
 import GridItem from '@/components/Grid/GridItem'
 import CustomTextField from '@/components/CustomTextField'
 import Button from '@/components/CustomButtons/Button'
-import SettingsOutlinedIcon from '@material-ui/icons/SettingsOutlined'
 
 // === Utils === //
 import isUndefined from 'lodash/isUndefined'
@@ -46,8 +45,7 @@ export default function Deposit({
   wantTokenBalance,
   wantTokenDecimals,
   wantTokenSymbol,
-  wantTokenForVault,
-  modalOpenHandle
+  wantTokenForVault
 }) {
   const classes = useStyles()
   const dispatch = useDispatch()
@@ -241,9 +239,6 @@ export default function Deposit({
   return (
     <>
       <GridContainer classes={{ root: classes.depositContainer }}>
-        <div className={classes.setting}>
-          <SettingsOutlinedIcon style={{ color: '#A0A0A0' }} onClick={modalOpenHandle} />
-        </div>
         <p className={classes.estimateText}>From</p>
         <GridItem xs={12} sm={12} md={12} lg={12} className={classes.tokenInputWrapper}>
           <GridContainer>
