@@ -1,6 +1,7 @@
 const componentsStyle = {
   main: {
-    flex: '1'
+    flex: '1',
+    paddingTop: '6rem'
   }
 }
 
