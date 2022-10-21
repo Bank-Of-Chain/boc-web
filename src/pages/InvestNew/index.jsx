@@ -230,7 +230,7 @@ function Invest(props) {
 
   return (
     <div className={classes.container}>
-      <GridContainer spacing={0} style={{ paddingTop: '100px' }}>
+      <GridContainer spacing={0}>
         <GridItem xs={2} sm={2} md={3} style={{ padding: '0 2rem' }}>
           <List>
             <ListItem key="My Account" button className={classNames(classes.item)} onClick={() => setCurrent(INVEST_TAB.account)}>

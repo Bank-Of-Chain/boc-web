@@ -16,6 +16,7 @@ import Paper from '@material-ui/core/Paper'
 import Frame from './components/Frame/Frame'
 import Snackbar from '@material-ui/core/Snackbar'
 import Alert from '@material-ui/lab/Alert'
+import VaultChange from './components/VaultChange'
 
 // === Utils === //
 import { NET_WORKS, LOCAL_CHAIN_ID } from './constants'
@@ -253,80 +254,74 @@ function App() {
         <Alert severity={alertState.type}>{alertState.message}</Alert>
       </Snackbar>
       <HashRouter>
-        <Switch>
-          <Route exact path="/">
-            <Suspense
-              fallback={
-                <Backdrop className={classes.backdrop} open>
-                  <CircularProgress color="inherit" />
-                </Backdrop>
-              }
-            >
-              <Frame {...nextProps}>
-                <Home {...nextProps} />
-              </Frame>
-            </Suspense>
-          </Route>
-          <Route path="/mutils">
-            <Suspense
-              fallback={
-                <Backdrop className={classes.backdrop} open>
-                  <CircularProgress color="inherit" />
-                </Backdrop>
-              }
-            >
-              <Frame {...nextProps}>
-                <InvestNew {...nextProps} />
-              </Frame>
-            </Suspense>
-          </Route>
-          <Route path="/ethi">
-            <Suspense
-              fallback={
-                <Backdrop className={classes.backdrop} open>
-                  <CircularProgress color="inherit" />
-                </Backdrop>
-              }
-            >
-              <Frame {...nextProps}>
-                <Ethi {...nextProps} />
-              </Frame>
-            </Suspense>
-          </Route>
-          <Route path="/ethr">
-            <Suspense
-              fallback={
-                <Backdrop className={classes.backdrop} open>
-                  <CircularProgress color="inherit" />
-                </Backdrop>
-              }
-            >
-              <Frame {...nextProps}>
-                <Ethr {...nextProps} />
-              </Frame>
-            </Suspense>
-          </Route>
-          <Route path="/usdr">
-            <Suspense
-              fallback={
-                <Backdrop className={classes.backdrop} open>
-                  <CircularProgress color="inherit" />
-                </Backdrop>
-              }
-            >
-              <Frame {...nextProps}>
-                <Usdr {...nextProps} />
-              </Frame>
-            </Suspense>
-          </Route>
-          <Route path="*">
-            <Redirect
-              to={{
-                pathname: '/'
-              }}
-            />
-          </Route>
-        </Switch>
+        <Frame {...nextProps}>
+          <VaultChange>
+            <Switch>
+              <Route exact path="/">
+                <Suspense
+                  fallback={
+                    <Backdrop className={classes.backdrop} open>
+                      <CircularProgress color="inherit" />
+                    </Backdrop>
+                  }
+                >
+                  <Home {...nextProps} />
+                </Suspense>
+              </Route>
+              <Route path="/usdi">
+                <Suspense
+                  fallback={
+                    <Backdrop className={classes.backdrop} open>
+                      <CircularProgress color="inherit" />
+                    </Backdrop>
+                  }
+                >
+                  <InvestNew {...nextProps} />
+                </Suspense>
+              </Route>
+              <Route path="/ethi">
+                <Suspense
+                  fallback={
+                    <Backdrop className={classes.backdrop} open>
+                      <CircularProgress color="inherit" />
+                    </Backdrop>
+                  }
+                >
+                  <Ethi {...nextProps} />
+                </Suspense>
+              </Route>
+              <Route path="/ethr">
+                <Suspense
+                  fallback={
+                    <Backdrop className={classes.backdrop} open>
+                      <CircularProgress color="inherit" />
+                    </Backdrop>
+                  }
+                >
+                  <Ethr {...nextProps} />
+                </Suspense>
+              </Route>
+              <Route path="/usdr">
+                <Suspense
+                  fallback={
+                    <Backdrop className={classes.backdrop} open>
+                      <CircularProgress color="inherit" />
+                    </Backdrop>
+                  }
+                >
+                  <Usdr {...nextProps} />
+                </Suspense>
+              </Route>
+              <Route path="*">
+                <Redirect
+                  to={{
+                    pathname: '/'
+                  }}
+                />
+              </Route>
+            </Switch>
+          </VaultChange>
+        </Frame>
       </HashRouter>
     </div>
   )
