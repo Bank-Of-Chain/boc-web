@@ -22,7 +22,7 @@ import MyStatementForRiskOn from '@/components/MyStatement/MyStatementForRiskOn'
 import MyVault from '@/components/MyVault'
 import Modal from '@material-ui/core/Modal'
 import Paper from '@material-ui/core/Paper'
-import SettingsOutlinedIcon from '@material-ui/icons/SettingsOutlined';
+import SettingsOutlinedIcon from '@material-ui/icons/SettingsOutlined'
 
 // === Reducers === //
 import { setCurrentTab } from '@/reducers/invest-reducer'
@@ -72,14 +72,15 @@ function Usdr(props) {
     loadData()
     dispatch(setCurrentTab(tab))
   }
-  const { minimumInvestmentAmount, baseInfo } = useVaultOnRisk(
+  const { baseInfo } = useVaultOnRisk(
     VAULT_FACTORY_ADDRESS,
     VAULT_FACTORY_ABI,
     personalVaultAddress,
     UNISWAPV3_RISK_ON_VAULT,
+    UNISWAPV3_RISK_ON_HELPER,
     userProvider
   )
-  const { netMarketMakingAmount } = baseInfo
+  const { netMarketMakingAmount, estimatedTotalAssets, manageFeeBps, minimumInvestmentAmount } = baseInfo
 
   const handleAddToken = useCallback(() => {
     addToken(wantTokenForVault, wantTokenSymbol, wantTokenDecimals)
@@ -150,6 +151,7 @@ function Usdr(props) {
             <div className={isLayoutSm ? classes.wrapperMobile : classes.wrapper}>
               <Deposit
                 address={address}
+                estimatedTotalAssets={estimatedTotalAssets}
                 wantTokenBalance={wantTokenBalance}
                 wantTokenDecimals={wantTokenDecimals}
                 userProvider={userProvider}
@@ -159,6 +161,7 @@ function Usdr(props) {
                 VAULT_ABI={UNISWAPV3_RISK_ON_VAULT}
                 isBalanceLoading={isBalanceLoading}
                 minimumInvestmentAmount={minimumInvestmentAmount}
+                manageFeeBps={manageFeeBps}
                 modalOpenHandle={() => setIsVisiable(true)}
               />
             </div>
@@ -168,8 +171,9 @@ function Usdr(props) {
           <GridItem xs={9} sm={9} md={6}>
             <div className={isLayoutSm ? classes.wrapperMobile : classes.wrapper}>
               <Withdraw
+                address={address}
                 userProvider={userProvider}
-                totalAsset={netMarketMakingAmount}
+                estimatedTotalAssets={estimatedTotalAssets}
                 wantTokenDecimals={wantTokenDecimals}
                 wantTokenSymbol={wantTokenSymbol}
                 VAULT_ADDRESS={personalVaultAddress}
