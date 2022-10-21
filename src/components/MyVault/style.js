@@ -13,7 +13,8 @@ const componentsStyle = () => ({
     background: 'linear-gradient(111.68deg, rgba(87, 97, 125, 0.2) 7.59%, rgba(255, 255, 255, 0.078) 102.04%)'
   },
   vaultTitle: {
-    textAlign: 'center'
+    textAlign: 'center',
+    height: '203px'
   },
   icon: {
     width: '100%',
@@ -45,6 +46,12 @@ const componentsStyle = () => ({
   },
   input: {
     maxWidth: '14rem'
+  },
+  setting: {
+    position: 'absolute',
+    right: '0rem',
+    top: '-0.5rem',
+    cursor: 'pointer'
   }
 })
 

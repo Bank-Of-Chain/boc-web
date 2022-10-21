@@ -12,7 +12,7 @@ import Step from '@material-ui/core/Step'
 import WarningIcon from '@material-ui/icons/Warning'
 import Tooltip from '@material-ui/core/Tooltip'
 import InfoIcon from '@material-ui/icons/Info'
-import SwapVerticalCircleOutlinedIcon from '@material-ui/icons/SwapVerticalCircleOutlined'
+import SettingsOutlinedIcon from '@material-ui/icons/SettingsOutlined';
 
 import CustomTextField from '@/components/CustomTextField'
 import BocStepper from '@/components/Stepper/Stepper'
@@ -442,7 +442,7 @@ export default function Withdraw({
     <>
       <GridContainer className={classes.withdrawContainer}>
         <div className={classes.setting}>
-          <SwapVerticalCircleOutlinedIcon onClick={modalOpenHandle} />
+          <SettingsOutlinedIcon style={{ color: '#A0A0A0' }} onClick={modalOpenHandle} />
         </div>
         <GridItem xs={12} sm={12} md={12} lg={12}>
           <p className={classes.estimateText}>From</p>

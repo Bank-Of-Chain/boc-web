@@ -22,7 +22,7 @@ import MyStatementForRiskOn from '@/components/MyStatement/MyStatementForRiskOn'
 import MyVault from '@/components/MyVault'
 import Modal from '@material-ui/core/Modal'
 import Paper from '@material-ui/core/Paper'
-import SwapVerticalCircleOutlinedIcon from '@material-ui/icons/SwapVerticalCircleOutlined'
+import SettingsOutlinedIcon from '@material-ui/icons/SettingsOutlined';
 
 // === Reducers === //
 import { setCurrentTab } from '@/reducers/invest-reducer'
@@ -186,7 +186,7 @@ function Usdr(props) {
             <div className={isLayoutSm ? classes.wrapperMobile : classes.wrapper} style={{ background: 'none', paddingTop: '1rem', paddingLeft: 0 }}>
               <Card className={classes.balanceCard}>
                 <div className={classes.setting}>
-                  <SwapVerticalCircleOutlinedIcon onClick={() => setIsVisiable(true)} />
+                  <SettingsOutlinedIcon style={{ color: '#A0A0A0' }} onClick={() => setIsVisiable(true)} />
                 </div>
                 <div className={classes.balanceCardItem}>
                   <div className={classes.balanceCardValue}>

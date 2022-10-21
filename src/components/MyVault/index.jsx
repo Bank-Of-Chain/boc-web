@@ -6,9 +6,9 @@ import GridContainer from '@/components/Grid/GridContainer'
 import GridItem from '@/components/Grid/GridItem'
 import Button from '@/components/CustomButtons/Button'
 import BuildIcon from '@material-ui/icons/Build'
-import ExitToAppIcon from '@material-ui/icons/ExitToApp'
 import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline'
 import CompareArrowsIcon from '@material-ui/icons/CompareArrows'
+import HighlightOffOutlinedIcon from '@material-ui/icons/HighlightOffOutlined'
 
 // === Hooks === //
 import useVaultFactory from '@/hooks/useVaultFactory'
@@ -33,6 +33,12 @@ const MyVault = props => {
   vaults.length = 2
   return (
     <GridContainer spacing={2}>
+      <GridItem md={12}>
+        <div className={classes.setting}>
+          <HighlightOffOutlinedIcon style={{ color: '#A0A0A0' }} onClick={modalCloseHandle} />
+        </div>
+      </GridItem>
+
       {map(vaults, (item, index) => {
         return (
           <GridItem md={6} key={index}>
@@ -75,11 +81,6 @@ const MyVault = props => {
           </GridItem>
         )
       })}
-      <GridItem xs={12} sm={12} md={12} lg={12}>
-        <Button color="danger" startIcon={<ExitToAppIcon />} className={classes.button} onClick={modalCloseHandle}>
-          cancel
-        </Button>
-      </GridItem>
     </GridContainer>
   )
 }
