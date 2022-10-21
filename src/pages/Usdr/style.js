@@ -63,7 +63,7 @@ const componentsStyle = theme => ({
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'flex-start',
-    margin: '0 1rem 1rem 0',
+    margin: '0 0 1rem 0',
     textAlign: 'left',
     padding: '2.8125rem 2.4375rem',
     background: '#323338',
@@ -257,12 +257,6 @@ const componentsStyle = theme => ({
     transition: 'all 300ms cubic-bezier(0.4, 0, 0.2, 1) 0ms',
     width: '54%',
     backgroundColor: '#fff'
-  },
-  setting: {
-    position: 'absolute',
-    right: '1rem',
-    top: '1rem',
-    cursor: 'pointer'
   }
 })
 
