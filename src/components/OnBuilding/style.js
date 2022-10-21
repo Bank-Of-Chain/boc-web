@@ -8,12 +8,13 @@ const componentsStyle = () => ({
     height: '100%',
     display: 'flex',
     position: 'absolute',
-    background: 'rgba(100,100,100,0.95)',
+    background: 'rgb(0,0,0,0.8)',
     alignItems: 'center',
     justifyContent: 'center'
   },
   text: {
-    marginLeft: '8px'
+    marginLeft: '8px',
+    color: '#A68EFE'
   }
 })
 
