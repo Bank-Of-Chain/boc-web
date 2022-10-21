@@ -22,8 +22,7 @@ import MyStatementForRiskOn from '@/components/MyStatement/MyStatementForRiskOn'
 import MyVault from '@/components/MyVault'
 import Modal from '@material-ui/core/Modal'
 import Paper from '@material-ui/core/Paper'
-
-import { useSelector, useDispatch } from 'react-redux'
+import SwapVerticalCircleOutlinedIcon from '@material-ui/icons/SwapVerticalCircleOutlined'
 
 // === Reducers === //
 import { setCurrentTab } from '@/reducers/invest-reducer'
@@ -41,6 +40,7 @@ import useVersionWapper from '@/hooks/useVersionWapper'
 import { addToken } from '@/helpers/wallet'
 
 // === Hooks === //
+import { useSelector, useDispatch } from 'react-redux'
 import useVaultOnRisk from '@/hooks/useVaultOnRisk'
 
 // === Styles === //
@@ -66,8 +66,6 @@ function Usdr(props) {
   const [wantTokenDecimals, setWantTokenDecimals] = useState(0)
   const [wantTokenSymbol, setWantTokenSymbol] = useState('')
   const [isVisiable, setIsVisiable] = useState(true)
-
-  console.log('personalVaultAddress=', wantTokenBalance?.toString())
 
   const current = useSelector(state => state.investReducer.currentTab)
   const setCurrent = tab => {
@@ -161,6 +159,7 @@ function Usdr(props) {
                 VAULT_ABI={UNISWAPV3_RISK_ON_VAULT}
                 isBalanceLoading={isBalanceLoading}
                 minimumInvestmentAmount={minimumInvestmentAmount}
+                modalOpenHandle={() => setIsVisiable(true)}
               />
             </div>
           </GridItem>
@@ -177,6 +176,7 @@ function Usdr(props) {
                 VAULT_ABI={UNISWAPV3_RISK_ON_VAULT}
                 isBalanceLoading={isBalanceLoading}
                 reloadBalance={loadData}
+                modalOpenHandle={() => setIsVisiable(true)}
               />
             </div>
           </GridItem>
@@ -185,6 +185,9 @@ function Usdr(props) {
           <GridItem xs={9} sm={9} md={9}>
             <div className={isLayoutSm ? classes.wrapperMobile : classes.wrapper} style={{ background: 'none', paddingTop: '1rem', paddingLeft: 0 }}>
               <Card className={classes.balanceCard}>
+                <div className={classes.setting}>
+                  <SwapVerticalCircleOutlinedIcon onClick={() => setIsVisiable(true)} />
+                </div>
                 <div className={classes.balanceCardItem}>
                   <div className={classes.balanceCardValue}>
                     <span
@@ -233,6 +236,7 @@ function Usdr(props) {
                 setPersonalVaultAddress(address)
                 setWantTokenForVault(token)
               }}
+              modalCloseHandle={() => setIsVisiable(false)}
             />
           </Paper>
         </Modal>
