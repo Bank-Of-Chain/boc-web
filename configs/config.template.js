@@ -64,7 +64,7 @@ const config137 = {
   chain_id: 137,
   vaults: [
     {
-      id: 'mutilCoins',
+      id: 'usdi',
       name: 'Vault for USDi',
       path: '#/usdi',
       abi_version: 'usdi-v1.6.0',
@@ -126,7 +126,7 @@ const config1 = {
   chain_id: 1,
   vaults: [
     {
-      id: 'mutilCoins',
+      id: 'usdi',
       name: 'Vault for USDi',
       path: '#/usdi',
       abi_version: 'usdi-v1.6.0',

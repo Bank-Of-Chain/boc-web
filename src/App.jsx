@@ -32,7 +32,7 @@ import { isInMobileWalletApp, isInMobileH5, hasWalletInstalled } from './helpers
 import './App.css'
 
 const Home = lazy(() => import('./pages/Home/index'))
-const InvestNew = lazy(() => import('./pages/InvestNew/index'))
+const Usdi = lazy(() => import('./pages/Usdi/index'))
 const Ethi = lazy(() => import('./pages/Ethi/index'))
 const Ethr = lazy(() => import('./pages/Ethr/index'))
 const Usdr = lazy(() => import('./pages/Usdr/index'))
@@ -276,7 +276,7 @@ function App() {
                     </Backdrop>
                   }
                 >
-                  <InvestNew {...nextProps} />
+                  <Usdi {...nextProps} />
                 </Suspense>
               </Route>
               <Route path="/ethi">

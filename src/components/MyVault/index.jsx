@@ -50,7 +50,7 @@ const MyVault = props => {
           <ExitToAppOutlinedIcon style={{ color: '#A0A0A0' }} onClick={() => push('/usdi')} />
         </div>
       </GridItem>
-      <LoadingComponent loading={loading}>
+      <LoadingComponent loading={loading} width="100%" height="2rem">
         {map(vaults, (item, index) => {
           return (
             <GridItem md={6} key={index}>

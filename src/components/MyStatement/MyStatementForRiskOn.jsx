@@ -132,7 +132,7 @@ const MyStatementForRiskOn = props => {
         </Tooltip>
       ),
       content: numeral(toFixed(netMarketMakingAmount, wantTokenDecimals, isUSDi ? TOKEN_DISPLAY_DECIMALS : ETHI_DISPLAY_DECIMALS)).format(
-        isUSDi ? '0,0.[00]' : '0,0.[0000]'
+        isUSDi ? '0,0.[00]a' : '0,0.[0000]a'
       ),
       unit: wantTokenSymbol
     },
@@ -150,7 +150,7 @@ const MyStatementForRiskOn = props => {
         </Tooltip>
       ),
       content: numeral(toFixed(estimatedTotalAssets, wantTokenDecimals, isUSDi ? TOKEN_DISPLAY_DECIMALS : ETHI_DISPLAY_DECIMALS)).format(
-        isUSDi ? '0,0.[00]' : '0,0.[0000]'
+        isUSDi ? '0,0.[00]a' : '0,0.[0000]a'
       ),
       isAPY: true,
       unit: wantTokenSymbol
@@ -169,7 +169,7 @@ const MyStatementForRiskOn = props => {
         </Tooltip>
       ),
       content: numeral(toFixed(result, wantTokenDecimals, isUSDi ? TOKEN_DISPLAY_DECIMALS : ETHI_DISPLAY_DECIMALS)).format(
-        isUSDi ? '0,0.[00]' : '0,0.[0000]'
+        isUSDi ? '0,0.[00]a' : '0,0.[0000]a'
       ),
       isAPY: true,
       unit: wantTokenSymbol
@@ -183,9 +183,7 @@ const MyStatementForRiskOn = props => {
           {map(cardProps, (i, index) => {
             return (
               <GridItem key={index} xs={12} sm={12} md={4} lg={4}>
-                <OnBuilding>
-                  <Card loading={loading} {...i} />
-                </OnBuilding>
+                <Card loading={loading} {...i} />
               </GridItem>
             )
           })}

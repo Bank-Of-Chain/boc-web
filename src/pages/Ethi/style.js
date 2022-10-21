@@ -63,7 +63,7 @@ const componentsStyle = theme => ({
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'flex-start',
-    margin: '0 1rem 1rem 0',
+    margin: '0 0 1rem 0',
     textAlign: 'left',
     padding: '2.8125rem 2.4375rem',
     background: '#323338',
