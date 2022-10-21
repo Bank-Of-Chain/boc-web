@@ -49,7 +49,7 @@ import styles from './style'
 const useStyles = makeStyles(styles)
 const { BigNumber } = ethers
 
-function Invest(props) {
+function Usdi(props) {
   const classes = useStyles()
   const dispatch = useDispatch()
   const isLayoutSm = useMediaQuery('(max-width: 960px)')
@@ -367,4 +367,4 @@ function Invest(props) {
   )
 }
 
-export default useVersionWapper(Invest, 'mutilCoins')
+export default useVersionWapper(Usdi, 'usdi')
