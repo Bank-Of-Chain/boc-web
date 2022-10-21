@@ -12,10 +12,10 @@ import { useLocation, useHistory } from 'react-router-dom'
 import styles from './style'
 
 const VAULTS = [
-  { label: 'USDi', value: '/usdi', hash: '#/usdi' },
-  { label: 'ETHi', value: '/ethi', hash: '#/ethi' },
-  { label: 'USDr', value: '/usdr', hash: '#/usdr' },
-  { label: 'ETHr', value: '/ethr', hash: '#/ethr' }
+  { label: 'USDi', value: '/usdi' },
+  { label: 'ETHi', value: '/ethi' },
+  { label: 'USDr', value: '/usdr' },
+  { label: 'ETHr', value: '/ethr' }
 ]
 
 const useStyles = makeStyles(styles)
