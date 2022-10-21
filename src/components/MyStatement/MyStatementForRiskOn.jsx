@@ -54,14 +54,12 @@ const MyStatementForRiskOn = props => {
   const [optionForLineChart, setOptionForLineChart] = useState({})
 
   // api datas fetching
-  const aaaa = useAsync(() => getDataByType(CHAIN_ID, personalVaultAddress, 'aave-outstanding-loan'), [personalVaultAddress])
-  const bbbb = useAsync(() => getDataByType(CHAIN_ID, personalVaultAddress, 'aave-collateral'), [personalVaultAddress])
-  const cccc = useAsync(() => getDataByType(CHAIN_ID, personalVaultAddress, 'aave-health-ratio'), [personalVaultAddress])
-  const dddd = useAsync(() => getDataByType(CHAIN_ID, personalVaultAddress, 'uniswap-position-value'), [personalVaultAddress])
-  const eeee = useAsync(() => getDataByType(CHAIN_ID, personalVaultAddress, 'profit'), [personalVaultAddress])
-  const ffff = useAsync(() => getDataByType(CHAIN_ID, personalVaultAddress, 'net-deposit'), [personalVaultAddress])
-  console.log('aaaa=', aaaa, bbbb, cccc, dddd, eeee, ffff)
-  const { dataSource, loading: chartLoading } = usePersonalData(chain, type, address, type)
+  const aaveOutstandingLoanArray = useAsync(() => getDataByType(CHAIN_ID, personalVaultAddress, 'aave-outstanding-loan'), [personalVaultAddress])
+  const aaveCollateralArray = useAsync(() => getDataByType(CHAIN_ID, personalVaultAddress, 'aave-collateral'), [personalVaultAddress])
+  const aaveHealthRatioArray = useAsync(() => getDataByType(CHAIN_ID, personalVaultAddress, 'aave-health-ratio'), [personalVaultAddress])
+  const uniswapPositionValueArray = useAsync(() => getDataByType(CHAIN_ID, personalVaultAddress, 'uniswap-position-value'), [personalVaultAddress])
+  const profitArray = useAsync(() => getDataByType(CHAIN_ID, personalVaultAddress, 'profit'), [personalVaultAddress])
+  const { dataSource, loading } = usePersonalData(chain, type, address, type)
   const { baseInfo } = useVaultOnRisk(
     VAULT_FACTORY_ADDRESS,
     VAULT_FACTORY_ABI,
@@ -184,7 +182,7 @@ const MyStatementForRiskOn = props => {
           {map(cardProps, (i, index) => {
             return (
               <GridItem key={index} xs={12} sm={12} md={4} lg={4}>
-                <Card {...i} />
+                <Card loading={loading} {...i} />
               </GridItem>
             )
           })}
@@ -192,10 +190,10 @@ const MyStatementForRiskOn = props => {
         <GridContainer className={classes.lineChart}>
           <GridItem xs={12} sm={12} md={12} lg={12}>
             <Card
-              loading={chartLoading}
+              loading={aaveOutstandingLoanArray.loading || aaveCollateralArray.loading || aaveHealthRatioArray.loading}
               title={
                 <span>
-                  AAVE Outstanding Loan
+                  AAVE Lines
                   <Tooltip title={`Curve of daily change in the total ${isUSDi ? 'USDi' : 'ETHi'} held by the user.`}>
                     <InfoIcon style={{ marginLeft: 8, fontSize: '1rem' }} />
                   </Tooltip>
@@ -206,56 +204,18 @@ const MyStatementForRiskOn = props => {
                 height: '2rem'
               }}
             >
-              <LineEchart option={optionForLineChart} style={{ minHeight: '20rem' }} />
+              {aaveOutstandingLoanArray.error || aaveCollateralArray.error || aaveHealthRatioArray.error ? (
+                <div>Error: {aaveOutstandingLoanArray?.error?.message}</div>
+              ) : (
+                <LineEchart option={optionForLineChart} style={{ minHeight: '20rem' }} />
+              )}
             </Card>
           </GridItem>
         </GridContainer>
         <GridContainer className={classes.lineChart}>
           <GridItem xs={12} sm={12} md={12} lg={12}>
             <Card
-              loading={chartLoading}
-              title={
-                <span>
-                  AAVE Collateral
-                  <Tooltip title={`Curve of daily change in the total ${isUSDi ? 'USDi' : 'ETHi'} held by the user.`}>
-                    <InfoIcon style={{ marginLeft: 8, fontSize: '1rem' }} />
-                  </Tooltip>
-                </span>
-              }
-              loadingOption={{
-                width: '100%',
-                height: '2rem'
-              }}
-            >
-              <LineEchart option={optionForLineChart} style={{ minHeight: '20rem' }} />
-            </Card>
-          </GridItem>
-        </GridContainer>
-        <GridContainer className={classes.lineChart}>
-          <GridItem xs={12} sm={12} md={12} lg={12}>
-            <Card
-              loading={chartLoading}
-              title={
-                <span>
-                  AAVE Health Ratio
-                  <Tooltip title={`Curve of daily change in the total ${isUSDi ? 'USDi' : 'ETHi'} held by the user.`}>
-                    <InfoIcon style={{ marginLeft: 8, fontSize: '1rem' }} />
-                  </Tooltip>
-                </span>
-              }
-              loadingOption={{
-                width: '100%',
-                height: '2rem'
-              }}
-            >
-              <LineEchart option={optionForLineChart} style={{ minHeight: '20rem' }} />
-            </Card>
-          </GridItem>
-        </GridContainer>
-        <GridContainer className={classes.lineChart}>
-          <GridItem xs={12} sm={12} md={12} lg={12}>
-            <Card
-              loading={chartLoading}
+              loading={uniswapPositionValueArray.loading}
               title={
                 <span>
                   Uniswap Position Value
@@ -269,14 +229,18 @@ const MyStatementForRiskOn = props => {
                 height: '2rem'
               }}
             >
-              <LineEchart option={optionForLineChart} style={{ minHeight: '20rem' }} />
+              {uniswapPositionValueArray.error ? (
+                <div>Error: {uniswapPositionValueArray.error.message}</div>
+              ) : (
+                <LineEchart option={optionForLineChart} style={{ minHeight: '20rem' }} />
+              )}
             </Card>
           </GridItem>
         </GridContainer>
         <GridContainer className={classes.lineChart}>
           <GridItem xs={12} sm={12} md={12} lg={12}>
             <Card
-              loading={chartLoading}
+              loading={profitArray.loading}
               title={
                 <span>
                   Profits
@@ -290,7 +254,11 @@ const MyStatementForRiskOn = props => {
                 height: '2rem'
               }}
             >
-              <LineEchart option={optionForLineChart} style={{ minHeight: '20rem' }} />
+              {profitArray.error ? (
+                <div>Error: {profitArray.error.message}</div>
+              ) : (
+                <LineEchart option={optionForLineChart} style={{ minHeight: '20rem' }} />
+              )}
             </Card>
           </GridItem>
         </GridContainer>
