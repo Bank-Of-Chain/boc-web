@@ -8,6 +8,7 @@ import Card from '@/components/Card'
 import { LineEchart } from '@/components/Echarts'
 import InfoIcon from '@material-ui/icons/InfoOutlined'
 import Tooltip from '@material-ui/core/Tooltip'
+import OnBuilding from '@/components/OnBuilding'
 
 // === Services === //
 import getLineEchartOpt from '@/components/Echarts/options/line/getLineEchartOpt'
@@ -178,11 +179,13 @@ const MyStatementForRiskOn = props => {
   return (
     <GridContainer>
       <GridItem xs={12} sm={12} md={12} lg={12}>
-        <GridContainer>
+        <GridContainer spacing={2}>
           {map(cardProps, (i, index) => {
             return (
               <GridItem key={index} xs={12} sm={12} md={4} lg={4}>
-                <Card loading={loading} {...i} />
+                <OnBuilding>
+                  <Card loading={loading} {...i} />
+                </OnBuilding>
               </GridItem>
             )
           })}
@@ -214,27 +217,29 @@ const MyStatementForRiskOn = props => {
         </GridContainer>
         <GridContainer className={classes.lineChart}>
           <GridItem xs={12} sm={12} md={12} lg={12}>
-            <Card
-              loading={uniswapPositionValueArray.loading}
-              title={
-                <span>
-                  Uniswap Position Value
-                  <Tooltip title={`Curve of daily change in the total ${isUSDi ? 'USDi' : 'ETHi'} held by the user.`}>
-                    <InfoIcon style={{ marginLeft: 8, fontSize: '1rem' }} />
-                  </Tooltip>
-                </span>
-              }
-              loadingOption={{
-                width: '100%',
-                height: '2rem'
-              }}
-            >
-              {uniswapPositionValueArray.error ? (
-                <div>Error: {uniswapPositionValueArray.error.message}</div>
-              ) : (
-                <LineEchart option={optionForLineChart} style={{ minHeight: '20rem' }} />
-              )}
-            </Card>
+            <OnBuilding>
+              <Card
+                loading={uniswapPositionValueArray.loading}
+                title={
+                  <span>
+                    Uniswap Position Value
+                    <Tooltip title={`Curve of daily change in the total ${isUSDi ? 'USDi' : 'ETHi'} held by the user.`}>
+                      <InfoIcon style={{ marginLeft: 8, fontSize: '1rem' }} />
+                    </Tooltip>
+                  </span>
+                }
+                loadingOption={{
+                  width: '100%',
+                  height: '2rem'
+                }}
+              >
+                {uniswapPositionValueArray.error ? (
+                  <div>Error: {uniswapPositionValueArray.error.message}</div>
+                ) : (
+                  <LineEchart option={optionForLineChart} style={{ minHeight: '20rem' }} />
+                )}
+              </Card>
+            </OnBuilding>
           </GridItem>
         </GridContainer>
         <GridContainer className={classes.lineChart}>

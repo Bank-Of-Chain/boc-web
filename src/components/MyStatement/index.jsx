@@ -270,7 +270,7 @@ const MyStatement = props => {
   return (
     <GridContainer>
       <GridItem xs={12} sm={12} md={12} lg={12}>
-        <GridContainer>
+        <GridContainer spacing={2}>
           {map(cardProps, (i, index) => {
             return (
               <GridItem key={index} xs={12} sm={12} md={4} lg={4}>
