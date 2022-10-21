@@ -1,7 +1,4 @@
-import { container } from '@/assets/jss/material-kit-react.js'
-
 const componentsStyle = () => ({
-  container,
   modal: {
     display: 'flex',
     alignItems: 'center',
@@ -12,9 +9,9 @@ const componentsStyle = () => ({
   },
   depositContainer: {
     border: '1px solid #A68EFD',
+    padding: '2.6875rem 2.25rem',
     borderTopLeftRadius: '1rem',
-    borderTopRightRadius: '1rem',
-    padding: '2.6875rem 2.25rem'
+    borderTopRightRadius: '1rem'
   },
   estimateContainer: {
     border: '1px solid #A68EFD',
@@ -23,17 +20,24 @@ const componentsStyle = () => ({
     borderBottomRightRadius: '1rem',
     padding: '2.0625rem 2.6875rem'
   },
+  estimateWrapper: {
+    display: 'flex',
+    marginTop: '1rem',
+    justifyContent: 'space-between',
+    fontSize: '1.625rem'
+  },
   estimateText: {
     color: '#A0A0A0',
     margin: 0,
     display: 'flex'
   },
-  estimateBalanceTitle: {
-    fontSize: '1.625rem'
-  },
   estimateBalanceNum: {
-    float: 'right',
-    fontSize: '1rem'
+    color: '#A0A0A0'
+  },
+  balance: {
+    display: 'flex',
+    color: '#A0A0A0',
+    marginTop: '1rem'
   },
   footerContainer: {
     marginTop: '2.5rem'
@@ -47,11 +51,7 @@ const componentsStyle = () => ({
     alignItems: 'center'
   },
   input: {
-    maxWidth: '12.5rem'
-  },
-  depositComfirmArea: {
-    display: 'flex',
-    justifyContent: 'space-between'
+    maxWidth: '14rem'
   },
   tokenInfo: {
     display: 'flex',
@@ -65,19 +65,6 @@ const componentsStyle = () => ({
     borderRadius: '50%',
     marginRight: 8
   },
-  flexText: {
-    display: 'inline-flex',
-    justifyContent: 'center',
-    alignItems: 'center'
-  },
-  ModalTokenLogo: {
-    width: 25,
-    borderRadius: '50%',
-    margin: '0 8px'
-  },
-  labelToolTipIcon: {
-    fontSize: 16
-  },
   depositModal: {
     padding: '1rem',
     maxWidth: '500px',
@@ -86,14 +73,11 @@ const componentsStyle = () => ({
     backgroundColor: '#000',
     borderRadius: '1rem'
   },
-  root: {
-    padding: '1.5rem 0'
-  },
-  item: {
-    paddingTop: '3rem'
-  },
-  subTitle: {
-    color: '#A68EFE'
+  setting: {
+    position: 'absolute',
+    right: '1rem',
+    top: '1rem',
+    cursor: 'pointer'
   }
 })
 

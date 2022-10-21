@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react'
+import React, { useState } from 'react'
 import { useDispatch } from 'react-redux'
 import { makeStyles } from '@material-ui/core/styles'
 
@@ -12,10 +12,11 @@ import GridContainer from '@/components/Grid/GridContainer'
 import GridItem from '@/components/Grid/GridItem'
 import CustomTextField from '@/components/CustomTextField'
 import Button from '@/components/CustomButtons/Button'
+import Tooltip from '@material-ui/core/Tooltip'
+import InfoIcon from '@material-ui/icons/Info'
 
 // === Utils === //
 import isUndefined from 'lodash/isUndefined'
-import debounce from 'lodash/debounce'
 import isEmpty from 'lodash/isEmpty'
 import isNumber from 'lodash/isNumber'
 import * as ethers from 'ethers'
@@ -26,32 +27,32 @@ import { toFixed, formatBalance } from '@/helpers/number-format'
 // === Constants === //
 import { isAd, isEs, isRp, isDistributing, errorTextOutput, isLessThanMinValue } from '@/helpers/error-handler'
 import { BN_18 } from '@/constants/big-number'
-import { MULTIPLE_OF_GAS, MAX_GAS_LIMIT } from '@/constants'
+import { MULTIPLE_OF_GAS, MAX_GAS_LIMIT, IERC20_ABI } from '@/constants'
 
 // === Styles === //
 import styles from './style'
 
-const { BigNumber } = ethers
+const { Contract, BigNumber } = ethers
 const useStyles = makeStyles(styles)
 
 export default function Deposit({
   address,
+  estimatedTotalAssets,
   userProvider,
   VAULT_ABI,
   VAULT_ADDRESS,
-  ETH_ADDRESS,
   isBalanceLoading,
   minimumInvestmentAmount,
   wantTokenBalance,
   wantTokenDecimals,
   wantTokenSymbol,
-  wantTokenForVault
+  wantTokenForVault,
+  manageFeeBps
 }) {
   const classes = useStyles()
   const dispatch = useDispatch()
-  const [ethValue, setEthValue] = useState('')
+  const [value, setValue] = useState('')
   const [isLoading, setIsLoading] = useState(false)
-  const loadingTimer = useRef()
 
   /**
    * check if value is valid
@@ -60,7 +61,6 @@ export default function Deposit({
   function isValidValue() {
     const balance = wantTokenBalance
     const decimals = wantTokenDecimals
-    const value = ethValue
     if (value === '' || value === '-' || value === '0' || isEmpty(value.replace(/ /g, ''))) return
     // not a number
     if (isNaN(Number(value))) return false
@@ -78,163 +78,113 @@ export default function Deposit({
   }
 
   const handleInputChange = event => {
-    setEthValue(event.target.value)
+    setValue(event.target.value)
   }
 
   const handleMaxClick = () => {
     const maxValue = wantTokenBalance
-    setEthValue(
+    setValue(
       formatBalance(maxValue.gt(0) ? maxValue : 0, wantTokenDecimals, {
         showAll: true
       })
     )
   }
 
-  const diposit = async () => {
-    clearTimeout(loadingTimer.current)
-    const isValid = isValidValue()
-    if (!isValid) {
-      return dispatch(
+  const deposit = async () => {
+    setIsLoading(true)
+    try {
+      const amount = BigNumber.from(value).mul(BigNumber.from(10).pow(wantTokenDecimals))
+      const signer = userProvider.getSigner()
+      const tokenContract = new Contract(wantTokenForVault, IERC20_ABI, userProvider)
+      const tokenContractWithUser = tokenContract.connect(signer)
+      const allowanceAmount = await tokenContractWithUser.allowance(address, VAULT_ADDRESS)
+      // If deposit amount greater than allow amount, need approve
+      if (amount.gt(allowanceAmount)) {
+        // If allowance gt 0, increaseAllowance, otherwise approve nextAmount
+        if (allowanceAmount.gt(0)) {
+          await tokenContractWithUser
+            .increaseAllowance(VAULT_ADDRESS, amount.sub(allowanceAmount))
+            .then(tx => tx.wait())
+            .catch(async e => {
+              console.table(e)
+              // cancel by user
+              if (e.code === 4001 || e.code === 'ACTION_REJECTED') {
+                return Promise.reject(e)
+              }
+              // If increase failed, approve 0 and approve nextAmounts
+              await tokenContractWithUser.approve(VAULT_ADDRESS, 0)
+              await tokenContractWithUser.approve(VAULT_ADDRESS, amount).then(tx => tx.wait())
+            })
+        } else {
+          await tokenContractWithUser.approve(VAULT_ADDRESS, amount)
+        }
+      }
+
+      const vaultContract = new Contract(VAULT_ADDRESS, VAULT_ABI, userProvider)
+      const vaultContractWithUser = vaultContract.connect(signer)
+
+      const extendObj = {}
+      // if gasLimit times not 1, need estimateGas
+      if (isNumber(MULTIPLE_OF_GAS) && MULTIPLE_OF_GAS !== 1) {
+        const gas = await vaultContractWithUser.estimateGas.lend(amount)
+        const gasLimit = Math.ceil(gas * MULTIPLE_OF_GAS)
+        // gasLimit not exceed maximum
+        const maxGasLimit = gasLimit < MAX_GAS_LIMIT ? gasLimit : MAX_GAS_LIMIT
+        extendObj.gasLimit = maxGasLimit
+      }
+      await vaultContractWithUser
+        .lend(amount, extendObj)
+        .then(tx => tx.wait())
+        .catch(error => {
+          const errorMsg = errorTextOutput(error)
+          let tip = ''
+          if (isEs(errorMsg)) {
+            tip = 'Vault has been shut down, please try again later!'
+          } else if (isAd(errorMsg)) {
+            tip = 'Vault is in adjustment status, please try again later!'
+          } else if (isRp(errorMsg)) {
+            tip = 'Vault is in rebase status, please try again later!'
+          } else if (isDistributing(errorMsg)) {
+            tip = 'Vault is in distributing, please try again later!'
+          } else if (isLessThanMinValue(errorMsg)) {
+            tip = `Deposit Amount must be greater than ${toFixed(minimumInvestmentAmount, BN_18, 2)}ETH!`
+          }
+          if (tip) {
+            dispatch(
+              warmDialog({
+                open: true,
+                type: 'error',
+                message: tip
+              })
+            )
+          }
+          setIsLoading(false)
+        })
+      setValue('')
+      setIsLoading(false)
+      dispatch(
         warmDialog({
           open: true,
-          type: 'warning',
-          message: 'Please enter the correct value'
+          type: 'success',
+          message: 'Success'
+        })
+      )
+    } catch (error) {
+      console.log('error', error)
+      setIsLoading(false)
+      dispatch(
+        warmDialog({
+          open: true,
+          type: 'error',
+          message: 'Deposit failed'
         })
       )
     }
-    setIsLoading(true)
-    const amount = BigNumber.from(BN(ethValue).multipliedBy(BigNumber.from(10).pow(wantTokenDecimals).toString()).toFixed())
-    console.log('nextTokens=', ETH_ADDRESS, amount)
-    const signer = userProvider.getSigner()
-    const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider)
-    const nVaultWithUser = vaultContract.connect(signer)
-    let isSuccess = false
-
-    const extendObj = {}
-    // if gasLimit times not 1, need estimateGas
-    if (isNumber(MULTIPLE_OF_GAS) && MULTIPLE_OF_GAS !== 1) {
-      const gas = await nVaultWithUser.estimateGas.mint(ETH_ADDRESS, amount, 0, { from: address, value: amount })
-      const gasLimit = Math.ceil(gas * MULTIPLE_OF_GAS)
-      // gasLimit not exceed maximum
-      const maxGasLimit = gasLimit < MAX_GAS_LIMIT ? gasLimit : MAX_GAS_LIMIT
-      extendObj.gasLimit = maxGasLimit
-    }
-    await nVaultWithUser
-      .mint(ETH_ADDRESS, amount, 0, {
-        ...extendObj,
-        from: address,
-        value: amount
-      })
-      .then(tx => tx.wait())
-      .then(() => {
-        isSuccess = true
-      })
-      .catch(error => {
-        const errorMsg = errorTextOutput(error)
-        let tip = ''
-        if (isEs(errorMsg)) {
-          tip = 'Vault has been shut down, please try again later!'
-        } else if (isAd(errorMsg)) {
-          tip = 'Vault is in adjustment status, please try again later!'
-        } else if (isRp(errorMsg)) {
-          tip = 'Vault is in rebase status, please try again later!'
-        } else if (isDistributing(errorMsg)) {
-          tip = 'Vault is in distributing, please try again later!'
-        } else if (isLessThanMinValue(errorMsg)) {
-          tip = `Deposit Amount must be greater than ${toFixed(minimumInvestmentAmount, BN_18, 2)}ETH!`
-        }
-        if (tip) {
-          dispatch(
-            warmDialog({
-              open: true,
-              type: 'error',
-              message: tip
-            })
-          )
-        }
-        setIsLoading(false)
-      })
-
-    if (isSuccess) {
-      setEthValue('')
-    }
-
-    loadingTimer.current = setTimeout(() => {
-      setIsLoading(false)
-      if (isSuccess) {
-        dispatch(
-          warmDialog({
-            open: true,
-            type: 'success',
-            message: 'Success!'
-          })
-        )
-      }
-    }, 2000)
   }
-
-  const estimateMint = useCallback(
-    debounce(async () => {
-      const isValid = isValidValue()
-      if (!isValid) {
-        return
-      }
-      const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider)
-      const amount = BigNumber.from(BN(ethValue).multipliedBy(BigNumber.from(10).pow(wantTokenDecimals).toString()).toFixed())
-      await vaultContract.estimateMint(ETH_ADDRESS, amount).catch(error => {
-        const errorMsg = errorTextOutput(error)
-        let tip = ''
-        if (isEs(errorMsg)) {
-          tip = 'Vault has been shut down, please try again later!'
-        } else if (isAd(errorMsg)) {
-          tip = 'Vault is in adjustment status, please try again later!'
-        } else if (isRp(errorMsg)) {
-          tip = 'Vault is in rebase status, please try again later!'
-        } else if (isDistributing(errorMsg)) {
-          tip = 'Vault is in distributing, please try again later!'
-        } else if (isLessThanMinValue(errorMsg)) {
-          tip = `Deposit Amount must be greater than ${toFixed(minimumInvestmentAmount, BN_18, 2)}ETH!`
-        }
-        if (tip) {
-          dispatch(
-            warmDialog({
-              open: true,
-              type: 'error',
-              message: tip
-            })
-          )
-        }
-        return BigNumber.from(0)
-      })
-    }, 1500)
-  )
-
-  useEffect(() => {
-    estimateMint()
-    return () => estimateMint.cancel()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [ethValue])
-
-  useEffect(() => {
-    const estimatedUsedValue = BigNumber.from(10).pow(wantTokenDecimals)
-    if (isEmpty(userProvider) || isEmpty(VAULT_ADDRESS) || isEmpty(VAULT_ABI) || wantTokenBalance.lt(estimatedUsedValue)) {
-      return
-    }
-    // const signer = userProvider.getSigner()
-    // const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider)
-    // const nVaultWithUser = vaultContract.connect(signer)
-    // nVaultWithUser.estimateGas
-    //   .mint(ETH_ADDRESS, estimatedUsedValue, {
-    //     from: address,
-    //     value: estimatedUsedValue
-    //   })
-    //   .then(setMintGasLimit)
-    //   .catch(noop)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [userProvider, VAULT_ADDRESS, wantTokenBalance, VAULT_ABI])
 
   const isLogin = !isEmpty(userProvider)
   const isValid = isValidValue()
+  const bps = manageFeeBps ? manageFeeBps.toString() / 10000 : 0
 
   return (
     <>
@@ -250,7 +200,7 @@ export default function Deposit({
                 </div>
                 <CustomTextField
                   classes={{ root: classes.input }}
-                  value={ethValue}
+                  value={value}
                   onChange={handleInputChange}
                   placeholder="deposit amount"
                   maxEndAdornment
@@ -273,11 +223,42 @@ export default function Deposit({
           </GridContainer>
         </GridItem>
       </GridContainer>
+      <GridContainer className={classes.estimateContainer}>
+        <GridItem xs={12} sm={12} md={12} lg={12}>
+          <p className={classes.estimateText}>To</p>
+        </GridItem>
+        <GridItem xs={12} sm={12} md={12} lg={12}>
+          <div className={classes.estimateWrapper}>
+            <span>{wantTokenSymbol} VAULT</span>
+            <span className={classes.estimateBalanceNum}>{Number(value) * (1 - bps)}</span>
+          </div>
+        </GridItem>
+        <GridItem xs={12} sm={12} md={12} lg={12}>
+          <p
+            className={classes.balance}
+            title={formatBalance(estimatedTotalAssets, wantTokenDecimals, {
+              showAll: true
+            })}
+          >
+            Balance:&nbsp;&nbsp;
+            <Loading loading={isBalanceLoading}>{formatBalance(estimatedTotalAssets, wantTokenDecimals)}</Loading>
+          </p>
+        </GridItem>
+      </GridContainer>
       <GridContainer>
         <GridItem xs={12} sm={12} md={12} lg={12}>
           <div className={classes.footerContainer}>
-            <Button disabled={!isLogin || (isLogin && !isValid)} color="colorfull" onClick={diposit} style={{ width: '100%' }}>
+            <Button disabled={!isLogin || (isLogin && !isValid)} color="colorfull" onClick={deposit} style={{ width: '100%' }}>
               Deposit
+              <Tooltip
+                classes={{
+                  tooltip: classes.tooltip
+                }}
+                placement="top"
+                title={`${bps * 100}% manage fee of the principal.`}
+              >
+                <InfoIcon style={{ marginLeft: '0.5rem' }} />
+              </Tooltip>
             </Button>
           </div>
         </GridItem>
@@ -286,7 +267,7 @@ export default function Deposit({
         <Paper elevation={3} className={classes.depositModal}>
           <div className={classes.modalBody}>
             <CircularProgress color="inherit" />
-            <p>On Deposit...</p>
+            <div style={{ marginTop: '1rem' }}>On Deposit...</div>
           </div>
         </Paper>
       </Modal>

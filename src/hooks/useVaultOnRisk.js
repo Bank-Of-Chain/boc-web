@@ -55,24 +55,28 @@ const useVaultOnRisk = (VAULT_FACTORY_ADDRESS, VAULT_FACTORY_ABI, VAULT_ADDRESS,
             helperContract.getCurrentBorrow(borrowToken, 2, VAULT_ADDRESS),
             helperContract.getTotalCollateralTokenAmount(VAULT_ADDRESS, wantToken),
             contract.depositTo3rdPoolTotalAssets(),
-            contract.estimatedTotalAssets()
-          ]).then(([netMarketMakingAmount, currentBorrow, totalCollateralTokenAmount, depositTo3rdPoolTotalAssets, estimatedTotalAssets]) => {
-            return helperContract.calcCanonicalAssetValue(borrowToken, currentBorrow, wantToken).then(currentBorrowWithCanonical => {
-              const nextBaseInfo = {
-                netMarketMakingAmount,
-                currentBorrow,
-                currentBorrowWithCanonical,
-                depositTo3rdPoolTotalAssets,
-                totalCollateralTokenAmount,
-                estimatedTotalAssets,
-                wantInfo,
-                borrowInfo,
-                result: depositTo3rdPoolTotalAssets.add(totalCollateralTokenAmount).sub(netMarketMakingAmount).sub(currentBorrowWithCanonical)
-              }
-              setBaseInfo(nextBaseInfo)
-              return nextBaseInfo
-            })
-          })
+            contract.estimatedTotalAssets(),
+            contract.manageFeeBps()
+          ]).then(
+            ([netMarketMakingAmount, currentBorrow, totalCollateralTokenAmount, depositTo3rdPoolTotalAssets, estimatedTotalAssets, manageFeeBps]) => {
+              return helperContract.calcCanonicalAssetValue(borrowToken, currentBorrow, wantToken).then(currentBorrowWithCanonical => {
+                const nextBaseInfo = {
+                  netMarketMakingAmount,
+                  currentBorrow,
+                  currentBorrowWithCanonical,
+                  depositTo3rdPoolTotalAssets,
+                  totalCollateralTokenAmount,
+                  estimatedTotalAssets,
+                  manageFeeBps,
+                  wantInfo,
+                  borrowInfo,
+                  result: depositTo3rdPoolTotalAssets.add(totalCollateralTokenAmount).sub(netMarketMakingAmount).sub(currentBorrowWithCanonical)
+                }
+                setBaseInfo(nextBaseInfo)
+                return nextBaseInfo
+              })
+            }
+          )
         })
         .finally(() => {
           setTimeout(() => {
