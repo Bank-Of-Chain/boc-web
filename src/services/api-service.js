@@ -151,7 +151,7 @@ export const getSegmentProfit = (address, chainId, tokenType, segmentType) => {
  * @param {*} params
  * @returns
  */
-export const getDataByType = (chainId, vaultAddress, type, params = { limit: 30 }) => {
+export const getDataByType = (chainId, vaultAddress, type, params) => {
   if (isNil(chainId) || isEmpty(vaultAddress) || isEmpty(type)) return Promise.reject('chainId & vaultAddress & type must not be null')
 
   return axios
