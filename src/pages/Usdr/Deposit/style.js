@@ -94,12 +94,6 @@ const componentsStyle = () => ({
   },
   subTitle: {
     color: '#A68EFE'
-  },
-  setting: {
-    position: 'absolute',
-    right: '1rem',
-    top: '1rem',
-    cursor: 'pointer'
   }
 })
 

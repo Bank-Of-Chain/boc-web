@@ -257,12 +257,6 @@ const componentsStyle = theme => ({
     transition: 'all 300ms cubic-bezier(0.4, 0, 0.2, 1) 0ms',
     width: '54%',
     backgroundColor: '#fff'
-  },
-  setting: {
-    position: 'absolute',
-    right: '1rem',
-    top: '1rem',
-    cursor: 'pointer'
   }
 })
 
