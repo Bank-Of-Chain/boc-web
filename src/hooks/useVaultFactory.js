@@ -49,15 +49,12 @@ const useVaultFactory = (vaultFactoryAddress, VAULT_FACTORY_ABI, userProvider) =
         })
       )
     })
-    Promise.all(requestArray)
-      .then(resp => {
+    Promise.all(requestArray).then(resp => {
+      setTimeout(() => {
+        setLoading(false)
         setPersonalVault(flatten(resp))
-      })
-      .finally(() => {
-        setTimeout(() => {
-          setLoading(false)
-        }, 3000)
-      })
+      }, 1000)
+    })
   }, [userAddress, vaultFactoryAddress, userProvider, vaultImplList, VAULT_FACTORY_ABI])
 
   const addVault = useCallback(
