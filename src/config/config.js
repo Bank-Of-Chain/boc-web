@@ -33,7 +33,7 @@ const configBase = {
   youtube_url: 'https://www.youtube.com/channel/UCnACZpYuAksuSeoLniDXlOQ/featured',
   medium_url: 'https://medium.com/bankofchain',
   document_url: 'https://docs.bankofchain.io',
-  boc_server: 'https://service-pr02-sg.bankofchain.io',
+  boc_server: 'https://service-qa03-sg.bankofchain.io',
   rpc_url: {
     1: 'https://rpc.ankr.com/eth',
     137: 'https://rpc-mainnet.maticvigil.com',

@@ -18,197 +18,97 @@ import useMediaQuery from '@material-ui/core/useMediaQuery'
 // === Components === //
 import Deposit from './Deposit'
 import Withdraw from './Withdraw'
-import MyStatement from '@/components/MyStatement/MyStatementForRiskOn'
+import MyStatementForRiskOn from '@/components/MyStatement/MyStatementForRiskOn'
 import MyVault from '@/components/MyVault'
 import Modal from '@material-ui/core/Modal'
 import Paper from '@material-ui/core/Paper'
 
-import { useSelector, useDispatch } from 'react-redux'
-
 // === Reducers === //
-import { warmDialog } from '@/reducers/meta-reducer'
 import { setCurrentTab } from '@/reducers/invest-reducer'
 
 // === constants === //
-import { ETH_ADDRESS, ETH_DECIMALS } from '@/constants/tokens'
+import { WETH_ADDRESS_MATIC } from '@/constants/tokens'
 import { INVEST_TAB } from '@/constants/invest'
-import { IERC20_ABI, CHAIN_ID } from '@/constants'
+import { IERC20_ABI } from '@/constants'
 
 // === Utils === //
 import { formatBalance } from '@/helpers/number-format'
 import isEmpty from 'lodash/isEmpty'
-import last from 'lodash/last'
-import noop from 'lodash/noop'
 import * as ethers from 'ethers'
 import useVersionWapper from '@/hooks/useVersionWapper'
 import { addToken } from '@/helpers/wallet'
-import useVault from '@/hooks/useVault'
+
+// === Hooks === //
+import { useSelector, useDispatch } from 'react-redux'
+import useVaultOnRisk from '@/hooks/useVaultOnRisk'
 
 // === Styles === //
 import styles from './style'
+import { useCallback } from 'react'
 
 const useStyles = makeStyles(styles)
 const { BigNumber } = ethers
+
+const tokens = [WETH_ADDRESS_MATIC]
 
 function Ethr(props) {
   const classes = useStyles()
   const dispatch = useDispatch()
   const isLayoutSm = useMediaQuery('(max-width: 960px)')
 
-  const [personalVaultAddress, setPersonalVaultAddress] = useState()
-  const [isVisiable, setIsVisiable] = useState(true)
-
-  const {
-    address,
-    userProvider,
-    ETHI_ADDRESS,
-    VAULT_ADDRESS,
-    VAULT_ABI,
-    EXCHANGE_AGGREGATOR_ABI,
-    EXCHANGE_ADAPTER_ABI,
-    PRICE_ORCALE_ABI,
-    VAULT_BUFFER_ADDRESS,
-    VAULT_BUFFER_ABI,
-    VAULT_FACTORY_ADDRESS
-  } = props
-
-  console.log('Usdr VAULT_FACTORY_ADDRESS=', VAULT_FACTORY_ADDRESS)
-
-  const [ethBalance, setEthBalance] = useState(BigNumber.from(0))
-  const [ethiBalance, setEthiBalance] = useState(BigNumber.from(0))
-  const [ethiDecimals, setEthiDecimals] = useState(0)
-  const ethDecimals = ETH_DECIMALS
-
-  const [beforeTotalValue, setBeforeTotalValue] = useState(BigNumber.from(0))
-  const [totalValue, setTotalValue] = useState(BigNumber.from(0))
-
-  const [vaultBufferBalance, setVaultBufferBalance] = useState(BigNumber.from(0))
-  const [vaultBufferDecimals, setVaultBufferDecimals] = useState(0)
+  const { address, userProvider, VAULT_FACTORY_ADDRESS, VAULT_FACTORY_ABI, UNISWAPV3_RISK_ON_VAULT, UNISWAPV3_RISK_ON_HELPER } = props
 
   const [isBalanceLoading, setIsBalanceLoading] = useState(false)
+  const [personalVaultAddress, setPersonalVaultAddress] = useState()
+  const [wantTokenForVault, setWantTokenForVault] = useState()
+  const [wantTokenBalance, setWantTokenBalance] = useState(BigNumber.from(0))
+  const [wantTokenDecimals, setWantTokenDecimals] = useState(0)
+  const [wantTokenSymbol, setWantTokenSymbol] = useState('')
+  const [isVisiable, setIsVisiable] = useState(true)
 
   const current = useSelector(state => state.investReducer.currentTab)
   const setCurrent = tab => {
-    loadCoinsBalance()
+    loadData()
     dispatch(setCurrentTab(tab))
   }
-  const { minimumInvestmentAmount, exchangeManager } = useVault(VAULT_ADDRESS, VAULT_ABI, userProvider)
+  const { baseInfo } = useVaultOnRisk(
+    VAULT_FACTORY_ADDRESS,
+    VAULT_FACTORY_ABI,
+    personalVaultAddress,
+    UNISWAPV3_RISK_ON_VAULT,
+    UNISWAPV3_RISK_ON_HELPER,
+    userProvider
+  )
+  const { netMarketMakingAmount, estimatedTotalAssets, manageFeeBps, minimumInvestmentAmount } = baseInfo
 
-  // load user balance
-  const loadBalance = () => {
-    if (isEmpty(address) || isEmpty(userProvider) || isEmpty(ETHI_ADDRESS) || isEmpty(VAULT_BUFFER_ADDRESS)) {
-      return
-    }
-    const vaultBufferContract = new ethers.Contract(VAULT_BUFFER_ADDRESS, VAULT_BUFFER_ABI, userProvider)
-    const ethiContract = new ethers.Contract(ETHI_ADDRESS, IERC20_ABI, userProvider)
-    Promise.all([
-      loadCoinsBalance(),
-      ethiContract
-        .decimals()
-        .then(setEthiDecimals)
-        .catch(() => setEthiDecimals(1)),
-      vaultBufferContract
-        .decimals()
-        .then(setVaultBufferDecimals)
-        .catch(() => setVaultBufferDecimals(1))
-    ]).catch(() => {
-      dispatch(
-        warmDialog({
-          open: true,
-          type: 'warning',
-          message: "Please confirm wallet's network!"
-        })
-      )
-    })
-  }
+  const handleAddToken = useCallback(() => {
+    addToken(wantTokenForVault, wantTokenSymbol, wantTokenDecimals)
+  }, [wantTokenForVault, wantTokenSymbol, wantTokenDecimals])
 
-  const loadCoinsBalance = () => {
-    if (isEmpty(address) || isEmpty(userProvider) || isEmpty(ETHI_ADDRESS) || isEmpty(VAULT_BUFFER_ADDRESS)) {
-      return
-    }
+  const loadData = useCallback(() => {
+    if (isEmpty(wantTokenForVault) || isEmpty(personalVaultAddress)) return
+
     setIsBalanceLoading(true)
-    const vaultBufferContract = new ethers.Contract(VAULT_BUFFER_ADDRESS, VAULT_BUFFER_ABI, userProvider)
-    const ethiContract = new ethers.Contract(ETHI_ADDRESS, IERC20_ABI, userProvider)
-    return Promise.all([
-      ethiContract.balanceOf(address).catch(() => BigNumber.from(0)),
-      userProvider.getBalance(address),
-      vaultBufferContract.balanceOf(address).catch(() => BigNumber.from(0))
-    ])
-      .then(([ethiBalance, ethBalance, vaultBufferBalance]) => {
-        setEthBalance(ethBalance)
-        setEthiBalance(ethiBalance)
-        setVaultBufferBalance(vaultBufferBalance)
-        return [ethiBalance, ethBalance, vaultBufferBalance]
+    const wantTokenContract = new ethers.Contract(wantTokenForVault, IERC20_ABI, userProvider)
+
+    Promise.all([wantTokenContract.balanceOf(address), wantTokenContract.decimals(), wantTokenContract.symbol()])
+      .then(([balance, decimals, symbol]) => {
+        setWantTokenBalance(balance)
+        setWantTokenDecimals(decimals)
+        setWantTokenSymbol(symbol)
       })
       .finally(() => {
         setTimeout(() => {
           setIsBalanceLoading(false)
         }, 500)
       })
-  }
+    return loadData
+  }, [wantTokenForVault, personalVaultAddress, address, userProvider])
 
   useEffect(() => {
-    if (isEmpty(VAULT_ADDRESS)) return
-    const loadTotalAssetsFn = () =>
-      loadTotalAssets()
-        .then(afterTotalValue => {
-          if (!afterTotalValue.eq(beforeTotalValue)) {
-            setBeforeTotalValue(totalValue)
-            setTotalValue(afterTotalValue)
-          }
-        })
-        .catch(noop)
-    const timer = setInterval(loadTotalAssetsFn, 3000)
-    return () => clearInterval(timer)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [totalValue.toString()])
-
-  function handleMint(...eventArgs) {
-    console.log('Mint=', eventArgs)
-    const block = last(eventArgs)
-    block &&
-      block
-        .getTransaction()
-        .then(tx => tx.wait())
-        .then(loadBalance)
-  }
-  function handleBurn(...eventArgs) {
-    console.log('Burn=', eventArgs)
-    const block = last(eventArgs)
-    block &&
-      block
-        .getTransaction()
-        .then(tx => tx.wait())
-        .then(loadBalance)
-  }
-
-  useEffect(() => {
-    const listener = () => {
-      if (isEmpty(VAULT_ABI) || isEmpty(userProvider)) return
-      loadBalance()
-      if (isEmpty(VAULT_ADDRESS)) return
-      const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider)
-      if (!isEmpty(address)) {
-        vaultContract.on('Mint', handleMint)
-        vaultContract.on('Burn', handleBurn)
-        return () => {
-          vaultContract.off('Mint', handleMint)
-          vaultContract.off('Burn', handleBurn)
-        }
-      }
-    }
-    return listener()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [address, VAULT_ADDRESS, VAULT_ABI, userProvider])
-
-  const loadTotalAssets = () => {
-    const ethiContract = new ethers.Contract(ETHI_ADDRESS, IERC20_ABI, userProvider)
-    return ethiContract.totalSupply()
-  }
-
-  const handleAddETHi = () => {
-    addToken(ETHI_ADDRESS, 'ETHi', 18)
-  }
+    loadData()
+    setInterval(loadData, 30000)
+  }, [loadData])
 
   return (
     <div className={classes.container}>
@@ -251,20 +151,18 @@ function Ethr(props) {
             <div className={isLayoutSm ? classes.wrapperMobile : classes.wrapper}>
               <Deposit
                 address={address}
-                ethBalance={ethBalance}
-                ethDecimals={ethDecimals}
-                ethiBalance={ethiBalance}
-                ethiDecimals={ethiDecimals}
+                estimatedTotalAssets={estimatedTotalAssets}
+                wantTokenBalance={wantTokenBalance}
+                wantTokenDecimals={wantTokenDecimals}
                 userProvider={userProvider}
-                VAULT_ABI={VAULT_ABI}
-                IERC20_ABI={IERC20_ABI}
-                VAULT_ADDRESS={VAULT_ADDRESS}
-                ETH_ADDRESS={ETH_ADDRESS}
-                vaultBufferBalance={vaultBufferBalance}
-                vaultBufferDecimals={vaultBufferDecimals}
+                wantTokenSymbol={wantTokenSymbol}
+                wantTokenForVault={wantTokenForVault}
+                VAULT_ADDRESS={personalVaultAddress}
+                VAULT_ABI={UNISWAPV3_RISK_ON_VAULT}
                 isBalanceLoading={isBalanceLoading}
-                reloadBalance={loadCoinsBalance}
                 minimumInvestmentAmount={minimumInvestmentAmount}
+                manageFeeBps={manageFeeBps}
+                modalOpenHandle={() => setIsVisiable(true)}
               />
             </div>
           </GridItem>
@@ -274,19 +172,15 @@ function Ethr(props) {
             <div className={isLayoutSm ? classes.wrapperMobile : classes.wrapper}>
               <Withdraw
                 address={address}
-                exchangeManager={exchangeManager}
-                ethiBalance={ethiBalance}
-                ethiDecimals={ethiDecimals}
                 userProvider={userProvider}
-                VAULT_ADDRESS={VAULT_ADDRESS}
-                ETH_ADDRESS={ETH_ADDRESS}
-                VAULT_ABI={VAULT_ABI}
-                IERC20_ABI={IERC20_ABI}
-                EXCHANGE_AGGREGATOR_ABI={EXCHANGE_AGGREGATOR_ABI}
-                EXCHANGE_ADAPTER_ABI={EXCHANGE_ADAPTER_ABI}
-                PRICE_ORCALE_ABI={PRICE_ORCALE_ABI}
+                estimatedTotalAssets={estimatedTotalAssets}
+                wantTokenDecimals={wantTokenDecimals}
+                wantTokenSymbol={wantTokenSymbol}
+                VAULT_ADDRESS={personalVaultAddress}
+                VAULT_ABI={UNISWAPV3_RISK_ON_VAULT}
                 isBalanceLoading={isBalanceLoading}
-                reloadBalance={loadCoinsBalance}
+                reloadBalance={loadData}
+                modalOpenHandle={() => setIsVisiable(true)}
               />
             </div>
           </GridItem>
@@ -298,16 +192,18 @@ function Ethr(props) {
                 <div className={classes.balanceCardItem}>
                   <div className={classes.balanceCardValue}>
                     <span
-                      title={formatBalance(ethiBalance, ethiDecimals, {
+                      title={formatBalance(netMarketMakingAmount, wantTokenDecimals, {
                         showAll: true
                       })}
                     >
-                      <Loading loading={isBalanceLoading}>{formatBalance(ethiBalance, ethiDecimals)}</Loading>
+                      <Loading loading={isBalanceLoading}>{formatBalance(netMarketMakingAmount, wantTokenDecimals)}</Loading>
                     </span>
-                    <span className={classes.symbol}>WETH</span>
+                    <span className={classes.symbol}>
+                      <Loading loading={isEmpty(wantTokenSymbol) && isBalanceLoading}>{wantTokenSymbol}</Loading>
+                    </span>
                     {userProvider && (
                       <span title="Add token address to wallet">
-                        <AddCircleOutlineIcon className={classes.addTokenIcon} onClick={handleAddETHi} fontSize="small" />
+                        <AddCircleOutlineIcon className={classes.addTokenIcon} onClick={handleAddToken} fontSize="small" />
                       </span>
                     )}
                   </div>
@@ -315,7 +211,15 @@ function Ethr(props) {
                 </div>
               </Card>
               {!isEmpty(address) && !isEmpty(personalVaultAddress) && (
-                <MyStatement address={address} chain={`${CHAIN_ID}`} VAULT_ADDRESS={VAULT_ADDRESS} type={'ETHi'} />
+                <MyStatementForRiskOn
+                  userProvider={userProvider}
+                  VAULT_FACTORY_ABI={VAULT_FACTORY_ABI}
+                  personalVaultAddress={personalVaultAddress}
+                  wantTokenSymbol={wantTokenSymbol}
+                  VAULT_FACTORY_ADDRESS={VAULT_FACTORY_ADDRESS}
+                  UNISWAPV3_RISK_ON_VAULT={UNISWAPV3_RISK_ON_VAULT}
+                  UNISWAPV3_RISK_ON_HELPER={UNISWAPV3_RISK_ON_HELPER}
+                />
               )}
             </div>
           </GridItem>
@@ -323,10 +227,17 @@ function Ethr(props) {
         <Modal className={classes.modal} open={isVisiable} aria-labelledby="simple-modal-title" aria-describedby="simple-modal-description">
           <Paper elevation={3}>
             <MyVault
-              setPersonalVaultAddress={v => {
+              tokens={tokens}
+              address={address}
+              userProvider={userProvider}
+              VAULT_FACTORY_ADDRESS={VAULT_FACTORY_ADDRESS}
+              VAULT_FACTORY_ABI={VAULT_FACTORY_ABI}
+              vaultChangeHandle={(address, token) => {
                 setIsVisiable(false)
-                setPersonalVaultAddress(v)
+                setPersonalVaultAddress(address)
+                setWantTokenForVault(token)
               }}
+              modalCloseHandle={() => setIsVisiable(false)}
             />
           </Paper>
         </Modal>
