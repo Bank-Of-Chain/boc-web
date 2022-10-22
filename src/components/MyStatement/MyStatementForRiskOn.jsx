@@ -74,15 +74,33 @@ const MyStatementForRiskOn = props => {
 
   const aaveOption = {
     grid: {
-      bottom: 20
+      top: 40,
+      left: '0%',
+      right: '5%',
+      bottom: '0%',
+      containLabel: true
     },
     legend: {
       textStyle: {
         color: '#fff'
       }
     },
-    tooltip: {},
+    tooltip: {
+      trigger: 'axis',
+      borderWidth: 0,
+      backgroundColor: '#292B2E',
+      textStyle: {
+        color: '#fff'
+      }
+    },
+    textStyle: {
+      color: '#fff'
+    },
+    color: ['#A68EFE', '#5470c6', '#91cc75'],
     xAxis: {
+      axisTick: {
+        alignWithLabel: true
+      },
       data: map(aaveOutstandingLoan.result, item => item.validateTime)
     },
     yAxis: [
@@ -118,7 +136,39 @@ const MyStatementForRiskOn = props => {
         type: 'line',
         yAxisIndex: 1,
         name: 'Health Ratio',
-        data: map(aaveHealthRatio.result, item => Number(item.result).toFixed(4))
+        data: map(aaveHealthRatio.result, item => Number(item.result).toFixed(4)),
+        markLine: {
+          symbol: 'none',
+          data: [
+            {
+              lineStyle: {
+                color: '#fff'
+              },
+              label: {
+                formatter: '加杠杆'
+              },
+              yAxis: 0.4
+            },
+            {
+              lineStyle: {
+                color: '#fff'
+              },
+              label: {
+                formatter: '减杠杆'
+              },
+              yAxis: 0.7
+            },
+            {
+              lineStyle: {
+                color: '#fff'
+              },
+              label: {
+                formatter: '清算线'
+              },
+              yAxis: 0.8
+            }
+          ]
+        }
       }
     ]
   }
@@ -182,6 +232,25 @@ const MyStatementForRiskOn = props => {
     }
   ]
 
+  const uniswapOption = getLineEchartOpt(
+    map(uniswapPositionValueArray.result, i => {
+      return {
+        date: i.validateTime,
+        value: toFixed(i.result, BN_18)
+      }
+    }),
+    'value',
+    wantTokenSymbol,
+    {
+      format: 'MM-DD',
+      xAxis: {
+        axisTick: {
+          alignWithLabel: true
+        }
+      }
+    }
+  )
+
   return (
     <GridContainer>
       <GridItem xs={12} sm={12} md={12} lg={12}>
@@ -201,7 +270,7 @@ const MyStatementForRiskOn = props => {
               title={
                 <span>
                   AAVE Lines
-                  <Tooltip title={`Curve of daily change in the total ${isUSDi ? 'USDi' : 'ETHi'} held by the user.`}>
+                  <Tooltip title="AAVE Outstanding Loan, Collateral, Health Ratio">
                     <InfoIcon style={{ marginLeft: 8, fontSize: '1rem' }} />
                   </Tooltip>
                 </span>
@@ -239,27 +308,7 @@ const MyStatementForRiskOn = props => {
               {uniswapPositionValueArray.error ? (
                 <div>Error: {uniswapPositionValueArray.error.message}</div>
               ) : (
-                <LineEchart
-                  option={getLineEchartOpt(
-                    map(uniswapPositionValueArray.result, i => {
-                      return {
-                        date: i.validateTime,
-                        value: toFixed(i.result, BN_18)
-                      }
-                    }),
-                    'value',
-                    wantTokenSymbol,
-                    {
-                      format: 'MM-DD',
-                      xAxis: {
-                        axisTick: {
-                          alignWithLabel: true
-                        }
-                      }
-                    }
-                  )}
-                  style={{ minHeight: '20rem' }}
-                />
+                <LineEchart option={uniswapOption} style={{ minHeight: '20rem' }} />
               )}
             </Card>
           </GridItem>
