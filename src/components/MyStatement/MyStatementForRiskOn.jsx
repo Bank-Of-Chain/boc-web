@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React from 'react'
 import { makeStyles } from '@material-ui/core/styles'
 
 // === Components === //
@@ -52,15 +52,14 @@ const MyStatementForRiskOn = props => {
 
   const isUSDi = type === 'USDi'
   const classes = useStyles()
-  const [optionForLineChart, setOptionForLineChart] = useState({})
 
   // api datas fetching
-  const aaveOutstandingLoanArray = useAsync(() => getDataByType(CHAIN_ID, personalVaultAddress, 'aave-outstanding-loan'), [personalVaultAddress])
-  const aaveCollateralArray = useAsync(() => getDataByType(CHAIN_ID, personalVaultAddress, 'aave-collateral'), [personalVaultAddress])
-  const aaveHealthRatioArray = useAsync(() => getDataByType(CHAIN_ID, personalVaultAddress, 'aave-health-ratio'), [personalVaultAddress])
+  const aaveOutstandingLoan = useAsync(() => getDataByType(CHAIN_ID, personalVaultAddress, 'aave-outstanding-loan'), [personalVaultAddress])
+  const aaveCollateral = useAsync(() => getDataByType(CHAIN_ID, personalVaultAddress, 'aave-collateral'), [personalVaultAddress])
+  const aaveHealthRatio = useAsync(() => getDataByType(CHAIN_ID, personalVaultAddress, 'aave-health-ratio'), [personalVaultAddress])
   const uniswapPositionValueArray = useAsync(() => getDataByType(CHAIN_ID, personalVaultAddress, 'uniswap-position-value'), [personalVaultAddress])
   const profitArray = useAsync(() => getDataByType(CHAIN_ID, personalVaultAddress, 'profit'), [personalVaultAddress])
-  const { dataSource, loading } = usePersonalData(chain, type, address, type)
+  const { loading } = usePersonalData(chain, type, address, type)
   const { baseInfo } = useVaultOnRisk(
     VAULT_FACTORY_ADDRESS,
     VAULT_FACTORY_ABI,
@@ -70,51 +69,109 @@ const MyStatementForRiskOn = props => {
     userProvider
   )
 
-  const { netMarketMakingAmount, result, estimatedTotalAssets, wantInfo = {}, borrowInfo = {} } = baseInfo
+  const { netMarketMakingAmount, result, estimatedTotalAssets, wantInfo = {} } = baseInfo
   const { wantTokenDecimals = BigNumber.from(0) } = wantInfo
-  const { borrowTokenDecimals = BigNumber.from(0) } = borrowInfo
-  console.log('borrowTokenDecimals=', borrowTokenDecimals, aaveOutstandingLoanArray.result, aaveCollateralArray.result, aaveHealthRatioArray.result)
-  useEffect(() => {
-    const tvls = [
-      {
-        date: '2022-10-11',
-        balance: '1'
-      },
-      {
-        date: '2022-10-12',
-        balance: '10'
-      },
-      {
-        date: '2022-10-13',
-        balance: '10'
-      },
-      {
-        date: '2022-10-14',
-        balance: '20'
-      },
-      {
-        date: '2022-10-15',
-        balance: '20'
-      },
-      {
-        date: '2022-10-16',
-        balance: '20'
-      },
-      {
-        date: '2022-10-17',
-        balance: '30'
+
+  const aaveOption = {
+    grid: {
+      top: 40,
+      left: '0%',
+      right: '5%',
+      bottom: '0%',
+      containLabel: true
+    },
+    legend: {
+      textStyle: {
+        color: '#fff'
       }
-    ]
-    const option1 = getLineEchartOpt(tvls, 'balance', dataSource.token, {
-      format: 'MM-DD',
-      xAxis: {
-        axisTick: {
-          alignWithLabel: true
+    },
+    tooltip: {
+      trigger: 'axis',
+      borderWidth: 0,
+      backgroundColor: '#292B2E',
+      textStyle: {
+        color: '#fff'
+      }
+    },
+    textStyle: {
+      color: '#fff'
+    },
+    color: ['#A68EFE', '#5470c6', '#91cc75'],
+    xAxis: {
+      axisTick: {
+        alignWithLabel: true
+      },
+      data: map(aaveOutstandingLoan.result, item => item.validateTime)
+    },
+    yAxis: [
+      {
+        splitLine: {
+          lineStyle: {
+            color: '#454459'
+          }
+        }
+      },
+      {
+        max: 1,
+        min: 0,
+        splitLine: {
+          lineStyle: {
+            color: '#454459'
+          }
         }
       }
-    })
-    setOptionForLineChart(option1)
-  }, [dataSource, address])
+    ],
+    series: [
+      {
+        type: 'line',
+        name: 'AAVE Outstanding Loan',
+        data: map(aaveOutstandingLoan.result, item => toFixed(item.result, BN_18, 2))
+      },
+      {
+        type: 'line',
+        name: 'AAVE Collateral',
+        data: map(aaveCollateral.result, item => toFixed(item.result, BN_18, 2))
+      },
+      {
+        type: 'line',
+        yAxisIndex: 1,
+        name: 'Health Ratio',
+        data: map(aaveHealthRatio.result, item => Number(item.result).toFixed(4)),
+        markLine: {
+          symbol: 'none',
+          data: [
+            {
+              lineStyle: {
+                color: '#fff'
+              },
+              label: {
+                formatter: '加杠杆'
+              },
+              yAxis: 0.4
+            },
+            {
+              lineStyle: {
+                color: '#fff'
+              },
+              label: {
+                formatter: '减杠杆'
+              },
+              yAxis: 0.7
+            },
+            {
+              lineStyle: {
+                color: '#fff'
+              },
+              label: {
+                formatter: '清算线'
+              },
+              yAxis: 0.8
+            }
+          ]
+        }
+      }
+    ]
+  }
 
   const cardProps = [
     {
@@ -175,6 +232,25 @@ const MyStatementForRiskOn = props => {
     }
   ]
 
+  const uniswapOption = getLineEchartOpt(
+    map(uniswapPositionValueArray.result, i => {
+      return {
+        date: i.validateTime,
+        value: toFixed(i.result, BN_18)
+      }
+    }),
+    'value',
+    wantTokenSymbol,
+    {
+      format: 'MM-DD',
+      xAxis: {
+        axisTick: {
+          alignWithLabel: true
+        }
+      }
+    }
+  )
+
   return (
     <GridContainer>
       <GridItem xs={12} sm={12} md={12} lg={12}>
@@ -190,11 +266,11 @@ const MyStatementForRiskOn = props => {
         <GridContainer className={classes.lineChart}>
           <GridItem xs={12} sm={12} md={12} lg={12}>
             <Card
-              loading={aaveOutstandingLoanArray.loading || aaveCollateralArray.loading || aaveHealthRatioArray.loading}
+              loading={aaveOutstandingLoan.loading || aaveCollateral.loading || aaveHealthRatio.loading}
               title={
                 <span>
                   AAVE Lines
-                  <Tooltip title={`Curve of daily change in the total ${isUSDi ? 'USDi' : 'ETHi'} held by the user.`}>
+                  <Tooltip title="AAVE Outstanding Loan, Collateral, Health Ratio">
                     <InfoIcon style={{ marginLeft: 8, fontSize: '1rem' }} />
                   </Tooltip>
                 </span>
@@ -204,10 +280,10 @@ const MyStatementForRiskOn = props => {
                 height: '2rem'
               }}
             >
-              {aaveOutstandingLoanArray.error || aaveCollateralArray.error || aaveHealthRatioArray.error ? (
-                <div>Error: {aaveOutstandingLoanArray?.error?.message}</div>
+              {aaveOutstandingLoan.error || aaveCollateral.error || aaveHealthRatio.error ? (
+                <div>Error: {aaveOutstandingLoan?.error?.message}</div>
               ) : (
-                <LineEchart option={optionForLineChart} style={{ minHeight: '20rem' }} />
+                <LineEchart option={aaveOption} style={{ minHeight: '20rem' }} />
               )}
             </Card>
           </GridItem>
@@ -232,27 +308,7 @@ const MyStatementForRiskOn = props => {
               {uniswapPositionValueArray.error ? (
                 <div>Error: {uniswapPositionValueArray.error.message}</div>
               ) : (
-                <LineEchart
-                  option={getLineEchartOpt(
-                    map(uniswapPositionValueArray.result, i => {
-                      return {
-                        date: i.validateTime,
-                        value: toFixed(i.result, BN_18)
-                      }
-                    }),
-                    'value',
-                    wantTokenSymbol,
-                    {
-                      format: 'MM-DD',
-                      xAxis: {
-                        axisTick: {
-                          alignWithLabel: true
-                        }
-                      }
-                    }
-                  )}
-                  style={{ minHeight: '20rem' }}
-                />
+                <LineEchart option={uniswapOption} style={{ minHeight: '20rem' }} />
               )}
             </Card>
           </GridItem>

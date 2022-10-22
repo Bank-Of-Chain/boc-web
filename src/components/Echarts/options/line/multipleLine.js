@@ -1,4 +1,4 @@
-import { getNoDataGraphic } from '@/components/echarts/options/optionHelper'
+import { getNoDataGraphic } from '@/components/Echarts/options/optionHelper'
 
 /**
  * Multiple line chart

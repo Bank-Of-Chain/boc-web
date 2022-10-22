@@ -106,6 +106,7 @@ function Usdr(props) {
   }, [wantTokenForVault, personalVaultAddress, address, userProvider])
 
   useEffect(() => {
+    loadData()
     setInterval(loadData, 30000)
   }, [loadData])
 
