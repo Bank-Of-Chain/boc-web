@@ -52,6 +52,9 @@ const componentsStyle = () => ({
     right: '0rem',
     top: '-0.5rem',
     cursor: 'pointer'
+  },
+  loading: {
+    animation: 'loading 1s linear infinite'
   }
 })
 

@@ -10,6 +10,7 @@ import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline'
 import CompareArrowsIcon from '@material-ui/icons/CompareArrows'
 import ExitToAppOutlinedIcon from '@material-ui/icons/ExitToAppOutlined'
 import LoadingComponent from '@/components/LoadingComponent'
+import CachedIcon from '@material-ui/icons/Cached'
 
 // === Hooks === //
 import useVaultFactory from '@/hooks/useVaultFactory'
@@ -28,7 +29,7 @@ const useStyles = makeStyles(styles)
 
 const MyVault = props => {
   const { vaultChangeHandle, userProvider, VAULT_FACTORY_ADDRESS, VAULT_FACTORY_ABI, tokens } = props
-  const { personalVault, addVault, loading } = useVaultFactory(VAULT_FACTORY_ADDRESS, VAULT_FACTORY_ABI, userProvider)
+  const { personalVault, addVault, loading, adding } = useVaultFactory(VAULT_FACTORY_ADDRESS, VAULT_FACTORY_ABI, userProvider)
   const classes = useStyles()
   const { push } = useHistory()
 
@@ -81,7 +82,7 @@ const MyVault = props => {
                   ) : (
                     <Button
                       color="colorfull"
-                      startIcon={<AddCircleOutlineIcon />}
+                      startIcon={adding ? <CachedIcon className={classes.loading} /> : <AddCircleOutlineIcon />}
                       className={classes.button}
                       onClick={() => addVault(item.token, item.type)}
                     >
