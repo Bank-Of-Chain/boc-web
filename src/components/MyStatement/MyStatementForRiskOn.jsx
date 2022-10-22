@@ -182,7 +182,8 @@ const MyStatementForRiskOn = props => {
             tooltip: classes.tooltip
           }}
           placement="right"
-          title={'Total profits from BoC that are withdrawable and cumulative.'}
+          // TODO
+          title="Net Deposit"
         >
           <InfoIcon style={{ fontSize: '1.375rem', color: 'rgba(255,255,255,0.45)' }} />
         </Tooltip>
@@ -200,7 +201,7 @@ const MyStatementForRiskOn = props => {
             tooltip: classes.tooltip
           }}
           placement="right"
-          title={'Yield over the past week.'}
+          title="Current Value"
         >
           <InfoIcon style={{ fontSize: '1.375rem', color: 'rgba(255,255,255,0.45)' }} />
         </Tooltip>
@@ -219,7 +220,7 @@ const MyStatementForRiskOn = props => {
             tooltip: classes.tooltip
           }}
           placement="right"
-          title={'Yield over the past month.'}
+          title="Profit"
         >
           <InfoIcon style={{ fontSize: '1.375rem', color: 'rgba(255,255,255,0.45)' }} />
         </Tooltip>
