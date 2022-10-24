@@ -255,7 +255,7 @@ function App() {
       </Snackbar>
       <HashRouter>
         <Frame {...nextProps}>
-          <VaultChange>
+          <VaultChange changeNetwork={changeNetwork}>
             <Switch>
               <Route exact path="/">
                 <Suspense
