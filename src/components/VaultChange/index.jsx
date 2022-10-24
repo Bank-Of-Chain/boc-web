@@ -9,6 +9,10 @@ import map from 'lodash/map'
 // === Hooks === //
 import { useLocation, useHistory } from 'react-router-dom'
 
+// === Constants === //
+import { NET_WORKS, CHAIN_ID } from '@/constants'
+
+// === Styles === //
 import styles from './style'
 
 const VAULTS = [
@@ -21,9 +25,27 @@ const VAULTS = [
 const useStyles = makeStyles(styles)
 
 export default function VaultChange(props) {
+  const { changeNetwork } = props
   const classes = useStyles()
   const { push } = useHistory()
   const { pathname } = useLocation()
+
+
+  const changeRouter = path => {
+    let promise = Promise.resolve({})
+    if (path === '/ethi' || path === '/usdi') {
+      if (CHAIN_ID !== 1) {
+        promise = changeNetwork(NET_WORKS[0])
+      }
+    } else if (path === '/ethr' || path === '/usdr') {
+      if (CHAIN_ID !== 137) {
+        promise = changeNetwork(NET_WORKS[1])
+      }
+    }
+    promise.then(() => {
+      push(path)
+    })
+  }
 
   return (
     <Fragment>
@@ -33,7 +55,7 @@ export default function VaultChange(props) {
             centered
             classes={{ indicator: classes.indicator }}
             value={pathname}
-            onChange={(e, val) => push(val)}
+            onChange={(e, val) => changeRouter(val)}
             aria-label="simple tabs example"
           >
             {map(VAULTS, item => (
