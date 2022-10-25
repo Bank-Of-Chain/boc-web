@@ -78,13 +78,13 @@
     "unimported": "^1.21.0"
   },
   "scripts": {
-    "apollo": "node ./configs/apollo.js",
-    "mustache": "mustache ./configs/address.json ./configs/config.template.js > ./src/config/config.js",
+    "apollo": "echo test",
+    "mustache": "echo test",
     "start": "set PORT=3001 && react-app-rewired start",
     "build": "react-app-rewired build",
     "apollo:local": "node configs/apollo.js --env=local",
     "apollo:qa-sg": "node configs/apollo.js --env=qa-sg",
-    "apollo:qa02-sg": "echo test",
+    "apollo:qa02-sg": "node configs/apollo.js --env=qa02-sg",
     "apollo:qa03-sg": "node configs/apollo.js --env=qa03-sg",
     "apollo:qa04-sg": "node configs/apollo.js --env=qa04-sg",
     "apollo:stage-sg": "node configs/apollo.js --env=stage-sg",
