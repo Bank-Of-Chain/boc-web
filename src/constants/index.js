@@ -13,6 +13,7 @@ if (!config) {
 }
 
 // === configs === //
+export const ENV = config.env
 export const APY_SERVER = config.apy_server
 export const EXCHANGE_EXTRA_PARAMS = config.exchange_extra_params
 export const USDT_ADDRESS = config.usdt_address
