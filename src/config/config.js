@@ -41,7 +41,7 @@ const configBase = {
     31337: ''
   },
   multiple_of_gas: 2,
-  dashboard_url: 'https://dashboard-v2.bankofchain.io',
+  dashboard_url: 'https://dashboard-qa02-sg.bankofchain.io',
   oracle_additional_slippage: 20
 }
 
