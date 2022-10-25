@@ -26,11 +26,11 @@ const getLineEchartOpt = (data, dataValueKey, seriesName, options = {}) => {
   const xAxisLabels = {}
   data.forEach(o => {
     // TODO: need comments
-    let value = moment(o.date).add(1, 'days').format(tootlTipFormat)
+    let value = moment(o.date).format(tootlTipFormat)
     if (tootlTipSuffix) {
       value = `${value} ${tootlTipSuffix}`
     }
-    xAxisLabels[value] = moment(o.date).add(1, 'days').format(format)
+    xAxisLabels[value] = moment(o.date).format(format)
     xAxisData.push(value)
     seriesData.push(o[dataValueKey])
   })

@@ -231,6 +231,7 @@ function Usdr(props) {
                 </Card>
                 {!isEmpty(address) && !isEmpty(personalVaultAddress) && (
                   <MyStatementForRiskOn
+                    type="USDr"
                     userProvider={userProvider}
                     VAULT_FACTORY_ABI={VAULT_FACTORY_ABI}
                     personalVaultAddress={personalVaultAddress}

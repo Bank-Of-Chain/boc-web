@@ -45,9 +45,9 @@ const MyVault = props => {
 
   return (
     <div>
-      <h3 className={classes.title}>Create a vault</h3>
       <div className={classes.vaults}>
         <LoadingComponent loading={loading} width="100%" height="2rem">
+          {!isEmpty(vaults) && <h3 className={classes.title}>Create a vault</h3>}
           {map(vaults, (item, index) => {
             return (
               <div key={index}>
