@@ -18,6 +18,7 @@ const VAULT_BUFFER_FOR_USDI_MATIC = ''
 const VAULT_FACTORY_ADDRESS = '0x9853Eb1dc3946F78f043EA513Ed87ADBdA6eeE09'
 
 const configBase = {
+  env: 'qa02-sg',
   usdt_address: '0xdAC17F958D2ee523a2206206994597C13D831ec7',
   usdc_address: '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48',
   dai_address: '0x6B175474E89094C44Da98b954EedeAC495271d0F',
@@ -33,7 +34,7 @@ const configBase = {
   youtube_url: 'https://www.youtube.com/channel/UCnACZpYuAksuSeoLniDXlOQ/featured',
   medium_url: 'https://medium.com/bankofchain',
   document_url: 'https://docs.bankofchain.io',
-  boc_server: 'https://service-qa03-sg.bankofchain.io',
+  boc_server: 'https://service-qa02-sg.bankofchain.io',
   rpc_url: {
     1: 'https://rpc.ankr.com/eth',
     137: 'https://rpc-mainnet.maticvigil.com',
