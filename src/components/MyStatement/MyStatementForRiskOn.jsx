@@ -21,6 +21,7 @@ import { useAsync } from 'react-async-hook'
 // === Utils === //
 import numeral from 'numeral'
 import map from 'lodash/map'
+import last from 'lodash/last'
 import { toFixed } from '@/helpers/number-format'
 import * as ethers from 'ethers'
 
@@ -75,7 +76,7 @@ const MyStatementForRiskOn = props => {
     userProvider
   )
 
-  const { netMarketMakingAmount, result, estimatedTotalAssets, wantInfo = {} } = baseInfo
+  const { netMarketMakingAmount, estimatedTotalAssets, wantInfo = {} } = baseInfo
   const { wantTokenDecimals = BigNumber.from(0) } = wantInfo
 
   const aaveOption = {
@@ -179,6 +180,7 @@ const MyStatementForRiskOn = props => {
     ]
   }
 
+  const lastProfit = last(profitArray.result)
   const cardProps = [
     {
       title: 'Net Deposit',
@@ -240,8 +242,8 @@ const MyStatementForRiskOn = props => {
         </Tooltip>
       ),
       content: (
-        <span title={toFixed(result, wantTokenDecimals)}>
-          {numeral(toFixed(result, wantTokenDecimals, isUSDi ? TOKEN_DISPLAY_DECIMALS : ETHI_DISPLAY_DECIMALS)).format(
+        <span title={toFixed(lastProfit?.result, BN_18)}>
+          {numeral(toFixed(lastProfit?.result, BN_18, isUSDi ? TOKEN_DISPLAY_DECIMALS : ETHI_DISPLAY_DECIMALS)).format(
             isUSDi ? '0,0.[00]a' : '0,0.[0000]a'
           )}
         </span>
@@ -345,7 +347,7 @@ const MyStatementForRiskOn = props => {
                     map(profitArray.result, i => {
                       return {
                         date: i.validateTime,
-                        value: toFixed(i.result, BN_18)
+                        value: toFixed(i.result, BN_18, isUSDi ? 6 : 18)
                       }
                     }),
                     'value',
