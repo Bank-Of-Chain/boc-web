@@ -292,7 +292,7 @@ const MyStatementForRiskOn = props => {
               loading={aaveOutstandingLoan.loading || aaveCollateral.loading || aaveHealthRatio.loading}
               title={
                 <span>
-                  AAVE Lines
+                  AAVE Lines ({wantTokenSymbol})
                   <Tooltip title="AAVE Outstanding Loan, Collateral, Health Ratio">
                     <InfoIcon style={{ marginLeft: 8, fontSize: '1rem' }} />
                   </Tooltip>
