@@ -3,8 +3,6 @@ import classNames from 'classnames'
 import { makeStyles } from '@material-ui/core/styles'
 import GridContainer from '@/components/Grid/GridContainer'
 import GridItem from '@/components/Grid/GridItem'
-import Card from '@material-ui/core/Card'
-import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline'
 import List from '@material-ui/core/List'
 import ListItem from '@material-ui/core/ListItem'
 import ListItemIcon from '@material-ui/core/ListItemIcon'
@@ -12,8 +10,10 @@ import ListItemText from '@material-ui/core/ListItemText'
 import AccountBalanceWalletIcon from '@material-ui/icons/AccountBalanceWallet'
 import SaveAltIcon from '@material-ui/icons/SaveAlt'
 import UndoIcon from '@material-ui/icons/Undo'
-import Loading from '@/components/LoadingComponent'
 import useMediaQuery from '@material-ui/core/useMediaQuery'
+// import Card from '@material-ui/core/Card'
+// import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline'
+// import Loading from '@/components/LoadingComponent'
 
 // === Components === //
 import Deposit from './Deposit'
@@ -33,11 +33,11 @@ import { INVEST_TAB } from '@/constants/invest'
 import { IERC20_ABI } from '@/constants'
 
 // === Utils === //
-import { formatBalance } from '@/helpers/number-format'
 import isEmpty from 'lodash/isEmpty'
 import * as ethers from 'ethers'
 import useVersionWapper from '@/hooks/useVersionWapper'
-import { addToken } from '@/helpers/wallet'
+// import { formatBalance } from '@/helpers/number-format'
+// import { addToken } from '@/helpers/wallet'
 
 // === Hooks === //
 import { useSelector, useDispatch } from 'react-redux'
@@ -80,11 +80,11 @@ function Ethr(props) {
     UNISWAPV3_RISK_ON_HELPER,
     userProvider
   )
-  const { netMarketMakingAmount, estimatedTotalAssets, manageFeeBps, minInvestment } = baseInfo
+  const { estimatedTotalAssets, manageFeeBps, minInvestment } = baseInfo
 
-  const handleAddToken = useCallback(() => {
-    addToken(wantTokenForVault, wantTokenSymbol, wantTokenDecimals)
-  }, [wantTokenForVault, wantTokenSymbol, wantTokenDecimals])
+  // const handleAddToken = useCallback(() => {
+  //   addToken(wantTokenForVault, wantTokenSymbol, wantTokenDecimals)
+  // }, [wantTokenForVault, wantTokenSymbol, wantTokenDecimals])
 
   const loadData = useCallback(() => {
     if (isEmpty(wantTokenForVault) || isEmpty(personalVaultAddress)) return
@@ -210,7 +210,7 @@ function Ethr(props) {
                 className={isLayoutSm ? classes.wrapperMobile : classes.wrapper}
                 style={{ background: 'none', paddingTop: '1rem', paddingLeft: 0 }}
               >
-                <Card className={classes.balanceCard}>
+                {/* <Card className={classes.balanceCard}>
                   <div className={classes.balanceCardItem}>
                     <div className={classes.balanceCardValue}>
                       <span
@@ -231,7 +231,7 @@ function Ethr(props) {
                     </div>
                     <div className={classes.balanceCardLabel}>AVAILABLE BALANCE</div>
                   </div>
-                </Card>
+                </Card> */}
                 {!isEmpty(address) && !isEmpty(personalVaultAddress) && (
                   <MyStatementForRiskOn
                     type="ETHr"

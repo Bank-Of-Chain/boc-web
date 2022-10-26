@@ -47,6 +47,7 @@ const start = async () => {
     const ETHI_VAULT = data['boc.networks.ethi.vaultAddress'] || ''
     const ETHI_FOR_ETH = data['boc.networks.ethi.pegTokenAddress'] || ''
     const VAULT_BUFFER_FOR_ETHI_ETH = data['boc.networks.ethi.vaultBufferAddress'] || ''
+    const VAULT_FACTORY_ADDRESS = data['boc.networks.polygon.vaultFactoryAddress'] || ''
     let config = {
       env: nextEnv,
       LOCAL_CHAIN_CONFIG: nextChain,
@@ -59,6 +60,7 @@ const start = async () => {
       VAULT_BUFFER_FOR_ETHI_ETH,
       VAULT_BUFFER_FOR_USDI_ETH,
       VAULT_BUFFER_FOR_USDI_MATIC,
+      VAULT_FACTORY_ADDRESS,
       API_SERVER: getApiServer(),
       DASHBOARD_ROOT: getDashboardRoot(),
       RPC_FOR_1: getRpcFor1(),

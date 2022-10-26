@@ -78,8 +78,8 @@
     "unimported": "^1.21.0"
   },
   "scripts": {
-    "apollo": "echo test",
-    "mustache": "echo test",
+    "apollo": "node ./configs/apollo.js",
+    "mustache": "mustache ./configs/address.json ./configs/config.template.js > ./src/config/config.js",
     "start": "set PORT=3001 && react-app-rewired start",
     "build": "react-app-rewired build",
     "apollo:local": "node configs/apollo.js --env=local",
