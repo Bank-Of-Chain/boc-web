@@ -27,7 +27,7 @@ import isUndefined from 'lodash/isUndefined'
 import map from 'lodash/map'
 import isEmpty from 'lodash/isEmpty'
 import isNumber from 'lodash/isNumber'
-import {  formatBalance } from '@/helpers/number-format'
+import { formatBalance } from '@/helpers/number-format'
 import { isAd, isEs, isRp, isMaxLoss, isLossMuch, isExchangeFail, errorTextOutput } from '@/helpers/error-handler'
 
 // === Constants === //
@@ -46,7 +46,6 @@ export default function Withdraw({
   VAULT_ADDRESS,
   VAULT_ABI,
   isBalanceLoading,
-  reloadBalance,
   estimatedTotalAssets,
   wantTokenDecimals,
   wantTokenSymbol
@@ -171,9 +170,8 @@ export default function Withdraw({
     }
   }
 
-  const handleMaxClick = async () => {
-    const [nexttotalAsset] = await reloadBalance()
-    setToValue(formatBalance(nexttotalAsset, wantTokenDecimals, { showAll: true }))
+  const handleMaxClick = () => {
+    setToValue(formatBalance(estimatedTotalAssets, wantTokenDecimals, { showAll: true }))
   }
 
   const isValidToValueFlag = isValidToValue()
