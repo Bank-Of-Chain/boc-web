@@ -28,8 +28,7 @@ const componentsStyle = () => ({
   },
   estimateText: {
     color: '#A0A0A0',
-    margin: 0,
-    display: 'flex'
+    margin: 0
   },
   estimateBalanceNum: {
     color: '#A0A0A0'
@@ -78,6 +77,11 @@ const componentsStyle = () => ({
     right: '1rem',
     top: '1rem',
     cursor: 'pointer'
+  },
+  min: {
+    marginTop: '1rem',
+    color: '#A0A0A0',
+    fontSize: '0.875rem'
   }
 })
 

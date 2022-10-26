@@ -22,11 +22,10 @@ import isNumber from 'lodash/isNumber'
 import * as ethers from 'ethers'
 import BN from 'bignumber.js'
 import { warmDialog } from '@/reducers/meta-reducer'
-import { toFixed, formatBalance } from '@/helpers/number-format'
+import { formatBalance } from '@/helpers/number-format'
 
 // === Constants === //
-import { isAd, isEs, isRp, isDistributing, errorTextOutput, isLessThanMinValue } from '@/helpers/error-handler'
-import { BN_18 } from '@/constants/big-number'
+import { isAd, isEs, isRp, isDistributing, errorTextOutput } from '@/helpers/error-handler'
 import { MULTIPLE_OF_GAS, MAX_GAS_LIMIT, IERC20_ABI } from '@/constants'
 
 // === Styles === //
@@ -42,7 +41,7 @@ export default function Deposit({
   VAULT_ABI,
   VAULT_ADDRESS,
   isBalanceLoading,
-  minimumInvestmentAmount,
+  minInvestment,
   wantTokenBalance,
   wantTokenDecimals,
   wantTokenSymbol,
@@ -91,9 +90,21 @@ export default function Deposit({
   }
 
   const deposit = async () => {
+    const amount = BigNumber.from(BN(value).times(BN(10).pow(wantTokenDecimals)).toString())
+    const totalInvest = amount.add(estimatedTotalAssets)
+    const lessThanMin = totalInvest.lt(minInvestment)
+    if (lessThanMin) {
+      dispatch(
+        warmDialog({
+          open: true,
+          type: 'warning',
+          message: 'Less than minimum investment'
+        })
+      )
+      return
+    }
     setIsLoading(true)
     try {
-      const amount = BigNumber.from(value).mul(BigNumber.from(10).pow(wantTokenDecimals))
       const signer = userProvider.getSigner()
       const tokenContract = new Contract(wantTokenForVault, IERC20_ABI, userProvider)
       const tokenContractWithUser = tokenContract.connect(signer)
@@ -136,6 +147,7 @@ export default function Deposit({
         .lend(amount, extendObj)
         .then(tx => tx.wait())
         .catch(error => {
+          console.log('Deposit error:', error)
           const errorMsg = errorTextOutput(error)
           let tip = ''
           if (isEs(errorMsg)) {
@@ -146,8 +158,6 @@ export default function Deposit({
             tip = 'Vault is in rebase status, please try again later!'
           } else if (isDistributing(errorMsg)) {
             tip = 'Vault is in distributing, please try again later!'
-          } else if (isLessThanMinValue(errorMsg)) {
-            tip = `Deposit Amount must be greater than ${toFixed(minimumInvestmentAmount, BN_18, 2)}ETH!`
           }
           if (tip) {
             dispatch(
@@ -243,6 +253,7 @@ export default function Deposit({
             Balance:&nbsp;&nbsp;
             <Loading loading={isBalanceLoading}>{formatBalance(estimatedTotalAssets, wantTokenDecimals)}</Loading>
           </p>
+          <div className={classes.min}>Minimum Investment: {formatBalance(minInvestment, wantTokenDecimals)}</div>
         </GridItem>
       </GridContainer>
       <GridContainer>
