@@ -72,7 +72,7 @@ function Ethr(props) {
     loadData()
     dispatch(setCurrentTab(tab))
   }
-  const { baseInfo } = useVaultOnRisk(
+  const { baseInfo, queryBaseInfo } = useVaultOnRisk(
     VAULT_FACTORY_ADDRESS,
     VAULT_FACTORY_ABI,
     personalVaultAddress,
@@ -178,7 +178,10 @@ function Ethr(props) {
                   isBalanceLoading={isBalanceLoading}
                   minInvestment={minInvestment}
                   manageFeeBps={manageFeeBps}
-                  // modalOpenHandle={() => setIsVisiable(true)}
+                  onDepositSuccess={() => {
+                    queryBaseInfo()
+                    loadData()
+                  }}
                 />
               </div>
             </GridItem>

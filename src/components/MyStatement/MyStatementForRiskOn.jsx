@@ -83,7 +83,7 @@ const MyStatementForRiskOn = props => {
       top: 40,
       left: '0%',
       right: '5%',
-      bottom: '0%',
+      bottom: '10%',
       containLabel: true
     },
     legend: {
@@ -313,14 +313,7 @@ const MyStatementForRiskOn = props => {
           <GridItem xs={12} sm={12} md={12} lg={12}>
             <Card
               loading={uniswapPositionValueArray.loading}
-              title={
-                <span>
-                  Uniswap Position Value
-                  <Tooltip title={`Curve of daily change in the total ${isUSDi ? 'USDi' : 'ETHi'} held by the user.`}>
-                    <InfoIcon style={{ marginLeft: 8, fontSize: '1rem' }} />
-                  </Tooltip>
-                </span>
-              }
+              title={<span>Uniswap Position Value</span>}
               loadingOption={{
                 width: '100%',
                 height: '2rem'
@@ -338,14 +331,7 @@ const MyStatementForRiskOn = props => {
           <GridItem xs={12} sm={12} md={12} lg={12}>
             <Card
               loading={profitArray.loading}
-              title={
-                <span>
-                  Profits
-                  <Tooltip title={`Curve of daily change in the total ${isUSDi ? 'USDi' : 'ETHi'} held by the user.`}>
-                    <InfoIcon style={{ marginLeft: 8, fontSize: '1rem' }} />
-                  </Tooltip>
-                </span>
-              }
+              title={<span>Profits</span>}
               loadingOption={{
                 width: '100%',
                 height: '2rem'
