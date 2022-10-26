@@ -80,7 +80,7 @@ function Ethr(props) {
     UNISWAPV3_RISK_ON_HELPER,
     userProvider
   )
-  const { netMarketMakingAmount, estimatedTotalAssets, manageFeeBps, minimumInvestmentAmount } = baseInfo
+  const { netMarketMakingAmount, estimatedTotalAssets, manageFeeBps, minInvestment } = baseInfo
 
   const handleAddToken = useCallback(() => {
     addToken(wantTokenForVault, wantTokenSymbol, wantTokenDecimals)
@@ -176,7 +176,7 @@ function Ethr(props) {
                   VAULT_ADDRESS={personalVaultAddress}
                   VAULT_ABI={UNISWAPV3_RISK_ON_VAULT}
                   isBalanceLoading={isBalanceLoading}
-                  minimumInvestmentAmount={minimumInvestmentAmount}
+                  minInvestment={minInvestment}
                   manageFeeBps={manageFeeBps}
                   // modalOpenHandle={() => setIsVisiable(true)}
                 />

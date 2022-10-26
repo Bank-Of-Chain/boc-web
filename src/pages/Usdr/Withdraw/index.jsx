@@ -74,7 +74,7 @@ export default function Withdraw({
       const vaultContractWithSigner = vaultContract.connect(signer)
       setCurrentStep(2)
       let tx
-      const withdrawAmount = BigNumber.from(toValue).mul(BigNumber.from(10).pow(wantTokenDecimals))
+      const withdrawAmount = BigNumber.from(BN(toValue).times(BN(10).pow(wantTokenDecimals)).toString())
       // if gasLimit times not 1, need estimateGas
       if (isNumber(MULTIPLE_OF_GAS) && MULTIPLE_OF_GAS !== 1) {
         const gas = await vaultContractWithSigner.estimateGas.redeem(withdrawAmount, estimatedTotalAssets)
