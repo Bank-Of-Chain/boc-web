@@ -44,59 +44,57 @@ const MyVault = props => {
   }, [vaults, vaultChangeHandle])
 
   return (
-    <div>
-      <div className={classes.vaults}>
-        <LoadingComponent loading={loading} width="100%" height="2rem">
-          {!isEmpty(vaults) && <h3 className={classes.title}>Create a vault</h3>}
-          {map(vaults, (item, index) => {
-            return (
-              <div key={index}>
-                {isEmpty(item) ? (
-                  <div className={classes.vault}>
-                    <div className={classes.vaultTitle}>
-                      <img alt="" className={classes.icon} src={`https://bankofchain.io/logo256.png`} />
-                    </div>
-
-                    <Button color="colorfull" startIcon={<BuildIcon />} className={classes.button}>
-                      on Building...
-                    </Button>
+    <div className={classes.vaults}>
+      <LoadingComponent loading={loading} width="100%" height="2rem">
+        {!isEmpty(vaults) && <h3 className={classes.title}>Create a vault</h3>}
+        {map(vaults, (item, index) => {
+          return (
+            <div key={index}>
+              {isEmpty(item) ? (
+                <div className={classes.vault}>
+                  <div className={classes.vaultTitle}>
+                    <img alt="" className={classes.icon} src={`https://bankofchain.io/logo256.png`} />
                   </div>
-                ) : (
-                  <div className={classes.vault}>
-                    <div className={classes.vaultTitle}>
-                      <img alt="" className={classes.icon} src={`https://bankofchain.io/images/${item.token}.png`} />
-                    </div>
-                    {item.hasCreate ? (
-                      <>
-                        <Button
-                          color="colorfull"
-                          startIcon={<CompareArrowsIcon />}
-                          className={classes.button}
-                          onClick={() => vaultChangeHandle(item.address, item.token)}
-                        >
-                          Deposit
-                        </Button>
-                        <Button color="danger" startIcon={<DeleteIcon />} className={classes.button} onClick={() => deleteSelectVault(item.address)}>
-                          Delete
-                        </Button>
-                      </>
-                    ) : (
+
+                  <Button color="colorfull" startIcon={<BuildIcon />} className={classes.button}>
+                    on Building...
+                  </Button>
+                </div>
+              ) : (
+                <div className={classes.vault}>
+                  <div className={classes.vaultTitle}>
+                    <img alt="" className={classes.icon} src={`https://bankofchain.io/images/${item.token}.png`} />
+                  </div>
+                  {item.hasCreate ? (
+                    <>
                       <Button
                         color="colorfull"
-                        startIcon={adding ? <CachedIcon className={classes.loading} /> : <AddCircleOutlineIcon />}
+                        startIcon={<CompareArrowsIcon />}
                         className={classes.button}
-                        onClick={() => addVault(item.token, item.type)}
+                        onClick={() => vaultChangeHandle(item.address, item.token)}
                       >
-                        Create
+                        Deposit
                       </Button>
-                    )}
-                  </div>
-                )}
-              </div>
-            )
-          })}
-        </LoadingComponent>
-      </div>
+                      <Button color="danger" startIcon={<DeleteIcon />} className={classes.button} onClick={() => deleteSelectVault(item.address)}>
+                        Delete
+                      </Button>
+                    </>
+                  ) : (
+                    <Button
+                      color="colorfull"
+                      startIcon={adding ? <CachedIcon className={classes.loading} /> : <AddCircleOutlineIcon />}
+                      className={classes.button}
+                      onClick={() => addVault(item.token, item.type)}
+                    >
+                      Create
+                    </Button>
+                  )}
+                </div>
+              )}
+            </div>
+          )
+        })}
+      </LoadingComponent>
     </div>
   )
 }

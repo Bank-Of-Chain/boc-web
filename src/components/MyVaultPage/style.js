@@ -4,17 +4,18 @@ const componentsStyle = () => ({
     fontWeight: 'normal'
   },
   vaults: {
-    display: 'flex',
-    justifyContent: 'center'
+    textAlign: 'center'
   },
   vault: {
+    display: 'inline-block',
+    width: '12.5rem',
     padding: '2rem',
     borderRadius: '1rem',
     background: 'linear-gradient(111.68deg, rgba(87, 97, 125, 0.2) 7.59%, rgba(255, 255, 255, 0.078) 102.04%)'
   },
   vaultTitle: {
     textAlign: 'center',
-    height: '203px'
+    height: '12.5rem'
   },
   icon: {
     height: '100%',
