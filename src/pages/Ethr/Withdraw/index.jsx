@@ -48,7 +48,8 @@ export default function Withdraw({
   isBalanceLoading,
   estimatedTotalAssets,
   wantTokenDecimals,
-  wantTokenSymbol
+  wantTokenSymbol,
+  onWithdrawSuccess
 }) {
   const classes = useStyles()
   const dispatch = useDispatch()
@@ -109,6 +110,7 @@ export default function Withdraw({
           message: `Withdraw ${formatBalance(_redeemAmount, wantTokenDecimals)} ${wantTokenSymbol}`
         })
       )
+      onWithdrawSuccess()
     } catch (error) {
       console.log('withdraw original error :', error)
       const errorMsg = errorTextOutput(error)

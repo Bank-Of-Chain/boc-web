@@ -199,7 +199,10 @@ function Ethr(props) {
                   VAULT_ABI={UNISWAPV3_RISK_ON_VAULT}
                   isBalanceLoading={isBalanceLoading}
                   reloadBalance={loadData}
-                  // modalOpenHandle={() => setIsVisiable(true)}
+                  onWithdrawSuccess={() => {
+                    queryBaseInfo()
+                    loadData()
+                  }}
                 />
               </div>
             </GridItem>
