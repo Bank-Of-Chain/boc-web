@@ -50,15 +50,21 @@ const MyStatementForRiskOn = props => {
     UNISWAPV3_RISK_ON_HELPER
   } = props
 
-  const isUSDi = type === 'USDi'
+  const isUSDi = type === 'USDr'
   const classes = useStyles()
 
   // api datas fetching
-  const aaveOutstandingLoan = useAsync(() => getDataByType(CHAIN_ID, personalVaultAddress, 'aave-outstanding-loan'), [personalVaultAddress])
-  const aaveCollateral = useAsync(() => getDataByType(CHAIN_ID, personalVaultAddress, 'aave-collateral'), [personalVaultAddress])
-  const aaveHealthRatio = useAsync(() => getDataByType(CHAIN_ID, personalVaultAddress, 'aave-health-ratio'), [personalVaultAddress])
-  const uniswapPositionValueArray = useAsync(() => getDataByType(CHAIN_ID, personalVaultAddress, 'uniswap-position-value'), [personalVaultAddress])
-  const profitArray = useAsync(() => getDataByType(CHAIN_ID, personalVaultAddress, 'profit'), [personalVaultAddress])
+  const aaveOutstandingLoan = useAsync(
+    () => getDataByType(CHAIN_ID, personalVaultAddress, 'aave-outstanding-loan').catch(() => []),
+    [personalVaultAddress]
+  )
+  const aaveCollateral = useAsync(() => getDataByType(CHAIN_ID, personalVaultAddress, 'aave-collateral').catch(() => []), [personalVaultAddress])
+  const aaveHealthRatio = useAsync(() => getDataByType(CHAIN_ID, personalVaultAddress, 'aave-health-ratio').catch(() => []), [personalVaultAddress])
+  const uniswapPositionValueArray = useAsync(
+    () => getDataByType(CHAIN_ID, personalVaultAddress, 'uniswap-position-value').catch(() => []),
+    [personalVaultAddress]
+  )
+  const profitArray = useAsync(() => getDataByType(CHAIN_ID, personalVaultAddress, 'profit').catch(() => []), [personalVaultAddress])
   const { loading } = usePersonalData(chain, type, address, type)
   const { baseInfo } = useVaultOnRisk(
     VAULT_FACTORY_ADDRESS,
@@ -188,8 +194,12 @@ const MyStatementForRiskOn = props => {
           <InfoIcon style={{ fontSize: '1.375rem', color: 'rgba(255,255,255,0.45)' }} />
         </Tooltip>
       ),
-      content: numeral(toFixed(netMarketMakingAmount, wantTokenDecimals, isUSDi ? TOKEN_DISPLAY_DECIMALS : ETHI_DISPLAY_DECIMALS)).format(
-        isUSDi ? '0,0.[00]a' : '0,0.[0000]a'
+      content: (
+        <span title={toFixed(netMarketMakingAmount, wantTokenDecimals)}>
+          {numeral(toFixed(netMarketMakingAmount, wantTokenDecimals, isUSDi ? TOKEN_DISPLAY_DECIMALS : ETHI_DISPLAY_DECIMALS)).format(
+            isUSDi ? '0,0.[00]a' : '0,0.[0000]a'
+          )}
+        </span>
       ),
       unit: wantTokenSymbol
     },
@@ -206,27 +216,35 @@ const MyStatementForRiskOn = props => {
           <InfoIcon style={{ fontSize: '1.375rem', color: 'rgba(255,255,255,0.45)' }} />
         </Tooltip>
       ),
-      content: numeral(toFixed(estimatedTotalAssets, wantTokenDecimals, isUSDi ? TOKEN_DISPLAY_DECIMALS : ETHI_DISPLAY_DECIMALS)).format(
-        isUSDi ? '0,0.[00]a' : '0,0.[0000]a'
+      content: (
+        <span title={toFixed(estimatedTotalAssets, wantTokenDecimals)}>
+          {numeral(toFixed(estimatedTotalAssets, wantTokenDecimals, isUSDi ? TOKEN_DISPLAY_DECIMALS : ETHI_DISPLAY_DECIMALS)).format(
+            isUSDi ? '0,0.[00]a' : '0,0.[0000]a'
+          )}
+        </span>
       ),
       isAPY: true,
       unit: wantTokenSymbol
     },
     {
-      title: 'Profit',
+      title: 'Profits',
       tip: (
         <Tooltip
           classes={{
             tooltip: classes.tooltip
           }}
           placement="right"
-          title="Profit"
+          title="Profits"
         >
           <InfoIcon style={{ fontSize: '1.375rem', color: 'rgba(255,255,255,0.45)' }} />
         </Tooltip>
       ),
-      content: numeral(toFixed(result, wantTokenDecimals, isUSDi ? TOKEN_DISPLAY_DECIMALS : ETHI_DISPLAY_DECIMALS)).format(
-        isUSDi ? '0,0.[00]a' : '0,0.[0000]a'
+      content: (
+        <span title={toFixed(result, wantTokenDecimals)}>
+          {numeral(toFixed(result, wantTokenDecimals, isUSDi ? TOKEN_DISPLAY_DECIMALS : ETHI_DISPLAY_DECIMALS)).format(
+            isUSDi ? '0,0.[00]a' : '0,0.[0000]a'
+          )}
+        </span>
       ),
       isAPY: true,
       unit: wantTokenSymbol
@@ -244,11 +262,13 @@ const MyStatementForRiskOn = props => {
     wantTokenSymbol,
     {
       format: 'MM-DD',
+      tootlTipFormat: 'YYYY-MM-DD',
       xAxis: {
         axisTick: {
           alignWithLabel: true
         }
-      }
+      },
+      tootlTipSuffix: ''
     }
   )
 
@@ -346,11 +366,15 @@ const MyStatementForRiskOn = props => {
                     wantTokenSymbol,
                     {
                       format: 'MM-DD',
+                      tootlTipFormat: 'YYYY-MM-DD',
                       xAxis: {
                         axisTick: {
                           alignWithLabel: true
                         }
-                      }
+                      },
+                      tootlTipSuffix: '',
+                      yAxisMin: () => {},
+                      yAxisMax: () => {}
                     }
                   )}
                   style={{ minHeight: '20rem' }}

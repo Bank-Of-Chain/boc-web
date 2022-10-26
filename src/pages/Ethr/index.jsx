@@ -231,6 +231,7 @@ function Ethr(props) {
                 </Card>
                 {!isEmpty(address) && !isEmpty(personalVaultAddress) && (
                   <MyStatementForRiskOn
+                    type="ETHr"
                     userProvider={userProvider}
                     VAULT_FACTORY_ABI={VAULT_FACTORY_ABI}
                     personalVaultAddress={personalVaultAddress}
