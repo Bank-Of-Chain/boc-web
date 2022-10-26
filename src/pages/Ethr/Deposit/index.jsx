@@ -25,7 +25,6 @@ import { warmDialog } from '@/reducers/meta-reducer'
 import { formatBalance } from '@/helpers/number-format'
 
 // === Constants === //
-import { isAd, isEs, isRp, isDistributing, errorTextOutput } from '@/helpers/error-handler'
 import { MULTIPLE_OF_GAS, MAX_GAS_LIMIT, IERC20_ABI } from '@/constants'
 
 // === Styles === //
@@ -46,7 +45,8 @@ export default function Deposit({
   wantTokenDecimals,
   wantTokenSymbol,
   wantTokenForVault,
-  manageFeeBps
+  manageFeeBps,
+  onDepositSuccess
 }) {
   const classes = useStyles()
   const dispatch = useDispatch()
@@ -144,33 +144,7 @@ export default function Deposit({
         const maxGasLimit = gasLimit < MAX_GAS_LIMIT ? gasLimit : MAX_GAS_LIMIT
         extendObj.gasLimit = maxGasLimit
       }
-      await vaultContractWithUser
-        .lend(amount, extendObj)
-        .then(tx => tx.wait())
-        .catch(error => {
-          console.log('Deposit error:', error)
-          const errorMsg = errorTextOutput(error)
-          let tip = ''
-          if (isEs(errorMsg)) {
-            tip = 'Vault has been shut down, please try again later!'
-          } else if (isAd(errorMsg)) {
-            tip = 'Vault is in adjustment status, please try again later!'
-          } else if (isRp(errorMsg)) {
-            tip = 'Vault is in rebase status, please try again later!'
-          } else if (isDistributing(errorMsg)) {
-            tip = 'Vault is in distributing, please try again later!'
-          }
-          if (tip) {
-            dispatch(
-              warmDialog({
-                open: true,
-                type: 'error',
-                message: tip
-              })
-            )
-          }
-          setIsLoading(false)
-        })
+      await vaultContractWithUser.lend(amount, extendObj).then(tx => tx.wait())
       setValue('')
       setIsLoading(false)
       dispatch(
@@ -180,6 +154,7 @@ export default function Deposit({
           message: 'Success'
         })
       )
+      onDepositSuccess()
     } catch (error) {
       console.log('error', error)
       setIsLoading(false)
