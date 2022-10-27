@@ -50,7 +50,7 @@ const componentsStyle = () => ({
     alignItems: 'center'
   },
   input: {
-    maxWidth: '14rem'
+    maxWidth: '12.5rem'
   },
   tokenInfo: {
     display: 'flex',
