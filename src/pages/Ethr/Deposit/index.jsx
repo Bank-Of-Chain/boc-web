@@ -90,7 +90,7 @@ export default function Deposit({
   }
 
   const deposit = async () => {
-    const amount = BigNumber.from(BN(value).times(BN(10).pow(wantTokenDecimals)).toString())
+    const amount = BigNumber.from(BN(value).times(BN(10).pow(wantTokenDecimals)).toFixed())
     const totalInvest = amount.add(estimatedTotalAssets)
     const lessThanMin = totalInvest.lt(minInvestment)
     if (lessThanMin) {

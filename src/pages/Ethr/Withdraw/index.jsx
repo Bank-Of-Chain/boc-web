@@ -48,7 +48,8 @@ export default function Withdraw({
   isBalanceLoading,
   estimatedTotalAssets,
   wantTokenDecimals,
-  wantTokenSymbol
+  wantTokenSymbol,
+  onWithdrawSuccess
 }) {
   const classes = useStyles()
   const dispatch = useDispatch()
@@ -73,7 +74,7 @@ export default function Withdraw({
       const vaultContractWithSigner = vaultContract.connect(signer)
       setCurrentStep(2)
       let tx
-      const withdrawAmount = BigNumber.from(BN(toValue).times(BN(10).pow(wantTokenDecimals)).toString())
+      const withdrawAmount = BigNumber.from(BN(toValue).times(BN(10).pow(wantTokenDecimals)).toFixed())
       // if gasLimit times not 1, need estimateGas
       if (isNumber(MULTIPLE_OF_GAS) && MULTIPLE_OF_GAS !== 1) {
         const gas = await vaultContractWithSigner.estimateGas.redeem(withdrawAmount, estimatedTotalAssets)
@@ -109,6 +110,7 @@ export default function Withdraw({
           message: `Withdraw ${formatBalance(_redeemAmount, wantTokenDecimals)} ${wantTokenSymbol}`
         })
       )
+      onWithdrawSuccess()
     } catch (error) {
       console.log('withdraw original error :', error)
       const errorMsg = errorTextOutput(error)
