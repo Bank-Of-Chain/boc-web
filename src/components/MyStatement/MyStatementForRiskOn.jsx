@@ -80,11 +80,12 @@ const MyStatementForRiskOn = props => {
   const { wantTokenDecimals = BigNumber.from(0) } = wantInfo
 
   const aaveOption = {
+    animation: false,
     grid: {
       top: 40,
       left: '0%',
       right: '5%',
-      bottom: '10%',
+      bottom: '10',
       containLabel: true
     },
     legend: {
@@ -119,12 +120,16 @@ const MyStatementForRiskOn = props => {
         }
       },
       {
-        max: 1,
+        max: 100,
         min: 0,
         splitLine: {
-          lineStyle: {
-            color: '#454459'
-          }
+          show: false
+        },
+        axisLine: {
+          show: false
+        },
+        axisLabel: {
+          show: false
         }
       }
     ],
@@ -132,47 +137,68 @@ const MyStatementForRiskOn = props => {
       {
         type: 'line',
         name: 'AAVE Outstanding Loan',
+        showSymbol: false,
+        lineStyle: {
+          width: 4
+        },
         data: map(aaveOutstandingLoan.result, item => toFixed(item.result, BN_18, 2))
       },
       {
         type: 'line',
         name: 'AAVE Collateral',
+        showSymbol: false,
+        lineStyle: {
+          width: 4
+        },
         data: map(aaveCollateral.result, item => toFixed(item.result, BN_18, 2))
       },
       {
         type: 'line',
         yAxisIndex: 1,
         name: 'Health Ratio',
-        data: map(aaveHealthRatio.result, item => Number(item.result).toFixed(4)),
+        showSymbol: false,
+        lineStyle: {
+          width: 4
+        },
+        data: map(aaveHealthRatio.result, item => (Number(item.result) * 100).toFixed(2)),
+        tooltip: {
+          valueFormatter: value => `${value}%`
+        },
         markLine: {
           symbol: 'none',
           data: [
             {
               lineStyle: {
-                color: '#fff'
+                color: '#999'
               },
               label: {
-                formatter: '加杠杆'
+                formatter: 'Leverage Upper 40%',
+                position: 'middle',
+                color: '#999'
               },
-              yAxis: 0.4
+              yAxis: 40
             },
             {
               lineStyle: {
-                color: '#fff'
+                color: '#999'
               },
               label: {
-                formatter: '减杠杆'
+                formatter: 'Leverage Lower 75%',
+                position: 'middle',
+                color: '#999'
               },
-              yAxis: 0.7
+              yAxis: 75
             },
             {
               lineStyle: {
-                color: '#fff'
+                color: '#999'
               },
               label: {
-                formatter: '清算线'
+                formatter: 'Liquidation 80%',
+                position: 'middle',
+                color: '#999'
               },
-              yAxis: 0.8
+              yAxis: 80
             }
           ]
         }
@@ -306,7 +332,7 @@ const MyStatementForRiskOn = props => {
               {aaveOutstandingLoan.error || aaveCollateral.error || aaveHealthRatio.error ? (
                 <div>Error: {aaveOutstandingLoan?.error?.message}</div>
               ) : (
-                <LineEchart option={aaveOption} style={{ minHeight: '20rem' }} />
+                <LineEchart option={aaveOption} style={{ minHeight: '30rem' }} />
               )}
             </Card>
           </GridItem>
