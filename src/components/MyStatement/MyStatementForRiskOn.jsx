@@ -22,6 +22,7 @@ import { useAsync } from 'react-async-hook'
 import numeral from 'numeral'
 import map from 'lodash/map'
 import last from 'lodash/last'
+import size from 'lodash/size'
 import { toFixed } from '@/helpers/number-format'
 import * as ethers from 'ethers'
 
@@ -137,7 +138,7 @@ const MyStatementForRiskOn = props => {
       {
         type: 'line',
         name: 'AAVE Outstanding Loan',
-        showSymbol: false,
+        showSymbol: size(aaveOutstandingLoan.result) === 1,
         lineStyle: {
           width: 4
         },
@@ -146,7 +147,7 @@ const MyStatementForRiskOn = props => {
       {
         type: 'line',
         name: 'AAVE Collateral',
-        showSymbol: false,
+        showSymbol: size(aaveCollateral.result) === 1,
         lineStyle: {
           width: 4
         },
@@ -156,7 +157,7 @@ const MyStatementForRiskOn = props => {
         type: 'line',
         yAxisIndex: 1,
         name: 'Health Ratio',
-        showSymbol: false,
+        showSymbol: size(aaveHealthRatio.result) === 1,
         lineStyle: {
           width: 4
         },
