@@ -1,5 +1,8 @@
 name: Release
 on:
+  push:
+    branches:
+      - feature/risk-on
   pull_request:
     branches:
       - feature/risk-on
