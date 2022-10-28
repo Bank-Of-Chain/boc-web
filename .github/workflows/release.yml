@@ -7,15 +7,13 @@ jobs:
   deploy-web:
     name: Deploy Web Site
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        node-version: '16.12.0'
     steps:
       - name: Checkout 🛎️
         uses: actions/checkout@master
       - name: Install
         uses: borales/actions-yarn@master
         with:
+          node-version: 16
           cmd: install
       - name: Build
         uses: borales/actions-yarn@master
