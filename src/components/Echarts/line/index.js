@@ -2,7 +2,7 @@ import React, { memo, useEffect, useState } from 'react'
 import ReactEChartsCore from 'echarts-for-react/lib/core'
 import * as echarts from 'echarts/core'
 import { LineChart } from 'echarts/charts'
-import { GraphicComponent, TooltipComponent, GridComponent, LegendComponent, DataZoomSliderComponent } from 'echarts/components'
+import { GraphicComponent, TooltipComponent, GridComponent, LegendComponent, DataZoomSliderComponent, MarkLineComponent } from 'echarts/components'
 import { CanvasRenderer } from 'echarts/renderers'
 import { UniversalTransition } from 'echarts/features'
 
@@ -14,7 +14,8 @@ echarts.use([
   DataZoomSliderComponent,
   LineChart,
   CanvasRenderer,
-  UniversalTransition
+  UniversalTransition,
+  MarkLineComponent
 ])
 
 function Line({ theme = 'light', style = {}, option = {} }) {

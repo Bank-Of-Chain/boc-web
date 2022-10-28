@@ -109,6 +109,7 @@ const MyStatement = props => {
     const startPercent = continuousIndex === -1 ? 0 : 100.5 - (100 * continuousIndex) / tvls.length
     const option1 = getLineEchartOpt(tvls, 'balance', dataSource.token, {
       format: 'MM-DD',
+      tootlTipFormat: 'YYYY-MM-DD',
       dataZoom: [
         {
           start: startPercent,
@@ -119,7 +120,8 @@ const MyStatement = props => {
         axisTick: {
           alignWithLabel: true
         }
-      }
+      },
+      tootlTipSuffix: ''
     })
     console.log('option1=', option1)
     setOptionForLineChart(option1)

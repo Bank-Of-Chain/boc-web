@@ -42,23 +42,45 @@ const useVaultOnRisk = (VAULT_FACTORY_ADDRESS, VAULT_FACTORY_ABI, VAULT_ADDRESS,
           const tokenContract = new Contract(i, IERC20_ABI, userProvider)
           return { borrowToken: i, name: await tokenContract.symbol(), borrowTokenDecimals: BigNumber.from(10).pow(await tokenContract.decimals()) }
         }),
-        contract.wantToken().then(async i => {
-          const tokenContract = new Contract(i, IERC20_ABI, userProvider)
-          return { wantToken: i, name: await tokenContract.symbol(), wantTokenDecimals: BigNumber.from(10).pow(await tokenContract.decimals()) }
+        contract.wantToken().then(async wantToken => {
+          const tokenContract = new Contract(wantToken, IERC20_ABI, userProvider)
+          const token0 = await contract.token0()
+          const token1 = await contract.token1()
+          let minLendFunction
+          if (token0 === wantToken) {
+            minLendFunction = contract.token0MinLendAmount
+          } else if (token1 === wantToken) {
+            minLendFunction = contract.token1MinLendAmount
+          }
+          return {
+            wantToken,
+            name: await tokenContract.symbol(),
+            wantTokenDecimals: BigNumber.from(10).pow(await tokenContract.decimals()),
+            minLendFunction
+          }
         })
       ])
         .then(([borrowInfo, wantInfo]) => {
           const { borrowToken } = borrowInfo
-          const { wantToken } = wantInfo
+          const { wantToken, minLendFunction } = wantInfo
           return Promise.all([
             contract.netMarketMakingAmount(),
             helperContract.getCurrentBorrow(borrowToken, 2, VAULT_ADDRESS),
             helperContract.getTotalCollateralTokenAmount(VAULT_ADDRESS, wantToken),
             contract.depositTo3rdPoolTotalAssets(),
             contract.estimatedTotalAssets(),
-            contract.manageFeeBps()
+            contract.manageFeeBps(),
+            minLendFunction()
           ]).then(
-            ([netMarketMakingAmount, currentBorrow, totalCollateralTokenAmount, depositTo3rdPoolTotalAssets, estimatedTotalAssets, manageFeeBps]) => {
+            ([
+              netMarketMakingAmount,
+              currentBorrow,
+              totalCollateralTokenAmount,
+              depositTo3rdPoolTotalAssets,
+              estimatedTotalAssets,
+              manageFeeBps,
+              minInvestment
+            ]) => {
               return helperContract.calcCanonicalAssetValue(borrowToken, currentBorrow, wantToken).then(currentBorrowWithCanonical => {
                 const nextBaseInfo = {
                   netMarketMakingAmount,
@@ -70,7 +92,8 @@ const useVaultOnRisk = (VAULT_FACTORY_ADDRESS, VAULT_FACTORY_ABI, VAULT_ADDRESS,
                   manageFeeBps,
                   wantInfo,
                   borrowInfo,
-                  result: depositTo3rdPoolTotalAssets.add(totalCollateralTokenAmount).sub(netMarketMakingAmount).sub(currentBorrowWithCanonical)
+                  result: depositTo3rdPoolTotalAssets.add(totalCollateralTokenAmount).sub(netMarketMakingAmount).sub(currentBorrowWithCanonical),
+                  minInvestment
                 }
                 setBaseInfo(nextBaseInfo)
                 return nextBaseInfo

@@ -15,6 +15,7 @@ export default function CustomTabs(props) {
 
   const handleChange = (event, value) => {
     setValue(value)
+    props.onChange(event, value)
   }
   const classes = useStyles()
   const { tabs, centered } = props

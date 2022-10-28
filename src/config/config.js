@@ -15,10 +15,10 @@ const VAULT_BUFFER_FOR_ETHI_ETH = '0xC8915157b36ed6D0F36827a1Bb5E9b0cDd1e87Cd'
 const VAULT_BUFFER_FOR_USDI_ETH = '0x0b8D3634a05cc6b50E4D026c0eaFa8469cA98480'
 const VAULT_BUFFER_FOR_USDI_MATIC = ''
 
-const VAULT_FACTORY_ADDRESS = '0x9853Eb1dc3946F78f043EA513Ed87ADBdA6eeE09'
+const VAULT_FACTORY_ADDRESS = '0xA92C91Fe965D7497A423d951fCDFA221fC354B5a'
 
 const configBase = {
-  env: 'qa02-sg',
+  env: 'qa03-sg',
   usdt_address: '0xdAC17F958D2ee523a2206206994597C13D831ec7',
   usdc_address: '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48',
   dai_address: '0x6B175474E89094C44Da98b954EedeAC495271d0F',
@@ -34,14 +34,14 @@ const configBase = {
   youtube_url: 'https://www.youtube.com/channel/UCnACZpYuAksuSeoLniDXlOQ/featured',
   medium_url: 'https://medium.com/bankofchain',
   document_url: 'https://docs.bankofchain.io',
-  boc_server: 'https://service-qa02-sg.bankofchain.io',
+  boc_server: 'https://service-qa03-sg.bankofchain.io',
   rpc_url: {
     1: 'https://rpc.ankr.com/eth',
     137: 'https://rpc-mainnet.maticvigil.com',
     31337: ''
   },
   multiple_of_gas: 2,
-  dashboard_url: 'https://dashboard-v2.bankofchain.io',
+  dashboard_url: 'https://dashboard-qa03-sg.bankofchain.io',
   oracle_additional_slippage: 20
 }
 

@@ -2,8 +2,7 @@ import React, { Fragment } from 'react'
 import { makeStyles } from '@material-ui/core/styles'
 
 // === Components === //
-import Tabs from '@material-ui/core/Tabs'
-import Tab from '@material-ui/core/Tab'
+import Tabs from '@/components/CustomTabs/CustomTabs'
 import map from 'lodash/map'
 
 // === Hooks === //
@@ -15,6 +14,7 @@ import { isProEnv } from '@/services/env-service'
 
 // === Styles === //
 import styles from './style'
+import { findIndex, isEmpty } from 'lodash'
 
 const VAULTS = [
   { label: 'USDi', value: '/usdi' },
@@ -31,7 +31,10 @@ export default function VaultChange(props) {
   const { push } = useHistory()
   const { pathname } = useLocation()
 
-  const changeRouter = path => {
+  const changeRouter = (event, index) => {
+    const clickItem = VAULTS[index]
+    if (isEmpty(clickItem)) return
+    const { value: path } = clickItem
     let promise = Promise.resolve({})
     if (isProEnv()) {
       if (path === '/ethi' || path === '/usdi') {
@@ -55,15 +58,17 @@ export default function VaultChange(props) {
         <div className={classes.container}>
           <Tabs
             centered
-            classes={{ indicator: classes.indicator }}
-            value={pathname}
-            onChange={(e, val) => changeRouter(val)}
-            aria-label="simple tabs example"
-          >
-            {map(VAULTS, item => (
-              <Tab key={item.label} label={item.label} value={item.value} classes={{ root: classes.root }} className={classes.tab} />
-            ))}
-          </Tabs>
+            value={findIndex(VAULTS, { value: pathname })}
+            indicatorColor="primary"
+            textColor="primary"
+            onChange={changeRouter}
+            tabs={map(VAULTS, item => {
+              return {
+                tabName: item.label,
+                tabContent: null
+              }
+            })}
+          />
         </div>
       )}
       {props.children}

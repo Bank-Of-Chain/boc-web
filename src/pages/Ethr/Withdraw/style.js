@@ -29,7 +29,7 @@ const componentsStyle = () => ({
     alignItems: 'center'
   },
   input: {
-    maxWidth: '14rem'
+    maxWidth: '12.5rem'
   },
   footerContainer: {
     marginTop: '2.5rem'
