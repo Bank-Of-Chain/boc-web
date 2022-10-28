@@ -16,6 +16,10 @@ jobs:
     steps:
       - name: Checkout 🛎️
         uses: actions/checkout@master
+      - name: use Node.js 16.x 
+        uses: actions/setup-node@v1 
+        with: 
+          node-version: 16.x 
       - name: Install
         uses: borales/actions-yarn@v2.1.0
         with:
