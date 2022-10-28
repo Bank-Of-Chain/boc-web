@@ -10,15 +10,12 @@ jobs:
     steps:
       - name: Checkout 🛎️
         uses: actions/checkout@master
-      - uses: actions/setup-node@v3
-        with:
-          node-version: 16
-          cache: 'yarn'
       - name: Install
         uses: borales/actions-yarn@master
       - name: Build
         uses: borales/actions-yarn@master
         with:
+          node-version: 16
           cmd: build
       - name: Deploy 🚀
         uses: JamesIves/github-pages-deploy-action@3.7.1
