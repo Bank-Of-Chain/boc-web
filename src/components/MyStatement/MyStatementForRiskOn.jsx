@@ -19,11 +19,10 @@ import useVaultOnRisk from '@/hooks/useVaultOnRisk'
 import { useAsync } from 'react-async-hook'
 
 // === Utils === //
-import numeral from 'numeral'
 import map from 'lodash/map'
 import last from 'lodash/last'
 import size from 'lodash/size'
-import { toFixed } from '@/helpers/number-format'
+import { toFixed, numberSplit } from '@/helpers/number-format'
 import * as ethers from 'ethers'
 
 // === Constants === //
@@ -208,6 +207,20 @@ const MyStatementForRiskOn = props => {
   }
 
   const lastProfit = last(profitArray.result)
+
+  const [netMarketMakingAmountText, netMarketMakingAmountSymbol] = numberSplit(
+    toFixed(netMarketMakingAmount, wantTokenDecimals, isUSDi ? TOKEN_DISPLAY_DECIMALS : ETHI_DISPLAY_DECIMALS),
+    isUSDi ? '0,0.[00]' : '0,0.[0000]'
+  )
+  const [estimatedTotalAssetsText, estimatedTotalAssetsSymbol] = numberSplit(
+    toFixed(estimatedTotalAssets, wantTokenDecimals, isUSDi ? TOKEN_DISPLAY_DECIMALS : ETHI_DISPLAY_DECIMALS),
+    isUSDi ? '0,0.[00]' : '0,0.[0000]'
+  )
+  const [profitsText, profitsSymbol] = numberSplit(
+    toFixed(lastProfit?.result, BN_18, isUSDi ? TOKEN_DISPLAY_DECIMALS : ETHI_DISPLAY_DECIMALS),
+    isUSDi ? '0,0.[00]' : '0,0.[0000]'
+  )
+
   const cardProps = [
     {
       title: 'Net Deposit',
@@ -223,14 +236,8 @@ const MyStatementForRiskOn = props => {
           <InfoIcon style={{ fontSize: '1.375rem', color: 'rgba(255,255,255,0.45)' }} />
         </Tooltip>
       ),
-      content: (
-        <span title={toFixed(netMarketMakingAmount, wantTokenDecimals)}>
-          {numeral(toFixed(netMarketMakingAmount, wantTokenDecimals, isUSDi ? TOKEN_DISPLAY_DECIMALS : ETHI_DISPLAY_DECIMALS)).format(
-            isUSDi ? '0,0.[00]a' : '0,0.[0000]a'
-          )}
-        </span>
-      ),
-      unit: wantTokenSymbol
+      content: <span title={toFixed(netMarketMakingAmount, wantTokenDecimals)}>{netMarketMakingAmountText}</span>,
+      unit: [netMarketMakingAmountSymbol, wantTokenSymbol].join(' ')
     },
     {
       title: 'Current Value',
@@ -245,15 +252,9 @@ const MyStatementForRiskOn = props => {
           <InfoIcon style={{ fontSize: '1.375rem', color: 'rgba(255,255,255,0.45)' }} />
         </Tooltip>
       ),
-      content: (
-        <span title={toFixed(estimatedTotalAssets, wantTokenDecimals)}>
-          {numeral(toFixed(estimatedTotalAssets, wantTokenDecimals, isUSDi ? TOKEN_DISPLAY_DECIMALS : ETHI_DISPLAY_DECIMALS)).format(
-            isUSDi ? '0,0.[00]a' : '0,0.[0000]a'
-          )}
-        </span>
-      ),
+      content: <span title={toFixed(estimatedTotalAssets, wantTokenDecimals)}>{estimatedTotalAssetsText}</span>,
       isAPY: true,
-      unit: wantTokenSymbol
+      unit: [estimatedTotalAssetsSymbol, wantTokenSymbol].join(' ')
     },
     {
       title: 'Profits',
@@ -268,15 +269,9 @@ const MyStatementForRiskOn = props => {
           <InfoIcon style={{ fontSize: '1.375rem', color: 'rgba(255,255,255,0.45)' }} />
         </Tooltip>
       ),
-      content: (
-        <span title={toFixed(lastProfit?.result, BN_18)}>
-          {numeral(toFixed(lastProfit?.result, BN_18, isUSDi ? TOKEN_DISPLAY_DECIMALS : ETHI_DISPLAY_DECIMALS)).format(
-            isUSDi ? '0,0.[00]a' : '0,0.[0000]a'
-          )}
-        </span>
-      ),
+      content: <span title={toFixed(lastProfit?.result, BN_18)}>{profitsText}</span>,
       isAPY: true,
-      unit: wantTokenSymbol
+      unit: [profitsSymbol, wantTokenSymbol].join(' ')
     }
   ]
 
