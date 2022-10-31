@@ -70,7 +70,8 @@ const useVaultOnRisk = (VAULT_FACTORY_ADDRESS, VAULT_FACTORY_ABI, VAULT_ADDRESS,
             contract.depositTo3rdPoolTotalAssets(),
             contract.estimatedTotalAssets(),
             contract.manageFeeBps(),
-            minLendFunction()
+            minLendFunction(),
+            helperContract.borrowInfo(VAULT_ADDRESS)
           ]).then(
             ([
               netMarketMakingAmount,
@@ -79,8 +80,10 @@ const useVaultOnRisk = (VAULT_FACTORY_ADDRESS, VAULT_FACTORY_ABI, VAULT_ADDRESS,
               depositTo3rdPoolTotalAssets,
               estimatedTotalAssets,
               manageFeeBps,
-              minInvestment
+              minInvestment,
+              helperBorrowInfo
             ]) => {
+              const { _currentLiquidationThreshold } = helperBorrowInfo
               return helperContract.calcCanonicalAssetValue(borrowToken, currentBorrow, wantToken).then(currentBorrowWithCanonical => {
                 const nextBaseInfo = {
                   netMarketMakingAmount,
@@ -93,7 +96,9 @@ const useVaultOnRisk = (VAULT_FACTORY_ADDRESS, VAULT_FACTORY_ABI, VAULT_ADDRESS,
                   wantInfo,
                   borrowInfo,
                   result: depositTo3rdPoolTotalAssets.add(totalCollateralTokenAmount).sub(netMarketMakingAmount).sub(currentBorrowWithCanonical),
-                  minInvestment
+                  minInvestment,
+                  // base 10000, return value like 8500
+                  currentLiquidationThreshold: Number(_currentLiquidationThreshold.toString()) / 100
                 }
                 setBaseInfo(nextBaseInfo)
                 return nextBaseInfo

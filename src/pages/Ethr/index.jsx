@@ -80,7 +80,7 @@ function Ethr(props) {
     UNISWAPV3_RISK_ON_HELPER,
     userProvider
   )
-  const { estimatedTotalAssets, manageFeeBps, minInvestment } = baseInfo
+  const { estimatedTotalAssets, manageFeeBps, minInvestment, currentLiquidationThreshold } = baseInfo
 
   // const handleAddToken = useCallback(() => {
   //   addToken(wantTokenForVault, wantTokenSymbol, wantTokenDecimals)
@@ -245,6 +245,7 @@ function Ethr(props) {
                     VAULT_FACTORY_ADDRESS={VAULT_FACTORY_ADDRESS}
                     UNISWAPV3_RISK_ON_VAULT={UNISWAPV3_RISK_ON_VAULT}
                     UNISWAPV3_RISK_ON_HELPER={UNISWAPV3_RISK_ON_HELPER}
+                    currentLiquidationThreshold={currentLiquidationThreshold}
                   />
                 )}
               </div>
