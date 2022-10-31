@@ -105,7 +105,6 @@ export default function Deposit({
     }
     setIsLoading(true)
     try {
-      const amount = BigNumber.from(value).mul(BigNumber.from(10).pow(wantTokenDecimals))
       const signer = userProvider.getSigner()
       const tokenContract = new Contract(wantTokenForVault, IERC20_ABI, userProvider)
       const tokenContractWithUser = tokenContract.connect(signer)

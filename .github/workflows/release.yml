@@ -1,4 +1,4 @@
-name: Release
+name: Release1
 on:
   push:
     branches:
@@ -16,14 +16,16 @@ jobs:
     steps:
       - name: Checkout 🛎️
         uses: actions/checkout@master
+      - name: use Node.js ${{ matrix.node-version }} 
+        uses: actions/setup-node@v2
+        with: 
+          node-version: ${{ matrix.node-version }} 
       - name: Install
-        uses: borales/actions-yarn@v2.1.0
-        with:
-          cmd: install
+        run: |
+          yarn install
       - name: Build
-        uses: borales/actions-yarn@v2.1.0
-        with:
-          cmd: build
+        run: |
+          yarn build
       - name: Deploy 🚀
         uses: JamesIves/github-pages-deploy-action@3.7.1
         with:
