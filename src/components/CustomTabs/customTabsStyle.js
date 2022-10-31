@@ -34,6 +34,23 @@ const customTabsStyle = {
       borderRadius: '0 0.25rem 0.25rem 0'
     }
   },
+  tabSmallButton: {
+    padding: '0.625rem 1rem',
+    lineHeight: '1.5rem',
+    border: '2px solid #A68EFE',
+    borderRight: 0,
+    fontSize: '1rem',
+    color: '#A68EFE',
+    opacity: 1,
+    '&:first-child': {
+      borderRadius: '0.25rem 0 0 0.25rem'
+    },
+    '&:last-child': {
+      borderRight: '2px solid #A68EFE',
+      marginLeft: '0px',
+      borderRadius: '0 0.25rem 0.25rem 0'
+    }
+  },
   tabSelected: {
     background: '#A68EFE',
     color: '#313036'
