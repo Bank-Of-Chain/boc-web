@@ -26,13 +26,13 @@ exports[`AmmSection Component Render 1`] = `
         >
           <button
             aria-selected="true"
-            class="MuiButtonBase-root MuiTab-root makeStyles-tabRootButton-14 MuiTab-textColorInherit Mui-selected makeStyles-tabSelected-15"
+            class="MuiButtonBase-root MuiTab-root makeStyles-tabRootButton-14 MuiTab-textColorInherit Mui-selected makeStyles-tabSelected-16"
             role="tab"
             tabindex="0"
             type="button"
           >
             <span
-              class="MuiTab-wrapper makeStyles-tabWrapper-16"
+              class="MuiTab-wrapper makeStyles-tabWrapper-17"
             >
               Stablecoins
             </span>
@@ -48,7 +48,7 @@ exports[`AmmSection Component Render 1`] = `
             type="button"
           >
             <span
-              class="MuiTab-wrapper makeStyles-tabWrapper-16"
+              class="MuiTab-wrapper makeStyles-tabWrapper-17"
             >
               Major chain(s)
             </span>
@@ -64,7 +64,7 @@ exports[`AmmSection Component Render 1`] = `
             type="button"
           >
             <span
-              class="MuiTab-wrapper makeStyles-tabWrapper-16"
+              class="MuiTab-wrapper makeStyles-tabWrapper-17"
             >
               Protocols
             </span>
@@ -74,14 +74,14 @@ exports[`AmmSection Component Render 1`] = `
           </button>
         </div>
         <span
-          class="PrivateTabIndicator-root-17 PrivateTabIndicator-colorSecondary-19 MuiTabs-indicator makeStyles-displayNone-12"
+          class="PrivateTabIndicator-root-18 PrivateTabIndicator-colorSecondary-20 MuiTabs-indicator makeStyles-displayNone-12"
           style="left: 0px; width: 0px;"
         />
       </div>
     </div>
     <div>
       <div
-        class="MuiGrid-root makeStyles-grid-21 makeStyles-iconContainer-2 MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-12 MuiGrid-grid-md-12"
+        class="MuiGrid-root makeStyles-grid-22 makeStyles-iconContainer-2 MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-12 MuiGrid-grid-md-12"
       >
         <div
           class="makeStyles-item-4"
