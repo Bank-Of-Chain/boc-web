@@ -48,7 +48,8 @@ const MyStatementForRiskOn = props => {
     VAULT_FACTORY_ABI,
     personalVaultAddress,
     UNISWAPV3_RISK_ON_VAULT,
-    UNISWAPV3_RISK_ON_HELPER
+    UNISWAPV3_RISK_ON_HELPER,
+    currentLiquidationThreshold
   } = props
 
   const isUSDi = type === 'USDr'
@@ -194,11 +195,11 @@ const MyStatementForRiskOn = props => {
                 color: '#999'
               },
               label: {
-                formatter: 'Liquidation 80%',
+                formatter: `Liquidation ${currentLiquidationThreshold}%`,
                 position: 'middle',
                 color: '#999'
               },
-              yAxis: 80
+              yAxis: currentLiquidationThreshold
             }
           ]
         }
