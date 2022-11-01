@@ -170,7 +170,8 @@ const MyStatementForRiskOn = props => {
           data: [
             {
               lineStyle: {
-                color: '#999'
+                color: '#07a2a4',
+                type: 'solid'
               },
               label: {
                 formatter: 'Leverage Upper 40%',
@@ -181,7 +182,8 @@ const MyStatementForRiskOn = props => {
             },
             {
               lineStyle: {
-                color: '#999'
+                color: '#ffb980',
+                type: 'solid'
               },
               label: {
                 formatter: 'Leverage Lower 75%',
@@ -192,7 +194,8 @@ const MyStatementForRiskOn = props => {
             },
             {
               lineStyle: {
-                color: '#999'
+                color: '#dc69aa',
+                type: 'solid'
               },
               label: {
                 formatter: 'Liquidation 80%',
