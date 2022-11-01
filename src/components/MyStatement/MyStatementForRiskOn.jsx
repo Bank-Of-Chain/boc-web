@@ -110,49 +110,22 @@ const MyStatementForRiskOn = props => {
       axisTick: {
         alignWithLabel: true
       },
-      data: map(aaveOutstandingLoan.result, item => item.validateTime)
+      data: map(aaveHealthRatio.result, item => item.validateTime)
     },
     yAxis: [
-      {
-        splitLine: {
-          lineStyle: {
-            color: '#454459'
-          }
-        }
-      },
       {
         max: 100,
         min: 0,
         splitLine: {
-          show: false
-        },
-        axisLine: {
-          show: false
+          lineStyle: {
+            color: '#454459'
+          }
         }
       }
     ],
     series: [
       {
         type: 'line',
-        name: 'AAVE Outstanding Loan',
-        showSymbol: size(aaveOutstandingLoan.result) === 1,
-        lineStyle: {
-          width: 4
-        },
-        data: map(aaveOutstandingLoan.result, item => toFixed(item.result, BN_18, 2))
-      },
-      {
-        type: 'line',
-        name: 'AAVE Collateral',
-        showSymbol: size(aaveCollateral.result) === 1,
-        lineStyle: {
-          width: 4
-        },
-        data: map(aaveCollateral.result, item => toFixed(item.result, BN_18, 2))
-      },
-      {
-        type: 'line',
-        yAxisIndex: 1,
         name: 'Debt Ratio',
         showSymbol: size(aaveHealthRatio.result) === 1,
         lineStyle: {
