@@ -250,7 +250,7 @@ const MyStatementForRiskOn = props => {
 
   const cardProps1 = [
     {
-      title: 'Oustanding Loan',
+      title: 'Outstanding Loan',
       tip: (
         <Tooltip
           classes={{
@@ -258,7 +258,7 @@ const MyStatementForRiskOn = props => {
           }}
           placement="right"
           // TODO
-          title="Oustanding Loan"
+          title="Outstanding Loan"
         >
           <InfoIcon style={{ fontSize: '1.375rem', color: 'rgba(255,255,255,0.45)' }} />
         </Tooltip>
