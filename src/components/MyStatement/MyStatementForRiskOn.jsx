@@ -168,7 +168,7 @@ const MyStatementForRiskOn = props => {
           data: [
             {
               lineStyle: {
-                color: '#999',
+                color: '#07a2a4',
                 type: 'solid'
               },
               label: {
@@ -180,7 +180,7 @@ const MyStatementForRiskOn = props => {
             },
             {
               lineStyle: {
-                color: '#999',
+                color: '#ffb980',
                 type: 'solid'
               },
               label: {
@@ -192,7 +192,7 @@ const MyStatementForRiskOn = props => {
             },
             {
               lineStyle: {
-                color: '#FE3DCE',
+                color: '#dc69aa',
                 type: 'solid'
               },
               label: {
