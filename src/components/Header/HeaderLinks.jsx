@@ -148,7 +148,7 @@ export default function HeaderLinks(props) {
                 <a
                   key="polygon-bridge"
                   target="_blank"
-                  href="https://wallet.polygon.technology/bridge"
+                  href="https://www.bungee.exchange"
                   className={classes.dropdownLink}
                   rel="noopener noreferrer"
                 >
