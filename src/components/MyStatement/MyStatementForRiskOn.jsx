@@ -28,7 +28,7 @@ import * as ethers from 'ethers'
 
 // === Constants === //
 import { ETHI_DISPLAY_DECIMALS } from '@/constants/ethi'
-import { TOKEN_DISPLAY_DECIMALS } from '@/constants/vault'
+import { VAULT_TYPE, TOKEN_DISPLAY_DECIMALS } from '@/constants/vault'
 import { CHAIN_ID } from '@/constants'
 import { BN_18 } from '@/constants/big-number'
 
@@ -49,10 +49,11 @@ const MyStatementForRiskOn = props => {
     VAULT_FACTORY_ABI,
     personalVaultAddress,
     UNISWAPV3_RISK_ON_VAULT,
-    UNISWAPV3_RISK_ON_HELPER
+    UNISWAPV3_RISK_ON_HELPER,
+    currentLiquidationThreshold
   } = props
 
-  const isUSDi = type === 'USDr'
+  const isUSDi = type === VAULT_TYPE.USDr
   const classes = useStyles()
 
   // api datas fetching
@@ -128,9 +129,6 @@ const MyStatementForRiskOn = props => {
         },
         axisLine: {
           show: false
-        },
-        axisLabel: {
-          show: false
         }
       }
     ],
@@ -156,7 +154,7 @@ const MyStatementForRiskOn = props => {
       {
         type: 'line',
         yAxisIndex: 1,
-        name: 'Health Ratio',
+        name: 'Debt Ratio',
         showSymbol: size(aaveHealthRatio.result) === 1,
         lineStyle: {
           width: 4
@@ -170,7 +168,8 @@ const MyStatementForRiskOn = props => {
           data: [
             {
               lineStyle: {
-                color: '#999'
+                color: '#999',
+                type: 'solid'
               },
               label: {
                 formatter: 'Leverage Upper 40%',
@@ -181,7 +180,8 @@ const MyStatementForRiskOn = props => {
             },
             {
               lineStyle: {
-                color: '#999'
+                color: '#999',
+                type: 'solid'
               },
               label: {
                 formatter: 'Leverage Lower 75%',
@@ -192,14 +192,15 @@ const MyStatementForRiskOn = props => {
             },
             {
               lineStyle: {
-                color: '#999'
+                color: '#FE3DCE',
+                type: 'solid'
               },
               label: {
-                formatter: 'Liquidation 80%',
+                formatter: `Liquidation ${currentLiquidationThreshold}%`,
                 position: 'middle',
                 color: '#999'
               },
-              yAxis: 80
+              yAxis: currentLiquidationThreshold
             }
           ]
         }
@@ -320,7 +321,7 @@ const MyStatementForRiskOn = props => {
               title={
                 <span>
                   AAVE Lines ({wantTokenSymbol})
-                  <Tooltip title="AAVE Outstanding Loan, Collateral, Health Ratio">
+                  <Tooltip title="AAVE Outstanding Loan, Collateral, Debt Ratio">
                     <InfoIcon style={{ marginLeft: 8, fontSize: '1rem' }} />
                   </Tooltip>
                 </span>
