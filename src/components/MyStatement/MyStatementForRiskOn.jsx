@@ -27,7 +27,7 @@ import * as ethers from 'ethers'
 
 // === Constants === //
 import { ETHI_DISPLAY_DECIMALS } from '@/constants/ethi'
-import { TOKEN_DISPLAY_DECIMALS } from '@/constants/vault'
+import { VAULT_TYPE, TOKEN_DISPLAY_DECIMALS } from '@/constants/vault'
 import { CHAIN_ID } from '@/constants'
 import { BN_18 } from '@/constants/big-number'
 
@@ -49,10 +49,10 @@ const MyStatementForRiskOn = props => {
     personalVaultAddress,
     UNISWAPV3_RISK_ON_VAULT,
     UNISWAPV3_RISK_ON_HELPER,
-    currentLiquidationThreshold = 0
+    currentLiquidationThreshold
   } = props
 
-  const isUSDi = type === 'USDr'
+  const isUSDi = type === VAULT_TYPE.USDr
   const classes = useStyles()
 
   // api datas fetching

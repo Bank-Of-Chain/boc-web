@@ -9,10 +9,11 @@ import useUserAddress from './useUserAddress'
 
 // === Constants === //
 import { IERC20_ABI } from '@/constants'
+import { VAULT_TYPE } from '@/constants/vault'
 
 const { Contract, BigNumber } = ethers
 
-const useVaultOnRisk = (VAULT_FACTORY_ADDRESS, VAULT_FACTORY_ABI, VAULT_ADDRESS, VAULT_ABI, UNISWAPV3_RISK_ON_HELPER, userProvider) => {
+const useVaultOnRisk = (VAULT_FACTORY_ADDRESS, VAULT_FACTORY_ABI, VAULT_ADDRESS, VAULT_ABI, UNISWAPV3_RISK_ON_HELPER, userProvider, type) => {
   const [error, setError] = useState()
   const [loading, setLoading] = useState(false)
   const [baseInfo, setBaseInfo] = useState({})
@@ -83,7 +84,14 @@ const useVaultOnRisk = (VAULT_FACTORY_ADDRESS, VAULT_FACTORY_ABI, VAULT_ADDRESS,
               minInvestment,
               helperBorrowInfo
             ]) => {
-              const { _currentLiquidationThreshold } = helperBorrowInfo
+              let currentLiquidationThreshold = helperBorrowInfo._currentLiquidationThreshold.toString()
+              if (currentLiquidationThreshold === '0') {
+                // If return 0, set default value
+                currentLiquidationThreshold = type === VAULT_TYPE.USDr ? 85 : 82.5
+              } else {
+                // base 10000, return value like 8500
+                currentLiquidationThreshold = Number(currentLiquidationThreshold) / 100
+              }
               return helperContract.calcCanonicalAssetValue(borrowToken, currentBorrow, wantToken).then(currentBorrowWithCanonical => {
                 const nextBaseInfo = {
                   netMarketMakingAmount,
@@ -97,8 +105,7 @@ const useVaultOnRisk = (VAULT_FACTORY_ADDRESS, VAULT_FACTORY_ABI, VAULT_ADDRESS,
                   borrowInfo,
                   result: depositTo3rdPoolTotalAssets.add(totalCollateralTokenAmount).sub(netMarketMakingAmount).sub(currentBorrowWithCanonical),
                   minInvestment,
-                  // base 10000, return value like 8500
-                  currentLiquidationThreshold: Number(_currentLiquidationThreshold.toString()) / 100
+                  currentLiquidationThreshold
                 }
                 setBaseInfo(nextBaseInfo)
                 return nextBaseInfo

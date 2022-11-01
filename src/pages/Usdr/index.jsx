@@ -31,6 +31,7 @@ import { setCurrentTab } from '@/reducers/invest-reducer'
 import { USDC_ADDRESS_MATIC } from '@/constants/tokens'
 import { INVEST_TAB } from '@/constants/invest'
 import { IERC20_ABI } from '@/constants'
+import { VAULT_TYPE } from '@/constants/vault'
 
 // === Utils === //
 import isEmpty from 'lodash/isEmpty'
@@ -78,9 +79,10 @@ function Usdr(props) {
     personalVaultAddress,
     UNISWAPV3_RISK_ON_VAULT,
     UNISWAPV3_RISK_ON_HELPER,
-    userProvider
+    userProvider,
+    VAULT_TYPE.USDr
   )
-  const { estimatedTotalAssets, manageFeeBps, minInvestment, currentLiquidationThreshold } = baseInfo
+  const { estimatedTotalAssets, manageFeeBps, minInvestment, currentLiquidationThreshold = 85 } = baseInfo
 
   // const handleAddToken = useCallback(() => {
   //   addToken(wantTokenForVault, wantTokenSymbol, wantTokenDecimals)
