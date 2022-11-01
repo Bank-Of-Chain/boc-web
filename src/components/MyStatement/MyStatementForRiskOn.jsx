@@ -89,11 +89,6 @@ const MyStatementForRiskOn = props => {
       bottom: '10',
       containLabel: true
     },
-    legend: {
-      textStyle: {
-        color: '#fff'
-      }
-    },
     tooltip: {
       trigger: 'axis',
       borderWidth: 0,
@@ -350,10 +345,7 @@ const MyStatementForRiskOn = props => {
               loading={aaveOutstandingLoan.loading || aaveCollateral.loading || aaveHealthRatio.loading}
               title={
                 <span>
-                  AAVE Lines (%)
-                  <Tooltip title="Debt Ratio">
-                    <InfoIcon style={{ marginLeft: 8, fontSize: '1rem' }} />
-                  </Tooltip>
+                  Debt Ratio (%)
                 </span>
               }
               loadingOption={{
