@@ -250,7 +250,7 @@ const MyStatementForRiskOn = props => {
 
   const cardProps1 = [
     {
-      title: 'Outstanding Loan',
+      title: 'AAVE Outstanding Loan',
       tip: (
         <Tooltip
           classes={{
@@ -258,7 +258,7 @@ const MyStatementForRiskOn = props => {
           }}
           placement="right"
           // TODO
-          title="Outstanding Loan"
+          title="AAVE Outstanding Loan"
         >
           <InfoIcon style={{ fontSize: '1.375rem', color: 'rgba(255,255,255,0.45)' }} />
         </Tooltip>
@@ -273,14 +273,14 @@ const MyStatementForRiskOn = props => {
       unit: wantTokenSymbol
     },
     {
-      title: 'Collateral',
+      title: 'AAVE Collateral',
       tip: (
         <Tooltip
           classes={{
             tooltip: classes.tooltip
           }}
           placement="right"
-          title="Collateral"
+          title="AAVE Collateral"
         >
           <InfoIcon style={{ fontSize: '1.375rem', color: 'rgba(255,255,255,0.45)' }} />
         </Tooltip>
