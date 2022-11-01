@@ -49,7 +49,7 @@ const MyStatementForRiskOn = props => {
     personalVaultAddress,
     UNISWAPV3_RISK_ON_VAULT,
     UNISWAPV3_RISK_ON_HELPER,
-    currentLiquidationThreshold
+    currentLiquidationThreshold = 0
   } = props
 
   const isUSDi = type === 'USDr'
