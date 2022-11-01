@@ -18,7 +18,7 @@ export default function CustomTabs(props) {
     props.onChange(event, value)
   }
   const classes = useStyles()
-  const { tabs, centered } = props
+  const { tabs, centered, size } = props
 
   useEffect(() => {
     setValue(props.value)
@@ -45,7 +45,7 @@ export default function CustomTabs(props) {
           return (
             <Tab
               classes={{
-                root: classes.tabRootButton,
+                root: size === 'small' ? classes.tabSmallButton : classes.tabRootButton,
                 label: classes.tabLabel,
                 selected: classes.tabSelected,
                 wrapper: classes.tabWrapper

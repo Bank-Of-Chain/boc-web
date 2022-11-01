@@ -4,6 +4,8 @@ import { makeStyles } from '@material-ui/core/styles'
 // === Components === //
 import Tabs from '@/components/CustomTabs/CustomTabs'
 import map from 'lodash/map'
+import GridContainer from '@/components/Grid/GridContainer'
+import GridItem from '@/components/Grid/GridItem'
 
 // === Hooks === //
 import { useLocation, useHistory } from 'react-router-dom'
@@ -55,21 +57,26 @@ export default function VaultChange(props) {
   return (
     <Fragment>
       {pathname !== '/' && (
-        <div className={classes.container}>
-          <Tabs
-            centered
-            value={findIndex(VAULTS, { value: pathname })}
-            indicatorColor="primary"
-            textColor="primary"
-            onChange={changeRouter}
-            tabs={map(VAULTS, item => {
-              return {
-                tabName: item.label,
-                tabContent: null
-              }
-            })}
-          />
-        </div>
+        <GridContainer>
+          <GridItem xs={3} sm={3} md={3}></GridItem>
+          <GridItem xs={9} sm={9} md={9}>
+            <div className={classes.container}>
+              <Tabs
+                size="small"
+                value={findIndex(VAULTS, { value: pathname })}
+                indicatorColor="primary"
+                textColor="primary"
+                onChange={changeRouter}
+                tabs={map(VAULTS, item => {
+                  return {
+                    tabName: item.label,
+                    tabContent: null
+                  }
+                })}
+              />
+            </div>
+          </GridItem>
+        </GridContainer>
       )}
       {props.children}
     </Fragment>
