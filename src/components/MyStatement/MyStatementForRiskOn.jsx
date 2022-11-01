@@ -77,8 +77,7 @@ const MyStatementForRiskOn = props => {
     UNISWAPV3_RISK_ON_HELPER,
     userProvider
   )
-
-  const { netMarketMakingAmount, estimatedTotalAssets, wantInfo = {} } = baseInfo
+  const { netMarketMakingAmount, estimatedTotalAssets, wantInfo = {}, currentBorrowWithCanonical, totalCollateralTokenAmount } = baseInfo
   const { wantTokenDecimals = BigNumber.from(0) } = wantInfo
 
   const aaveOption = {
@@ -281,6 +280,55 @@ const MyStatementForRiskOn = props => {
     }
   ]
 
+  const cardProps1 = [
+    {
+      title: 'Oustanding Loan',
+      tip: (
+        <Tooltip
+          classes={{
+            tooltip: classes.tooltip
+          }}
+          placement="right"
+          // TODO
+          title="Oustanding Loan"
+        >
+          <InfoIcon style={{ fontSize: '1.375rem', color: 'rgba(255,255,255,0.45)' }} />
+        </Tooltip>
+      ),
+      content: (
+        <span title={toFixed(currentBorrowWithCanonical, wantTokenDecimals)}>
+          {numeral(toFixed(currentBorrowWithCanonical, wantTokenDecimals, isUSDi ? TOKEN_DISPLAY_DECIMALS : ETHI_DISPLAY_DECIMALS)).format(
+            isUSDi ? '0,0.[00]a' : '0,0.[0000]a'
+          )}
+        </span>
+      ),
+      unit: wantTokenSymbol
+    },
+    {
+      title: 'Collateral',
+      tip: (
+        <Tooltip
+          classes={{
+            tooltip: classes.tooltip
+          }}
+          placement="right"
+          title="Collateral"
+        >
+          <InfoIcon style={{ fontSize: '1.375rem', color: 'rgba(255,255,255,0.45)' }} />
+        </Tooltip>
+      ),
+      content: (
+        <span title={toFixed(totalCollateralTokenAmount, wantTokenDecimals)}>
+          {numeral(toFixed(totalCollateralTokenAmount, wantTokenDecimals, isUSDi ? TOKEN_DISPLAY_DECIMALS : ETHI_DISPLAY_DECIMALS)).format(
+            isUSDi ? '0,0.[00]a' : '0,0.[0000]a'
+          )}
+        </span>
+      ),
+      isAPY: true,
+      unit: wantTokenSymbol
+    }
+  ]
+
   const uniswapOption = getLineEchartOpt(
     map(uniswapPositionValueArray.result, i => {
       return {
@@ -307,6 +355,15 @@ const MyStatementForRiskOn = props => {
       <GridItem xs={12} sm={12} md={12} lg={12}>
         <GridContainer spacing={2}>
           {map(cardProps, (i, index) => {
+            return (
+              <GridItem key={index} xs={12} sm={12} md={4} lg={4}>
+                <Card loading={loading} {...i} />
+              </GridItem>
+            )
+          })}
+        </GridContainer>
+        <GridContainer spacing={2}>
+          {map(cardProps1, (i, index) => {
             return (
               <GridItem key={index} xs={12} sm={12} md={4} lg={4}>
                 <Card loading={loading} {...i} />
