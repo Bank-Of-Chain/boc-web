@@ -345,7 +345,7 @@ const MyStatementForRiskOn = props => {
               loading={aaveOutstandingLoan.loading || aaveCollateral.loading || aaveHealthRatio.loading}
               title={
                 <span>
-                  Debt Ratio (%)
+                  AAVE Debt Ratio (%)
                 </span>
               }
               loadingOption={{
