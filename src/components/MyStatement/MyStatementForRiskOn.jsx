@@ -28,7 +28,7 @@ import * as ethers from 'ethers'
 
 // === Constants === //
 import { ETHI_DISPLAY_DECIMALS } from '@/constants/ethi'
-import { TOKEN_DISPLAY_DECIMALS } from '@/constants/vault'
+import { VAULT_TYPE, TOKEN_DISPLAY_DECIMALS } from '@/constants/vault'
 import { CHAIN_ID } from '@/constants'
 import { BN_18 } from '@/constants/big-number'
 
@@ -49,10 +49,11 @@ const MyStatementForRiskOn = props => {
     VAULT_FACTORY_ABI,
     personalVaultAddress,
     UNISWAPV3_RISK_ON_VAULT,
-    UNISWAPV3_RISK_ON_HELPER
+    UNISWAPV3_RISK_ON_HELPER,
+    currentLiquidationThreshold
   } = props
 
-  const isUSDi = type === 'USDr'
+  const isUSDi = type === VAULT_TYPE.USDr
   const classes = useStyles()
 
   // api datas fetching
@@ -76,8 +77,7 @@ const MyStatementForRiskOn = props => {
     UNISWAPV3_RISK_ON_HELPER,
     userProvider
   )
-
-  const { netMarketMakingAmount, estimatedTotalAssets, wantInfo = {} } = baseInfo
+  const { netMarketMakingAmount, estimatedTotalAssets, wantInfo = {}, currentBorrowWithCanonical, totalCollateralTokenAmount } = baseInfo
   const { wantTokenDecimals = BigNumber.from(0) } = wantInfo
 
   const aaveOption = {
@@ -88,11 +88,6 @@ const MyStatementForRiskOn = props => {
       right: '5%',
       bottom: '10',
       containLabel: true
-    },
-    legend: {
-      textStyle: {
-        color: '#fff'
-      }
     },
     tooltip: {
       trigger: 'axis',
@@ -110,53 +105,23 @@ const MyStatementForRiskOn = props => {
       axisTick: {
         alignWithLabel: true
       },
-      data: map(aaveOutstandingLoan.result, item => item.validateTime)
+      data: map(aaveHealthRatio.result, item => item.validateTime)
     },
     yAxis: [
-      {
-        splitLine: {
-          lineStyle: {
-            color: '#454459'
-          }
-        }
-      },
       {
         max: 100,
         min: 0,
         splitLine: {
-          show: false
-        },
-        axisLine: {
-          show: false
-        },
-        axisLabel: {
-          show: false
+          lineStyle: {
+            color: '#454459'
+          }
         }
       }
     ],
     series: [
       {
         type: 'line',
-        name: 'AAVE Outstanding Loan',
-        showSymbol: size(aaveOutstandingLoan.result) === 1,
-        lineStyle: {
-          width: 4
-        },
-        data: map(aaveOutstandingLoan.result, item => toFixed(item.result, BN_18, 2))
-      },
-      {
-        type: 'line',
-        name: 'AAVE Collateral',
-        showSymbol: size(aaveCollateral.result) === 1,
-        lineStyle: {
-          width: 4
-        },
-        data: map(aaveCollateral.result, item => toFixed(item.result, BN_18, 2))
-      },
-      {
-        type: 'line',
-        yAxisIndex: 1,
-        name: 'Health Ratio',
+        name: 'Debt Ratio',
         showSymbol: size(aaveHealthRatio.result) === 1,
         lineStyle: {
           width: 4
@@ -170,7 +135,8 @@ const MyStatementForRiskOn = props => {
           data: [
             {
               lineStyle: {
-                color: '#999'
+                color: '#07a2a4',
+                type: 'solid'
               },
               label: {
                 formatter: 'Leverage Upper 40%',
@@ -181,7 +147,8 @@ const MyStatementForRiskOn = props => {
             },
             {
               lineStyle: {
-                color: '#999'
+                color: '#ffb980',
+                type: 'solid'
               },
               label: {
                 formatter: 'Leverage Lower 75%',
@@ -192,14 +159,15 @@ const MyStatementForRiskOn = props => {
             },
             {
               lineStyle: {
-                color: '#999'
+                color: '#dc69aa',
+                type: 'solid'
               },
               label: {
-                formatter: 'Liquidation 80%',
+                formatter: `Liquidation ${currentLiquidationThreshold}%`,
                 position: 'middle',
                 color: '#999'
               },
-              yAxis: 80
+              yAxis: currentLiquidationThreshold
             }
           ]
         }
@@ -280,6 +248,55 @@ const MyStatementForRiskOn = props => {
     }
   ]
 
+  const cardProps1 = [
+    {
+      title: 'AAVE Outstanding Loan',
+      tip: (
+        <Tooltip
+          classes={{
+            tooltip: classes.tooltip
+          }}
+          placement="right"
+          // TODO
+          title="AAVE Outstanding Loan"
+        >
+          <InfoIcon style={{ fontSize: '1.375rem', color: 'rgba(255,255,255,0.45)' }} />
+        </Tooltip>
+      ),
+      content: (
+        <span title={toFixed(currentBorrowWithCanonical, wantTokenDecimals)}>
+          {numeral(toFixed(currentBorrowWithCanonical, wantTokenDecimals, isUSDi ? TOKEN_DISPLAY_DECIMALS : ETHI_DISPLAY_DECIMALS)).format(
+            isUSDi ? '0,0.[00]a' : '0,0.[0000]a'
+          )}
+        </span>
+      ),
+      unit: wantTokenSymbol
+    },
+    {
+      title: 'AAVE Collateral',
+      tip: (
+        <Tooltip
+          classes={{
+            tooltip: classes.tooltip
+          }}
+          placement="right"
+          title="AAVE Collateral"
+        >
+          <InfoIcon style={{ fontSize: '1.375rem', color: 'rgba(255,255,255,0.45)' }} />
+        </Tooltip>
+      ),
+      content: (
+        <span title={toFixed(totalCollateralTokenAmount, wantTokenDecimals)}>
+          {numeral(toFixed(totalCollateralTokenAmount, wantTokenDecimals, isUSDi ? TOKEN_DISPLAY_DECIMALS : ETHI_DISPLAY_DECIMALS)).format(
+            isUSDi ? '0,0.[00]a' : '0,0.[0000]a'
+          )}
+        </span>
+      ),
+      isAPY: true,
+      unit: wantTokenSymbol
+    }
+  ]
+
   const uniswapOption = getLineEchartOpt(
     map(uniswapPositionValueArray.result, i => {
       return {
@@ -313,16 +330,22 @@ const MyStatementForRiskOn = props => {
             )
           })}
         </GridContainer>
+        <GridContainer spacing={2}>
+          {map(cardProps1, (i, index) => {
+            return (
+              <GridItem key={index} xs={12} sm={12} md={4} lg={4}>
+                <Card loading={loading} {...i} />
+              </GridItem>
+            )
+          })}
+        </GridContainer>
         <GridContainer className={classes.lineChart}>
           <GridItem xs={12} sm={12} md={12} lg={12}>
             <Card
               loading={aaveOutstandingLoan.loading || aaveCollateral.loading || aaveHealthRatio.loading}
               title={
                 <span>
-                  AAVE Lines ({wantTokenSymbol})
-                  <Tooltip title="AAVE Outstanding Loan, Collateral, Health Ratio">
-                    <InfoIcon style={{ marginLeft: 8, fontSize: '1rem' }} />
-                  </Tooltip>
+                  AAVE Debt Ratio (%)
                 </span>
               }
               loadingOption={{

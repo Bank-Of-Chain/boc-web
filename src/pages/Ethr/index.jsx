@@ -31,6 +31,7 @@ import { setCurrentTab } from '@/reducers/invest-reducer'
 import { WETH_ADDRESS_MATIC } from '@/constants/tokens'
 import { INVEST_TAB } from '@/constants/invest'
 import { IERC20_ABI } from '@/constants'
+import { VAULT_TYPE } from '@/constants/vault'
 
 // === Utils === //
 import isEmpty from 'lodash/isEmpty'
@@ -78,9 +79,10 @@ function Ethr(props) {
     personalVaultAddress,
     UNISWAPV3_RISK_ON_VAULT,
     UNISWAPV3_RISK_ON_HELPER,
-    userProvider
+    userProvider,
+    VAULT_TYPE.ETHr
   )
-  const { estimatedTotalAssets, manageFeeBps, minInvestment } = baseInfo
+  const { estimatedTotalAssets, manageFeeBps, minInvestment, currentLiquidationThreshold = 82.5 } = baseInfo
 
   // const handleAddToken = useCallback(() => {
   //   addToken(wantTokenForVault, wantTokenSymbol, wantTokenDecimals)
@@ -245,6 +247,7 @@ function Ethr(props) {
                     VAULT_FACTORY_ADDRESS={VAULT_FACTORY_ADDRESS}
                     UNISWAPV3_RISK_ON_VAULT={UNISWAPV3_RISK_ON_VAULT}
                     UNISWAPV3_RISK_ON_HELPER={UNISWAPV3_RISK_ON_HELPER}
+                    currentLiquidationThreshold={currentLiquidationThreshold}
                   />
                 )}
               </div>

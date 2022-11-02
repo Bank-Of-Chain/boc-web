@@ -215,7 +215,7 @@ export default function Deposit({
         <GridItem xs={12} sm={12} md={12} lg={12}>
           <div className={classes.estimateWrapper}>
             <span>{wantTokenSymbol} VAULT</span>
-            <span className={classes.estimateBalanceNum}>{Number(value) * (1 - bps)}</span>
+            <span className={classes.estimateBalanceNum}>{(Number(value) * (1 - bps)).toFixed(4)}</span>
           </div>
         </GridItem>
         <GridItem xs={12} sm={12} md={12} lg={12}>

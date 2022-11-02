@@ -18,7 +18,7 @@ const VAULT_BUFFER_FOR_USDI_MATIC = ''
 const VAULT_FACTORY_ADDRESS = '0xA92C91Fe965D7497A423d951fCDFA221fC354B5a'
 
 const configBase = {
-  env: 'qa03-sg',
+  env: 'pr02-sg',
   usdt_address: '0xdAC17F958D2ee523a2206206994597C13D831ec7',
   usdc_address: '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48',
   dai_address: '0x6B175474E89094C44Da98b954EedeAC495271d0F',
@@ -34,14 +34,14 @@ const configBase = {
   youtube_url: 'https://www.youtube.com/channel/UCnACZpYuAksuSeoLniDXlOQ/featured',
   medium_url: 'https://medium.com/bankofchain',
   document_url: 'https://docs.bankofchain.io',
-  boc_server: 'https://service-qa03-sg.bankofchain.io',
+  boc_server: 'https://service-pr02-sg.bankofchain.io',
   rpc_url: {
     1: 'https://rpc.ankr.com/eth',
     137: 'https://rpc-mainnet.maticvigil.com',
     31337: ''
   },
   multiple_of_gas: 2,
-  dashboard_url: 'https://dashboard-qa03-sg.bankofchain.io',
+  dashboard_url: 'https://risk-on-dashboard.bankofchain.io',
   oracle_additional_slippage: 20
 }
 
