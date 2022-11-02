@@ -139,7 +139,7 @@ const MyStatementForRiskOn = props => {
                 type: 'solid'
               },
               label: {
-                formatter: 'Leverage Upper 40%',
+                formatter: 'Leverage Lower 40%',
                 position: 'middle',
                 color: '#999'
               },
@@ -151,7 +151,7 @@ const MyStatementForRiskOn = props => {
                 type: 'solid'
               },
               label: {
-                formatter: 'Leverage Lower 75%',
+                formatter: 'Leverage Upper 75%',
                 position: 'middle',
                 color: '#999'
               },
