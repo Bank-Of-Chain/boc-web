@@ -82,7 +82,7 @@ function Ethr(props) {
     userProvider,
     VAULT_TYPE.ETHr
   )
-  const { estimatedTotalAssets, manageFeeBps, minInvestment, currentLiquidationThreshold = 85 } = baseInfo
+  const { estimatedTotalAssets, manageFeeBps, minInvestment, currentLiquidationThreshold = 82.5 } = baseInfo
 
   // const handleAddToken = useCallback(() => {
   //   addToken(wantTokenForVault, wantTokenSymbol, wantTokenDecimals)
