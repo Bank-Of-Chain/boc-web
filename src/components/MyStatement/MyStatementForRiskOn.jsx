@@ -26,8 +26,7 @@ import { toFixed, numberSplit } from '@/helpers/number-format'
 import * as ethers from 'ethers'
 
 // === Constants === //
-import { ETHI_DISPLAY_DECIMALS } from '@/constants/ethi'
-import { VAULT_TYPE, TOKEN_DISPLAY_DECIMALS } from '@/constants/vault'
+import { VAULT_TYPE } from '@/constants/vault'
 import { CHAIN_ID } from '@/constants'
 import { BN_18 } from '@/constants/big-number'
 
@@ -176,18 +175,18 @@ const MyStatementForRiskOn = props => {
 
   const lastProfit = last(profitArray.result)
 
-  const [netMarketMakingAmountText, netMarketMakingAmountSymbol] = numberSplit(
-    toFixed(netMarketMakingAmount, wantTokenDecimals, isUSDi ? TOKEN_DISPLAY_DECIMALS : ETHI_DISPLAY_DECIMALS),
-    isUSDi ? '0,0.[00]' : '0,0.[0000]'
-  )
-  const [estimatedTotalAssetsText, estimatedTotalAssetsSymbol] = numberSplit(
-    toFixed(estimatedTotalAssets, wantTokenDecimals, isUSDi ? TOKEN_DISPLAY_DECIMALS : ETHI_DISPLAY_DECIMALS),
-    isUSDi ? '0,0.[00]' : '0,0.[0000]'
-  )
-  const [profitsText, profitsSymbol] = numberSplit(
-    toFixed(lastProfit?.result, BN_18, isUSDi ? TOKEN_DISPLAY_DECIMALS : ETHI_DISPLAY_DECIMALS),
-    isUSDi ? '0,0.[00]' : '0,0.[0000]'
-  )
+  const value1 = toFixed(netMarketMakingAmount, wantTokenDecimals)
+  const value2 = toFixed(estimatedTotalAssets, wantTokenDecimals)
+  const value3 = toFixed(lastProfit?.result, BN_18)
+  const value4 = toFixed(currentBorrowWithCanonical, wantTokenDecimals)
+  const value5 = toFixed(totalCollateralTokenAmount, wantTokenDecimals)
+  const [netMarketMakingAmountText, netMarketMakingAmountSymbol] = numberSplit(value1, isUSDi ? '0,0.[00]' : '0,0.[0000]')
+  const [estimatedTotalAssetsText, estimatedTotalAssetsSymbol] = numberSplit(value2, isUSDi ? '0,0.[00]' : '0,0.[0000]')
+  const [profitsText, profitsSymbol] = numberSplit(value3, isUSDi ? '0,0.[00]' : '0,0.[0000]')
+
+  const [currentBorrowWithCanonicalText, currentBorrowWithCanonicalSymbol] = numberSplit(value4, isUSDi ? '0,0.[00]' : '0,0.[0000]')
+
+  const [totalCollateralTokenAmountText, totalCollateralTokenAmountSymbol] = numberSplit(value5, isUSDi ? '0,0.[00]' : '0,0.[0000]')
 
   const cardProps = [
     {
@@ -204,7 +203,7 @@ const MyStatementForRiskOn = props => {
           <InfoIcon style={{ fontSize: '1.375rem', color: 'rgba(255,255,255,0.45)' }} />
         </Tooltip>
       ),
-      content: <span title={toFixed(netMarketMakingAmount, wantTokenDecimals)}>{netMarketMakingAmountText}</span>,
+      content: <span title={value1}>{netMarketMakingAmountText}</span>,
       unit: [netMarketMakingAmountSymbol, wantTokenSymbol].join(' ')
     },
     {
@@ -220,7 +219,7 @@ const MyStatementForRiskOn = props => {
           <InfoIcon style={{ fontSize: '1.375rem', color: 'rgba(255,255,255,0.45)' }} />
         </Tooltip>
       ),
-      content: <span title={toFixed(estimatedTotalAssets, wantTokenDecimals)}>{estimatedTotalAssetsText}</span>,
+      content: <span title={value2}>{estimatedTotalAssetsText}</span>,
       isAPY: true,
       unit: [estimatedTotalAssetsSymbol, wantTokenSymbol].join(' ')
     },
@@ -237,7 +236,7 @@ const MyStatementForRiskOn = props => {
           <InfoIcon style={{ fontSize: '1.375rem', color: 'rgba(255,255,255,0.45)' }} />
         </Tooltip>
       ),
-      content: <span title={toFixed(lastProfit?.result, BN_18)}>{profitsText}</span>,
+      content: <span title={value3}>{profitsText}</span>,
       isAPY: true,
       unit: [profitsSymbol, wantTokenSymbol].join(' ')
     }
@@ -258,14 +257,8 @@ const MyStatementForRiskOn = props => {
           <InfoIcon style={{ fontSize: '1.375rem', color: 'rgba(255,255,255,0.45)' }} />
         </Tooltip>
       ),
-      content: (
-        <span title={toFixed(currentBorrowWithCanonical, wantTokenDecimals)}>
-          {numeral(toFixed(currentBorrowWithCanonical, wantTokenDecimals, isUSDi ? TOKEN_DISPLAY_DECIMALS : ETHI_DISPLAY_DECIMALS)).format(
-            isUSDi ? '0,0.[00]a' : '0,0.[0000]a'
-          )}
-        </span>
-      ),
-      unit: wantTokenSymbol
+      content: <span title={value4}>{currentBorrowWithCanonicalText}</span>,
+      unit: [currentBorrowWithCanonicalSymbol, wantTokenSymbol].join(' ')
     },
     {
       title: 'AAVE Collateral',
@@ -280,15 +273,9 @@ const MyStatementForRiskOn = props => {
           <InfoIcon style={{ fontSize: '1.375rem', color: 'rgba(255,255,255,0.45)' }} />
         </Tooltip>
       ),
-      content: (
-        <span title={toFixed(totalCollateralTokenAmount, wantTokenDecimals)}>
-          {numeral(toFixed(totalCollateralTokenAmount, wantTokenDecimals, isUSDi ? TOKEN_DISPLAY_DECIMALS : ETHI_DISPLAY_DECIMALS)).format(
-            isUSDi ? '0,0.[00]a' : '0,0.[0000]a'
-          )}
-        </span>
-      ),
+      content: <span title={value5}>{totalCollateralTokenAmountText}</span>,
       isAPY: true,
-      unit: wantTokenSymbol
+      unit: [totalCollateralTokenAmountSymbol, wantTokenSymbol].join(' ')
     }
   ]
 
@@ -338,11 +325,7 @@ const MyStatementForRiskOn = props => {
           <GridItem xs={12} sm={12} md={12} lg={12}>
             <Card
               loading={aaveOutstandingLoan.loading || aaveCollateral.loading || aaveHealthRatio.loading}
-              title={
-                <span>
-                  AAVE Debt Ratio (%)
-                </span>
-              }
+              title={<span>AAVE Debt Ratio (%)</span>}
               loadingOption={{
                 width: '100%',
                 height: '2rem'
