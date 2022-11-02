@@ -1,5 +1,6 @@
 import React from 'react'
 import { makeStyles } from '@material-ui/core/styles'
+import classNames from 'classnames'
 
 // === Components === //
 import Card from '@material-ui/core/Card'
@@ -39,6 +40,13 @@ const useStyles = makeStyles({
   },
   unit: {
     marginLeft: '0.5rem',
+    fontSize: '2.3rem',
+    backgroundImage: 'linear-gradient(223.3deg,#a68efd 20.71%,#f4acf3 103.56%)',
+    '-webkitBackgroundClip': 'text',
+    textFillColor: 'transparent'
+  },
+  symbol: {
+    marginLeft: '0.5rem',
     fontSize: '1.3rem',
     backgroundImage: 'linear-gradient(223.3deg,#a68efd 20.71%,#f4acf3 103.56%)',
     '-webkitBackgroundClip': 'text',
@@ -58,9 +66,10 @@ const useStyles = makeStyles({
 })
 
 const CardComponent = props => {
-  const { title, children, footer, content, loading, tip, unit, loadingOption = {} } = props
+  const { title, children, footer, content, loading, tip, unit = '', loadingOption = {} } = props
   const classes = useStyles()
 
+  const [text, symbol] = unit.split(' ')
   return (
     <Card className={classes.root}>
       <CardHeader
@@ -77,7 +86,10 @@ const CardComponent = props => {
           <Loading loading={loading}>
             <Typography className={classes.content} style={{ fontFamily: 'DM Sans' }} variant="h5" component="h2">
               {content}
-              <span className={classes.unit}>{unit}</span>
+              <span className={classNames({ [classes.unit]: !isEmpty(text) })}>
+                {text}
+                <span className={classes.symbol}>{symbol}</span>
+              </span>
             </Typography>
           </Loading>
         )}
