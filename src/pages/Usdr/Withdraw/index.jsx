@@ -216,7 +216,7 @@ export default function Withdraw({
         <GridItem xs={12} sm={12} md={12} lg={12}>
           <div className={classes.estimateWrapper}>
             <span>{wantTokenSymbol}</span>
-            <span className={classes.estimateBalanceNum}>{toValue}</span>
+            <span className={classes.estimateBalanceNum}>{Number(toValue).toFixed(6)}</span>
           </div>
         </GridItem>
       </GridContainer>
