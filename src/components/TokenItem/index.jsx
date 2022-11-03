@@ -170,7 +170,9 @@ const TokenItem = (props, ref) => {
           setRetryTimes(retryTimes + 1)
           setDone(false)
           setIsSwapInfoFetching(retryTimes + 1 <= MAX_RETRY_TIME)
-          onStaticCallFinish(false, error)
+          if (retryTimes + 1 > MAX_RETRY_TIME) {
+            onStaticCallFinish(false, error)
+          }
         })
         .finally(() => {
           setIsStaticCalling(false)
