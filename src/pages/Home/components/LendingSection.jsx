@@ -182,11 +182,11 @@ export default function LendingSection() {
           ) : (
             <GridContainer className={classes.block} style={{ margin: '0 auto' }} justify="center">
               <GridItem sm={12} xs={6} md={6} lg={6} style={{ backgroundColor: 'rgba(0,0,0,0.1)' }}>
-                <p className={classes.colorful}>USDi</p>
+                <p className={classes.colorful}>USD</p>
                 {renderJsx(data, displayMaxValue)}
               </GridItem>
               <GridItem sm={12} xs={6} md={6} lg={6}>
-                <p className={classes.colorful}>ETHi</p>
+                <p className={classes.colorful}>ETH</p>
                 {renderJsx(ethiData, displayMaxValue)}
               </GridItem>
             </GridContainer>
