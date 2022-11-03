@@ -86,7 +86,7 @@ const ApproveArrayV2 = props => {
   const refArray = map(tokens, () => useRef(null))
   const [exchangePlatformAdapters, setExchangePlatformAdapters] = useState({})
   const [receiveToken, setReceiveToken] = useState(isEthi ? ETH_ADDRESS : USDT_ADDRESS)
-  const [slippage, setSlippage] = useState('0.3')
+  const [slippage, setSlippage] = useState('0.5')
   const [isSwapping, setIsSwapping] = useState(false)
   const [count, setCount] = useState(0)
   const [callStateArray, setCallStateArray] = useState(map(tokens, () => undefined))
@@ -310,13 +310,8 @@ const ApproveArrayV2 = props => {
     console.groupEnd('clickSwap call')
   }
 
-  const changeSlippage = value => {
-    onSlippageChange(value)
-  }
-
   // when child state change, reRender component
   const onChildStateChange = useCallback(() => {
-    // setCount(count + 1)
     setCount(Math.random())
   }, [])
 
