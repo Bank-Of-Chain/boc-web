@@ -176,6 +176,7 @@ const MyStatementForRiskOn = props => {
   const lastProfit = last(profitArray.result)
   let profit = lastProfit?.result || '0'
   const MIN_LENGTH = isUSDi ? 17 : 15
+  // If profit is less than minimum, set 0
   if (profit.length < MIN_LENGTH) {
     profit = '0'
   }
