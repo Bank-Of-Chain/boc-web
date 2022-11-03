@@ -165,12 +165,12 @@ export default function Withdraw({
     return true
   }
 
-  const handleAmountChange = event => {
-    try {
-      setToValue(event.target.value)
-    } catch (error) {
-      setToValue('')
+  const handleInputChange = value => {
+    const num = Number(value)
+    if (isNaN(num) || num < 0) {
+      return
     }
+    setToValue(value)
   }
 
   const handleMaxClick = () => {
@@ -198,7 +198,7 @@ export default function Withdraw({
               placeholder="withdraw amount"
               maxEndAdornment
               onMaxClick={() => handleMaxClick()}
-              onChange={handleAmountChange}
+              onChange={(e) => handleInputChange(e.target.value)}
               error={!isUndefined(isValidToValueFlag) && !isValidToValueFlag && toValue !== '0'}
             />
           </div>
@@ -217,7 +217,7 @@ export default function Withdraw({
         <GridItem xs={12} sm={12} md={12} lg={12}>
           <div className={classes.estimateWrapper}>
             <span>{wantTokenSymbol}</span>
-            <span className={classes.estimateBalanceNum}>{toValue}</span>
+            <span className={classes.estimateBalanceNum}>{Number(toValue).toFixed(6)}</span>
           </div>
         </GridItem>
       </GridContainer>

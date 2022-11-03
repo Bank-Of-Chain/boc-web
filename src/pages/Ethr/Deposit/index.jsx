@@ -76,8 +76,12 @@ export default function Deposit({
     return true
   }
 
-  const handleInputChange = event => {
-    setValue(event.target.value)
+  const handleInputChange = value => {
+    const num = Number(value)
+    if (isNaN(num) || num < 0) {
+      return
+    }
+    setValue(value)
   }
 
   const handleMaxClick = () => {
@@ -186,7 +190,7 @@ export default function Deposit({
                 <CustomTextField
                   classes={{ root: classes.input }}
                   value={value}
-                  onChange={handleInputChange}
+                  onChange={(e) => handleInputChange(e.target.value)}
                   placeholder="deposit amount"
                   maxEndAdornment
                   onMaxClick={handleMaxClick}

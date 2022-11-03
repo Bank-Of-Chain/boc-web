@@ -164,12 +164,12 @@ export default function Withdraw({
     return true
   }
 
-  const handleAmountChange = event => {
-    try {
-      setToValue(event.target.value)
-    } catch (error) {
-      setToValue('')
+  const handleInputChange = value => {
+    const num = Number(value)
+    if (isNaN(num) || num < 0) {
+      return
     }
+    setToValue(value)
   }
 
   const handleMaxClick = () => {
@@ -197,7 +197,7 @@ export default function Withdraw({
               placeholder="withdraw amount"
               maxEndAdornment
               onMaxClick={() => handleMaxClick()}
-              onChange={handleAmountChange}
+              onChange={(e) => handleInputChange(e.target.value)}
               error={!isUndefined(isValidToValueFlag) && !isValidToValueFlag && toValue !== '0'}
             />
           </div>
