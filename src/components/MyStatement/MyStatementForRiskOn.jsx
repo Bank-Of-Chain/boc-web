@@ -174,10 +174,16 @@ const MyStatementForRiskOn = props => {
   }
 
   const lastProfit = last(profitArray.result)
+  let profit = lastProfit?.result || '0'
+  const MIN_LENGTH = isUSDi ? 17 : 15
+  // If profit is less than minimum, set 0
+  if (profit.length < MIN_LENGTH) {
+    profit = '0'
+  }
 
   const value1 = toFixed(netMarketMakingAmount, wantTokenDecimals)
   const value2 = toFixed(estimatedTotalAssets, wantTokenDecimals)
-  const value3 = toFixed(lastProfit?.result, BN_18)
+  const value3 = toFixed(profit, BN_18)
   const value4 = toFixed(currentBorrowWithCanonical, wantTokenDecimals)
   const value5 = toFixed(totalCollateralTokenAmount, wantTokenDecimals)
   const [netMarketMakingAmountText, netMarketMakingAmountSymbol] = numberSplit(value1, isUSDi ? '0,0.[00]' : '0,0.[0000]')
