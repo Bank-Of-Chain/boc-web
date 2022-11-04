@@ -23,6 +23,7 @@ import MyVaultPage from '@/components/MyVaultPage'
 // import MyVault from '@/components/MyVault'
 // import Modal from '@material-ui/core/Modal'
 // import Paper from '@material-ui/core/Paper'
+import Skeleton from '@material-ui/lab/Skeleton'
 
 // === Reducers === //
 import { setCurrentTab } from '@/reducers/invest-reducer'
@@ -116,18 +117,44 @@ function Ethr(props) {
   return (
     <div className={classes.container}>
       {myVaultVisible && (
-        <MyVaultPage
-          tokens={tokens}
-          address={address}
-          userProvider={userProvider}
-          VAULT_FACTORY_ADDRESS={VAULT_FACTORY_ADDRESS}
-          VAULT_FACTORY_ABI={VAULT_FACTORY_ABI}
-          vaultChangeHandle={(address, token) => {
-            setMyVaultVisible(false)
-            setPersonalVaultAddress(address)
-            setWantTokenForVault(token)
-          }}
-        />
+        <GridContainer spacing={0}>
+          <GridItem xs={2} sm={2} md={3} style={{ paddingLeft: '2rem' }}>
+            <List>
+              <ListItem key="My Account" button className={classNames(classes.item)}>
+                <ListItemIcon>
+                  <Skeleton variant="circle" animation={false} width={40} height={40} />
+                </ListItemIcon>
+                {!isLayoutSm && <Skeleton animation={false} width={140} />}
+              </ListItem>
+              <ListItem key="Deposit" button className={classNames(classes.item)}>
+                <ListItemIcon>
+                  <Skeleton variant="circle" animation={false} width={40} height={40} />
+                </ListItemIcon>
+                {!isLayoutSm && <Skeleton animation={false} width={140} />}
+              </ListItem>
+              <ListItem key="Withdraw" button className={classNames(classes.item)}>
+                <ListItemIcon>
+                  <Skeleton variant="circle" animation={false} width={40} height={40} />
+                </ListItemIcon>
+                {!isLayoutSm && <Skeleton animation={false} width={140} />}
+              </ListItem>
+            </List>
+          </GridItem>
+          <GridItem xs={9} sm={9} md={9} style={{ paddingRight: '2rem' }}>
+            <MyVaultPage
+              tokens={tokens}
+              address={address}
+              userProvider={userProvider}
+              VAULT_FACTORY_ADDRESS={VAULT_FACTORY_ADDRESS}
+              VAULT_FACTORY_ABI={VAULT_FACTORY_ABI}
+              vaultChangeHandle={(address, token) => {
+                setMyVaultVisible(false)
+                setPersonalVaultAddress(address)
+                setWantTokenForVault(token)
+              }}
+            />
+          </GridItem>
+        </GridContainer>
       )}
       {!myVaultVisible && (
         <GridContainer spacing={0}>
