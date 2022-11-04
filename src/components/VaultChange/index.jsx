@@ -55,14 +55,15 @@ export default function VaultChange(props) {
     <Fragment>
       {pathname !== '/' && (
         <GridContainer>
-          <GridItem xs={12} sm={12} md={12}>
+          <GridItem xs={2} sm={2} md={3} style={{ padding: '0 2rem' }}></GridItem>
+          <GridItem xs={9} sm={9} md={9} style={{ paddingRight: '2rem' }}>
             <div className={classes.wrapper}>
               <div className={classes.container}>
                 {map(
                   groupBy(VAULTS, i => {
                     return i.row
                   }),
-                  (item) => {
+                  item => {
                     return (
                       <div className={classes.row}>
                         {map(item, ii => {
