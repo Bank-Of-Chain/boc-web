@@ -63,12 +63,13 @@ export default function VaultChange(props) {
                   groupBy(VAULTS, i => {
                     return i.row
                   }),
-                  item => {
+                  (item, itemIndex) => {
                     return (
-                      <div className={classes.row}>
+                      <div className={classes.row} key={itemIndex}>
                         {map(item, ii => {
                           return (
                             <div
+                              key={ii.value}
                               onClick={() => changeRouter(ii.value)}
                               className={classNames({ [classes.item]: true, [classes.checked]: ii.value === pathname })}
                             >
