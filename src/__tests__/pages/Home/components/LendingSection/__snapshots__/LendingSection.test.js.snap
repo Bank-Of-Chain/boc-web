@@ -17,7 +17,7 @@ exports[`LendingSection Component Render 1`] = `
         class="makeStyles-chartInner-19"
       >
         <div
-          class="MuiGrid-root makeStyles-grid-21  MuiGrid-container MuiGrid-justify-content-xs-center"
+          class="MuiGrid-root makeStyles-grid-21  MuiGrid-container MuiGrid-justify-xs-center"
           style="margin: 0px auto; padding: 10rem;"
         >
           <div
