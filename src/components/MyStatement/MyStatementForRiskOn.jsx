@@ -374,9 +374,15 @@ const MyStatementForRiskOn = props => {
                 <LineEchart
                   option={getLineEchartOpt(
                     map(profitArray.result, i => {
+                      let value = i.result || '0'
+                      const MIN_LENGTH = isUSDi ? 17 : 15
+                      // If profit is less than minimum, set 0
+                      if (value.length < MIN_LENGTH) {
+                        value = '0'
+                      }
                       return {
                         date: i.validateTime,
-                        value: toFixed(i.result, BN_18, isUSDi ? 6 : 18)
+                        value: toFixed(value, BN_18, isUSDi ? 2 : 4)
                       }
                     }),
                     'value',
