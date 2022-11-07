@@ -23,33 +23,20 @@ import get from 'lodash/get'
 import map from 'lodash/map'
 import some from 'lodash/some'
 import size from 'lodash/size'
-import uniq from 'lodash/uniq'
 import first from 'lodash/first'
-import isNil from 'lodash/isNil'
 import every from 'lodash/every'
-import assign from 'lodash/assign'
 import reduce from 'lodash/reduce'
 import isEmpty from 'lodash/isEmpty'
 import debounce from 'lodash/debounce'
 import compact from 'lodash/compact'
 import find from 'lodash/find'
-import findIndex from 'lodash/findIndex'
-import isEqual from 'lodash/isEqual'
 import isNumber from 'lodash/isNumber'
-import min from 'lodash/min'
 import { toFixed } from '@/helpers/number-format'
-import { getBestSwapInfo } from 'piggy-finance-utils'
-import BN from 'bignumber.js'
-import { addToken } from '@/helpers/wallet'
 import { warmDialog } from '@/reducers/meta-reducer'
-import { getProtocolsFromBestRouter } from '@/helpers/swap-util'
 import { errorTextOutput, isLossMuch } from '@/helpers/error-handler'
 
 // === Constants === //
 import {
-  IERC20_ABI,
-  EXCHANGE_EXTRA_PARAMS,
-  ORACLE_ADDITIONAL_SLIPPAGE,
   USDT_ADDRESS,
   USDC_ADDRESS,
   DAI_ADDRESS,
@@ -61,11 +48,9 @@ import { BN_6, BN_18 } from '@/constants/big-number'
 
 // === Styles === //
 import styles from './style'
-import { current } from '@reduxjs/toolkit'
 
 const { Contract, BigNumber } = ethers
 const useStyles = makeStyles(styles)
-let sycIndex = 0
 const MAX_RETRY_TIME = 2
 
 const ApproveArrayV2 = props => {
@@ -79,14 +64,13 @@ const ApproveArrayV2 = props => {
     exchangeManager,
     EXCHANGE_AGGREGATOR_ABI,
     EXCHANGE_ADAPTER_ABI,
-    handleClose,
-    onSlippageChange
+    handleClose
   } = props
 
   const refArray = map(tokens, () => useRef(null))
   const [exchangePlatformAdapters, setExchangePlatformAdapters] = useState({})
   const [receiveToken, setReceiveToken] = useState(isEthi ? ETH_ADDRESS : USDT_ADDRESS)
-  const [slippage, setSlippage] = useState('0.3')
+  const [slippage, setSlippage] = useState('0.5')
   const [isSwapping, setIsSwapping] = useState(false)
   const [count, setCount] = useState(0)
   const [callStateArray, setCallStateArray] = useState(map(tokens, () => undefined))
@@ -190,13 +174,13 @@ const ApproveArrayV2 = props => {
   const receiveTokenAmount = find(tokens, el => el.address === receiveToken)?.amount || '0'
 
   const approveAll = async () => {
-    console.groupCollapsed('approveAll call')
+    // console.groupCollapsed('approveAll call')
     try {
       for (let i = 0; i < tokens.length; i++) {
-        console.log(`tokens[${i}] isReciveToken=`, isReciveToken(i))
+        // console.log(`tokens[${i}] isReciveToken=`, isReciveToken(i))
         if (isReciveToken(i)) continue
         const enough = refArray[i].current.isApproveEnough()
-        console.log(`refArray[${i}] isApproveEnough=`, enough)
+        // console.log(`refArray[${i}] isApproveEnough=`, enough)
         if (enough) continue
         await refArray[i].current.approve()
       }
@@ -210,7 +194,7 @@ const ApproveArrayV2 = props => {
           message
         })
       )
-      console.groupEnd('approveAll call')
+      // console.groupEnd('approveAll call')
       return
     }
     const someApproveNotEnough = some(refArray, item => {
@@ -230,7 +214,7 @@ const ApproveArrayV2 = props => {
       )
       return
     }
-    console.groupEnd('approveAll call')
+    // console.groupEnd('approveAll call')
   }
 
   // All done, swap
@@ -280,10 +264,11 @@ const ApproveArrayV2 = props => {
       )
       handleClose()
     } catch (error) {
+      console.log('batchSwap error:', error)
       const errorMsg = errorTextOutput(error)
-      let message = 'Swap Failed'
+      let message = 'Swap Failed, please retry.'
       if (isLossMuch(errorMsg)) {
-        message = 'Swap Failed, please increase the exchange slippage'
+        message = 'Swap Failed, please increase the slippage and retry.'
       } else if (error.code === 4001) {
         message = errorMsg
       }
@@ -300,28 +285,23 @@ const ApproveArrayV2 = props => {
   }, 500)
 
   const clickSwap = () => {
-    console.groupCollapsed('clickSwap call')
+    // console.groupCollapsed('clickSwap call')
     setIsSwapping(true)
     if (allDone()) {
       batchSwap()
     } else {
       approveAll()
     }
-    console.groupEnd('clickSwap call')
-  }
-
-  const changeSlippage = value => {
-    onSlippageChange(value)
+    // console.groupEnd('clickSwap call')
   }
 
   // when child state change, reRender component
   const onChildStateChange = useCallback(() => {
-    // setCount(count + 1)
     setCount(Math.random())
   }, [])
 
   const onStaticCallFinish = useCallback(
-    (index, bool) => {
+    (index, bool, error) => {
       console.groupCollapsed(`onStaticCallFinish call ${index} ${bool}`)
       const nextArray = map(callStateArray, (item, i) => {
         if (isReciveToken(i) || refArray[i].current.isEmptyValue()) {
@@ -349,11 +329,18 @@ const ApproveArrayV2 = props => {
       if (someError) {
         console.log('someError', someError)
         setIsSwapping(false)
+        let message = 'Swap Failed, please retry.'
+        if (error) {
+          const errorMsg = errorTextOutput(error)
+          if (isLossMuch(errorMsg)) {
+            message = 'Swap Failed, please increase the slippage and retry.'
+          }
+        }
         dispatch(
           warmDialog({
             open: true,
             type: 'error',
-            message: 'Swap Failed'
+            message
           })
         )
         console.groupEnd(`onStaticCallFinish call ${index} ${bool}`)
@@ -374,12 +361,12 @@ const ApproveArrayV2 = props => {
 
   useEffect(() => {
     async function getAdapters() {
-      console.groupCollapsed(`getAdapters useEffect call:${++sycIndex}`)
+      // console.groupCollapsed(`getAdapters useEffect call:${++sycIndex}`)
       const exchangeManagerContract = new Contract(exchangeManager, EXCHANGE_AGGREGATOR_ABI, userProvider)
       const exchangeAdapters = await getExchangePlatformAdapters(exchangeManagerContract, userProvider)
-      console.log('exchangeAdapters', exchangeAdapters)
+      // console.log('exchangeAdapters', exchangeAdapters)
       setExchangePlatformAdapters(exchangeAdapters)
-      console.groupEnd(`getAdapters useEffect call:${sycIndex}`)
+      // console.groupEnd(`getAdapters useEffect call:${sycIndex}`)
     }
     getAdapters()
   }, [exchangeManager])
@@ -410,8 +397,8 @@ const ApproveArrayV2 = props => {
               EXCHANGE_AGGREGATOR_ABI={EXCHANGE_AGGREGATOR_ABI}
               disabled={isSwapping}
               onChange={onChildStateChange}
-              onStaticCallFinish={bool => {
-                onStaticCallFinish(index, bool)
+              onStaticCallFinish={(bool, error) => {
+                onStaticCallFinish(index, bool, error)
               }}
             />
           )
