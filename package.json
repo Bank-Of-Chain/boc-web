@@ -87,6 +87,7 @@
     "apollo:qa02-sg": "node configs/apollo.js --env=qa02-sg",
     "apollo:qa03-sg": "node configs/apollo.js --env=qa03-sg",
     "apollo:qa04-sg": "node configs/apollo.js --env=qa04-sg",
+    "apollo:qa05-sg": "node configs/apollo.js --env=qa05-sg",
     "apollo:stage-sg": "node configs/apollo.js --env=stage-sg",
     "apollo:pr-sg": "node configs/apollo.js --env=pr-sg --chain=configBase",
     "apollo:pr02-sg": "node configs/apollo.js --env=pr02-sg --chain=configBase",

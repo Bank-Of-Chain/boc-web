@@ -11,30 +11,16 @@ import RefreshIcon from '@material-ui/icons/Refresh'
 
 // === Utils === //
 import * as ethers from 'ethers'
-import get from 'lodash/get'
-import map from 'lodash/map'
-import some from 'lodash/some'
-import size from 'lodash/size'
 import uniq from 'lodash/uniq'
-import first from 'lodash/first'
 import isNil from 'lodash/isNil'
-import every from 'lodash/every'
 import assign from 'lodash/assign'
-import reduce from 'lodash/reduce'
 import isEmpty from 'lodash/isEmpty'
 import debounce from 'lodash/debounce'
-import compact from 'lodash/compact'
-import findIndex from 'lodash/findIndex'
-import isEqual from 'lodash/isEqual'
-import isNumber from 'lodash/isNumber'
-import min from 'lodash/min'
 import { addToken } from '@/helpers/wallet'
 import { toFixed } from '@/helpers/number-format'
 import { getBestSwapInfo } from 'piggy-finance-utils'
 import BN from 'bignumber.js'
-import { warmDialog } from '@/reducers/meta-reducer'
 import { getProtocolsFromBestRouter } from '@/helpers/swap-util'
-import { errorTextOutput, isLossMuch } from '@/helpers/error-handler'
 
 // === Constants === //
 import {
@@ -76,7 +62,7 @@ const TokenItem = (props, ref) => {
     onChange,
     onStaticCallFinish
   } = props
-  const { address, amount } = token
+  const { address } = token
 
   const [isReload, setIsReload] = useState(false)
   const [value, setValue] = useState('')
@@ -95,27 +81,27 @@ const TokenItem = (props, ref) => {
   const isFetching = !isReciveToken && (isSwapInfoFetching || isStaticCalling)
   const isOverMaxRetry = retryTimes > MAX_RETRY_TIME
 
-  console.groupCollapsed(`init state:${address}:${sycIndex++}`)
-  console.log('isReload=', isReload)
-  console.log('value=', value)
-  console.log('balance=', balance.toString())
-  console.log('decimals=', decimals.toString())
-  console.log('allowances=', allowances.toString())
-  console.log('exclude=', exclude)
-  console.log('swapInfo=', swapInfo)
-  console.log('isSwapInfoFetching=', isSwapInfoFetching)
-  console.log('isStaticCalling=', isStaticCalling)
-  console.log('done=', done)
-  console.log('retryTimes=', retryTimes)
-  console.log('isApproving=', isApproving)
-  console.log('isReciveToken=', isReciveToken)
-  console.log('userAddress=', userAddress)
-  console.log('slippage=', slippage)
-  console.log('token=', token)
-  console.log('exchangePlatformAdapters=', exchangePlatformAdapters)
-  console.log('exchangeManager=', exchangeManager)
-  console.log('receiveTokenDecimals=', receiveTokenDecimals.toString())
-  console.groupEnd(`init state:${address}:${sycIndex++}`)
+  // console.groupCollapsed(`init state:${address}:${sycIndex++}`)
+  // console.log('isReload=', isReload)
+  // console.log('value=', value)
+  // console.log('balance=', balance.toString())
+  // console.log('decimals=', decimals.toString())
+  // console.log('allowances=', allowances.toString())
+  // console.log('exclude=', exclude)
+  // console.log('swapInfo=', swapInfo)
+  // console.log('isSwapInfoFetching=', isSwapInfoFetching)
+  // console.log('isStaticCalling=', isStaticCalling)
+  // console.log('done=', done)
+  // console.log('retryTimes=', retryTimes)
+  // console.log('isApproving=', isApproving)
+  // console.log('isReciveToken=', isReciveToken)
+  // console.log('userAddress=', userAddress)
+  // console.log('slippage=', slippage)
+  // console.log('token=', token)
+  // console.log('exchangePlatformAdapters=', exchangePlatformAdapters)
+  // console.log('exchangeManager=', exchangeManager)
+  // console.log('receiveTokenDecimals=', receiveTokenDecimals.toString())
+  // console.groupEnd(`init state:${address}:${sycIndex++}`)
 
   const resetState = useCallback(() => {
     setIsReload(false)
@@ -180,10 +166,13 @@ const TokenItem = (props, ref) => {
           }
           setExclude(nextExclude)
           setSwapInfo(undefined)
+          console.log(`Retry ${retryTimes + 1} times`)
           setRetryTimes(retryTimes + 1)
           setDone(false)
           setIsSwapInfoFetching(retryTimes + 1 <= MAX_RETRY_TIME)
-          onStaticCallFinish(false)
+          if (retryTimes + 1 > MAX_RETRY_TIME) {
+            onStaticCallFinish(false, error)
+          }
         })
         .finally(() => {
           setIsStaticCalling(false)
@@ -196,7 +185,7 @@ const TokenItem = (props, ref) => {
   const approve = async () => {
     // ETH no need approve
     if (isEmpty(token) || isNil(value) || value === '0') return
-    console.groupCollapsed(`approve call:${address}:${++sycIndex}`)
+    // console.groupCollapsed(`approve call:${address}:${++sycIndex}`)
     const signer = userProvider.getSigner()
     const contract = new Contract(address, IERC20_ABI, userProvider)
     const contractWithUser = contract.connect(signer)
@@ -250,7 +239,7 @@ const TokenItem = (props, ref) => {
           })
       }
     }
-    console.groupEnd(`approve call:${address}:${sycIndex}`)
+    // console.groupEnd(`approve call:${address}:${sycIndex}`)
   }
 
   // item fetch swap path failed
@@ -298,7 +287,7 @@ const TokenItem = (props, ref) => {
 
   const reload = useCallback(async () => {
     const { address } = token
-    console.groupCollapsed(`reload call:${address}:${++sycIndex}`)
+    // console.groupCollapsed(`reload call:${address}:${++sycIndex}`)
     setIsReload(true)
 
     const contract = new Contract(address, IERC20_ABI, userProvider)
@@ -310,26 +299,26 @@ const TokenItem = (props, ref) => {
     setDecimals(nextDecimals)
     setAllowances(nextAllowance)
     setIsReload(false)
-    console.groupEnd(`reload call:${address}:${sycIndex}`)
+    // console.groupEnd(`reload call:${address}:${sycIndex}`)
   }, [token, userAddress, exchangeManager])
 
   const reloadSwap = () => {
-    console.groupCollapsed(`reloadSwap call:${address}:${++sycIndex}`)
+    // console.groupCollapsed(`reloadSwap call:${address}:${++sycIndex}`)
     setSwapInfo(undefined)
     setIsSwapInfoFetching(true)
     setRetryTimes(0)
     onStaticCallFinish(undefined)
-    console.groupEnd(`reloadSwap call:${address}:${sycIndex}`)
+    // console.groupEnd(`reloadSwap call:${address}:${sycIndex}`)
   }
 
   const queryBestSwapInfo = useCallback(async () => {
     if (isNil(decimals) || isEmptyValue() || value === '0' || isReciveToken) {
       return
     }
-    console.groupCollapsed(`queryBestSwapInfo call:${address}:${++sycIndex}`)
-    console.log('exclude=', exclude)
-    console.log('value=', value)
-    console.log('swapInfo=', swapInfo)
+    // console.groupCollapsed(`queryBestSwapInfo call:${address}:${++sycIndex}`)
+    // console.log('exclude=', exclude)
+    // console.log('value=', value)
+    // console.log('swapInfo=', swapInfo)
     const nextFromValueString = new BN(value).multipliedBy(decimals.toString()).toFixed()
     if (nextFromValueString.indexOf('.') !== -1) return
     const swapAmount = BigNumber.from(nextFromValueString)
@@ -391,7 +380,7 @@ const TokenItem = (props, ref) => {
     if (isEmpty(bestSwapInfo)) {
       throw new Error('fetch error')
     }
-    console.groupEnd(`queryBestSwapInfo call:${sycIndex}`)
+    // console.groupEnd(`queryBestSwapInfo call:${sycIndex}`)
     return {
       bestSwapInfo,
       info: {
@@ -409,21 +398,21 @@ const TokenItem = (props, ref) => {
         onChange()
         return
       }
-      console.groupCollapsed(`estimateWithValue call:${address}:${++sycIndex}`)
+      // console.groupCollapsed(`estimateWithValue call:${address}:${++sycIndex}`)
       setIsSwapInfoFetching(true)
       onChange()
       await queryBestSwapInfo()
         .then(nextSwapInfo => {
-          console.log('estimateWithValue call success')
-          console.groupEnd(`estimateWithValue call:${address}:${sycIndex}`)
+          // console.log('estimateWithValue call success')
+          // console.groupEnd(`estimateWithValue call:${address}:${sycIndex}`)
           setSwapInfo(nextSwapInfo)
           if (!isApproveEnough()) {
             setIsSwapInfoFetching(false)
           }
         })
         .catch(() => {
-          console.log('estimateWithValue call error')
-          console.groupEnd(`estimateWithValue call:${address}:${sycIndex}`)
+          // console.log('estimateWithValue call error')
+          // console.groupEnd(`estimateWithValue call:${address}:${sycIndex}`)
           if (isOverMaxRetry) {
             setIsSwapInfoFetching(false)
           } else {
@@ -458,12 +447,12 @@ const TokenItem = (props, ref) => {
     !isFetching && !isReciveToken && ((isApproveEnough() && done) || (!isApproveEnough() && !isEmpty(swapInfo))) && !isOverMaxRetry
 
   useEffect(() => {
-    console.groupCollapsed(`estimateWithValue useEffect call:${address}:${++sycIndex}`)
     const isValidSlippageValue = isValidSlippage()
-    console.log('isReload=', isReload)
-    console.log('swapInfo=', swapInfo)
-    console.log('isValidSlippage()=', isValidSlippageValue)
-    console.log('isGetSwapInfoSuccess=', isGetSwapInfoSuccess)
+    // console.groupCollapsed(`estimateWithValue useEffect call:${address}:${++sycIndex}`)
+    // console.log('isReload=', isReload)
+    // console.log('swapInfo=', swapInfo)
+    // console.log('isValidSlippage()=', isValidSlippageValue)
+    // console.log('isGetSwapInfoSuccess=', isGetSwapInfoSuccess)
     if (
       isReciveToken ||
       isReload ||
@@ -474,25 +463,25 @@ const TokenItem = (props, ref) => {
       isErrorValue() ||
       isEmptyValue()
     ) {
-      console.log('estimateWithValue useEffect return')
-      console.groupEnd(`estimateWithValue useEffect call:${address}:${sycIndex}`)
+      // console.log('estimateWithValue useEffect return')
+      // console.groupEnd(`estimateWithValue useEffect call:${address}:${sycIndex}`)
       return
     }
-    console.groupEnd(`estimateWithValue useEffect call:${address}:${sycIndex}`)
+    // console.groupEnd(`estimateWithValue useEffect call:${address}:${sycIndex}`)
     estimateWithValue()
     return () => estimateWithValue.cancel()
   }, [isReload, value, swapInfo, estimateWithValue, retryTimes, isSwapInfoFetching])
 
   useEffect(() => {
-    console.groupCollapsed(`staticCall useEffect call:${address}:${++sycIndex}`)
     const isApproveEnoughValue = isApproveEnough()
-    console.log('done=', done)
-    console.log('retryTimes=', retryTimes)
-    console.log('isApproveEnoughValue=', isApproveEnoughValue)
-    console.log('swapInfo=', swapInfo)
-    console.log('isStaticCalling=', isStaticCalling)
-    console.log('isOverMaxRetry=', isOverMaxRetry)
-    console.log('isReciveToken=', isReciveToken)
+    // console.groupCollapsed(`staticCall useEffect call:${address}:${++sycIndex}`)
+    // console.log('done=', done)
+    // console.log('retryTimes=', retryTimes)
+    // console.log('isApproveEnoughValue=', isApproveEnoughValue)
+    // console.log('swapInfo=', swapInfo)
+    // console.log('isStaticCalling=', isStaticCalling)
+    // console.log('isOverMaxRetry=', isOverMaxRetry)
+    // console.log('isReciveToken=', isReciveToken)
     if (
       isReciveToken ||
       done ||
@@ -503,11 +492,11 @@ const TokenItem = (props, ref) => {
       isErrorValue() ||
       isEmptyValue()
     ) {
-      console.log('staticCall useEffect return')
-      console.groupEnd(`staticCall useEffect call:${address}:${sycIndex}`)
+      // console.log('staticCall useEffect return')
+      // console.groupEnd(`staticCall useEffect call:${address}:${sycIndex}`)
       return
     }
-    console.groupEnd(`staticCall useEffect call:${address}:${sycIndex}`)
+    // console.groupEnd(`staticCall useEffect call:${address}:${sycIndex}`)
     staticCall()
   }, [done, value, retryTimes, swapInfo, staticCall, isStaticCalling, isApproveEnough])
 
