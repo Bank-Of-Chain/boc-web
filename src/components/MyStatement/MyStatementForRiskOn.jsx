@@ -55,11 +55,6 @@ const MyStatementForRiskOn = props => {
   const classes = useStyles()
 
   // api datas fetching
-  const aaveOutstandingLoan = useAsync(
-    () => getDataByType(CHAIN_ID, personalVaultAddress, 'aave-outstanding-loan').catch(() => []),
-    [personalVaultAddress]
-  )
-  const aaveCollateral = useAsync(() => getDataByType(CHAIN_ID, personalVaultAddress, 'aave-collateral').catch(() => []), [personalVaultAddress])
   const aaveHealthRatio = useAsync(() => getDataByType(CHAIN_ID, personalVaultAddress, 'aave-health-ratio').catch(() => []), [personalVaultAddress])
   const uniswapPositionValueArray = useAsync(
     () => getDataByType(CHAIN_ID, personalVaultAddress, 'uniswap-position-value').catch(() => []),
@@ -330,15 +325,15 @@ const MyStatementForRiskOn = props => {
         <GridContainer className={classes.lineChart}>
           <GridItem xs={12} sm={12} md={12} lg={12}>
             <Card
-              loading={aaveOutstandingLoan.loading || aaveCollateral.loading || aaveHealthRatio.loading}
+              loading={aaveHealthRatio.loading}
               title={<span>AAVE Debt Ratio (%)</span>}
               loadingOption={{
                 width: '100%',
                 height: '2rem'
               }}
             >
-              {aaveOutstandingLoan.error || aaveCollateral.error || aaveHealthRatio.error ? (
-                <div>Error: {aaveOutstandingLoan?.error?.message}</div>
+              {aaveHealthRatio.error ? (
+                <div>Error: {aaveHealthRatio?.error?.message}</div>
               ) : (
                 <LineEchart option={aaveOption} style={{ minHeight: '30rem' }} />
               )}

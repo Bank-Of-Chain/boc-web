@@ -156,7 +156,10 @@ export const getDataByType = (chainId, vaultAddress, type, params) => {
 
   return axios
     .get(`${BOC_SERVER}/chains/${chainId}/vaults/${vaultAddress}/data_collects/types/${type}`, {
-      params
+      params: {
+        sort: 'validate_time asc',
+        ...params
+      }
     })
     .then(resp => get(resp, 'data.content', []))
 }
