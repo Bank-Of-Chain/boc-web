@@ -106,11 +106,13 @@ export default function HeaderLinks(props) {
 
   const dashboardUrlRender = () => {
     let nextChainId = CHAIN_ID || '1'
-    let nextVault = pathname === '/ethi' ? 'ethi' : 'usdi'
+    let nextVault = pathname?.replace('/', '')
 
     // If it's in ETHi, jump to eth chain
-    if (nextVault === 'ethi') {
+    if (nextVault === 'ethi' || nextVault === 'usdi') {
       nextChainId = '1'
+    } else if (nextVault === 'usdr' || nextVault === 'ethr') {
+      nextChainId = '137'
     }
     return `${isMarketingHost() ? 'https://dashboard.bankofchain.io' : DASHBOARD_URL}/#/?chain=${nextChainId}&vault=${nextVault}`
   }
@@ -145,13 +147,7 @@ export default function HeaderLinks(props) {
                 color: 'transparent'
               }}
               dropdownList={[
-                <a
-                  key="polygon-bridge"
-                  target="_blank"
-                  href="https://www.bungee.exchange"
-                  className={classes.dropdownLink}
-                  rel="noopener noreferrer"
-                >
+                <a key="polygon-bridge" target="_blank" href="https://www.bungee.exchange" className={classes.dropdownLink} rel="noopener noreferrer">
                   Polygon Bridge
                 </a>
               ]}
