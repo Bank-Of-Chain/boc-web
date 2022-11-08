@@ -8,6 +8,9 @@ export const ETHI_V1_6_0 = 'ethi-v1.6.0'
 export const USDR = 'usdr'
 export const ETHR = 'ethr'
 
+export const USDRV2 = 'usdrv2'
+export const ETHRV2 = 'ethrv2'
+
 export const COMMON = 'common'
 
 // abi rely on
@@ -19,5 +22,7 @@ export const ABI_SEQUENCE = {
   [USDI_V1_6_0]: [COMMON, BETA_V1_5_9, USDI_V1_6_0],
   [ETHI_V1_6_0]: [COMMON, ETHI, ETHI_V1_6_0],
   [ETHR]: [COMMON, ETHR],
-  [USDR]: [COMMON, USDR]
+  [USDR]: [COMMON, USDR],
+  [USDRV2]: [COMMON, USDRV2],
+  [ETHRV2]: [COMMON, ETHRV2]
 }

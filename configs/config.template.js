@@ -144,6 +144,21 @@ const config1 = {
       VAULT_ADDRESS: ETHI_VAULT,
       ETHI_ADDRESS: ETHI_FOR_ETH,
       VAULT_BUFFER_ADDRESS: VAULT_BUFFER_FOR_ETHI_ETH
+    },
+    {
+      id: 'ethrv2',
+      name: 'Vault for ethr',
+      path: '#/ethrv2',
+      abi_version: 'ethrv2',
+      VAULT_FACTORY_ADDRESS: VAULT_FACTORY_ADDRESS
+    },
+    {
+      id: 'usdrv2',
+      name: 'Vault for usdr',
+      description: 'Vault for usdr',
+      path: '#/usdrv2',
+      abi_version: 'usdrv2',
+      VAULT_FACTORY_ADDRESS: VAULT_FACTORY_ADDRESS
     }
   ]
 }
