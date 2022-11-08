@@ -2,6 +2,7 @@ import BN from 'bignumber.js'
 import isEmpty from 'lodash/isEmpty'
 import padEnd from 'lodash/padEnd'
 import { isNil, isNull } from 'lodash'
+import numeral from 'numeral'
 
 export const toFixed = (value, precision = 1, ...args) => {
   if (isNil(value)) return undefined
@@ -39,4 +40,15 @@ export const formatBalance = (balance, decimals, options = {}) => {
   const isLessThenDisplay = decimals > 6 && !value.eq(0) && value.lt(BN(10).pow(decimals - displayDecimals + 1))
   const displayBalance = toFixed(value, decimalsValue, displayDecimals, MATH_FLOOR_SIGN)
   return isLessThenDisplay ? `${displayBalance}...` : displayBalance
+}
+
+/**
+ *
+ * @param {*} value
+ * @param {*} format
+ * @returns
+ */
+ export const numberSplit = (value, format = '0.00') => {
+  const totalSupplyTextWithSymbol = numeral(value).format(`${format} a`)
+  return totalSupplyTextWithSymbol.split(' ')
 }

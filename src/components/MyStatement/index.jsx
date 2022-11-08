@@ -26,7 +26,7 @@ import map from 'lodash/map'
 import reverse from 'lodash/reverse'
 import isEmpty from 'lodash/isEmpty'
 import findIndex from 'lodash/findIndex'
-import { toFixed } from '@/helpers/number-format'
+import { toFixed, numberSplit } from '@/helpers/number-format'
 
 // === Constants === //
 import { SEGMENT_TYPES, DAY, WEEK, MONTH } from '@/constants/date'
@@ -200,6 +200,12 @@ const MyStatement = props => {
   }, [data, address])
 
   const { day7Apy, day30Apy, profit, latestProfit = { profit: '0', tokenType: '' } } = dataSource
+
+  const [profitsText, profitsSymbol] = numberSplit(
+    toFixed(profit, ETHI_BN_DECIMALS, isUSDi ? TOKEN_DISPLAY_DECIMALS : ETHI_DISPLAY_DECIMALS),
+    isUSDi ? '0,0.[00]' : '0,0.[0000]'
+  )
+
   const cardProps = [
     {
       title: 'Profits',
@@ -214,9 +220,7 @@ const MyStatement = props => {
           <InfoIcon style={{ fontSize: '1.375rem', color: 'rgba(255,255,255,0.45)' }} />
         </Tooltip>
       ),
-      content: numeral(toFixed(profit, ETHI_BN_DECIMALS, isUSDi ? TOKEN_DISPLAY_DECIMALS : ETHI_DISPLAY_DECIMALS)).format(
-        isUSDi ? '0,0.[00]' : '0,0.[0000]'
-      ),
+      content: profitsText,
       footer: (
         <span>
           {`+${numeral(latestProfit?.profit).format(isUSDi ? '0,0.[00]' : '0,0.[000000]')} ${latestProfit?.tokenType}`}&nbsp;&nbsp;
@@ -231,7 +235,7 @@ const MyStatement = props => {
           </Tooltip>
         </span>
       ),
-      unit: latestProfit?.tokenType
+      unit: [profitsSymbol, latestProfit?.tokenType].join(' ')
     },
     {
       title: 'APY (last 7 days)',
@@ -248,7 +252,7 @@ const MyStatement = props => {
       ),
       content: numeral(day7Apy?.apy).format('0,0.00'),
       isAPY: true,
-      unit: '%'
+      unit: ['', '%'].join(' ')
     },
     {
       title: 'APY (last 30 days)',
@@ -265,7 +269,7 @@ const MyStatement = props => {
       ),
       content: numeral(day30Apy?.apy).format('0,0.00'),
       isAPY: true,
-      unit: '%'
+      unit: ['', '%'].join(' ')
     }
   ]
 

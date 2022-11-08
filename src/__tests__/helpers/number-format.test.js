@@ -1,4 +1,4 @@
-import { toFixed, formatBalance } from '@/helpers/number-format'
+import { toFixed, formatBalance, numberSplit } from '@/helpers/number-format'
 
 test('number-format toFixed', () => {
   const text = toFixed('10000', '100')
@@ -48,4 +48,16 @@ test('number-format formatBalance with value null', () => {
 test('number-format formatBalance with decimals undefined', () => {
   const text = formatBalance('10000', undefined)
   expect(text).toBe('10000')
+})
+
+test('number-format numberSplit', () => {
+  const [text, symbol] = numberSplit(815436538078)
+  expect(text).toBe('815.44')
+  expect(symbol).toBe('b')
+})
+
+test('number-format numberSplit with format', () => {
+  const [text, symbol] = numberSplit(815436538078, '0.000000')
+  expect(text).toBe('815.436538')
+  expect(symbol).toBe('b')
 })

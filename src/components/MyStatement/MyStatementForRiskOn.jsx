@@ -19,16 +19,14 @@ import useVaultOnRisk from '@/hooks/useVaultOnRisk'
 import { useAsync } from 'react-async-hook'
 
 // === Utils === //
-import numeral from 'numeral'
 import map from 'lodash/map'
 import last from 'lodash/last'
 import size from 'lodash/size'
-import { toFixed } from '@/helpers/number-format'
+import { toFixed, numberSplit } from '@/helpers/number-format'
 import * as ethers from 'ethers'
 
 // === Constants === //
-import { ETHI_DISPLAY_DECIMALS } from '@/constants/ethi'
-import { VAULT_TYPE, TOKEN_DISPLAY_DECIMALS } from '@/constants/vault'
+import { VAULT_TYPE } from '@/constants/vault'
 import { CHAIN_ID } from '@/constants'
 import { BN_18 } from '@/constants/big-number'
 
@@ -57,11 +55,6 @@ const MyStatementForRiskOn = props => {
   const classes = useStyles()
 
   // api datas fetching
-  const aaveOutstandingLoan = useAsync(
-    () => getDataByType(CHAIN_ID, personalVaultAddress, 'aave-outstanding-loan').catch(() => []),
-    [personalVaultAddress]
-  )
-  const aaveCollateral = useAsync(() => getDataByType(CHAIN_ID, personalVaultAddress, 'aave-collateral').catch(() => []), [personalVaultAddress])
   const aaveHealthRatio = useAsync(() => getDataByType(CHAIN_ID, personalVaultAddress, 'aave-health-ratio').catch(() => []), [personalVaultAddress])
   const uniswapPositionValueArray = useAsync(
     () => getDataByType(CHAIN_ID, personalVaultAddress, 'uniswap-position-value').catch(() => []),
@@ -176,6 +169,26 @@ const MyStatementForRiskOn = props => {
   }
 
   const lastProfit = last(profitArray.result)
+  let profit = lastProfit?.result || '0'
+  const MIN_LENGTH = isUSDi ? 17 : 15
+  // If profit is less than minimum, set 0
+  if (profit.length < MIN_LENGTH) {
+    profit = '0'
+  }
+
+  const value1 = toFixed(netMarketMakingAmount, wantTokenDecimals)
+  const value2 = toFixed(estimatedTotalAssets, wantTokenDecimals)
+  const value3 = toFixed(profit, BN_18)
+  const value4 = toFixed(currentBorrowWithCanonical, wantTokenDecimals)
+  const value5 = toFixed(totalCollateralTokenAmount, wantTokenDecimals)
+  const [netMarketMakingAmountText, netMarketMakingAmountSymbol] = numberSplit(value1, isUSDi ? '0,0.[00]' : '0,0.[0000]')
+  const [estimatedTotalAssetsText, estimatedTotalAssetsSymbol] = numberSplit(value2, isUSDi ? '0,0.[00]' : '0,0.[0000]')
+  const [profitsText, profitsSymbol] = numberSplit(value3, isUSDi ? '0,0.[00]' : '0,0.[0000]')
+
+  const [currentBorrowWithCanonicalText, currentBorrowWithCanonicalSymbol] = numberSplit(value4, isUSDi ? '0,0.[00]' : '0,0.[0000]')
+
+  const [totalCollateralTokenAmountText, totalCollateralTokenAmountSymbol] = numberSplit(value5, isUSDi ? '0,0.[00]' : '0,0.[0000]')
+
   const cardProps = [
     {
       title: 'Net Deposit',
@@ -191,14 +204,8 @@ const MyStatementForRiskOn = props => {
           <InfoIcon style={{ fontSize: '1.375rem', color: 'rgba(255,255,255,0.45)' }} />
         </Tooltip>
       ),
-      content: (
-        <span title={toFixed(netMarketMakingAmount, wantTokenDecimals)}>
-          {numeral(toFixed(netMarketMakingAmount, wantTokenDecimals, isUSDi ? TOKEN_DISPLAY_DECIMALS : ETHI_DISPLAY_DECIMALS)).format(
-            isUSDi ? '0,0.[00]a' : '0,0.[0000]a'
-          )}
-        </span>
-      ),
-      unit: wantTokenSymbol
+      content: <span title={value1}>{netMarketMakingAmountText}</span>,
+      unit: [netMarketMakingAmountSymbol, wantTokenSymbol].join(' ')
     },
     {
       title: 'Current Value',
@@ -213,15 +220,9 @@ const MyStatementForRiskOn = props => {
           <InfoIcon style={{ fontSize: '1.375rem', color: 'rgba(255,255,255,0.45)' }} />
         </Tooltip>
       ),
-      content: (
-        <span title={toFixed(estimatedTotalAssets, wantTokenDecimals)}>
-          {numeral(toFixed(estimatedTotalAssets, wantTokenDecimals, isUSDi ? TOKEN_DISPLAY_DECIMALS : ETHI_DISPLAY_DECIMALS)).format(
-            isUSDi ? '0,0.[00]a' : '0,0.[0000]a'
-          )}
-        </span>
-      ),
+      content: <span title={value2}>{estimatedTotalAssetsText}</span>,
       isAPY: true,
-      unit: wantTokenSymbol
+      unit: [estimatedTotalAssetsSymbol, wantTokenSymbol].join(' ')
     },
     {
       title: 'Profits',
@@ -236,15 +237,9 @@ const MyStatementForRiskOn = props => {
           <InfoIcon style={{ fontSize: '1.375rem', color: 'rgba(255,255,255,0.45)' }} />
         </Tooltip>
       ),
-      content: (
-        <span title={toFixed(lastProfit?.result, BN_18)}>
-          {numeral(toFixed(lastProfit?.result, BN_18, isUSDi ? TOKEN_DISPLAY_DECIMALS : ETHI_DISPLAY_DECIMALS)).format(
-            isUSDi ? '0,0.[00]a' : '0,0.[0000]a'
-          )}
-        </span>
-      ),
+      content: <span title={value3}>{profitsText}</span>,
       isAPY: true,
-      unit: wantTokenSymbol
+      unit: [profitsSymbol, wantTokenSymbol].join(' ')
     }
   ]
 
@@ -263,14 +258,8 @@ const MyStatementForRiskOn = props => {
           <InfoIcon style={{ fontSize: '1.375rem', color: 'rgba(255,255,255,0.45)' }} />
         </Tooltip>
       ),
-      content: (
-        <span title={toFixed(currentBorrowWithCanonical, wantTokenDecimals)}>
-          {numeral(toFixed(currentBorrowWithCanonical, wantTokenDecimals, isUSDi ? TOKEN_DISPLAY_DECIMALS : ETHI_DISPLAY_DECIMALS)).format(
-            isUSDi ? '0,0.[00]a' : '0,0.[0000]a'
-          )}
-        </span>
-      ),
-      unit: wantTokenSymbol
+      content: <span title={value4}>{currentBorrowWithCanonicalText}</span>,
+      unit: [currentBorrowWithCanonicalSymbol, wantTokenSymbol].join(' ')
     },
     {
       title: 'AAVE Collateral',
@@ -285,15 +274,9 @@ const MyStatementForRiskOn = props => {
           <InfoIcon style={{ fontSize: '1.375rem', color: 'rgba(255,255,255,0.45)' }} />
         </Tooltip>
       ),
-      content: (
-        <span title={toFixed(totalCollateralTokenAmount, wantTokenDecimals)}>
-          {numeral(toFixed(totalCollateralTokenAmount, wantTokenDecimals, isUSDi ? TOKEN_DISPLAY_DECIMALS : ETHI_DISPLAY_DECIMALS)).format(
-            isUSDi ? '0,0.[00]a' : '0,0.[0000]a'
-          )}
-        </span>
-      ),
+      content: <span title={value5}>{totalCollateralTokenAmountText}</span>,
       isAPY: true,
-      unit: wantTokenSymbol
+      unit: [totalCollateralTokenAmountSymbol, wantTokenSymbol].join(' ')
     }
   ]
 
@@ -342,19 +325,15 @@ const MyStatementForRiskOn = props => {
         <GridContainer className={classes.lineChart}>
           <GridItem xs={12} sm={12} md={12} lg={12}>
             <Card
-              loading={aaveOutstandingLoan.loading || aaveCollateral.loading || aaveHealthRatio.loading}
-              title={
-                <span>
-                  AAVE Debt Ratio (%)
-                </span>
-              }
+              loading={aaveHealthRatio.loading}
+              title={<span>AAVE Debt Ratio (%)</span>}
               loadingOption={{
                 width: '100%',
                 height: '2rem'
               }}
             >
-              {aaveOutstandingLoan.error || aaveCollateral.error || aaveHealthRatio.error ? (
-                <div>Error: {aaveOutstandingLoan?.error?.message}</div>
+              {aaveHealthRatio.error ? (
+                <div>Error: {aaveHealthRatio?.error?.message}</div>
               ) : (
                 <LineEchart option={aaveOption} style={{ minHeight: '30rem' }} />
               )}
@@ -395,9 +374,15 @@ const MyStatementForRiskOn = props => {
                 <LineEchart
                   option={getLineEchartOpt(
                     map(profitArray.result, i => {
+                      let value = i.result || '0'
+                      const MIN_LENGTH = isUSDi ? 17 : 15
+                      // If profit is less than minimum, set 0
+                      if (value.length < MIN_LENGTH) {
+                        value = '0'
+                      }
                       return {
                         date: i.validateTime,
-                        value: toFixed(i.result, BN_18, isUSDi ? 6 : 18)
+                        value: toFixed(value, BN_18, isUSDi ? 2 : 4)
                       }
                     }),
                     'value',
