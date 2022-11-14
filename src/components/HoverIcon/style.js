@@ -6,8 +6,11 @@ const style = {
     display: 'none'
   },
   logo: {
-    '&:hover&normal': {
+    '&:hover .normal': {
       display: 'none'
+    },
+    '&::hover .active': {
+      display: 'inline'
     }
   }
 }

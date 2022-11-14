@@ -12,7 +12,7 @@ const buttonStyle = {
     position: 'relative',
     padding: '12px 30px',
     fontWeight: '400',
-    textTransform: 'uppercase',
+    textTransform: 'none',
     letterSpacing: '0',
     willChange: 'box-shadow, transform',
     transition: 'box-shadow 0.2s cubic-bezier(0.4, 0, 1, 1), background-color 0.2s cubic-bezier(0.4, 0, 0.2, 1)',

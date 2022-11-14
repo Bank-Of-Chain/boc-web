@@ -28,9 +28,6 @@ const style = {
   buttonRow: {
     marginTop: '6.25rem',
     textAlign: 'center'
-  },
-  button: {
-    textTransform: 'none'
   }
 }
 

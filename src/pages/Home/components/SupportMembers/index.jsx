@@ -408,7 +408,7 @@ const SupportMembers = () => {
       </div>
       <div className={classes.membersCenter}>{UCL_SVG}</div>
       <div className={classes.buttonRow}>
-        <Button className={classes.button} color="white-border" size="lg" href="/#/">
+        <Button color="white-border" size="lg" href="/#/">
           Our Team
         </Button>
       </div>
