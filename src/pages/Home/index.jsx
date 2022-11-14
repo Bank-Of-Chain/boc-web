@@ -9,6 +9,7 @@ import AmmSection from './components/AmmSection'
 import YieldSection from './components/YieldSection'
 import LendingSection from './components/LendingSection'
 import RoadMapSectionV2 from './components/RoadMapSectionV2'
+import SupportMembers from './components/SupportMembers'
 import GridContainer from '@/components/Grid/GridContainer'
 import GridItem from '@/components/Grid/GridItem'
 import Button from '@/components/CustomButtons/Button'
@@ -47,6 +48,7 @@ export default function Home() {
       <LendingSection />
       <YieldSection />
       <AmmSection />
+      <SupportMembers />
       <RoadMapSectionV2 />
       <AuditedSection />
     </div>

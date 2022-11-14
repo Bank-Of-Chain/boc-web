@@ -243,10 +243,10 @@ const buttonStyle = {
     pointerEvents: 'none'
   },
   lg: {
-    padding: '1.125rem 2.25rem',
-    fontSize: '0.875rem',
-    lineHeight: '1.333333',
-    borderRadius: '0.2rem'
+    padding: '1.125rem 5.4rem',
+    fontSize: '1.25rem',
+    lineHeight: '1',
+    borderRadius: '0.625rem'
   },
   sm: {
     padding: '0.40625rem 1.25rem',
@@ -304,6 +304,12 @@ const buttonStyle = {
         height: '17px'
       }
     }
+  },
+  'white-border': {
+    border: '2px solid #fff',
+    borderRadius: 10,
+    color: '#fff',
+    backgroundColor: 'transparent'
   }
 }
 
