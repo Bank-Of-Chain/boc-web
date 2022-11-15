@@ -9,10 +9,10 @@ const HoverIcon = props => {
   const { defaultIcon, hoverIcon } = props
 
   return (
-    <div className={classes.logo}>
-      <span className={classes.normal}>{defaultIcon}</span>
+    <span className={classes.logo}>
+      <span>{defaultIcon}</span>
       <span className={classes.active}>{hoverIcon}</span>
-    </div>
+    </span>
   )
 }
 

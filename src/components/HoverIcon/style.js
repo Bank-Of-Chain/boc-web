@@ -1,16 +1,16 @@
 const style = {
-  normal: {
-    display: 'inline'
-  },
   active: {
-    display: 'none'
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    opacity: 0,
+    transition: 'all 0.3s linear'
   },
   logo: {
-    '&:hover>:first-child': {
-      display: 'none'
-    },
+    position: 'relative',
+    display: 'inline-block',
     '&:hover>:last-child': {
-      display: 'inline'
+      opacity: 1
     }
   }
 }
