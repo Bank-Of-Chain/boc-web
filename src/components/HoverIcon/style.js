@@ -6,10 +6,10 @@ const style = {
     display: 'none'
   },
   logo: {
-    '&:hover .normal': {
+    '&:hover>:first-child': {
       display: 'none'
     },
-    '&::hover .active': {
+    '&:hover>:last-child': {
       display: 'inline'
     }
   }

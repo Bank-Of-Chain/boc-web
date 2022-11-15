@@ -403,7 +403,7 @@ const SupportMembers = () => {
       <h1 className={classes.title}>Supported by members from:</h1>
       <div className={classes.members}>
         <HoverIcon defaultIcon={ND_SVG} hoverIcon={ND_SVG_HOVER} />
-        {IDG_SVG}
+        <HoverIcon defaultIcon={IDG_SVG} hoverIcon={ND_SVG_HOVER} />
         {IRIS_SVG}
       </div>
       <div className={classes.membersCenter}>{UCL_SVG}</div>
