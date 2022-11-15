@@ -29,13 +29,22 @@ export default function Home() {
           <h1 className={isLayoutSm ? classes.titleMobile : classes.title}>The Multichain</h1>
           <h1 className={isLayoutSm ? classes.titleMobile : classes.title}>Yield Optimizer</h1>
           <h4 className={classes.text} style={{ marginTop: 40 }}>
-            BoC is a DeFi protocol that
-          </h4>
-          <h4 className={classes.text}>
-            provides the best long-term
+            BoC is a DeFi protocol that provides the best long-term
             <b> &quot;risk-free&quot; </b>
             return
           </h4>
+          <div className={classes.infoWrapper}>
+            <ul className={classes.info}>
+              <li>
+                <div className={classes.infoTitle}>Total Value Locked</div>
+                <div className={classes.infoText}>$0.5M</div>
+              </li>
+              <li>
+                <div className={classes.infoTitle}>Holders</div>
+                <div className={classes.infoText}>3,452</div>
+              </li>
+            </ul>
+          </div>
           <p className={classes.text} style={{ marginTop: 40 }}>
             <Button className={classes.invest} color="colorfull-border" size="sm" href="/#/mutils">
               Launch App
