@@ -57,7 +57,8 @@ RegularButton.propTypes = {
     'transparent',
     'colorfull',
     'colorfull-border',
-    'colorfull-border-2'
+    'colorfull-border-2',
+    'white-border'
   ]),
   size: PropTypes.oneOf(['sm', 'lg']),
   simple: PropTypes.bool,
