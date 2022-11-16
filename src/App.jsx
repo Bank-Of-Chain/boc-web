@@ -266,7 +266,7 @@ function App() {
               </Frame>
             </Suspense>
           </Route>
-          <Route path="/mutils">
+          <Route path="/usdi">
             <Suspense
               fallback={
                 <Backdrop className={classes.backdrop} open>
