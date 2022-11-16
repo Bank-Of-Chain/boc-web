@@ -1,5 +1,4 @@
 import {
-  container,
   defaultFont,
   primaryColor,
   infoColor,
@@ -37,13 +36,15 @@ const headerStyle = {
     zIndex: '1100'
   },
   container: {
-    ...container,
     minHeight: '50px',
     flex: '1',
     alignItems: 'center',
     justifyContent: 'space-between',
     display: 'flex',
-    flexWrap: 'nowrap'
+    flexWrap: 'nowrap',
+    width: '100%',
+    maxWidth: '1412px',
+    margin: '0 auto'
   },
   '@media (max-width: 991px) and (min-width: 960px)': {
     toolbar: {

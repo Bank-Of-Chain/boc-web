@@ -120,19 +120,14 @@ export default function HeaderLinks(props) {
   console.log('HeaderLinks render')
   return (
     <>
-      <List className={classes.list} classes={{ root: classes.iii }}>
+      <List className={classes.list}>
         <ListItem className={classes.listItem}>
-          <Button color="transparent" href={'/'} className={classes.navLink}>
-            Home
-          </Button>
-        </ListItem>
-        <ListItem className={classes.listItem}>
-          <Button color="transparent" target="_blank" href={dashboardUrlRender()} className={classes.navLink}>
+          <Button color="colorful-text" target="_blank" href={dashboardUrlRender()} disableRipple={true}>
             Dashboard
           </Button>
         </ListItem>
         <ListItem className={classes.listItem}>
-          <Button color="transparent" target="_blank" href={DOCUMENT_URL} className={classes.navLink}>
+          <Button color="colorful-text" target="_blank" href={DOCUMENT_URL} disableRipple={true}>
             Docs
           </Button>
         </ListItem>
@@ -185,7 +180,7 @@ export default function HeaderLinks(props) {
         )}
         {pathname === '/' ? (
           <ListItem className={classes.listItem}>
-            <Button className={`${classes.navLink} ${classes.colorfulLink}`} color="colorfull-border" href="/#/usdi">
+            <Button color="colorfull-border" href="/#/usdi">
               Launch App
             </Button>
           </ListItem>

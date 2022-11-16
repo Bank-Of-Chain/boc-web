@@ -1,4 +1,5 @@
 import { grayColor, roseColor, primaryColor, infoColor, successColor, warningColor, dangerColor } from '@/assets/jss/material-kit-react.js'
+import { hoverGradientText, focusGradientText } from '@/assets/jss/common'
 
 const buttonStyle = {
   button: {
@@ -10,8 +11,7 @@ const buttonStyle = {
     border: 'none',
     borderRadius: '5px',
     position: 'relative',
-    padding: '12px 30px',
-    fontWeight: '400',
+    padding: '0.75rem 1rem',
     textTransform: 'none',
     letterSpacing: '0',
     willChange: 'box-shadow, transform',
@@ -21,6 +21,8 @@ const buttonStyle = {
     verticalAlign: 'middle',
     touchAction: 'manipulation',
     cursor: 'pointer',
+    lineHeight: 1,
+    fontSize: '1rem',
     '&:hover,&:focus': {
       color: '#FFFFFF',
       backgroundColor: grayColor,
@@ -310,6 +312,24 @@ const buttonStyle = {
     borderRadius: 10,
     color: '#fff',
     backgroundColor: 'transparent'
+  },
+  'colorful-text': {
+    backgroundColor: 'transparent',
+    boxShadow: 'none',
+    '&:hover': {
+      backgroundColor: 'transparent',
+      boxShadow: 'none',
+      ...hoverGradientText
+    },
+    '&:focus': {
+      backgroundColor: 'transparent',
+      boxShadow: 'none'
+    },
+    '&:active': {
+      backgroundColor: 'transparent',
+      boxShadow: 'none',
+      ...focusGradientText
+    }
   }
 }
 
