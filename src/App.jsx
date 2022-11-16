@@ -33,6 +33,7 @@ import './App.css'
 const Home = lazy(() => import('./pages/Home/index'))
 const InvestNew = lazy(() => import('./pages/InvestNew/index'))
 const Ethi = lazy(() => import('./pages/Ethi/index'))
+const Team = lazy(() => import('./pages/Team/index'))
 
 const useStyles = makeStyles(theme => ({
   backdrop: {
@@ -288,6 +289,19 @@ function App() {
             >
               <Frame {...nextProps}>
                 <Ethi {...nextProps} />
+              </Frame>
+            </Suspense>
+          </Route>
+          <Route exact path="/team">
+            <Suspense
+              fallback={
+                <Backdrop className={classes.backdrop} open>
+                  <CircularProgress color="inherit" />
+                </Backdrop>
+              }
+            >
+              <Frame {...nextProps}>
+                <Team {...nextProps} />
               </Frame>
             </Suspense>
           </Route>
