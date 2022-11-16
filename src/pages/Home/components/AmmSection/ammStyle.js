@@ -38,7 +38,11 @@ const ammSectionStyle = {
   img: {
     height: '6rem',
     margin: '0.3rem',
-    borderRadius: '50%'
+    borderRadius: '50%',
+    filter: 'grayscale(100%)',
+    '&:hover': {
+      filter: 'grayscale(0%)'
+    }
   },
   transparentBg: {
     background: 'transparent'
