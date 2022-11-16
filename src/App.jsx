@@ -36,6 +36,7 @@ const Usdi = lazy(() => import('./pages/Usdi/index'))
 const Ethi = lazy(() => import('./pages/Ethi/index'))
 const Ethr = lazy(() => import('./pages/Ethr/index'))
 const Usdr = lazy(() => import('./pages/Usdr/index'))
+const Team = lazy(() => import('./pages/Team/index'))
 
 const useStyles = makeStyles(theme => ({
   backdrop: {
@@ -310,6 +311,17 @@ function App() {
                   }
                 >
                   <Usdr {...nextProps} />
+                </Suspense>
+              </Route>
+              <Route path="/team">
+                <Suspense
+                  fallback={
+                    <Backdrop className={classes.backdrop} open>
+                      <CircularProgress color="inherit" />
+                    </Backdrop>
+                  }
+                >
+                  <Team {...nextProps} />
                 </Suspense>
               </Route>
               <Route path="*">

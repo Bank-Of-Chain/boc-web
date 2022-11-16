@@ -41,6 +41,7 @@ export const TWITTER_URL = config.twitter_url
 export const LINKEDIN_URL = config.linkedin_url
 export const YOUTUBE_URL = config.youtube_url
 export const MEDIUM_URL = config.medium_url
+export const GITHUB_URL = config.github_url
 
 export const POLYGON_HIDDEN = false
 

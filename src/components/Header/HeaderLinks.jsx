@@ -119,6 +119,7 @@ export default function HeaderLinks(props) {
 
   const handleGoToAccount = () => dispatch(setCurrentTab(INVEST_TAB.account))
 
+  console.log('HeaderLinks render')
   return (
     <>
       <List className={classes.list} classes={{ root: classes.iii }}>

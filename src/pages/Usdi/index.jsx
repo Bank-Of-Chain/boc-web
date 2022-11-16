@@ -12,15 +12,13 @@ import ListItemText from '@material-ui/core/ListItemText'
 import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline'
 import Tooltip from '@material-ui/core/Tooltip'
 import InfoIcon from '@material-ui/icons/Info'
-import AccountBalanceWalletIcon from '@material-ui/icons/AccountBalanceWallet'
-import SaveAltIcon from '@material-ui/icons/SaveAlt'
-import UndoIcon from '@material-ui/icons/Undo'
 import Loading from '@/components/LoadingComponent'
 import GridItem from '@/components/Grid/GridItem'
 import GridContainer from '@/components/Grid/GridContainer'
 import Deposit from './Deposit'
 import Withdraw from './Withdraw'
 import MyStatement from '@/components/MyStatement'
+import { MyAccountIcon, SwapIcon, WithdrawIcon, DepositIcon, SwitchIcon } from '@/components/SvgIcons'
 
 // === Reducers === //
 import { useDispatch, useSelector } from 'react-redux'
@@ -235,10 +233,20 @@ function Usdi(props) {
           <List>
             <ListItem key="My Account" button className={classNames(classes.item)} onClick={() => setCurrent(INVEST_TAB.account)}>
               <ListItemIcon>
-                <AccountBalanceWalletIcon style={{ color: current === 0 ? '#A68EFE' : '#fff' }} />
+                <MyAccountIcon style={{ color: current === 0 ? '#A68EFE' : '#fff' }} />
               </ListItemIcon>
               {!isLayoutSm && <ListItemText primary={'My Account'} className={classNames(current === 0 ? classes.check : classes.text)} />}
             </ListItem>
+            {/* {!isEmpty(address) && (
+              <ListItem key="My Statement" button className={classNames(classes.item)} onClick={() => setCurrent(INVEST_TAB.statement)}>
+                <ListItemIcon>
+                  <InsertChartIcon style={{ color: current === INVEST_TAB.statement ? '#A68EFE' : '#fff' }} />
+                </ListItemIcon>
+                {!isLayoutSm && (
+                  <ListItemText primary={'My Statement'} className={classNames(current === INVEST_TAB.statement ? classes.check : classes.text)} />
+                )}
+              </ListItem>
+            )} */}
             <ListItem
               key="Deposit"
               button
@@ -246,7 +254,7 @@ function Usdi(props) {
               onClick={() => setCurrent(INVEST_TAB.deposit)}
             >
               <ListItemIcon>
-                <SaveAltIcon style={{ color: current === INVEST_TAB.deposit ? '#A68EFE' : '#fff' }} />
+                <DepositIcon style={{ color: current === INVEST_TAB.deposit ? '#A68EFE' : '#fff' }} />
               </ListItemIcon>
               {!isLayoutSm && (
                 <ListItemText primary={'Deposit'} className={classNames(current === INVEST_TAB.deposit ? classes.check : classes.text)} />
@@ -259,11 +267,28 @@ function Usdi(props) {
               onClick={() => setCurrent(INVEST_TAB.withdraw)}
             >
               <ListItemIcon>
-                <UndoIcon style={{ color: current === INVEST_TAB.withdraw ? '#A68EFE' : '#fff' }} />
+                <WithdrawIcon style={{ color: current === INVEST_TAB.withdraw ? '#A68EFE' : '#fff' }} />
               </ListItemIcon>
               {!isLayoutSm && (
                 <ListItemText primary={'Withdraw'} className={classNames(current === INVEST_TAB.withdraw ? classes.check : classes.text)} />
               )}
+            </ListItem>
+            <ListItem
+              key="Swap"
+              button
+              className={classNames(classes.item, current === INVEST_TAB.withdraw && classes.check)}
+              onClick={() => setCurrent(INVEST_TAB.swap)}
+            >
+              <ListItemIcon>
+                <SwapIcon style={{ color: current === INVEST_TAB.swap ? '#A68EFE' : '#fff' }} />
+              </ListItemIcon>
+              {!isLayoutSm && <ListItemText primary={'Swap'} className={classNames(current === INVEST_TAB.swap ? classes.check : classes.text)} />}
+            </ListItem>
+            <ListItem key="Switch to ETHi" button className={classNames(classes.item, classes.check)} onClick={() => changeRouter('#/ethi')}>
+              <ListItemIcon>
+                <SwitchIcon style={{ color: '#fff' }} />
+              </ListItemIcon>
+              {!isLayoutSm && <ListItemText primary={'Switch to ETHi'} className={classNames(classes.text)} />}
             </ListItem>
           </List>
         </GridItem>
