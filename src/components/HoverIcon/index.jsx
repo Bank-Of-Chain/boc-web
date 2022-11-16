@@ -6,13 +6,15 @@ const useStyles = makeStyles(styles)
 
 const HoverIcon = props => {
   const classes = useStyles()
-  const { defaultIcon, hoverIcon } = props
+  const { defaultIcon, hoverIcon, href } = props
 
   return (
-    <span className={classes.logo}>
-      <span>{defaultIcon}</span>
-      <span className={classes.active}>{hoverIcon}</span>
-    </span>
+    <a href={href} target="_blank" rel="noopener noreferrer">
+      <span className={classes.logo}>
+        <span>{defaultIcon}</span>
+        <span className={classes.active}>{hoverIcon}</span>
+      </span>
+    </a>
   )
 }
 

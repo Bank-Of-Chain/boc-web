@@ -7,6 +7,7 @@ const style = {
   title: {
     height: '8.125rem',
     lineHeight: '8.125rem',
+    paddingTop: '3.125rem',
     margin: 0,
     fontSize: '6.25rem'
   },
@@ -41,6 +42,7 @@ const style = {
     },
     '& img': {
       width: '100%',
+      border: '5px solid #FFFFFF',
       borderRadius: '50%',
     }
   },
@@ -62,7 +64,7 @@ const style = {
   social: {
     marginTop: '1rem',
     textAlign: 'center',
-    '& svg + svg': {
+    '& a + a': {
       marginLeft: '0.625rem'
     }
   }
