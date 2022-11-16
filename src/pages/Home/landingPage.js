@@ -89,9 +89,7 @@ const landingPageStyle = {
   },
   invest: {
     width: '17.5rem',
-    height: '3.625rem',
-    fontSize: '1rem',
-    textTransform: 'none'
+    height: '3.625rem'
   },
   grid: {
     padding: '15rem 0',
