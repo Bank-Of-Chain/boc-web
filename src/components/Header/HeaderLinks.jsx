@@ -192,15 +192,14 @@ export default function HeaderLinks(props) {
           >
             {isEmpty(userProvider) ? (
               <Button
-                color="colorfull-border-2"
+                color="colorfull-border"
                 target="_blank"
-                className={`${classes.navLink} ${classes.colorfulLink}`}
                 onClick={handleClickConnect}
               >
                 Connect Wallet
               </Button>
             ) : isInMobileWalletApp() ? (
-              <Button color="colorfull-border-2" target="_blank" className={`${classes.navLink} ${classes.colorfulLink}`} onClick={disconnect}>
+              <Button color="colorfull-border" target="_blank" onClick={disconnect}>
                 <Address size="short" address={address} />
               </Button>
             ) : (
@@ -208,8 +207,8 @@ export default function HeaderLinks(props) {
                 noLiPadding
                 buttonText={() => <Address size="short" address={address} />}
                 buttonProps={{
-                  color: 'colorfull-border-2',
-                  className: `${classes.navLink} ${classes.colorfulLink} ${classes.accountLink}`
+                  color: 'colorfull-border',
+                  className: classes.accountLink
                 }}
                 dropdownList={[
                   <div key="My Account" className={classes.dropdownLink} onClick={handleGoToAccount}>

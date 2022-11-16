@@ -363,7 +363,7 @@ export default function Deposit({
       <GridContainer>
         <GridItem xs={12} sm={12} md={12} lg={12}>
           <div className={classes.footerContainer}>
-            <Button disabled={!isLogin || (isLogin && !isValid)} color="colorfull" onClick={openEstimateModal} style={{ width: '100%' }}>
+            <Button disabled={!isLogin || (isLogin && !isValid)} color="colorfull" onClick={openEstimateModal} className={classes.blockButton}>
               Deposit
             </Button>
           </div>

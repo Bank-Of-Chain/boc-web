@@ -627,7 +627,7 @@ export default function Withdraw({
               disabled={!isLogin || (isLogin && (isUndefined(isValidToValueFlag) || !isValidToValueFlag))}
               color="colorfull"
               onClick={withdraw}
-              style={{ width: '100%', padding: '12px 16px' }}
+              className={classes.blockButton}
             >
               Withdraw
               <Tooltip
