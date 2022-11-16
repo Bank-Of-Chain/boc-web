@@ -18,7 +18,7 @@ import GridContainer from '@/components/Grid/GridContainer'
 import Deposit from './Deposit'
 import Withdraw from './Withdraw'
 import MyStatement from '@/components/MyStatement'
-import { MyAccountIcon, SwapIcon, WithdrawIcon, DepositIcon, SwitchIcon } from '@/components/SvgIcons'
+import { MyAccountIcon, SwapIcon, WithdrawIcon, DepositIcon } from '@/components/SvgIcons'
 
 // === Reducers === //
 import { useDispatch, useSelector } from 'react-redux'
@@ -283,12 +283,6 @@ function Usdi(props) {
                 <SwapIcon style={{ color: current === INVEST_TAB.swap ? '#A68EFE' : '#fff' }} />
               </ListItemIcon>
               {!isLayoutSm && <ListItemText primary={'Swap'} className={classNames(current === INVEST_TAB.swap ? classes.check : classes.text)} />}
-            </ListItem>
-            <ListItem key="Switch to ETHi" button className={classNames(classes.item, classes.check)} onClick={() => changeRouter('#/ethi')}>
-              <ListItemIcon>
-                <SwitchIcon style={{ color: '#fff' }} />
-              </ListItemIcon>
-              {!isLayoutSm && <ListItemText primary={'Switch to ETHi'} className={classNames(classes.text)} />}
             </ListItem>
           </List>
         </GridItem>

@@ -18,7 +18,7 @@ import useMediaQuery from '@material-ui/core/useMediaQuery'
 import Deposit from './Deposit'
 import Withdraw from './Withdraw'
 import MyStatement from '@/components/MyStatement'
-import { MyAccountIcon, SwapIcon, WithdrawIcon, DepositIcon, SwitchIcon } from '@/components/SvgIcons'
+import { MyAccountIcon, SwapIcon, WithdrawIcon, DepositIcon } from '@/components/SvgIcons'
 
 import { useSelector, useDispatch } from 'react-redux'
 
@@ -224,12 +224,6 @@ function Ethi(props) {
                 <SwapIcon style={{ color: current === INVEST_TAB.swap ? '#A68EFE' : '#fff' }} />
               </ListItemIcon>
               {!isLayoutSm && <ListItemText primary={'Swap'} className={classNames(current === INVEST_TAB.swap ? classes.check : classes.text)} />}
-            </ListItem>
-            <ListItem key="Switch to USDi" button className={classNames(classes.item)} onClick={() => history.push('/mutils')}>
-              <ListItemIcon>
-                <SwitchIcon style={{ color: '#fff' }} />
-              </ListItemIcon>
-              {!isLayoutSm && <ListItemText primary={'Switch to USDi'} className={classNames(classes.text)} />}
             </ListItem>
           </List>
         </GridItem>
