@@ -31,12 +31,13 @@ import get from 'lodash/get'
 import find from 'lodash/find'
 import { isInMobileWalletApp, isInMobileH5 } from '@/helpers/plugin-util'
 import { isMarketingHost } from '@/helpers/location'
+import { useLocation } from 'react-router-dom'
 
 // === Constants === //
 import { NET_WORKS, DASHBOARD_URL, DOCUMENT_URL, CHAIN_ID, LEGACYS, POLYGON_HIDDEN } from '@/constants'
 import { INVEST_TAB } from '@/constants/invest'
 
-const CHAIN_SELECTOR_SHOW_ROUTER = ['#/mutils']
+const CHAIN_SELECTOR_SHOW_ROUTER = ['/usdi']
 
 const useStyles = makeStyles(styles)
 export default function HeaderLinks(props) {
@@ -45,6 +46,7 @@ export default function HeaderLinks(props) {
   const classes = useStyles()
   const dispatch = useDispatch()
   const connectTimer = useRef(null)
+  const { pathname } = useLocation()
 
   const handleClickConnect = () => {
     if (isInMobileWalletApp()) {
@@ -104,7 +106,7 @@ export default function HeaderLinks(props) {
 
   const dashboardUrlRender = () => {
     let nextChainId = CHAIN_ID || '1'
-    let nextVault = window.location.hash === '#/ethi' ? 'ethi' : 'usdi'
+    let nextVault = pathname === '/ethi' ? 'ethi' : 'usdi'
 
     // If it's in ETHi, jump to eth chain
     if (nextVault === 'ethi') {
@@ -115,6 +117,7 @@ export default function HeaderLinks(props) {
 
   const handleGoToAccount = () => dispatch(setCurrentTab(INVEST_TAB.account))
 
+  console.log('HeaderLinks render')
   return (
     <>
       <List className={classes.list} classes={{ root: classes.iii }}>
@@ -156,7 +159,7 @@ export default function HeaderLinks(props) {
             />
           </ListItem>
         )}
-        {CHAIN_SELECTOR_SHOW_ROUTER.includes(window.location.hash) && (
+        {CHAIN_SELECTOR_SHOW_ROUTER.includes(pathname) && (
           <ListItem className={classes.listItem}>
             <CustomDropdown
               noLiPadding
@@ -180,9 +183,9 @@ export default function HeaderLinks(props) {
             </Button>
           </ListItem>
         )}
-        {window.location.hash === '#/' ? (
+        {pathname === '/' ? (
           <ListItem className={classes.listItem}>
-            <Button className={`${classes.navLink} ${classes.colorfulLink}`} color="colorfull-border" href="/#/mutils">
+            <Button className={`${classes.navLink} ${classes.colorfulLink}`} color="colorfull-border" href="/#/usdi">
               Launch App
             </Button>
           </ListItem>
