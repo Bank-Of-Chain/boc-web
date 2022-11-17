@@ -14,14 +14,16 @@ const componentsStyle = () => ({
     border: '1px solid #A68EFD',
     borderTopLeftRadius: '1rem',
     borderTopRightRadius: '1rem',
-    padding: '2.6875rem 2.25rem'
+    padding: '2.6875rem 2.25rem',
+    background: '#1E1E1F'
   },
   estimateContainer: {
     border: '1px solid #A68EFD',
     marginTop: '0.5rem',
     borderBottomLeftRadius: '1rem',
     borderBottomRightRadius: '1rem',
-    padding: '2.0625rem 2.6875rem'
+    padding: '2.0625rem 2.6875rem',
+    background: '#1E1E1F'
   },
   estimateText: {
     color: '#A0A0A0',
@@ -45,9 +47,6 @@ const componentsStyle = () => ({
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center'
-  },
-  input: {
-    maxWidth: '12.5rem'
   },
   depositComfirmArea: {
     display: 'flex',

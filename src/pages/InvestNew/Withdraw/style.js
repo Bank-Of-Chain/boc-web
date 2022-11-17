@@ -30,14 +30,16 @@ const componentsStyle = () => ({
     padding: '2.6875rem 2.25rem',
     border: '1px solid #A68EFD',
     borderTopLeftRadius: '1rem',
-    borderTopRightRadius: '1rem'
+    borderTopRightRadius: '1rem',
+    background: '#1E1E1F'
   },
   outputContainer: {
     padding: '2.6875rem 2.25rem',
     border: '1px solid #A68EFD',
     marginTop: '0.5rem',
     borderBottomLeftRadius: '1rem',
-    borderBottomRightRadius: '1rem'
+    borderBottomRightRadius: '1rem',
+    background: '#1E1E1F'
   },
   estimateText: {
     height: '1.25rem',
@@ -46,9 +48,6 @@ const componentsStyle = () => ({
     display: 'flex',
     marginTop: '0.5rem',
     alignItems: 'center'
-  },
-  input: {
-    maxWidth: '12.5rem'
   },
   footerContainer: {
     marginTop: '2.5rem'
