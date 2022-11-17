@@ -55,10 +55,11 @@ RegularButton.propTypes = {
     'google',
     'github',
     'transparent',
-    'colorfull',
-    'colorfull-border',
-    'colorfull-border-2',
-    'white-border'
+    'colorful',
+    'colorful-border',
+    'colorful-border-2',
+    'white-border',
+    'colorful-text'
   ]),
   size: PropTypes.oneOf(['sm', 'lg']),
   simple: PropTypes.bool,

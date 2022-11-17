@@ -13,6 +13,7 @@ import LinkedInIcon from '@/components/HoverIcon/icons/LinkedIn'
 import YoutubeIcon from '@/components/HoverIcon/icons/Youtube'
 import MediumIcon from '@/components/HoverIcon/icons/Medium'
 import GithubIcon from '@/components/HoverIcon/icons/Github'
+import Button from '@/components/CustomButtons/Button'
 
 // === Constants === //
 import { COMMUNITY_URL, DOCUMENT_URL, TELEGRAM_URL, TWITTER_URL, LINKEDIN_URL, YOUTUBE_URL, MEDIUM_URL, GITHUB_URL } from '@/constants'
@@ -67,39 +68,34 @@ export default function Footer(props) {
           >
             <List className={classes.list}>
               <ListItem className={classes.inlineBlock}>
-                <a
-                  className={classes.block}
+                <Button
+                  color="colorful-text"
                   target="_blank"
-                  rel="noopener noreferrer"
                   href={`${DOCUMENT_URL}/docs/protocol-mechanisms/protocol-algorithm-design`}
+                  disableRipple={true}
                 >
                   BoC Protocol
-                </a>
+                </Button>
               </ListItem>
               <ListItem className={classes.inlineBlock}>
-                <a className={classes.block} target="_blank" rel="noopener noreferrer" href={'https://governance.bankofchain.io'}>
+                <Button color="colorful-text" target="_blank" href={`${DOCUMENT_URL}/docs/governance/governance`} disableRipple={true}>
                   Governance
-                </a>
+                </Button>
               </ListItem>
               <ListItem className={classes.inlineBlock}>
-                <a className={classes.block} target="_blank" rel="noopener noreferrer" href={DOCUMENT_URL}>
+                <Button color="colorful-text" target="_blank" href={DOCUMENT_URL} disableRipple={true}>
                   Docs
-                </a>
+                </Button>
               </ListItem>
               <ListItem className={classes.inlineBlock}>
-                <a
-                  className={classes.block}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  href={`${DOCUMENT_URL}/docs/protocol-mechanisms/security-risk`}
-                >
+                <Button color="colorful-text" target="_blank" href={`${DOCUMENT_URL}/docs/protocol-mechanisms/security-risk`} disableRipple={true}>
                   Security
-                </a>
+                </Button>
               </ListItem>
               <ListItem className={classes.inlineBlock}>
-                <a className={classes.block} target="_blank" rel="noopener noreferrer" href={`${DOCUMENT_URL}/docs/more/faqs`}>
+                <Button color="colorful-text" target="_blank" href={`${DOCUMENT_URL}/docs/more/faqs`} disableRipple={true}>
                   FAQ
-                </a>
+                </Button>
               </ListItem>
             </List>
           </GridItem>

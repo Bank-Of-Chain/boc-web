@@ -751,60 +751,85 @@ exports[`Footer Component Render 1`] = `
               class="MuiListItem-root makeStyles-inlineBlock-11 MuiListItem-gutters"
             >
               <a
-                class="makeStyles-block-4"
+                aria-disabled="false"
+                class="MuiButtonBase-root MuiButton-root MuiButton-text makeStyles-button-22 makeStyles-colorful-text-48"
                 href="https://docs.bankofchain.io/docs/protocol-mechanisms/protocol-algorithm-design"
-                rel="noopener noreferrer"
+                tabindex="0"
                 target="_blank"
               >
-                BoC Protocol
+                <span
+                  class="MuiButton-label"
+                >
+                  BoC Protocol
+                </span>
               </a>
             </li>
             <li
               class="MuiListItem-root makeStyles-inlineBlock-11 MuiListItem-gutters"
             >
               <a
-                class="makeStyles-block-4"
-                href="https://governance.bankofchain.io"
-                rel="noopener noreferrer"
+                aria-disabled="false"
+                class="MuiButtonBase-root MuiButton-root MuiButton-text makeStyles-button-22 makeStyles-colorful-text-48"
+                href="https://docs.bankofchain.io/docs/governance/governance"
+                tabindex="0"
                 target="_blank"
               >
-                Governance
+                <span
+                  class="MuiButton-label"
+                >
+                  Governance
+                </span>
               </a>
             </li>
             <li
               class="MuiListItem-root makeStyles-inlineBlock-11 MuiListItem-gutters"
             >
               <a
-                class="makeStyles-block-4"
+                aria-disabled="false"
+                class="MuiButtonBase-root MuiButton-root MuiButton-text makeStyles-button-22 makeStyles-colorful-text-48"
                 href="https://docs.bankofchain.io"
-                rel="noopener noreferrer"
+                tabindex="0"
                 target="_blank"
               >
-                Docs
+                <span
+                  class="MuiButton-label"
+                >
+                  Docs
+                </span>
               </a>
             </li>
             <li
               class="MuiListItem-root makeStyles-inlineBlock-11 MuiListItem-gutters"
             >
               <a
-                class="makeStyles-block-4"
+                aria-disabled="false"
+                class="MuiButtonBase-root MuiButton-root MuiButton-text makeStyles-button-22 makeStyles-colorful-text-48"
                 href="https://docs.bankofchain.io/docs/protocol-mechanisms/security-risk"
-                rel="noopener noreferrer"
+                tabindex="0"
                 target="_blank"
               >
-                Security
+                <span
+                  class="MuiButton-label"
+                >
+                  Security
+                </span>
               </a>
             </li>
             <li
               class="MuiListItem-root makeStyles-inlineBlock-11 MuiListItem-gutters"
             >
               <a
-                class="makeStyles-block-4"
+                aria-disabled="false"
+                class="MuiButtonBase-root MuiButton-root MuiButton-text makeStyles-button-22 makeStyles-colorful-text-48"
                 href="https://docs.bankofchain.io/docs/more/faqs"
-                rel="noopener noreferrer"
+                tabindex="0"
                 target="_blank"
               >
-                FAQ
+                <span
+                  class="MuiButton-label"
+                >
+                  FAQ
+                </span>
               </a>
             </li>
           </ul>

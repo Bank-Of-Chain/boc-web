@@ -625,9 +625,10 @@ export default function Withdraw({
           <div className={classes.footerContainer}>
             <Button
               disabled={!isLogin || (isLogin && (isUndefined(isValidToValueFlag) || !isValidToValueFlag))}
-              color="colorfull"
+              color="colorful"
               onClick={withdraw}
-              style={{ width: '100%', padding: '12px 16px' }}
+              className={classes.blockButton}
+              fullWidth={true}
             >
               Withdraw
               <Tooltip

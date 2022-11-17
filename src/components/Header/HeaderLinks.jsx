@@ -120,19 +120,14 @@ export default function HeaderLinks(props) {
   console.log('HeaderLinks render')
   return (
     <>
-      <List className={classes.list} classes={{ root: classes.iii }}>
+      <List className={classes.list}>
         <ListItem className={classes.listItem}>
-          <Button color="transparent" href={'/'} className={classes.navLink}>
-            Home
-          </Button>
-        </ListItem>
-        <ListItem className={classes.listItem}>
-          <Button color="transparent" target="_blank" href={dashboardUrlRender()} className={classes.navLink}>
+          <Button color="colorful-text" target="_blank" href={dashboardUrlRender()} disableRipple={true}>
             Dashboard
           </Button>
         </ListItem>
         <ListItem className={classes.listItem}>
-          <Button color="transparent" target="_blank" href={DOCUMENT_URL} className={classes.navLink}>
+          <Button color="colorful-text" target="_blank" href={DOCUMENT_URL} disableRipple={true}>
             Docs
           </Button>
         </ListItem>
@@ -185,7 +180,7 @@ export default function HeaderLinks(props) {
         )}
         {pathname === '/' ? (
           <ListItem className={classes.listItem}>
-            <Button className={`${classes.navLink} ${classes.colorfulLink}`} color="colorfull-border" href="/#/usdi">
+            <Button color="colorful-border" href="/#/usdi">
               Launch App
             </Button>
           </ListItem>
@@ -197,15 +192,14 @@ export default function HeaderLinks(props) {
           >
             {isEmpty(userProvider) ? (
               <Button
-                color="colorfull-border-2"
+                color="colorful-border"
                 target="_blank"
-                className={`${classes.navLink} ${classes.colorfulLink}`}
                 onClick={handleClickConnect}
               >
                 Connect Wallet
               </Button>
             ) : isInMobileWalletApp() ? (
-              <Button color="colorfull-border-2" target="_blank" className={`${classes.navLink} ${classes.colorfulLink}`} onClick={disconnect}>
+              <Button color="colorful-border" target="_blank" onClick={disconnect}>
                 <Address size="short" address={address} />
               </Button>
             ) : (
@@ -213,8 +207,8 @@ export default function HeaderLinks(props) {
                 noLiPadding
                 buttonText={() => <Address size="short" address={address} />}
                 buttonProps={{
-                  color: 'colorfull-border-2',
-                  className: `${classes.navLink} ${classes.colorfulLink} ${classes.accountLink}`
+                  color: 'colorful-border',
+                  className: classes.accountLink
                 }}
                 dropdownList={[
                   <div key="My Account" className={classes.dropdownLink} onClick={handleGoToAccount}>
