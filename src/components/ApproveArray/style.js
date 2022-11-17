@@ -132,13 +132,15 @@ const componentsStyle = () => ({
     marginTop: '0.625rem'
   },
   okWrapper: {
-    paddingLeft: '1rem'
+    paddingLeft: '0.75rem'
   },
   okButton: {
-    width: '100%'
+    borderRadius: '1.25rem',
+    padding: '1.25rem 0'
   },
   cancelButton: {
-    width: '100%'
+    borderRadius: '1.25rem',
+    padding: '1.25rem 0'
   },
   addToken: {
     cursor: 'pointer'

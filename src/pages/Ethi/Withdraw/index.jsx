@@ -628,6 +628,7 @@ export default function Withdraw({
               color="colorfull"
               onClick={withdraw}
               className={classes.blockButton}
+              fullWidth={true}
             >
               Withdraw
               <Tooltip

@@ -56,8 +56,8 @@ RegularButton.propTypes = {
     'github',
     'transparent',
     'colorfull',
-    'colorfull-border',
-    'colorfull-border-2',
+    'colorful-border',
+    'colorful-border-2',
     'white-border',
     'colorful-text'
   ]),

@@ -180,7 +180,7 @@ export default function HeaderLinks(props) {
         )}
         {pathname === '/' ? (
           <ListItem className={classes.listItem}>
-            <Button color="colorfull-border" href="/#/usdi">
+            <Button color="colorful-border" href="/#/usdi">
               Launch App
             </Button>
           </ListItem>
@@ -192,14 +192,14 @@ export default function HeaderLinks(props) {
           >
             {isEmpty(userProvider) ? (
               <Button
-                color="colorfull-border"
+                color="colorful-border"
                 target="_blank"
                 onClick={handleClickConnect}
               >
                 Connect Wallet
               </Button>
             ) : isInMobileWalletApp() ? (
-              <Button color="colorfull-border" target="_blank" onClick={disconnect}>
+              <Button color="colorful-border" target="_blank" onClick={disconnect}>
                 <Address size="short" address={address} />
               </Button>
             ) : (
@@ -207,7 +207,7 @@ export default function HeaderLinks(props) {
                 noLiPadding
                 buttonText={() => <Address size="short" address={address} />}
                 buttonProps={{
-                  color: 'colorfull-border',
+                  color: 'colorful-border',
                   className: classes.accountLink
                 }}
                 dropdownList={[

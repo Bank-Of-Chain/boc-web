@@ -38,7 +38,7 @@ export default function Home() {
             return
           </h4>
           <p className={classes.text} style={{ marginTop: 40 }}>
-            <Button className={classes.invest} color="colorfull-border" size="lg" href="/#/usdi">
+            <Button color="colorful-border" size="lg" href="/#/usdi">
               Launch App
             </Button>
           </p>

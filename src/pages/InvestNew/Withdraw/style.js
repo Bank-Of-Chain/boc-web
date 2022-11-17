@@ -166,7 +166,6 @@ const componentsStyle = () => ({
     fontSize: '1.625rem'
   },
   blockButton: {
-    width: '100%',
     padding: '1.25rem 0',
     borderRadius: 20
   }

@@ -439,6 +439,7 @@ export default function Deposit({
               color="colorfull"
               onClick={openEstimateModal}
               className={classes.blockButton}
+              fullWidth={true}
             >
               Deposit
             </Button>

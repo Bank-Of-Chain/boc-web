@@ -100,7 +100,6 @@ const componentsStyle = () => ({
     color: '#A68EFE'
   },
   blockButton: {
-    width: '100%',
     padding: '1.25rem 0',
     borderRadius: 20
   }
