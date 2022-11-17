@@ -103,7 +103,7 @@ const buttonStyle = {
       color: '#EA7D7D'
     }
   },
-  colorfull: {
+  colorful: {
     color: '#fff',
     background: 'linear-gradient(223.3deg, #A68EFD 20.71%, #F4ACF3 103.56%)'
   },

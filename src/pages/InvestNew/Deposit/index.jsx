@@ -436,7 +436,7 @@ export default function Deposit({
                 (isLogin &&
                   (some(formConfig, item => isValidValue(item.name) === false) || every(formConfig, item => isValidValue(item.name) !== true)))
               }
-              color="colorfull"
+              color="colorful"
               onClick={openEstimateModal}
               className={classes.blockButton}
               fullWidth={true}
@@ -546,7 +546,7 @@ export default function Deposit({
               </Typography>
             </GridItem>
             <GridItem xs={12} sm={12} md={12} lg={12} className={classes.item} style={{ textAlign: 'center' }}>
-              <Button color="colorfull" onClick={deposit} style={{ width: '50%' }}>
+              <Button color="colorful" onClick={deposit} style={{ width: '50%' }}>
                 Continue
               </Button>
               <Button style={{ marginLeft: 20 }} color="danger" onClick={() => setIsOpenEstimateModal(false)}>

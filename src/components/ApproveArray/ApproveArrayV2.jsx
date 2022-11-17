@@ -447,7 +447,7 @@ const ApproveArrayV2 = props => {
         </GridItem>
         <GridItem xs={7} sm={7} md={7} className={classes.okWrapper}>
           <Button
-            color="colorfull"
+            color="colorful"
             fullWidth={true}
             onClick={clickSwap}
             disabled={noNeedSwap || someFetching || isSwapping || someSwapError() || !isValidSlippage() || receiveAmount.lte(0) || someErrorValue}
