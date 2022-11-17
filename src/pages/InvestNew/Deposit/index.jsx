@@ -416,7 +416,14 @@ export default function Deposit({
           <p className={classes.estimateBalanceTitle}>
             USDi Ticket:
             <span className={classes.estimateBalanceNum}>
-              <Loading loading={isEstimate}>{toFixed(estimateVaultBuffValue, BigNumber.from(10).pow(usdiDecimals))}</Loading>
+              <Loading loading={isEstimate}>
+                <CustomTextField
+                  disabled
+                  classes={{ root: classes.input }}
+                  value={toFixed(estimateVaultBuffValue, BigNumber.from(10).pow(usdiDecimals))}
+                  error={false}
+                />
+              </Loading>
             </span>
           </p>
           <p className={classes.estimateText}>
