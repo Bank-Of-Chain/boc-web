@@ -4,15 +4,10 @@ import { makeStyles } from '@material-ui/core/styles'
 import { useHistory } from 'react-router-dom'
 import GridContainer from '@/components/Grid/GridContainer'
 import GridItem from '@/components/Grid/GridItem'
-import Card from '@material-ui/core/Card'
-import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline'
 import List from '@material-ui/core/List'
 import ListItem from '@material-ui/core/ListItem'
 import ListItemIcon from '@material-ui/core/ListItemIcon'
 import ListItemText from '@material-ui/core/ListItemText'
-import Tooltip from '@material-ui/core/Tooltip'
-import InfoIcon from '@material-ui/icons/Info'
-import Loading from '@/components/LoadingComponent'
 import useMediaQuery from '@material-ui/core/useMediaQuery'
 
 // === Components === //
@@ -20,7 +15,7 @@ import Deposit from './Deposit'
 import Withdraw from './Withdraw'
 import MyStatement from '@/components/MyStatement'
 import { MyAccountIcon, SwapIcon, WithdrawIcon, DepositIcon, SwitchIcon } from '@/components/SvgIcons'
-
+import ApproveArray from '@/components/ApproveArray/ApproveArrayV3'
 import { useSelector, useDispatch } from 'react-redux'
 
 // === Reducers === //
@@ -28,19 +23,15 @@ import { warmDialog } from '@/reducers/meta-reducer'
 import { setCurrentTab } from '@/reducers/invest-reducer'
 
 // === constants === //
-import { ETH_ADDRESS, ETH_DECIMALS } from '@/constants/tokens'
+import { ETH_ADDRESS, ETH_DECIMALS, WETH_ADDRESS } from '@/constants/tokens'
 import { INVEST_TAB } from '@/constants/invest'
 import { IERC20_ABI, CHAIN_ID } from '@/constants'
 
 // === Utils === //
-import moment from 'moment'
-import { formatBalance } from '@/helpers/number-format'
 import isEmpty from 'lodash/isEmpty'
 import last from 'lodash/last'
 import * as ethers from 'ethers'
 import useVersionWapper from '@/hooks/useVersionWapper'
-import { addToken } from '@/helpers/wallet'
-import { getLastPossibleRebaseTime } from '@/helpers/time-util'
 import useVault from '@/hooks/useVault'
 
 // === Styles === //
@@ -78,7 +69,16 @@ function Ethi(props) {
 
   const [isBalanceLoading, setIsBalanceLoading] = useState(false)
 
-  const lastRebaseTime = getLastPossibleRebaseTime()
+  const [burnTokens, setBurnTokens] = useState([
+    {
+      address: ETH_ADDRESS,
+      amount: '10000000000000000000'
+    },
+    {
+      address: WETH_ADDRESS,
+      amount: '1000000000000000000'
+    }
+  ])
 
   const current = useSelector(state => state.investReducer.currentTab)
   const setCurrent = tab => {
@@ -177,10 +177,6 @@ function Ethi(props) {
     return listener()
   }, [address, VAULT_ADDRESS, VAULT_ABI, userProvider])
 
-  const handleAddETHi = () => {
-    addToken(ETHI_ADDRESS, 'ETHi', 18)
-  }
-
   return (
     <div className={classes.container}>
       <GridContainer spacing={0} style={{ paddingTop: '100px' }}>
@@ -188,7 +184,7 @@ function Ethi(props) {
           <List>
             <ListItem key="My Account" button className={classNames(classes.item)} onClick={() => setCurrent(INVEST_TAB.account)}>
               <ListItemIcon>
-                <MyAccountIcon style={{ color: current === INVEST_TAB.account ? '#A68EFE' : '#fff' }} />
+                <MyAccountIcon color={current === INVEST_TAB.account ? '#A68EFE' : '#fff'} />
               </ListItemIcon>
               {!isLayoutSm && (
                 <ListItemText primary={'My Account'} className={classNames(current === INVEST_TAB.account ? classes.check : classes.text)} />
@@ -201,7 +197,7 @@ function Ethi(props) {
               onClick={() => setCurrent(INVEST_TAB.deposit)}
             >
               <ListItemIcon>
-                <DepositIcon style={{ color: current === INVEST_TAB.deposit ? '#A68EFE' : '#fff' }} />
+                <DepositIcon color={current === INVEST_TAB.deposit ? '#A68EFE' : '#fff'} />
               </ListItemIcon>
               {!isLayoutSm && (
                 <ListItemText primary={'Deposit'} className={classNames(current === INVEST_TAB.deposit ? classes.check : classes.text)} />
@@ -209,7 +205,7 @@ function Ethi(props) {
             </ListItem>
             <ListItem key="Withdraw" button className={classNames(classes.item)} onClick={() => setCurrent(INVEST_TAB.withdraw)}>
               <ListItemIcon>
-                <WithdrawIcon style={{ color: current === INVEST_TAB.withdraw ? '#A68EFE' : '#fff' }} />
+                <WithdrawIcon color={current === INVEST_TAB.withdraw ? '#A68EFE' : '#fff'} />
               </ListItemIcon>
               {!isLayoutSm && (
                 <ListItemText primary={'Withdraw'} className={classNames(current === INVEST_TAB.withdraw ? classes.check : classes.text)} />
@@ -218,15 +214,15 @@ function Ethi(props) {
             <ListItem
               key="Swap"
               button
-              className={classNames(classes.item, current === INVEST_TAB.withdraw && classes.check)}
+              className={classNames(classes.item, current === INVEST_TAB.swap && classes.check)}
               onClick={() => setCurrent(INVEST_TAB.swap)}
             >
               <ListItemIcon>
-                <SwapIcon style={{ color: current === INVEST_TAB.swap ? '#A68EFE' : '#fff' }} />
+                <SwapIcon color={current === INVEST_TAB.swap ? '#A68EFE' : '#fff'} />
               </ListItemIcon>
               {!isLayoutSm && <ListItemText primary={'Swap'} className={classNames(current === INVEST_TAB.swap ? classes.check : classes.text)} />}
             </ListItem>
-            <ListItem key="Switch to USDi" button className={classNames(classes.item)} onClick={() => history.push('/mutils')}>
+            <ListItem key="Switch to USDi" button className={classNames(classes.item)} onClick={() => history.push('/usdi')}>
               <ListItemIcon>
                 <SwitchIcon style={{ color: '#fff' }} />
               </ListItemIcon>
@@ -234,6 +230,8 @@ function Ethi(props) {
             </ListItem>
           </List>
         </GridItem>
+        {/* 
+        // legacy "My Account" page hidden. Using "My Statement" page
         {current === INVEST_TAB.account && (
           <GridItem xs={9} sm={9} md={6}>
             <Card className={classes.balanceCard}>
@@ -278,10 +276,10 @@ function Ethi(props) {
               </div>
             </Card>
           </GridItem>
-        )}
+        )} */}
         {current === INVEST_TAB.deposit && (
           <GridItem xs={9} sm={9} md={6}>
-            <div className={isLayoutSm ? classes.wrapperMobile : classes.wrapper}>
+            <div className={classes.wrapper}>
               <Deposit
                 address={address}
                 ethBalance={ethBalance}
@@ -304,10 +302,9 @@ function Ethi(props) {
         )}
         {current === INVEST_TAB.withdraw && (
           <GridItem xs={9} sm={9} md={6}>
-            <div className={isLayoutSm ? classes.wrapperMobile : classes.wrapper}>
+            <div className={classes.wrapper}>
               <Withdraw
                 address={address}
-                exchangeManager={exchangeManager}
                 ethiBalance={ethiBalance}
                 ethiDecimals={ethiDecimals}
                 userProvider={userProvider}
@@ -315,8 +312,7 @@ function Ethi(props) {
                 ETH_ADDRESS={ETH_ADDRESS}
                 VAULT_ABI={VAULT_ABI}
                 IERC20_ABI={IERC20_ABI}
-                EXCHANGE_AGGREGATOR_ABI={EXCHANGE_AGGREGATOR_ABI}
-                EXCHANGE_ADAPTER_ABI={EXCHANGE_ADAPTER_ABI}
+                setBurnTokens={setBurnTokens}
                 PRICE_ORCALE_ABI={PRICE_ORCALE_ABI}
                 isBalanceLoading={isBalanceLoading}
                 reloadBalance={loadCoinsBalance}
@@ -324,10 +320,24 @@ function Ethi(props) {
             </div>
           </GridItem>
         )}
-        {current === INVEST_TAB.statement && (
+        {current === INVEST_TAB.account && (
           <GridItem xs={9} sm={9} md={9}>
-            <div className={isLayoutSm ? classes.wrapperMobile : classes.wrapper} style={{ background: 'none', paddingTop: '1rem', paddingLeft: 0 }}>
+            <div className={classes.wrapper} style={{ background: 'none', paddingTop: '1rem', paddingLeft: 0 }}>
               <MyStatement address={address} chain={`${CHAIN_ID}`} VAULT_ADDRESS={VAULT_ADDRESS} type={'ETHi'} />
+            </div>
+          </GridItem>
+        )}
+        {current === INVEST_TAB.swap && (
+          <GridItem xs={9} sm={9} md={6}>
+            <div className={classes.wrapper}>
+              <ApproveArray
+                address={address}
+                tokens={burnTokens}
+                userProvider={userProvider}
+                exchangeManager={exchangeManager}
+                EXCHANGE_ADAPTER_ABI={EXCHANGE_ADAPTER_ABI}
+                EXCHANGE_AGGREGATOR_ABI={EXCHANGE_AGGREGATOR_ABI}
+              />
             </div>
           </GridItem>
         )}

@@ -5,21 +5,17 @@ import { useHistory } from 'react-router-dom'
 import useMediaQuery from '@material-ui/core/useMediaQuery'
 
 // === Components === //
-import Card from '@material-ui/core/Card'
 import List from '@material-ui/core/List'
 import ListItem from '@material-ui/core/ListItem'
 import ListItemIcon from '@material-ui/core/ListItemIcon'
 import ListItemText from '@material-ui/core/ListItemText'
-import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline'
-import Tooltip from '@material-ui/core/Tooltip'
-import InfoIcon from '@material-ui/icons/Info'
-import Loading from '@/components/LoadingComponent'
 import GridItem from '@/components/Grid/GridItem'
 import GridContainer from '@/components/Grid/GridContainer'
 import Deposit from './Deposit'
 import Withdraw from './Withdraw'
 import MyStatement from '@/components/MyStatement'
 import { MyAccountIcon, SwapIcon, WithdrawIcon, DepositIcon, SwitchIcon } from '@/components/SvgIcons'
+import ApproveArray from '@/components/ApproveArray/ApproveArrayV3'
 
 // === Reducers === //
 import { useDispatch, useSelector } from 'react-redux'
@@ -31,15 +27,11 @@ import { USDT_ADDRESS, USDC_ADDRESS, DAI_ADDRESS, NET_WORKS, CHAIN_ID, IERC20_AB
 import { INVEST_TAB } from '@/constants/invest'
 
 // === Utils === //
-import { formatBalance } from '@/helpers/number-format'
-import moment from 'moment'
 import isEmpty from 'lodash/isEmpty'
 import last from 'lodash/last'
 import noop from 'lodash/noop'
 import * as ethers from 'ethers'
 import useVersionWapper from '@/hooks/useVersionWapper'
-import { addToken } from '@/helpers/wallet'
-import { getLastPossibleRebaseTime } from '@/helpers/time-util'
 import useVault from '@/hooks/useVault'
 
 // === Styles === //
@@ -83,13 +75,26 @@ function Invest(props) {
 
   const [isBalanceLoading, setIsBalanceLoading] = useState(false)
 
+  const [burnTokens, setBurnTokens] = useState([
+    {
+      address: USDT_ADDRESS,
+      amount: '100000000'
+    },
+    {
+      address: USDC_ADDRESS,
+      amount: '10000000'
+    },
+    {
+      address: DAI_ADDRESS,
+      amount: '10000000000000000000'
+    }
+  ])
+
   const current = useSelector(state => state.investReducer.currentTab)
   const setCurrent = tab => {
     loadCoinsBalance()
     dispatch(setCurrentTab(tab))
   }
-
-  const lastRebaseTime = getLastPossibleRebaseTime()
 
   const { minimumInvestmentAmount, exchangeManager } = useVault(VAULT_ADDRESS, VAULT_ABI, userProvider)
   // load user balance
@@ -222,10 +227,6 @@ function Invest(props) {
     return vaultContract.totalAssetsIncludeVaultBuffer()
   }
 
-  const handleAddUSDi = () => {
-    addToken(USDI_ADDRESS, 'USDi', usdiDecimals)
-  }
-
   const changeRouter = path => {
     let promise = Promise.resolve({})
     if (path === '#/ethi' && CHAIN_ID !== 1) {
@@ -242,9 +243,11 @@ function Invest(props) {
           <List>
             <ListItem key="My Account" button className={classNames(classes.item)} onClick={() => setCurrent(INVEST_TAB.account)}>
               <ListItemIcon>
-                <MyAccountIcon style={{ color: current === 0 ? '#A68EFE' : '#fff' }} />
+                <MyAccountIcon color={current === INVEST_TAB.account ? '#A68EFE' : '#fff'} />
               </ListItemIcon>
-              {!isLayoutSm && <ListItemText primary={'My Account'} className={classNames(current === 0 ? classes.check : classes.text)} />}
+              {!isLayoutSm && (
+                <ListItemText primary={'My Account'} className={classNames(current === INVEST_TAB.account ? classes.check : classes.text)} />
+              )}
             </ListItem>
             {/* {!isEmpty(address) && (
               <ListItem key="My Statement" button className={classNames(classes.item)} onClick={() => setCurrent(INVEST_TAB.statement)}>
@@ -263,7 +266,7 @@ function Invest(props) {
               onClick={() => setCurrent(INVEST_TAB.deposit)}
             >
               <ListItemIcon>
-                <DepositIcon style={{ color: current === INVEST_TAB.deposit ? '#A68EFE' : '#fff' }} />
+                <DepositIcon color={current === INVEST_TAB.deposit ? '#A68EFE' : '#fff'} />
               </ListItemIcon>
               {!isLayoutSm && (
                 <ListItemText primary={'Deposit'} className={classNames(current === INVEST_TAB.deposit ? classes.check : classes.text)} />
@@ -276,7 +279,7 @@ function Invest(props) {
               onClick={() => setCurrent(INVEST_TAB.withdraw)}
             >
               <ListItemIcon>
-                <WithdrawIcon style={{ color: current === INVEST_TAB.withdraw ? '#A68EFE' : '#fff' }} />
+                <WithdrawIcon color={current === INVEST_TAB.withdraw ? '#A68EFE' : '#fff'} />
               </ListItemIcon>
               {!isLayoutSm && (
                 <ListItemText primary={'Withdraw'} className={classNames(current === INVEST_TAB.withdraw ? classes.check : classes.text)} />
@@ -289,7 +292,7 @@ function Invest(props) {
               onClick={() => setCurrent(INVEST_TAB.swap)}
             >
               <ListItemIcon>
-                <SwapIcon style={{ color: current === INVEST_TAB.swap ? '#A68EFE' : '#fff' }} />
+                <SwapIcon color={current === INVEST_TAB.swap ? '#A68EFE' : '#fff'} />
               </ListItemIcon>
               {!isLayoutSm && <ListItemText primary={'Swap'} className={classNames(current === INVEST_TAB.swap ? classes.check : classes.text)} />}
             </ListItem>
@@ -301,6 +304,8 @@ function Invest(props) {
             </ListItem>
           </List>
         </GridItem>
+        {/* 
+        // legacy "My Account" page hidden. Using "My Statement" page
         {current === INVEST_TAB.account && (
           <GridItem xs={9} sm={9} md={6}>
             <Card className={classes.balanceCard}>
@@ -345,10 +350,11 @@ function Invest(props) {
               </div>
             </Card>
           </GridItem>
-        )}
+        )} 
+        */}
         {current === INVEST_TAB.deposit && (
           <GridItem xs={9} sm={9} md={6}>
-            <div className={isLayoutSm ? classes.wrapperMobile : classes.wrapper}>
+            <div className={classes.wrapper}>
               <Deposit
                 address={address}
                 usdtBalance={usdtBalance}
@@ -375,28 +381,40 @@ function Invest(props) {
         )}
         {current === INVEST_TAB.withdraw && (
           <GridItem xs={9} sm={9} md={6}>
-            <div className={isLayoutSm ? classes.wrapperMobile : classes.wrapper}>
+            <div className={classes.wrapper}>
               <Withdraw
                 address={address}
-                exchangeManager={exchangeManager}
                 toBalance={toBalance}
                 usdiDecimals={usdiDecimals}
                 userProvider={userProvider}
                 VAULT_ADDRESS={VAULT_ADDRESS}
                 VAULT_ABI={VAULT_ABI}
                 IERC20_ABI={IERC20_ABI}
-                EXCHANGE_AGGREGATOR_ABI={EXCHANGE_AGGREGATOR_ABI}
-                EXCHANGE_ADAPTER_ABI={EXCHANGE_ADAPTER_ABI}
+                setBurnTokens={setBurnTokens}
                 isBalanceLoading={isBalanceLoading}
                 reloadBalance={loadCoinsBalance}
               />
             </div>
           </GridItem>
         )}
-        {current === INVEST_TAB.statement && (
+        {current === INVEST_TAB.account && (
           <GridItem xs={9} sm={9} md={9}>
-            <div className={isLayoutSm ? classes.wrapperMobile : classes.wrapper} style={{ background: 'none', paddingTop: '1rem', paddingLeft: 0 }}>
+            <div className={classes.wrapper} style={{ background: 'none', paddingTop: '1rem', paddingLeft: 0 }}>
               <MyStatement address={address} chain={`${CHAIN_ID}`} VAULT_ADDRESS={VAULT_ADDRESS} type={'USDi'} />
+            </div>
+          </GridItem>
+        )}
+        {current === INVEST_TAB.swap && (
+          <GridItem xs={9} sm={9} md={6}>
+            <div className={classes.wrapper}>
+              <ApproveArray
+                address={address}
+                tokens={burnTokens}
+                userProvider={userProvider}
+                exchangeManager={exchangeManager}
+                EXCHANGE_ADAPTER_ABI={EXCHANGE_ADAPTER_ABI}
+                EXCHANGE_AGGREGATOR_ABI={EXCHANGE_AGGREGATOR_ABI}
+              />
             </div>
           </GridItem>
         )}

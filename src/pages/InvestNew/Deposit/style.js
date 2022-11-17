@@ -12,16 +12,16 @@ const componentsStyle = () => ({
   },
   depositContainer: {
     border: '1px solid #A68EFD',
-    borderTopLeftRadius: '1rem',
-    borderTopRightRadius: '1rem',
+    borderTopLeftRadius: '1.25rem',
+    borderTopRightRadius: '1.25rem',
     padding: '2.6875rem 2.25rem',
     background: '#1E1E1F'
   },
   estimateContainer: {
     border: '1px solid #A68EFD',
-    marginTop: '0.5rem',
-    borderBottomLeftRadius: '1rem',
-    borderBottomRightRadius: '1rem',
+    marginTop: '0.625rem',
+    borderBottomLeftRadius: '1.25rem',
+    borderBottomRightRadius: '1.25rem',
     padding: '2.0625rem 2.6875rem',
     background: '#1E1E1F'
   },
@@ -38,7 +38,7 @@ const componentsStyle = () => ({
     fontSize: '1rem'
   },
   footerContainer: {
-    marginTop: '2.5rem'
+    marginTop: '0.625rem'
   },
   tokenInputWrapper: {
     marginBottom: '16px'
