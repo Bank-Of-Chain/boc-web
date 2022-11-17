@@ -94,6 +94,10 @@ const componentsStyle = () => ({
   },
   subTitle: {
     color: '#A68EFE'
+  },
+  blockButton: {
+    padding: '1.25rem 0',
+    borderRadius: 20
   }
 })
 

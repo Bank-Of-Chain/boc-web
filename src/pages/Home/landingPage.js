@@ -87,12 +87,6 @@ const landingPageStyle = {
     marginLeft: 10,
     cursor: 'pointer'
   },
-  invest: {
-    width: '17.5rem',
-    height: '3.625rem',
-    fontSize: '1rem',
-    textTransform: 'none'
-  },
   grid: {
     padding: '15rem 0',
     textAlign: 'center',

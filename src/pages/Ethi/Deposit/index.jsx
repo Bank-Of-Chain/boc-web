@@ -363,7 +363,13 @@ export default function Deposit({
       <GridContainer>
         <GridItem xs={12} sm={12} md={12} lg={12}>
           <div className={classes.footerContainer}>
-            <Button disabled={!isLogin || (isLogin && !isValid)} color="colorfull" onClick={openEstimateModal} style={{ width: '100%' }}>
+            <Button
+              disabled={!isLogin || (isLogin && !isValid)}
+              color="colorful"
+              onClick={openEstimateModal}
+              className={classes.blockButton}
+              fullWidth={true}
+            >
               Deposit
             </Button>
           </div>
@@ -446,7 +452,7 @@ export default function Deposit({
               </Typography>
             </GridItem>
             <GridItem xs={12} sm={12} md={12} lg={12} className={classes.item} style={{ textAlign: 'center' }}>
-              <Button color="colorfull" onClick={diposit} style={{ width: '50%' }}>
+              <Button color="colorful" onClick={diposit} style={{ width: '50%' }}>
                 Continue
               </Button>
               <Button style={{ marginLeft: 20 }} color="danger" onClick={() => setIsOpenEstimateModal(false)}>

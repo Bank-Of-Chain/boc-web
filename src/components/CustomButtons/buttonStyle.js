@@ -1,4 +1,5 @@
 import { grayColor, roseColor, primaryColor, infoColor, successColor, warningColor, dangerColor } from '@/assets/jss/material-kit-react.js'
+import { hoverGradientText, focusGradientText } from '@/assets/jss/common'
 
 const buttonStyle = {
   button: {
@@ -10,8 +11,7 @@ const buttonStyle = {
     border: 'none',
     borderRadius: '5px',
     position: 'relative',
-    padding: '12px 30px',
-    fontWeight: '400',
+    padding: '0.75rem 1rem',
     textTransform: 'none',
     letterSpacing: '0',
     willChange: 'box-shadow, transform',
@@ -21,7 +21,9 @@ const buttonStyle = {
     verticalAlign: 'middle',
     touchAction: 'manipulation',
     cursor: 'pointer',
-    '&:hover,&:focus': {
+    lineHeight: 1,
+    fontSize: '1rem',
+    '&:hover': {
       color: '#FFFFFF',
       backgroundColor: grayColor,
       boxShadow: '0 14px 26px -12px rgba(153, 153, 153, 0.42), 0 4px 23px 0px rgba(0, 0, 0, 0.12), 0 8px 10px -5px rgba(153, 153, 153, 0.2)'
@@ -93,26 +95,36 @@ const buttonStyle = {
     }
   },
   danger: {
-    backgroundColor: dangerColor,
-    boxShadow: '0 2px 2px 0 rgba(244, 67, 54, 0.14), 0 3px 1px -2px rgba(244, 67, 54, 0.2), 0 1px 5px 0 rgba(244, 67, 54, 0.12)',
-    '&:hover,&:focus': {
-      backgroundColor: dangerColor,
-      boxShadow: '0 14px 26px -12px rgba(244, 67, 54, 0.42), 0 4px 23px 0px rgba(0, 0, 0, 0.12), 0 8px 10px -5px rgba(244, 67, 54, 0.2)'
+    border: '2px solid #EA7D7D',
+    backgroundColor: 'transparent',
+    color: '#EA7D7D',
+    '&:hover': {
+      backgroundColor: 'transparent',
+      color: '#EA7D7D'
     }
   },
-  colorfull: {
+  colorful: {
     color: '#fff',
     background: 'linear-gradient(223.3deg, #A68EFD 20.71%, #F4ACF3 103.56%)'
   },
-  'colorfull-border': {
+  'colorful-border': {
     border: '2px solid transparent',
     borderRadius: 5,
     color: '#fff',
     backgroundClip: 'padding-box, border-box',
     backgroundOrigin: 'padding-box, border-box',
-    backgroundImage: 'linear-gradient(to right, #1F2023, #1F2023), linear-gradient(219.17deg, #94E3FF 24.63%, #FE3DCE 104.13%)'
+    backgroundImage: 'linear-gradient(to right, #1F2023, #1F2023), linear-gradient(219.17deg, #94E3FF 24.63%, #FE3DCE 104.13%)',
+    '&:hover': {
+      backgroundImage: 'linear-gradient(to right, #1F2023, #1F2023), linear-gradient(220.48deg, #FE3DCE 6.75%, #5B93E0 100%)',
+      boxShadow: '0px 0px 20px #A68EFE'
+    },
+    '&:active': {
+      backgroundClip: 'border-box',
+      backgroundOrigin: 'border-box',
+      backgroundImage: 'linear-gradient(220.48deg, #FE3DCE 6.75%, #5B93E0 100%)'
+    }
   },
-  'colorfull-border-2': {
+  'colorful-border-2': {
     border: '2px solid transparent',
     borderRadius: 5,
     color: '#fff',
@@ -309,7 +321,37 @@ const buttonStyle = {
     border: '2px solid #fff',
     borderRadius: 10,
     color: '#fff',
-    backgroundColor: 'transparent'
+    backgroundColor: 'transparent',
+    '&:hover': {
+      borderColor: 'transparent',
+      backgroundClip: 'padding-box, border-box',
+      backgroundOrigin: 'padding-box, border-box',
+      backgroundImage: 'linear-gradient(to right, #1F2023, #1F2023), linear-gradient(219.17deg, #94E3FF 24.63%, #FE3DCE 104.13%)'
+    },
+    '&:active': {
+      borderColor: '#fff',
+      backgroundClip: 'padding-box',
+      backgroundOrigin: 'padding-box',
+      backgroundImage: 'linear-gradient(220.48deg, #FE3DCE 6.75%, #5B93E0 100%)'
+    }
+  },
+  'colorful-text': {
+    backgroundColor: 'transparent',
+    boxShadow: 'none',
+    '&:hover': {
+      backgroundColor: 'transparent',
+      boxShadow: 'none',
+      ...hoverGradientText
+    },
+    '&:focus': {
+      backgroundColor: 'transparent',
+      boxShadow: 'none'
+    },
+    '&:active': {
+      backgroundColor: 'transparent',
+      boxShadow: 'none',
+      ...focusGradientText
+    }
   }
 }
 

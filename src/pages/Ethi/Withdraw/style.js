@@ -169,6 +169,10 @@ const componentsStyle = () => ({
   },
   root: {
     padding: '1.5rem 0'
+  },
+  blockButton: {
+    padding: '1.25rem 0',
+    borderRadius: 20
   }
 })
 

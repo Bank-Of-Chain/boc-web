@@ -164,6 +164,10 @@ const componentsStyle = () => ({
   },
   tokenName: {
     fontSize: '1.625rem'
+  },
+  blockButton: {
+    padding: '1.25rem 0',
+    borderRadius: 20
   }
 })
 
