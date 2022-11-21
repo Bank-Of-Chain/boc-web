@@ -13,6 +13,8 @@ import reduce from 'lodash/reduce'
 import debounce from 'lodash/debounce'
 import isEmpty from 'lodash/isEmpty'
 import isNumber from 'lodash/isNumber'
+import compact from 'lodash/compact'
+import filter from 'lodash/filter'
 import moment from 'moment'
 import { getLastPossibleRebaseTime } from '@/helpers/time-util'
 import { isAd, isEs, isRp, isDistributing, errorTextOutput, isLessThanMinValue } from '@/helpers/error-handler'
@@ -37,6 +39,10 @@ import Button from '@/components/CustomButtons/Button'
 import { warmDialog } from '@/reducers/meta-reducer'
 import { toFixed, formatBalance } from '@/helpers/number-format'
 import Loading from '@/components/LoadingComponent'
+import SimpleSelect from '@/components/SimpleSelect'
+import AddIcon from '@material-ui/icons/Add'
+import ExpandLessIcon from '@material-ui/icons/ExpandLess'
+import ClearIcon from '@material-ui/icons/Clear'
 
 // === Constants === //
 import { USDT_ADDRESS, USDC_ADDRESS, DAI_ADDRESS, IERC20_ABI, MULTIPLE_OF_GAS, MAX_GAS_LIMIT } from '@/constants'
@@ -84,6 +90,8 @@ export default function Deposit({
   const loadingTimer = useRef()
 
   const nextRebaseTime = getLastPossibleRebaseTime()
+
+  const [tokenSelect, setTokenSelect] = useState([USDT_ADDRESS])
 
   const tokenBasicState = {
     [TOKEN.USDT]: {
@@ -321,6 +329,18 @@ export default function Deposit({
     setIsOpenEstimateModal(true)
   }
 
+  const addSelectToken = address => {
+    if (!tokenSelect.includes(address)) {
+      setTokenSelect([...tokenSelect, address])
+    }
+  }
+
+  const removeSelectToken = address => {
+    if (tokenSelect.includes(address)) {
+      setTokenSelect(filter(tokenSelect, i => i !== address))
+    }
+  }
+
   const estimateMint = useCallback(
     debounce(async () => {
       const isValidUsdtValue = isValidValue(TOKEN.USDT)
@@ -375,45 +395,78 @@ export default function Deposit({
     <>
       <GridContainer classes={{ root: classes.depositContainer }}>
         <p className={classes.estimateText}>From</p>
-        {map(formConfig, item => (
-          <GridItem key={item.name} xs={12} sm={12} md={12} lg={12} className={classes.tokenInputWrapper}>
-            <GridContainer>
-              <GridItem xs={12} sm={12} md={12} lg={12}>
-                <div className={classes.inputLabelWrapper}>
-                  <div className={classes.tokenInfo}>
-                    <img className={classes.tokenLogo} alt="" src={item.image} />
-                    <span className={classes.tokenName}>{item.name}</span>
-                  </div>
-                  <CustomTextField
-                    classes={{ root: classes.input }}
-                    value={item.value}
-                    onChange={event => handleInputChange(event, item)}
-                    placeholder="deposit amount"
-                    maxEndAdornment
-                    onMaxClick={() => handleMaxClick(item)}
-                    error={!isUndefined(item.isValid) && !item.isValid}
-                  />
-                </div>
+        {map(formConfig, item => {
+          if (tokenSelect.includes(item.address)) {
+            const addItem = compact(
+              map(formConfig, selectItem => {
+                if (!tokenSelect.includes(selectItem.address)) {
+                  return {
+                    label: selectItem.name,
+                    value: selectItem.address,
+                    img: `./images/${selectItem.address}.png`,
+                    endDont: <AddIcon onClick={() => addSelectToken(selectItem.address)} />
+                  }
+                }
+              })
+            )
+            const selectOptions = [
+              {
+                key: `${item.address}-expand`,
+                label: item.name,
+                value: item.address,
+                img: `./images/${item.address}.png`,
+                endDont: <ExpandLessIcon />
+              },
+              ...addItem,
+              {
+                key: `${item.address}-clear`,
+                label: item.name,
+                value: item.address,
+                img: `./images/${item.address}.png`,
+                endDont: <ClearIcon onClick={() => removeSelectToken(item.address)} />
+              }
+            ]
+            console.log('selectOptions=', selectOptions)
+            return (
+              <GridItem key={item.name} xs={12} sm={12} md={12} lg={12} className={classes.tokenInputWrapper}>
+                <GridContainer justify="center">
+                  <GridItem xs={4} sm={4} md={4} lg={4}>
+                    <SimpleSelect options={selectOptions} value={item.address} />
+                  </GridItem>
+                  <GridItem xs={8} sm={8} md={8} lg={8}>
+                    <CustomTextField
+                      classes={{ root: classes.input }}
+                      value={item.value}
+                      onChange={event => handleInputChange(event, item)}
+                      placeholder="deposit amount"
+                      maxEndAdornment
+                      onMaxClick={() => handleMaxClick(item)}
+                      error={!isUndefined(item.isValid) && !item.isValid}
+                    />
+                  </GridItem>
+                  <GridItem xs={12} sm={12} md={12} lg={12}>
+                    <p
+                      className={classes.estimateText}
+                      title={formatBalance(item.balance, item.decimals, {
+                        showAll: true
+                      })}
+                    >
+                      Balance:&nbsp;&nbsp;
+                      <Loading loading={isBalanceLoading}>{formatBalance(item.balance, item.decimals)}</Loading>
+                    </p>
+                  </GridItem>
+                </GridContainer>
               </GridItem>
-              <GridItem xs={12} sm={12} md={12} lg={12}>
-                <p
-                  className={classes.estimateText}
-                  title={formatBalance(item.balance, item.decimals, {
-                    showAll: true
-                  })}
-                >
-                  Balance:&nbsp;&nbsp;
-                  <Loading loading={isBalanceLoading}>{formatBalance(item.balance, item.decimals)}</Loading>
-                </p>
-              </GridItem>
-            </GridContainer>
-          </GridItem>
-        ))}
+            )
+          }
+        })}
       </GridContainer>
       <GridContainer classes={{ root: classes.estimateContainer }}>
         <GridItem xs={12} sm={12} md={12} lg={12}>
           <p className={classes.estimateText}>To</p>
-          <p className={classes.estimateBalanceTitle}>
+        </GridItem>
+        <GridItem xs={12} sm={12} md={12} lg={12}>
+          <div className={classes.estimateBalanceTitle}>
             USDi Ticket:
             <span className={classes.estimateBalanceNum}>
               <Loading loading={isEstimate}>
@@ -425,7 +478,7 @@ export default function Deposit({
                 />
               </Loading>
             </span>
-          </p>
+          </div>
           <p className={classes.estimateText}>
             Balance:&nbsp;&nbsp;
             <span>
