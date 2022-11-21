@@ -21,7 +21,6 @@ import Modal from '@material-ui/core/Modal'
 import Paper from '@material-ui/core/Paper'
 import Tooltip from '@material-ui/core/Tooltip'
 import InfoIcon from '@material-ui/icons/Info'
-import Typography from '@material-ui/core/Typography'
 import Loading from '@/components/LoadingComponent'
 
 import GridContainer from '@/components/Grid/GridContainer'
@@ -132,7 +131,7 @@ export default function Deposit({
     )
   }
 
-  const diposit = async () => {
+  const deposit = async () => {
     clearTimeout(loadingTimer.current)
     const isValid = isValidValue()
     if (!isValid) {
@@ -393,73 +392,51 @@ export default function Deposit({
               )
             })}
           </BocStepper>
-          <GridContainer>
-            <GridItem xs={12} sm={12} md={12} lg={12} className={classes.item}>
-              <Typography variant="subtitle1" gutterBottom className={classes.subTitle}>
-                Deposit Amounts:&nbsp;
-                <span key={address} className={classes.flexText}>
-                  <span style={{ color: 'chocolate', marginRight: 5 }}>{ethValue}</span> ETH&nbsp;
-                  <img className={classes.ModalTokenLogo} alt="" src={'./images/0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE.png'} />
-                </span>
-              </Typography>
-            </GridItem>
-            <GridItem xs={12} sm={12} md={12} lg={12} className={classes.item}>
-              <Typography variant="subtitle1" gutterBottom className={classes.subTitle}>
-                Estimate User Get:&nbsp;
-                <span style={{ color: 'darkturquoise' }}>
-                  &nbsp; + {toFixed(estimateVaultBuffValue, BigNumber.from(10).pow(ethiDecimals))}
-                  &nbsp;
-                </span>
-                &nbsp; ETHi Tickets
-              </Typography>
-            </GridItem>
-            <GridItem xs={12} sm={12} md={12} lg={12} className={classes.item}>
-              <Typography variant="subtitle1" gutterBottom className={classes.subTitle}>
-                Exchange&nbsp;
-                <Tooltip
-                  classes={{
-                    tooltip: classes.tooltip
-                  }}
-                  placement="top"
-                  title="Estimated amount of ETHi that can be exchanged"
-                >
+          <div className={classes.item}>
+            <div className={classes.title}>Deposit Amounts:</div>
+            <div className={classes.tokens}>
+              <div className={classes.token}>
+                <img className={classes.ModalTokenLogo} alt="" src="/images/0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE.png" />
+                <span className={classes.name}>ETH: </span>
+                <span className={classes.name}>{ethValue}</span>
+              </div>
+            </div>
+          </div>
+          <div className={classes.itemBottom}>
+            <div className={classes.exchangeInfo}>
+              <div>Receive: {toFixed(estimateVaultBuffValue, BigNumber.from(10).pow(ethiDecimals), 2)} Estimated USDi Tickets</div>
+              <div className={classes.toInfo}>
+                Exchange to
+                <Tooltip placement="top" title="Estimated amount of USDi that can be exchanged">
                   <InfoIcon classes={{ root: classes.labelToolTipIcon }} />
-                </Tooltip>
-                :&nbsp;From&nbsp;
-                <span style={{ color: 'chocolate' }}>{toFixed(estimateVaultBuffValue, BigNumber.from(10).pow(ethiDecimals))}</span>
-                &nbsp; ETHi Tickets <span style={{ fontWeight: 'bold', color: 'dimgrey' }}>To</span>
-                &nbsp;
-                <span style={{ color: 'darkturquoise' }}>
-                  {toFixed(estimateVaultBuffValue.mul(9987).div(10000), BigNumber.from(10).pow(ethiDecimals), 2)}
+                </Tooltip>:
+                <span className={classes.usdiInfo}>
+                  {toFixed(estimateVaultBuffValue.mul(9987).div(10000), BigNumber.from(10).pow(ethiDecimals), 2)} ETHi
                 </span>
-                &nbsp; ETHi
-              </Typography>
-            </GridItem>
-            <GridItem xs={12} sm={12} md={12} lg={12} className={classes.item}>
-              <Typography variant="subtitle1" gutterBottom className={classes.subTitle}>
-                Exchange Time&nbsp;
-                <Tooltip
-                  classes={{
-                    tooltip: classes.tooltip
-                  }}
-                  placement="top"
-                  title="The latest planned execution date may not be executed due to cost and other factors"
-                >
-                  <InfoIcon classes={{ root: classes.labelToolTipIcon }} />
-                </Tooltip>
-                :&nbsp;
-                <span style={{ color: 'chocolate' }}>{moment(nextRebaseTime).format('YYYY-MM-DD HH:mm:ss')}</span>
-              </Typography>
-            </GridItem>
-            <GridItem xs={12} sm={12} md={12} lg={12} className={classes.item} style={{ textAlign: 'center' }}>
-              <Button color="colorful" onClick={diposit} style={{ width: '50%' }}>
-                Continue
-              </Button>
-              <Button style={{ marginLeft: 20 }} color="danger" onClick={() => setIsOpenEstimateModal(false)}>
-                Cancel
-              </Button>
-            </GridItem>
-          </GridContainer>
+              </div>
+            </div>
+            <div className={classes.timeInfo}>
+              Exchange Time
+              <Tooltip
+                classes={{
+                  tooltip: classes.tooltip
+                }}
+                placement="top"
+                title="The latest planned execution date may not be executed due to cost and other factors"
+              >
+                <InfoIcon classes={{ root: classes.labelToolTipIcon }} />
+              </Tooltip>:
+              <span className={classes.time}>{moment(nextRebaseTime).format('YYYY-MM-DD HH:mm:ss')}</span>
+            </div>
+          </div>
+          <div className={classes.buttonGroup}>
+            <Button className={classes.cancelButton} color="danger" onClick={() => setIsOpenEstimateModal(false)}>
+              Cancel
+            </Button>
+            <Button className={classes.okButton} color="colorful" onClick={deposit}>
+              Continue
+            </Button>
+          </div>
         </Paper>
       </Modal>
       <Modal className={classes.modal} open={isLoading} aria-labelledby="simple-modal-title" aria-describedby="simple-modal-description">

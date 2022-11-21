@@ -128,13 +128,14 @@ const componentsStyle = () => ({
     marginLeft: 16
   },
   widthdrawLoadingPaper: {
-    padding: '1rem',
+    padding: '1.25rem',
     maxWidth: '500px',
     color: 'rgba(255, 255, 255, 0.87)',
     border: '1px solid #A68EFE',
-    backgroundColor: '#000',
+    backgroundColor: '#1f1d27',
     borderRadius: '1rem',
-    width: '100%'
+    width: '100%',
+    outline: 0
   },
   estimateBalanceTitle: {
     fontSize: '1.625rem'
@@ -168,11 +169,27 @@ const componentsStyle = () => ({
     padding: '0.5rem 0'
   },
   root: {
-    padding: '1.5rem 0'
+    padding: '1.25rem',
+    borderRadius: '0 0 1.25rem 1.25rem',
+    marginTop: '0.625rem',
+    backgroundColor: '#313036'
   },
   blockButton: {
     padding: '1.25rem 0',
     borderRadius: 20
+  },
+  itemTop: {
+    padding: '1.25rem',
+    borderRadius: '1.25rem 1.25rem 0 0',
+    backgroundColor: '#313036',
+    color: '#DADADA'
+  },
+  cancelButton: {
+    height: '3.625rem',
+    lineHeight: '3.375rem',
+    padding: 0,
+    borderRadius: '1.25rem',
+    marginTop: '0.625rem'
   }
 })
 
