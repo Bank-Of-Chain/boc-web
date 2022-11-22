@@ -1,4 +1,8 @@
-export const array = ['Compound', 'Aave', 'Coinbase', 'YearnFinance', 'Gemini', 'Bitfinex', 'Staking']
+export const usdiArray = ['Compound', 'Aave', 'Coinbase', 'YearnFinance', 'Gemini', 'Bitfinex']
+
+export const ethiArray = ['Compound', 'Aave', 'YearnFinance', 'Gemini', 'Bitfinex', 'Staking']
+
+export const BOC_TITLE = 'BoC'
 
 export const apyType = {
   BlockFi: 'Fixed Rate',

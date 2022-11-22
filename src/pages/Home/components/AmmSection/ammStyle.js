@@ -38,6 +38,7 @@ const ammSectionStyle = {
   img: {
     height: '6rem',
     margin: '0.3rem',
+    cursor: 'pointer',
     borderRadius: '50%',
     filter: 'grayscale(100%)',
     '&:hover': {
