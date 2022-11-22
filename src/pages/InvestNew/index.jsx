@@ -238,9 +238,9 @@ function Invest(props) {
   }
   return (
     <div className={classes.container}>
-      <GridContainer spacing={0} style={{ paddingTop: '100px' }}>
-        <GridItem xs={2} sm={2} md={3} style={{ padding: '0 2rem' }}>
-          <List>
+      <GridContainer spacing={0}>
+        <GridItem xs={2} sm={2} md={3} style={{ paddingRight: '2rem' }}>
+          <List disablePadding={true}>
             <ListItem key="My Account" button className={classNames(classes.item)} onClick={() => setCurrent(INVEST_TAB.account)}>
               <ListItemIcon>
                 <MyAccountIcon color={current === INVEST_TAB.account ? '#A68EFE' : '#fff'} />
@@ -352,71 +352,81 @@ function Invest(props) {
           </GridItem>
         )} 
         */}
-        {current === INVEST_TAB.deposit && (
-          <GridItem xs={9} sm={9} md={6}>
-            <div className={classes.wrapper}>
-              <Deposit
-                address={address}
-                usdtBalance={usdtBalance}
-                usdtDecimals={usdtDecimals}
-                usdcBalance={usdcBalance}
-                usdcDecimals={usdcDecimals}
-                daiBalance={daiBalance}
-                daiDecimals={daiDecimals}
-                usdiDecimals={usdiDecimals}
-                userProvider={userProvider}
-                VAULT_ABI={VAULT_ABI}
-                IERC20_ABI={IERC20_ABI}
-                VAULT_ADDRESS={VAULT_ADDRESS}
-                abi_version={abi_version}
-                toBalance={toBalance}
-                vaultBufferBalance={vaultBufferBalance}
-                vaultBufferDecimals={vaultBufferDecimals}
-                isBalanceLoading={isBalanceLoading}
-                reloadBalance={loadCoinsBalance}
-                minimumInvestmentAmount={minimumInvestmentAmount}
-              />
-            </div>
-          </GridItem>
-        )}
-        {current === INVEST_TAB.withdraw && (
-          <GridItem xs={9} sm={9} md={6}>
-            <div className={classes.wrapper}>
-              <Withdraw
-                address={address}
-                toBalance={toBalance}
-                usdiDecimals={usdiDecimals}
-                userProvider={userProvider}
-                VAULT_ADDRESS={VAULT_ADDRESS}
-                VAULT_ABI={VAULT_ABI}
-                IERC20_ABI={IERC20_ABI}
-                setBurnTokens={setBurnTokens}
-                isBalanceLoading={isBalanceLoading}
-                reloadBalance={loadCoinsBalance}
-              />
-            </div>
-          </GridItem>
-        )}
-        {current === INVEST_TAB.account && (
+        {!userProvider && (
           <GridItem xs={9} sm={9} md={9}>
-            <div className={classes.wrapper} style={{ background: 'none', paddingTop: '1rem', paddingLeft: 0 }}>
-              <MyStatement address={address} chain={`${CHAIN_ID}`} VAULT_ADDRESS={VAULT_ADDRESS} type={'USDi'} />
+            <div className={classes.notConnect}>
+              <div>Wallet not connected.</div>
+              <div className={classes.textBottom}>Connect to your Wallet address to operate.</div>
             </div>
           </GridItem>
         )}
-        {current === INVEST_TAB.swap && (
-          <GridItem xs={9} sm={9} md={6}>
-            <div className={classes.wrapper}>
-              <ApproveArray
-                address={address}
-                tokens={burnTokens}
-                userProvider={userProvider}
-                exchangeManager={exchangeManager}
-                EXCHANGE_ADAPTER_ABI={EXCHANGE_ADAPTER_ABI}
-                EXCHANGE_AGGREGATOR_ABI={EXCHANGE_AGGREGATOR_ABI}
-              />
-            </div>
-          </GridItem>
+        {userProvider && (
+          <>
+            {current === INVEST_TAB.deposit && (
+              <GridItem xs={9} sm={9} md={7}>
+                <div className={classes.wrapper}>
+                  <Deposit
+                    address={address}
+                    usdtBalance={usdtBalance}
+                    usdtDecimals={usdtDecimals}
+                    usdcBalance={usdcBalance}
+                    usdcDecimals={usdcDecimals}
+                    daiBalance={daiBalance}
+                    daiDecimals={daiDecimals}
+                    usdiDecimals={usdiDecimals}
+                    userProvider={userProvider}
+                    VAULT_ABI={VAULT_ABI}
+                    IERC20_ABI={IERC20_ABI}
+                    VAULT_ADDRESS={VAULT_ADDRESS}
+                    abi_version={abi_version}
+                    toBalance={toBalance}
+                    vaultBufferBalance={vaultBufferBalance}
+                    vaultBufferDecimals={vaultBufferDecimals}
+                    isBalanceLoading={isBalanceLoading}
+                    reloadBalance={loadCoinsBalance}
+                    minimumInvestmentAmount={minimumInvestmentAmount}
+                  />
+                </div>
+              </GridItem>
+            )}
+            {current === INVEST_TAB.withdraw && (
+              <GridItem xs={9} sm={9} md={7}>
+                <div className={classes.wrapper}>
+                  <Withdraw
+                    address={address}
+                    toBalance={toBalance}
+                    usdiDecimals={usdiDecimals}
+                    userProvider={userProvider}
+                    VAULT_ADDRESS={VAULT_ADDRESS}
+                    VAULT_ABI={VAULT_ABI}
+                    IERC20_ABI={IERC20_ABI}
+                    setBurnTokens={setBurnTokens}
+                    isBalanceLoading={isBalanceLoading}
+                    reloadBalance={loadCoinsBalance}
+                  />
+                </div>
+              </GridItem>
+            )}
+            {current === INVEST_TAB.account && (
+              <GridItem xs={9} sm={9} md={9}>
+                <MyStatement address={address} chain={`${CHAIN_ID}`} VAULT_ADDRESS={VAULT_ADDRESS} type={'USDi'} />
+              </GridItem>
+            )}
+            {current === INVEST_TAB.swap && (
+              <GridItem xs={9} sm={9} md={7}>
+                <div className={classes.wrapper}>
+                  <ApproveArray
+                    address={address}
+                    tokens={burnTokens}
+                    userProvider={userProvider}
+                    exchangeManager={exchangeManager}
+                    EXCHANGE_ADAPTER_ABI={EXCHANGE_ADAPTER_ABI}
+                    EXCHANGE_AGGREGATOR_ABI={EXCHANGE_AGGREGATOR_ABI}
+                  />
+                </div>
+              </GridItem>
+            )}
+          </>
         )}
       </GridContainer>
     </div>
