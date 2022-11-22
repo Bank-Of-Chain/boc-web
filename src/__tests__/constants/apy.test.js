@@ -1,11 +1,19 @@
-import { array, apyType } from '@/constants/apy'
+import { usdiArray, ethiArray, apyType } from '@/constants/apy'
 
-test(`has 7 array item`, () => {
-  expect(array.length).toBe(7)
+test(`usdiArray has 6 array item`, () => {
+  expect(usdiArray.length).toBe(6)
 })
 
-test(`array item must have apy type`, () => {
-  for (const item of array) {
+test(`ethiArray has 6 array item`, () => {
+  expect(ethiArray.length).toBe(6)
+})
+
+test(`every item must have apy type`, () => {
+  for (const item of usdiArray) {
+    expect(apyType[item]).toBeTruthy()
+  }
+
+  for (const item of ethiArray) {
     expect(apyType[item]).toBeTruthy()
   }
 })
