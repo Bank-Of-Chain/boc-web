@@ -87,6 +87,7 @@ const componentsStyle = () => ({
   },
   notConnect: {
     display: 'flex',
+    flexDirection: 'column',
     height: '20rem',
     justifyContent: 'center',
     alignItems: 'center',
