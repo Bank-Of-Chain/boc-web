@@ -176,11 +176,11 @@ export default function LendingSection() {
       <div className={classes.chart}>
         <div className={classes.chartInner}>
           {loading ? (
-            <GridContainer style={{ margin: '0 auto', padding: '10rem' }} justify="center">
+            <GridContainer style={{ margin: '0 auto', padding: '10rem' }} justifyContent="center">
               <CircularProgress />
             </GridContainer>
           ) : (
-            <GridContainer className={classes.block} style={{ margin: '0 auto' }} justify="center">
+            <GridContainer className={classes.block} style={{ margin: '0 auto' }} justifyContent="center">
               <GridItem sm={12} xs={6} md={6} lg={6} style={{ backgroundColor: 'rgba(0,0,0,0.1)' }}>
                 <p className={classes.colorful}>USD</p>
                 {renderJsx(data, displayMaxValue)}

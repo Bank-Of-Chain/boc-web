@@ -1,19 +1,19 @@
 /**
- * pr02-sg config
+ * qa03-sg config
  */
 
-const ETHI_FOR_ETH = '0x1A597356E7064D4401110FAa2242bD0B51D1E4Fa'
+const ETHI_FOR_ETH = '0x04F339eC4D75Cf2833069e6e61b60eF56461CD7C'
 
-const USDI_FOR_ETH = '0x83131242843257bc6C43771762ba467346Efb2CF'
-const USDI_FOR_MATIC = ''
+const USDI_FOR_ETH = '0x2d13826359803522cCe7a4Cfa2c1b582303DD0B4'
+const USDI_FOR_MATIC = '0x8bA83450090a4F22649C5d01806d1C2679b1Ba98'
 
-const ETHI_VAULT = '0x8f0Cb368C63fbEDF7a90E43fE50F7eb8B9411746'
-const USDI_VAULT_FOR_ETH = '0x30D120f80D60E7b58CA9fFaf1aaB1815f000B7c3'
-const USDI_VAULT_FOR_MATIC = ''
+const ETHI_VAULT = '0x0724F18B2aA7D6413D3fDcF6c0c27458a8170Dd9'
+const USDI_VAULT_FOR_ETH = '0x3a622DB2db50f463dF562Dc5F341545A64C580fc'
+const USDI_VAULT_FOR_MATIC = '0xd3feAe6c4fdfDE73Bd2fE99c8fE6944904DAA68A'
 
-const VAULT_BUFFER_FOR_ETHI_ETH = '0xC8915157b36ed6D0F36827a1Bb5E9b0cDd1e87Cd'
-const VAULT_BUFFER_FOR_USDI_ETH = '0x0b8D3634a05cc6b50E4D026c0eaFa8469cA98480'
-const VAULT_BUFFER_FOR_USDI_MATIC = ''
+const VAULT_BUFFER_FOR_ETHI_ETH = '0x92A00fc48Ad3dD4A8b5266a8F467a52Ac784fC83'
+const VAULT_BUFFER_FOR_USDI_ETH = '0x124dDf9BdD2DdaD012ef1D5bBd77c00F05C610DA'
+const VAULT_BUFFER_FOR_USDI_MATIC = '0x6eED2f58ed21a651CCc42Af123E243FaBad920E0'
 
 const configBase = {
   usdt_address: '0xdAC17F958D2ee523a2206206994597C13D831ec7',
@@ -31,20 +31,20 @@ const configBase = {
   youtube_url: 'https://www.youtube.com/channel/UCnACZpYuAksuSeoLniDXlOQ/featured',
   medium_url: 'https://medium.com/bankofchain',
   document_url: 'https://docs.bankofchain.io',
-  boc_server: 'https://service-pr02-sg.bankofchain.io',
+  boc_server: 'https://service-qa03-sg.bankofchain.io',
   rpc_url: {
-    1: 'https://rpc.ankr.com/eth',
-    137: 'https://rpc-mainnet.maticvigil.com',
-    31337: ''
+    1: 'https://rpc-qa03-sg.bankofchain.io',
+    137: 'https://rpc-qa03-sg.bankofchain.io',
+    31337: 'https://rpc-qa03-sg.bankofchain.io'
   },
   multiple_of_gas: 2,
-  dashboard_url: 'https://dashboard-v2.bankofchain.io',
+  dashboard_url: 'https://dashboard-qa03-sg.bankofchain.io',
   oracle_additional_slippage: 20
 }
 
 const config137 = {
   ...configBase,
-  apy_server: 'https://pr02-sg-keeper-polygon.bankofchain.io',
+  apy_server: 'https://qa03-sg-keeper-polygon.bankofchain.io',
   usdt_address: '0xc2132D05D31c914a87C6611C10748AEb04B58e8F',
   usdc_address: '0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174',
   dai_address: '0x8f3Cf7ad23Cd3CaDbD9735AFf958023239c6A063',
@@ -64,7 +64,7 @@ const config137 = {
     {
       id: 'mutilCoins',
       name: 'Vault for USDi',
-      path: '#/mutils',
+      path: '#/usdi',
       abi_version: 'usdi-v1.6.0',
       VAULT_ADDRESS: USDI_VAULT_FOR_MATIC,
       USDI_ADDRESS: USDI_FOR_MATIC,
@@ -85,8 +85,8 @@ const config137 = {
 
 const config1 = {
   ...configBase,
-  apy_server: 'https://pr02-sg-keeper-eth.bankofchain.io',
-  ethi_keeper_server: 'https://pr02-sg-keeper-ethi.bankofchain.io',
+  apy_server: 'https://qa03-sg-keeper-eth.bankofchain.io',
+  ethi_keeper_server: 'https://qa03-sg-keeper-ethi.bankofchain.io',
   usdt_address: '0xdAC17F958D2ee523a2206206994597C13D831ec7',
   usdc_address: '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48',
   dai_address: '0x6B175474E89094C44Da98b954EedeAC495271d0F',
@@ -111,7 +111,7 @@ const config1 = {
     {
       id: 'mutilCoins',
       name: 'Vault for USDi',
-      path: '#/mutils',
+      path: '#/usdi',
       abi_version: 'usdi-v1.6.0',
       VAULT_ADDRESS: USDI_VAULT_FOR_ETH,
       USDI_ADDRESS: USDI_FOR_ETH,
@@ -137,7 +137,7 @@ const glo = {
 }
 export default {
   // local
-  31337: glo['configBase'],
+  31337: glo['config1'],
   // polygon
   137: config137,
   // eth

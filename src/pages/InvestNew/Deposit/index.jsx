@@ -9,7 +9,6 @@ import isUndefined from 'lodash/isUndefined'
 import map from 'lodash/map'
 import some from 'lodash/some'
 import every from 'lodash/every'
-import reduce from 'lodash/reduce'
 import debounce from 'lodash/debounce'
 import isEmpty from 'lodash/isEmpty'
 import isNumber from 'lodash/isNumber'
@@ -23,7 +22,6 @@ import BocStepper from '@/components/Stepper/Stepper'
 import BocStepLabel from '@/components/Stepper/StepLabel'
 import BocStepIcon from '@/components/Stepper/StepIcon'
 import BocStepConnector from '@/components/Stepper/StepConnector'
-import Typography from '@material-ui/core/Typography'
 import CircularProgress from '@material-ui/core/CircularProgress'
 import Modal from '@material-ui/core/Modal'
 import Paper from '@material-ui/core/Paper'
@@ -53,7 +51,15 @@ const TOKEN = {
   DAI: 'DAI'
 }
 
-const steps = ['Step1: Deposit', 'Get USDi Ticket', 'Step2: Allocation Action', 'Get USDi']
+const steps = [
+  <>
+    <div>Step1:</div>
+    <div>Deposit</div>
+  </>,
+  'Get USDi Ticket',
+  'Step2: Allocation Action',
+  'Get USDi'
+]
 
 export default function Deposit({
   address,
@@ -416,7 +422,14 @@ export default function Deposit({
           <p className={classes.estimateBalanceTitle}>
             USDi Ticket:
             <span className={classes.estimateBalanceNum}>
-              <Loading loading={isEstimate}>{toFixed(estimateVaultBuffValue, BigNumber.from(10).pow(usdiDecimals))}</Loading>
+              <Loading loading={isEstimate}>
+                <CustomTextField
+                  disabled
+                  classes={{ root: classes.input }}
+                  value={toFixed(estimateVaultBuffValue, BigNumber.from(10).pow(usdiDecimals))}
+                  error={false}
+                />
+              </Loading>
             </span>
           </p>
           <p className={classes.estimateText}>
@@ -436,9 +449,10 @@ export default function Deposit({
                 (isLogin &&
                   (some(formConfig, item => isValidValue(item.name) === false) || every(formConfig, item => isValidValue(item.name) !== true)))
               }
-              color="colorfull"
+              color="colorful"
               onClick={openEstimateModal}
-              style={{ width: '100%' }}
+              className={classes.blockButton}
+              fullWidth={true}
             >
               Deposit
             </Button>
@@ -463,96 +477,59 @@ export default function Deposit({
               )
             })}
           </BocStepper>
-          <GridContainer>
-            <GridItem xs={12} sm={12} md={12} lg={12} className={classes.item}>
-              <Typography variant="subtitle1" gutterBottom className={classes.subTitle}>
-                Deposit Amounts:&nbsp;
-                {reduce(
-                  map(formConfig, item => {
-                    const { name, value, image, isValid, address } = item
-                    if (!isValid) {
-                      return
-                    }
-                    return (
-                      <span key={address} className={classes.flexText}>
-                        <span style={{ color: 'chocolate', marginRight: 5 }}>{value}</span> {name}&nbsp;
-                        <img className={classes.ModalTokenLogo} alt="" src={image} />
-                      </span>
-                    )
-                  }),
-                  (rs, i, index) => {
-                    if (isEmpty(i)) {
-                      return rs
-                    }
-                    if (!isEmpty(rs)) {
-                      rs.push(<span key={index}> + </span>)
-                    }
-                    rs.push(i)
-                    return rs
-                  },
-                  []
-                )}
-              </Typography>
-            </GridItem>
-            <GridItem xs={12} sm={12} md={12} lg={12} className={classes.item}>
-              <Typography variant="subtitle1" gutterBottom className={classes.subTitle}>
-                Estimate User Get:&nbsp;
-                <span style={{ color: 'darkturquoise' }}>
-                  &nbsp; + {toFixed(estimateVaultBuffValue, BigNumber.from(10).pow(usdiDecimals))}
-                  &nbsp;
-                </span>
-                &nbsp; USDi Tickets
-              </Typography>
-            </GridItem>
-            <GridItem xs={12} sm={12} md={12} lg={12} className={classes.item}>
-              <Typography variant="subtitle1" gutterBottom className={classes.subTitle}>
-                Exchange&nbsp;
-                <Tooltip
-                  classes={{
-                    tooltip: classes.tooltip
-                  }}
-                  placement="top"
-                  title="Estimated amount of USDi that can be exchanged"
-                >
+          <div className={classes.item}>
+            <div className={classes.title}>Deposit Amounts:</div>
+            <div className={classes.tokens}>
+              {map(formConfig, item => {
+                const { name, value, image, isValid, address } = item
+                if (!isValid) {
+                  return
+                }
+                return (
+                  <div className={classes.token} key={address}>
+                    <img className={classes.ModalTokenLogo} alt="" src={image} />
+                    <span className={classes.name}>{name}: </span>
+                    <span className={classes.name}>{value}</span>
+                  </div>
+                )
+              })}
+            </div>
+          </div>
+          <div className={classes.itemBottom}>
+            <div className={classes.exchangeInfo}>
+              <div>Receive: {toFixed(estimateVaultBuffValue, BigNumber.from(10).pow(usdiDecimals), 2)} Estimated USDi Tickets</div>
+              <div className={classes.toInfo}>
+                Exchange to
+                <Tooltip placement="top" title="Estimated amount of USDi that can be exchanged">
                   <InfoIcon classes={{ root: classes.labelToolTipIcon }} />
-                </Tooltip>
-                :&nbsp;From&nbsp;
-                <span style={{ color: 'chocolate' }}>{toFixed(estimateVaultBuffValue, BigNumber.from(10).pow(usdiDecimals))}</span>
-                &nbsp; USDi Tickets <span style={{ fontWeight: 'bold', color: 'dimgrey' }}>To</span>
-                &nbsp;
-                <span style={{ color: 'darkturquoise' }}>
-                  <Loading loading={isEstimate}>
-                    {toFixed(estimateVaultBuffValue.mul(9987).div(10000), BigNumber.from(10).pow(usdiDecimals), 2)}
-                  </Loading>
+                </Tooltip>:
+                <span className={classes.usdiInfo}>
+                  {toFixed(estimateVaultBuffValue.mul(9987).div(10000), BigNumber.from(10).pow(usdiDecimals), 2)} USDi
                 </span>
-                &nbsp; USDi
-              </Typography>
-            </GridItem>
-            <GridItem xs={12} sm={12} md={12} lg={12} className={classes.item}>
-              <Typography variant="subtitle1" gutterBottom className={classes.subTitle}>
-                Exchange Time&nbsp;
-                <Tooltip
-                  classes={{
-                    tooltip: classes.tooltip
-                  }}
-                  placement="top"
-                  title="The latest planned execution date may not be executed due to cost and other factors"
-                >
-                  <InfoIcon classes={{ root: classes.labelToolTipIcon }} />
-                </Tooltip>
-                :&nbsp;
-                <span style={{ color: 'chocolate' }}>{moment(nextRebaseTime).format('YYYY-MM-DD HH:mm:ss')}</span>
-              </Typography>
-            </GridItem>
-            <GridItem xs={12} sm={12} md={12} lg={12} className={classes.item} style={{ textAlign: 'center' }}>
-              <Button color="colorfull" onClick={deposit} style={{ width: '50%' }}>
-                Continue
-              </Button>
-              <Button style={{ marginLeft: 20 }} color="danger" onClick={() => setIsOpenEstimateModal(false)}>
-                Cancel
-              </Button>
-            </GridItem>
-          </GridContainer>
+              </div>
+            </div>
+            <div className={classes.timeInfo}>
+              Exchange Time
+              <Tooltip
+                classes={{
+                  tooltip: classes.tooltip
+                }}
+                placement="top"
+                title="The latest planned execution date may not be executed due to cost and other factors"
+              >
+                <InfoIcon classes={{ root: classes.labelToolTipIcon }} />
+              </Tooltip>:
+              <span className={classes.time}>{moment(nextRebaseTime).format('YYYY-MM-DD HH:mm:ss')}</span>
+            </div>
+          </div>
+          <div className={classes.buttonGroup}>
+            <Button className={classes.cancelButton} color="danger" onClick={() => setIsOpenEstimateModal(false)}>
+              Cancel
+            </Button>
+            <Button className={classes.okButton} color="colorful" onClick={deposit}>
+              Continue
+            </Button>
+          </div>
         </Paper>
       </Modal>
       <Modal className={classes.modal} open={isLoading} aria-labelledby="simple-modal-title" aria-describedby="simple-modal-description">

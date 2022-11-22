@@ -65,35 +65,111 @@ const componentsStyle = () => ({
     borderRadius: '50%',
     marginRight: 8
   },
-  flexText: {
-    display: 'inline-flex',
-    justifyContent: 'center',
-    alignItems: 'center'
-  },
   ModalTokenLogo: {
-    width: 25,
-    borderRadius: '50%',
-    margin: '0 8px'
+    width: '1.875rem',
+    borderRadius: '50%'
   },
   labelToolTipIcon: {
     fontSize: 16
   },
   depositModal: {
-    padding: '1rem',
-    maxWidth: '500px',
+    padding: '1.25rem',
+    width: '35rem',
     color: 'rgba(255, 255, 255, 0.87)',
     border: '1px solid #A68EFE',
-    backgroundColor: '#000',
-    borderRadius: '1rem'
+    backgroundColor: '#1f1d27',
+    borderRadius: '2.5rem',
+    outline: 0,
+    '&:active': {
+      outline: 'none'
+    }
   },
   root: {
-    padding: '1.5rem 0'
+    padding: '1.25rem',
+    borderRadius: '1.25rem 1.25rem 0 0',
+    backgroundColor: '#313036'
   },
   item: {
-    paddingTop: '3rem'
+    padding: '1.25rem',
+    marginTop: '0.625rem',
+    backgroundColor: '#313036',
+    color: '#DADADA'
+  },
+  title: {
+    height: '1rem',
+    lineHeight: '1rem',
+    fontSize: '1rem'
   },
   subTitle: {
     color: '#A68EFE'
+  },
+  blockButton: {
+    padding: '1.25rem 0',
+    borderRadius: 20
+  },
+  tokens: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    marginTop: '0.625rem'
+  },
+  token: {
+    display: 'flex',
+    alignItems: 'center'
+  },
+  name: {
+    marginLeft: '0.625rem'
+  },
+  itemBottom: {
+    padding: '1.25rem',
+    borderRadius: '0 0 1.25rem 1.25rem',
+    marginTop: '0.625rem',
+    backgroundColor: '#313036',
+    color: '#DADADA'
+  },
+  exchangeInfo: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    height: '1.875rem',
+    fontSize: '0.75rem'
+  },
+  toInfo: {
+    display: 'flex',
+    alignItems: 'center',
+    height: '1.875rem',
+    fontSize: '1rem',
+    fontWeight: 'bold'
+  },
+  usdiInfo: {
+    marginLeft: '0.625rem',
+    fontSize: '1.5rem'
+  },
+  timeInfo: {
+    display: 'flex',
+    alignItems: 'center',
+    height: '1rem',
+    lineHeight: '1rem',
+    marginTop: '1.875rem',
+    fontSize: '0.75rem'
+  },
+  time: {
+    marginLeft: '0.625rem'
+  },
+  buttonGroup: {
+    marginTop: '0.625rem',
+    '& button + button': {
+      marginLeft: '0.625rem'
+    }
+  },
+  cancelButton: {
+    width: '15rem',
+    padding: '1.25rem 0',
+    borderRadius: '1.25rem'
+  },
+  okButton: {
+    width: '19.375rem',
+    padding: '1.25rem 0',
+    borderRadius: '1.25rem'
   }
 })
 

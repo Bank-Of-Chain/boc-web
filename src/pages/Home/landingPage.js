@@ -48,6 +48,7 @@ const landingPageStyle = {
     background: '#1F2023 url(/images/home/bg-line.png) no-repeat center'
   },
   infoWrapper: {
+    marginTop: '2.375rem',
     textAlign: 'center'
   },
   info: {
