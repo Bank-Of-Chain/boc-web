@@ -1,5 +1,3 @@
-import { container } from '@/assets/jss/material-kit-react.js'
-
 const footerStyle = {
   title: {
     display: 'block',
@@ -36,7 +34,7 @@ const footerStyle = {
     display: 'flex',
     zIndex: '2',
     position: 'relative',
-    padding: '1.5rem 8.75rem 0'
+    padding: '1.5rem 0'
   },
   '@media (max-width: 960px)': {
     footer: {
@@ -48,7 +46,10 @@ const footerStyle = {
       color: '#FFFFFF'
     }
   },
-  container: container,
+  container: {
+    maxWidth: '75rem',
+    margin: '0 auto'
+  },
   list: {
     padding: '0',
     margin: '0 -0.9375rem 0 0'

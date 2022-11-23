@@ -1,6 +1,7 @@
 const style = {
   roadmap: {
-    marginBottom: 100
+    marginBottom: '11rem',
+    textAlign: 'center'
   },
   title: {
     fontSize: '5rem',
@@ -9,16 +10,16 @@ const style = {
     color: '#fff'
   },
   bottomButton: {
+    boxSizing: 'border-box',
+    display: 'inline-block',
+    height: '8.125rem',
+    padding: '0 3.125rem',
     color: '#A68EFE',
-    border: '0.5rem solid #A68EFE',
+    border: '0.375rem solid #A68EFE',
     fontSize: '2.5rem',
-    textAlign: 'center',
     fontWeight: 700,
     borderRadius: '8rem',
-    width: '18.25rem',
-    margin: '0 auto',
-    letterSpacing: '0.01em',
-    lineHeight: 2.7
+    lineHeight: '7.375rem'
   },
   text: {
     fontSize: '1.375rem',

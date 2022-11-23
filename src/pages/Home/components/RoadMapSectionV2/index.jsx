@@ -118,7 +118,7 @@ export default function RoadMapSectionV2() {
       if (length === 2) return 30
       return 12.5 * length
     }
-    return 19 * length
+    return 17 * length
   }
 
   return (
@@ -171,7 +171,7 @@ export default function RoadMapSectionV2() {
           )
         })}
       </GridContainer>
-      <h3 className={classes.bottomButton}>DeB</h3>
+      <div className={classes.bottomButton}>... To a full-fledged Decentralized Bank</div>
     </div>
   )
 }
