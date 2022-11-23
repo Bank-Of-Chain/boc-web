@@ -341,7 +341,14 @@ function Ethi(props) {
             )}
             {current === INVEST_TAB.account && (
               <GridItem xs={9} sm={9} md={9}>
-                <MyStatement address={address} chain={`${CHAIN_ID}`} VAULT_ADDRESS={VAULT_ADDRESS} type={'ETHi'} />
+                <MyStatement
+                  address={address}
+                  chain={`${CHAIN_ID}`}
+                  VAULT_ADDRESS={VAULT_ADDRESS}
+                  type={'ETHi'}
+                  balance={ethiBalance}
+                  vaultBufferBalance={vaultBufferBalance}
+                />
               </GridItem>
             )}
             {current === INVEST_TAB.swap && (

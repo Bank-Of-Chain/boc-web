@@ -406,7 +406,14 @@ function Invest(props) {
             )}
             {current === INVEST_TAB.account && (
               <GridItem xs={9} sm={9} md={9}>
-                <MyStatement address={address} chain={`${CHAIN_ID}`} VAULT_ADDRESS={VAULT_ADDRESS} type={'USDi'} />
+                <MyStatement
+                  address={address}
+                  chain={`${CHAIN_ID}`}
+                  VAULT_ADDRESS={VAULT_ADDRESS}
+                  type={'USDi'}
+                  balance={toBalance}
+                  vaultBufferBalance={vaultBufferBalance}
+                />
               </GridItem>
             )}
             {current === INVEST_TAB.swap && (

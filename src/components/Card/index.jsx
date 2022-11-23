@@ -13,12 +13,10 @@ import isEmpty from 'lodash/isEmpty'
 
 const useStyles = makeStyles({
   root: {
-    background: '#323338',
+    background: 'linear-gradient(111.68deg, rgba(87, 97, 125, 0.2) 7.59%, rgba(255, 255, 255, 0.078) 102.04%)',
     borderRadius: '20px',
     color: '#fff',
-    marginRight: '1rem',
-    height: '100%',
-    padding: '0 0.5rem'
+    height: '100%'
   },
   action: {
     flex: 'none',
@@ -39,8 +37,7 @@ const useStyles = makeStyles({
     marginBottom: 12
   },
   unit: {
-    marginLeft: '0.5rem',
-    fontSize: '1.3rem',
+    marginLeft: '0.625rem',
     backgroundImage: 'linear-gradient(223.3deg,#a68efd 20.71%,#f4acf3 103.56%)',
     '-webkitBackgroundClip': 'text',
     textFillColor: 'transparent'
@@ -50,11 +47,15 @@ const useStyles = makeStyles({
     fontWeight: 700
   },
   footer: {
-    paddingTop: '1rem'
+    height: '1rem',
+    lineHeight: '1rem',
+    fontSize: '0.75rem'
   },
   header: {
-    paddingTop: '2rem',
-    paddingBottom: 0
+    padding: '2.5rem 2.5rem 0'
+  },
+  cardContent: {
+    padding: '0.625rem 2.5rem 1.5rem'
   }
 })
 
@@ -73,7 +74,11 @@ const CardComponent = props => {
         action={tip}
         title={title}
       />
-      <CardContent>
+      <CardContent
+        classes={{
+          root: classes.cardContent
+        }}
+      >
         {!isEmpty(content) && (
           <Loading loading={loading}>
             <Typography className={classes.content} style={{ fontFamily: 'DM Sans' }} variant="h5" component="h2">

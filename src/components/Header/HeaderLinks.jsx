@@ -160,8 +160,8 @@ export default function HeaderLinks(props) {
               noLiPadding
               buttonText={get(find(NET_WORKS, { chainId: CHAIN_ID }), 'name', 'Networks')}
               buttonProps={{
-                className: classes.navLink,
-                color: 'transparent'
+                color: 'colorful-text',
+                disableRipple: true
               }}
               dropdownList={map(NET_WORKS, i => (
                 <a onClick={() => props.changeNetwork(i)} className={classes.dropdownLink}>
