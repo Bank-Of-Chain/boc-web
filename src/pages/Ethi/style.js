@@ -42,7 +42,13 @@ const componentsStyle = () => ({
     borderRadius: '1.25rem'
   },
   check: {
-    color: '#A68EFE'
+    color: '#A68EFE',
+    '&>span': {
+      fontWeight: '700',
+      '&:hover': {
+        letterSpacing: '0.1rem'
+      }
+    }
   },
   balanceCardValue: {
     display: 'flex',
@@ -88,7 +94,11 @@ const componentsStyle = () => ({
     textAlign: 'center'
   },
   text: {
-    color: 'azure'
+    color: 'azure',
+    '&>span:hover': {
+      fontWeight: 'bold',
+      letterSpacing: '0.1rem'
+    }
   },
   notConnect: {
     display: 'flex',
