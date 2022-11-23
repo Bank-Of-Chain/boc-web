@@ -10,14 +10,8 @@ import { makeStyles } from '@material-ui/core/styles'
 // === Components === //
 import List from '@material-ui/core/List'
 import ListItem from '@material-ui/core/ListItem'
+import { AccountIcon, CopyIcon, ChangeWalletIcon, ExitIcon } from '@/components/SvgIcons'
 
-// @material-ui/icons
-import AccountBalanceWalletOutlinedIcon from '@material-ui/icons/AccountBalanceWalletOutlined'
-import ExitToAppOutlinedIcon from '@material-ui/icons/ExitToAppOutlined'
-import FileCopyOutlinedIcon from '@material-ui/icons/FileCopyOutlined'
-import PaymentOutlinedIcon from '@material-ui/icons/PaymentOutlined'
-
-// core components
 import Button from '../CustomButtons/Button'
 import styles from './headerLinksStyle'
 import Address from '../Address/Address'
@@ -191,11 +185,7 @@ export default function HeaderLinks(props) {
             })}
           >
             {isEmpty(userProvider) ? (
-              <Button
-                color="colorful-border"
-                target="_blank"
-                onClick={handleClickConnect}
-              >
+              <Button color="colorful-border" target="_blank" onClick={handleClickConnect}>
                 Connect Wallet
               </Button>
             ) : isInMobileWalletApp() ? (
@@ -212,20 +202,20 @@ export default function HeaderLinks(props) {
                 }}
                 dropdownList={[
                   <div key="My Account" className={classes.dropdownLink} onClick={handleGoToAccount}>
-                    <AccountBalanceWalletOutlinedIcon className={classes.dropdownLinkIcon} />
-                    <a>My Account</a>
+                    <AccountIcon />
+                    <a className={classes.dropdownLinkText}>My Account</a>
                   </div>,
                   <div key="Copy Addres" onClick={handleCopyAddress} className={classes.dropdownLink}>
-                    <FileCopyOutlinedIcon className={classes.dropdownLinkIcon} />
-                    <a>Copy Address</a>
+                    <CopyIcon />
+                    <a className={classes.dropdownLinkText}>Copy Address</a>
                   </div>,
                   <div key="Change Wallet" onClick={handleClickConnect} className={classes.dropdownLink}>
-                    <PaymentOutlinedIcon className={classes.dropdownLinkIcon} />
-                    <a>Change Wallet</a>
+                    <ChangeWalletIcon />
+                    <a className={classes.dropdownLinkText}>Change Wallet</a>
                   </div>,
                   <div key="Disconnect" onClick={disconnect} className={classes.dropdownLink}>
-                    <ExitToAppOutlinedIcon className={classes.dropdownLinkIcon} />
-                    <a>Disconnect</a>
+                    <ExitIcon />
+                    <a className={classes.dropdownLinkText}>Disconnect</a>
                   </div>
                 ]}
               />

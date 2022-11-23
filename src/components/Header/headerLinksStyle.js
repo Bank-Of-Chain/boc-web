@@ -139,8 +139,8 @@ const headerLinksStyle = theme => ({
       padding: '10px 14px'
     }
   },
-  dropdownLinkIcon: {
-    marginRight: '8px'
+  dropdownLinkText: {
+    marginLeft: '8px'
   },
   ...tooltip,
   marginRight5: {
