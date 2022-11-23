@@ -12,7 +12,7 @@ const headerLinksStyle = theme => ({
     color: 'inherit',
     display: 'flex',
     alignItems: 'center',
-    '& li + li': {
+    '& > li + li': {
       marginLeft: '1.25rem'
     }
   },

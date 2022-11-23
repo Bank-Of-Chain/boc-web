@@ -26,12 +26,14 @@ import map from 'lodash/map'
 import reverse from 'lodash/reverse'
 import isEmpty from 'lodash/isEmpty'
 import findIndex from 'lodash/findIndex'
-import { toFixed } from '@/helpers/number-format'
+import { toFixed, formatBalance } from '@/helpers/number-format'
+import { getLastPossibleRebaseTime } from '@/helpers/time-util'
 
 // === Constants === //
 import { SEGMENT_TYPES, DAY, WEEK, MONTH } from '@/constants/date'
 import { ETHI_BN_DECIMALS, ETHI_DISPLAY_DECIMALS, ETHI_PROFITS_DISPLAY_DECIMALS } from '@/constants/ethi'
 import { TOKEN_DISPLAY_DECIMALS } from '@/constants/vault'
+import { USDI_DECIMALS } from '@/constants/usdi'
 
 // === Styles === //
 import styles from './style'
@@ -43,9 +45,10 @@ const getMarker = color => {
 }
 
 const MyStatement = props => {
-  const { address, type, chain } = props
+  const { address, type, chain, balance, vaultBufferBalance } = props
 
   const isUSDi = type === 'USDi'
+  const lastRebaseTime = getLastPossibleRebaseTime()
   const classes = useStyles()
 
   const [data, setData] = useState([])
@@ -198,6 +201,40 @@ const MyStatement = props => {
   const { day7Apy, day30Apy, profit, latestProfit = { profit: '0', tokenType: '' } } = dataSource
   const cardProps = [
     {
+      title: 'Balance',
+      tip: (
+        <Tooltip
+          classes={{
+            tooltip: classes.tooltip
+          }}
+          placement="right"
+          title="Current available balance on your account"
+        >
+          <InfoIcon style={{ fontSize: '1.375rem', color: 'rgba(255,255,255,0.45)' }} />
+        </Tooltip>
+      ),
+      content: numeral(formatBalance(balance, USDI_DECIMALS)).format(isUSDi ? '0,0.[00]' : '0,0.[0000]'),
+      footer: (
+        <span>
+          {`+${numeral(formatBalance(vaultBufferBalance, USDI_DECIMALS)).format(isUSDi ? '0,0.[00]' : '0,0.[000000]')} ${
+            isUSDi ? 'USDi' : 'ETHi'
+          } Ticket`}
+          &nbsp;&nbsp;
+          <Tooltip
+            classes={{
+              tooltip: classes.tooltip
+            }}
+            placement="right"
+            title={`USDi Ticket functions as parallel USDi that will be converted into USDi after fund allocations have been successful. Last
+            execution time was ${moment(lastRebaseTime).format('yyyy-MM-DD HH:mm')}`}
+          >
+            <InfoIcon style={{ fontSize: '0.875rem', color: 'rgba(255,255,255,0.45)' }} />
+          </Tooltip>
+        </span>
+      ),
+      unit: isUSDi ? 'USDi' : 'ETHi'
+    },
+    {
       title: 'Profits',
       tip: (
         <Tooltip
@@ -243,7 +280,7 @@ const MyStatement = props => {
         </Tooltip>
       ),
       content: numeral(day7Apy?.apy).format('0,0.00'),
-      isAPY: true,
+      footer: ' ',
       unit: '%'
     },
     {
@@ -260,7 +297,7 @@ const MyStatement = props => {
         </Tooltip>
       ),
       content: numeral(day30Apy?.apy).format('0,0.00'),
-      isAPY: true,
+      footer: ' ',
       unit: '%'
     }
   ]
@@ -268,10 +305,10 @@ const MyStatement = props => {
   return (
     <GridContainer>
       <GridItem xs={12} sm={12} md={12} lg={12}>
-        <GridContainer>
+        <GridContainer spacing={3}>
           {map(cardProps, (i, index) => {
             return (
-              <GridItem key={index} xs={12} sm={12} md={4} lg={4}>
+              <GridItem key={index} xs={12} sm={12} md={6} lg={6}>
                 <Card {...i} />
               </GridItem>
             )
