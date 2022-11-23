@@ -39,8 +39,8 @@ const infoStyle = {
   },
   title: {
     color: '#fff',
-    fontSize: '2rem',
-    lineHeight: '2.625rem'
+    fontSize: '1.875rem',
+    lineHeight: '2.5rem'
   },
   description: {
     color: '#fff',
@@ -60,7 +60,7 @@ const infoStyle = {
   infoArea: {
     cursor: 'pointer',
     padding: '6rem 3rem 3rem',
-    background: '#313036',
+    background: '#1E1E1F',
     borderRadius: '1rem',
     boxSizing: 'border-box'
   }

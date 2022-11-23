@@ -38,7 +38,7 @@ const landingPageStyle = {
     textTransform: 'none'
   },
   grid: {
-    padding: '15rem 0',
+    padding: '4rem 0 15rem',
     textAlign: 'center',
     background: '#1F2023 url(/images/home/bg-line.png) no-repeat center'
   },

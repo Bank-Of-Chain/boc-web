@@ -19,7 +19,7 @@ const headerStyle = {
     color: '#555',
     width: '100%',
     backgroundColor: '#1F2023 !important',
-    boxShadow: '0 4px 18px 0px rgba(0, 0, 0, 0.12), 0 7px 10px -5px rgba(0, 0, 0, 0.15)',
+    boxShadow: 'none',
     transition: 'all 150ms ease 0s',
     alignItems: 'center',
     flexFlow: 'row nowrap',
@@ -110,8 +110,7 @@ const headerStyle = {
   white: {
     border: '0',
     color: '#555',
-    backgroundColor: '#070b10',
-    boxShadow: '0 4px 18px 0px rgba(0, 0, 0, 0.12), 0 7px 10px -5px rgba(0, 0, 0, 0.15)'
+    backgroundColor: '#070b10'
   },
   drawerPaper: {
     backgroundColor: 'rgb(19, 24, 35)',

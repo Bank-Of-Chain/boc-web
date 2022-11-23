@@ -19,7 +19,7 @@ const useStyles = makeStyles(styles)
 
 const data = [
   {
-    title: 'Full automation',
+    title: 'Full Automation',
     descriptions: [
       'Regular yield calibration for the best capita allocation, costs/rewards justification of position adjustments, deleverage for price fluctuation.'
     ],
@@ -47,7 +47,7 @@ const data = [
     )
   },
   {
-    title: 'Ease of use',
+    title: 'Ease of Use',
     descriptions: ['Flexible deposit/withdrawal. No complex operations. Visible yields. Automatic reinvestment.'],
     imagePath: (
       <svg width="102" height="121" viewBox="0 0 102 121" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -115,7 +115,7 @@ const data = [
     )
   },
   {
-    title: 'Risk control',
+    title: 'Risk Control',
     descriptions: ['Protocols and stablecoins with minimal risk of de-pegging and impermanent loss.'],
     imagePath: (
       <svg width="116" height="121" viewBox="0 0 116 121" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -220,7 +220,7 @@ export default function ProductSection() {
                   vertical
                   style={{
                     height: '28rem',
-                    padding: isLayoutSm ? '2rem' : '5.25rem 1.5rem 1.5rem'
+                    padding: isLayoutSm ? '2rem' : '3.625rem 1.875rem'
                   }}
                 />
               </SwiperSlide>
