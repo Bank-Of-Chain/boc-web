@@ -41,7 +41,6 @@ import moment from 'moment'
 import { formatBalance } from '@/helpers/number-format'
 import isEmpty from 'lodash/isEmpty'
 import last from 'lodash/last'
-import noop from 'lodash/noop'
 import * as ethers from 'ethers'
 import useVersionWapper from '@/hooks/useVersionWapper'
 import { addToken } from '@/helpers/wallet'
@@ -77,9 +76,6 @@ function Ethi(props) {
   const [ethiBalance, setEthiBalance] = useState(BigNumber.from(0))
   const [ethiDecimals, setEthiDecimals] = useState(0)
   const ethDecimals = ETH_DECIMALS
-
-  const [beforeTotalValue, setBeforeTotalValue] = useState(BigNumber.from(0))
-  const [totalValue, setTotalValue] = useState(BigNumber.from(0))
 
   const [vaultBufferBalance, setVaultBufferBalance] = useState(BigNumber.from(0))
   const [vaultBufferDecimals, setVaultBufferDecimals] = useState(0)
@@ -148,21 +144,6 @@ function Ethi(props) {
       })
   }
 
-  useEffect(() => {
-    if (isEmpty(VAULT_ADDRESS)) return
-    const loadTotalAssetsFn = () =>
-      loadTotalAssets()
-        .then(afterTotalValue => {
-          if (!afterTotalValue.eq(beforeTotalValue)) {
-            setBeforeTotalValue(totalValue)
-            setTotalValue(afterTotalValue)
-          }
-        })
-        .catch(noop)
-    const timer = setInterval(loadTotalAssetsFn, 3000)
-    return () => clearInterval(timer)
-  }, [totalValue.toString()])
-
   function handleMint(...eventArgs) {
     console.log('Mint=', eventArgs)
     const block = last(eventArgs)
@@ -199,11 +180,6 @@ function Ethi(props) {
     }
     return listener()
   }, [address, VAULT_ADDRESS, VAULT_ABI, userProvider])
-
-  const loadTotalAssets = () => {
-    const ethiContract = new ethers.Contract(ETHI_ADDRESS, IERC20_ABI, userProvider)
-    return ethiContract.totalSupply()
-  }
 
   const handleAddETHi = () => {
     addToken(ETHI_ADDRESS, 'ETHi', 18)
