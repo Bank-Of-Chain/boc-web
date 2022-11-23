@@ -9,7 +9,6 @@ import CircularProgress from '@material-ui/core/CircularProgress'
 import Modal from '@material-ui/core/Modal'
 import Paper from '@material-ui/core/Paper'
 import ErrorOutlineIcon from '@material-ui/icons/ErrorOutline'
-import AddIcon from '@material-ui/icons/Add'
 import Tooltip from '@material-ui/core/Tooltip'
 import InfoIcon from '@material-ui/icons/Info'
 import Step from '@material-ui/core/Step'
@@ -27,8 +26,7 @@ import Loading from '@/components/LoadingComponent'
 // === Constants === //
 import { warmDialog } from '@/reducers/meta-reducer'
 import { toFixed, formatBalance } from '@/helpers/number-format'
-import { addToken } from '@/helpers/wallet'
-import { USDT_ADDRESS, USDC_ADDRESS, DAI_ADDRESS, IERC20_ABI, MULTIPLE_OF_GAS, MAX_GAS_LIMIT } from '@/constants'
+import { USDT_ADDRESS, IERC20_ABI, MULTIPLE_OF_GAS, MAX_GAS_LIMIT } from '@/constants'
 import { BN_18 } from '@/constants/big-number'
 
 // === Hooks === //
@@ -67,7 +65,7 @@ export default function Withdraw({
 }) {
   const classes = useStyles()
   const dispatch = useDispatch()
-  const [receiveToken, setReceiveToken] = useState(RECEIVE_MIX_VALUE)
+  const [receiveToken] = useState(RECEIVE_MIX_VALUE)
   const [toValue, setToValue] = useState('')
   const [allowMaxLoss, setAllowMaxLoss] = useState('0.3')
   const [estimateWithdrawArray, setEstimateWithdrawArray] = useState([])
@@ -118,6 +116,8 @@ export default function Withdraw({
                 return {
                   tokenAddress: token,
                   decimals: await tokenContract.decimals(),
+                  symbol: await tokenContract.symbol(),
+                  balance: await tokenContract.balanceOf(address),
                   amounts: amount
                 }
               }
@@ -318,17 +318,6 @@ export default function Withdraw({
       transaction: `${swc}(${swcPercents}%)`
     })
   }
-
-  function imgError(e) {
-    const evn = e
-    const img = evn.srcElement ? evn.srcElement : evn.target
-    img.src = '/default.png'
-  }
-
-  const handleReceiveTokenChange = value => {
-    setReceiveToken(value)
-  }
-
   /**
    * check if toValue is valid
    * @returns
@@ -419,52 +408,41 @@ export default function Withdraw({
         </GridItem>
       )
     }
+    console.log('estimateWithdrawArray=', estimateWithdrawArray)
+    const options = map(estimateWithdrawArray, item => {
+      return {
+        label: item.symbol,
+        value: item.tokenAddress,
+        img: `./images/${item.tokenAddress}.png`
+      }
+    })
+
     return map(estimateWithdrawArray, item => {
       return (
-        <GridItem key={item.tokenAddress} xs={12} sm={12} md={6} lg={6}>
-          <Button
-            title="Add token address to wallet"
-            color="transparent"
-            target="_blank"
-            style={{ fontSize: '1rem', color: '#A0A0A0' }}
-            onClick={() => addToken(item.tokenAddress)}
-          >
-            <AddIcon fontSize="small" style={{ position: 'absolute', top: 25, left: 45 }} />
-            <img className={classes.img} style={{ borderRadius: '50%' }} alt="" src={`./images/${item.tokenAddress}.png`} onError={imgError} />
-            &nbsp;&nbsp;~&nbsp;
-            {toFixed(item.amounts, BigNumber.from(10).pow(item.decimals), 6)}
-          </Button>
+        <GridItem key={item.tokenAddress} xs={12} sm={12} md={12} lg={12}>
+          <GridContainer justify="center" spacing={2}>
+            <GridItem xs={4} sm={4} md={4} lg={4}>
+              <SimpleSelect disabled value={item.tokenAddress} options={options} />
+            </GridItem>
+            <GridItem xs={8} sm={8} md={8} lg={8}>
+              <CustomTextField
+                classes={{ root: classes.input }}
+                value={toFixed(item.amounts, BigNumber.from(10).pow(item.decimals), 6)}
+                placeholder="withdraw amount"
+                disabled
+              />
+            </GridItem>
+            <GridItem xs={12} sm={12} md={12} lg={12}>
+              <p className={classes.estimateText} title={formatBalance(item.balance, item.decimals, { showAll: true })}>
+                Balance:&nbsp;
+                <Loading loading={isBalanceLoading}>{formatBalance(item.balance, item.decimals)}</Loading>
+              </p>
+            </GridItem>
+          </GridContainer>
         </GridItem>
       )
     })
   }
-
-  const selectOptions = [
-    {
-      label: 'USDT',
-      value: USDT_ADDRESS || 'USDT',
-      img: './images/0x55d398326f99059fF775485246999027B3197955.png'
-    },
-    {
-      label: 'USDC',
-      value: USDC_ADDRESS || 'USDC',
-      img: './images/0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d.png'
-    },
-    {
-      label: 'DAI',
-      value: DAI_ADDRESS || 'DAI',
-      img: './images/0x1AF3F329e8BE154074D8769D1FFa4eE058B1DBc3.png'
-    },
-    {
-      label: 'Mix',
-      value: RECEIVE_MIX_VALUE || 'Mix',
-      img: [
-        './images/0x55d398326f99059fF775485246999027B3197955.png',
-        './images/0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d.png',
-        './images/0x1AF3F329e8BE154074D8769D1FFa4eE058B1DBc3.png'
-      ]
-    }
-  ]
 
   const isValidToValueFlag = isValidToValue()
   const isValidAllowLossFlag = isValidAllowLoss()
@@ -494,30 +472,34 @@ export default function Withdraw({
           <p className={classes.estimateText}>From</p>
         </GridItem>
         <GridItem xs={12} sm={12} md={12} lg={12}>
-          <div className={classes.inputLabelWrapper}>
-            <div className={classes.tokenInfo}>
-              <span className={classes.tokenName}>USDi</span>
-            </div>
-            <CustomTextField
-              classes={{ root: classes.input }}
-              value={toValue}
-              placeholder="withdraw amount"
-              maxEndAdornment
-              onMaxClick={() => handleMaxClick()}
-              onChange={handleAmountChange}
-              error={!isUndefined(isValidToValueFlag) && !isValidToValueFlag && toValue !== '0'}
-            />
-          </div>
+          <GridContainer justify="center" spacing={2}>
+            <GridItem xs={4} sm={4} md={4} lg={4}>
+              <div className={classes.tokenInfo}>
+                <span className={classes.tokenName}>USDi</span>
+              </div>
+            </GridItem>
+            <GridItem xs={8} sm={8} md={8} lg={8}>
+              <CustomTextField
+                classes={{ root: classes.input }}
+                value={toValue}
+                placeholder="withdraw amount"
+                maxEndAdornment
+                onMaxClick={() => handleMaxClick()}
+                onChange={handleAmountChange}
+                error={!isUndefined(isValidToValueFlag) && !isValidToValueFlag && toValue !== '0'}
+              />
+            </GridItem>
+          </GridContainer>
         </GridItem>
-        <GridItem xs={12} sm={12} md={12} lg={12}>
+        <GridItem xs={6} sm={6} md={6} lg={6}>
           <p className={classes.estimateText} title={formatBalance(toBalance, usdiDecimals, { showAll: true })}>
             Balance:&nbsp;
             <Loading loading={isBalanceLoading}>{formatBalance(toBalance, usdiDecimals)}</Loading>
           </p>
         </GridItem>
         {address && (
-          <GridItem xs={12} sm={12} md={12} lg={12}>
-            <p className={classes.estimateText} title={toFixed(pegTokenPrice, BN_18)}>
+          <GridItem xs={6} sm={6} md={6} lg={6}>
+            <p className={classes.estimateText} style={{ justifyContent: 'right' }} title={toFixed(pegTokenPrice, BN_18)}>
               <span>1 USDi ≈ {toFixed(pegTokenPrice, BN_18, 6)} USD</span>
             </p>
           </GridItem>
@@ -528,29 +510,11 @@ export default function Withdraw({
           <p className={classes.estimateText}>To</p>
         </GridItem>
         <GridItem xs={12} sm={12} md={12} lg={12}>
-          <div className={classes.selectorlWrapper}>
-            <SimpleSelect disabled value={receiveToken} onChange={handleReceiveTokenChange} options={selectOptions} />
-            <p className={classes.estimateText}>
-              {receiveToken === 'Mix' && (
-                <Tooltip
-                  classes={{
-                    tooltip: classes.tooltip
-                  }}
-                  placement="top"
-                  title={'Mix mode will return a variety of coins, such as USDT/USDC/TUSD/BUSD, etc.'}
-                >
-                  <InfoIcon />
-                </Tooltip>
-              )}
-            </p>
-          </div>
-        </GridItem>
-        <GridItem xs={12} sm={12} md={12} lg={12}>
           <GridContainer>{renderEstimate()}</GridContainer>
         </GridItem>
       </GridContainer>
       <GridContainer className={classes.maxlossContainer}>
-        <GridItem xs={4} sm={4} md={4} className={classes.slippageTitlte}>
+        <GridItem xs={4} sm={4} md={4} className={classes.slippageTitle}>
           Max loss:
         </GridItem>
         <GridItem xs={8} sm={8} md={8}>

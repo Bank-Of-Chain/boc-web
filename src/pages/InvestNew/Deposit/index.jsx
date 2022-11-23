@@ -97,7 +97,7 @@ export default function Deposit({
 
   const nextRebaseTime = getLastPossibleRebaseTime()
 
-  const [tokenSelect, setTokenSelect] = useState([USDT_ADDRESS])
+  const [tokenSelect, setTokenSelect] = useState([USDT_ADDRESS, USDC_ADDRESS, DAI_ADDRESS])
 
   const tokenBasicState = {
     [TOKEN.USDT]: {
@@ -435,7 +435,7 @@ export default function Deposit({
             console.log('selectOptions=', selectOptions)
             return (
               <GridItem key={item.name} xs={12} sm={12} md={12} lg={12} className={classes.tokenInputWrapper}>
-                <GridContainer justify="center">
+                <GridContainer justify="center" spacing={2}>
                   <GridItem xs={4} sm={4} md={4} lg={4}>
                     <SimpleSelect options={selectOptions} value={item.address} />
                   </GridItem>
@@ -555,7 +555,8 @@ export default function Deposit({
                 Exchange to
                 <Tooltip placement="top" title="Estimated amount of USDi that can be exchanged">
                   <InfoIcon classes={{ root: classes.labelToolTipIcon }} />
-                </Tooltip>:
+                </Tooltip>
+                :
                 <span className={classes.usdiInfo}>
                   {toFixed(estimateVaultBuffValue.mul(9987).div(10000), BigNumber.from(10).pow(usdiDecimals), 2)} USDi
                 </span>
@@ -571,8 +572,8 @@ export default function Deposit({
                 title="The latest planned execution date may not be executed due to cost and other factors"
               >
                 <InfoIcon classes={{ root: classes.labelToolTipIcon }} />
-              </Tooltip>:
-              <span className={classes.time}>{moment(nextRebaseTime).format('YYYY-MM-DD HH:mm:ss')}</span>
+              </Tooltip>
+              :<span className={classes.time}>{moment(nextRebaseTime).format('YYYY-MM-DD HH:mm:ss')}</span>
             </div>
           </div>
           <div className={classes.buttonGroup}>

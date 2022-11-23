@@ -14,7 +14,7 @@ const componentsStyle = () => ({
     border: '1px solid #A68EFD',
     borderTopLeftRadius: '1.25rem',
     borderTopRightRadius: '1.25rem',
-    padding: '2.6875rem 2.25rem',
+    padding: '1.25rem',
     background: '#1E1E1F'
   },
   estimateContainer: {
@@ -22,7 +22,7 @@ const componentsStyle = () => ({
     marginTop: '0.625rem',
     borderBottomLeftRadius: '1.25rem',
     borderBottomRightRadius: '1.25rem',
-    padding: '2.0625rem 2.6875rem',
+    padding: '1.25rem',
     background: '#1E1E1F'
   },
   estimateText: {
@@ -31,7 +31,11 @@ const componentsStyle = () => ({
     display: 'flex'
   },
   estimateBalanceTitle: {
-    fontSize: '1.625rem'
+    fontSize: '1.625rem',
+    margin: '0.75rem 0',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between'
   },
   estimateBalanceNum: {
     float: 'right',
@@ -54,6 +58,7 @@ const componentsStyle = () => ({
   },
   tokenInfo: {
     display: 'flex',
+    height: '100%',
     alignItems: 'center'
   },
   tokenName: {

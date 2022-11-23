@@ -15,7 +15,7 @@ const componentsStyle = () => ({
   },
   approveContainer: {
     maxHeight: '20rem',
-    padding: '2rem 1.25rem',
+    padding: '1.25rem',
     border: '1px solid #A68EFD',
     borderRadius: '1.25rem 1.25rem 0 0',
     backgroundColor: '#1F2023',
@@ -86,7 +86,7 @@ const componentsStyle = () => ({
     background: 'linear-gradient(223.3deg, #A68EFD 20.71%, #F4ACF3 103.56%)'
   },
   slippage: {
-    padding: '0 1.25rem',
+    padding: '1.25rem',
     border: '1px solid #A68EFD',
     borderRadius: '0px 0px 1.25rem 1.25rem',
     marginTop: '0.625rem',
@@ -97,7 +97,7 @@ const componentsStyle = () => ({
     alignItems: 'center'
   },
   estimateContainer: {
-    padding: '2rem 1.25rem',
+    padding: '1.25rem',
     border: '1px solid #A68EFD',
     marginTop: '0.625rem',
     backgroundColor: '#1F2023'

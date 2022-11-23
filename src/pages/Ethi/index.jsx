@@ -159,6 +159,11 @@ function Ethi(props) {
         .then(loadBalance)
   }
 
+  const withdrawCallback = value => {
+    setBurnTokens(value)
+    setCurrent(INVEST_TAB.swap)
+  }
+
   useEffect(() => {
     const listener = () => {
       if (isEmpty(VAULT_ABI) || isEmpty(userProvider)) return
@@ -205,13 +210,17 @@ function Ethi(props) {
             </ListItem>
             <ListItem key="Withdraw" button className={classNames(classes.item)} onClick={() => setCurrent(INVEST_TAB.withdraw)}>
               <ListItemIcon>
-                <WithdrawIcon color={current === INVEST_TAB.withdraw ? '#A68EFE' : '#fff'} />
+                <WithdrawIcon color={current === INVEST_TAB.withdraw || current === INVEST_TAB.swap ? '#A68EFE' : '#fff'} />
               </ListItemIcon>
               {!isLayoutSm && (
-                <ListItemText primary={'Withdraw'} className={classNames(current === INVEST_TAB.withdraw ? classes.check : classes.text)} />
+                <ListItemText
+                  primary={'Withdraw'}
+                  className={classNames(current === INVEST_TAB.withdraw || current === INVEST_TAB.swap ? classes.check : classes.text)}
+                />
               )}
             </ListItem>
             <ListItem
+              style={{ display: 'none' }}
               key="Swap"
               button
               className={classNames(classes.item, current === INVEST_TAB.swap && classes.check)}
@@ -322,7 +331,7 @@ function Ethi(props) {
                     ETH_ADDRESS={ETH_ADDRESS}
                     VAULT_ABI={VAULT_ABI}
                     IERC20_ABI={IERC20_ABI}
-                    setBurnTokens={setBurnTokens}
+                    setBurnTokens={withdrawCallback}
                     PRICE_ORCALE_ABI={PRICE_ORCALE_ABI}
                     isBalanceLoading={isBalanceLoading}
                     reloadBalance={loadCoinsBalance}
@@ -339,6 +348,7 @@ function Ethi(props) {
               <GridItem xs={9} sm={9} md={7}>
                 <div className={classes.wrapper}>
                   <ApproveArray
+                    isEthi
                     address={address}
                     tokens={burnTokens}
                     userProvider={userProvider}

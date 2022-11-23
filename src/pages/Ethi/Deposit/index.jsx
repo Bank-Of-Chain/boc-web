@@ -27,8 +27,6 @@ import GridContainer from '@/components/Grid/GridContainer'
 import GridItem from '@/components/Grid/GridItem'
 import CustomTextField from '@/components/CustomTextField'
 import Button from '@/components/CustomButtons/Button'
-import { warmDialog } from '@/reducers/meta-reducer'
-import { toFixed, formatBalance } from '@/helpers/number-format'
 
 // === Utils === //
 import noop from 'lodash/noop'
@@ -36,6 +34,8 @@ import { getLastPossibleRebaseTime } from '@/helpers/time-util'
 import { isAd, isEs, isRp, isDistributing, errorTextOutput, isLessThanMinValue } from '@/helpers/error-handler'
 import { BN_18 } from '@/constants/big-number'
 import { MULTIPLE_OF_GAS, MAX_GAS_LIMIT } from '@/constants'
+import { warmDialog } from '@/reducers/meta-reducer'
+import { toFixed, formatBalance } from '@/helpers/number-format'
 
 import styles from './style'
 
@@ -306,21 +306,25 @@ export default function Deposit({
         <GridItem xs={12} sm={12} md={12} lg={12} className={classes.tokenInputWrapper}>
           <GridContainer>
             <GridItem xs={12} sm={12} md={12} lg={12}>
-              <div className={classes.inputLabelWrapper}>
-                <div className={classes.tokenInfo}>
-                  <img className={classes.tokenLogo} alt="" src={`./images/0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE.png`} />
-                  <span className={classes.tokenName}>ETH</span>
-                </div>
-                <CustomTextField
-                  classes={{ root: classes.input }}
-                  value={ethValue}
-                  onChange={handleInputChange}
-                  placeholder="deposit amount"
-                  maxEndAdornment
-                  onMaxClick={handleMaxClick}
-                  error={!isUndefined(isValid) && !isValid}
-                />
-              </div>
+              <GridContainer justify="center" spacing={2}>
+                <GridItem xs={4} sm={4} md={4} lg={4}>
+                  <div className={classes.tokenInfo}>
+                    <img className={classes.tokenLogo} alt="" src={`./images/0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE.png`} />
+                    <span className={classes.tokenName}>ETH</span>
+                  </div>
+                </GridItem>
+                <GridItem xs={8} sm={8} md={8} lg={8}>
+                  <CustomTextField
+                    classes={{ root: classes.input }}
+                    value={ethValue}
+                    onChange={handleInputChange}
+                    placeholder="deposit amount"
+                    maxEndAdornment
+                    onMaxClick={handleMaxClick}
+                    error={!isUndefined(isValid) && !isValid}
+                  />
+                </GridItem>
+              </GridContainer>
             </GridItem>
             <GridItem xs={12} sm={12} md={12} lg={12}>
               <p
@@ -339,12 +343,19 @@ export default function Deposit({
       <GridContainer classes={{ root: classes.estimateContainer }}>
         <GridItem xs={12} sm={12} md={12} lg={12}>
           <p className={classes.estimateText}>To</p>
-          <p className={classes.estimateBalanceTitle}>
+          <div className={classes.estimateBalanceTitle}>
             ETHi Ticket:
             <span className={classes.estimateBalanceNum}>
-              <Loading loading={isEstimate}>{toFixed(estimateVaultBuffValue, BigNumber.from(10).pow(ethiDecimals))}</Loading>
+              <Loading loading={isEstimate}>
+                <CustomTextField
+                  disabled
+                  classes={{ root: classes.input }}
+                  value={toFixed(estimateVaultBuffValue, BigNumber.from(10).pow(ethiDecimals))}
+                  error={false}
+                />
+              </Loading>
             </span>
-          </p>
+          </div>
           <p className={classes.estimateText}>Estimated Gas Fee: {toFixed(getGasFee(), BigNumber.from(10).pow(ethDecimals), 6)} ETH</p>
           <p className={classes.estimateText} style={{ marginTop: '1rem' }}>
             Balance:&nbsp;&nbsp;
@@ -409,7 +420,8 @@ export default function Deposit({
                 Exchange to
                 <Tooltip placement="top" title="Estimated amount of USDi that can be exchanged">
                   <InfoIcon classes={{ root: classes.labelToolTipIcon }} />
-                </Tooltip>:
+                </Tooltip>
+                :
                 <span className={classes.usdiInfo}>
                   {toFixed(estimateVaultBuffValue.mul(9987).div(10000), BigNumber.from(10).pow(ethiDecimals), 2)} ETHi
                 </span>
@@ -425,8 +437,8 @@ export default function Deposit({
                 title="The latest planned execution date may not be executed due to cost and other factors"
               >
                 <InfoIcon classes={{ root: classes.labelToolTipIcon }} />
-              </Tooltip>:
-              <span className={classes.time}>{moment(nextRebaseTime).format('YYYY-MM-DD HH:mm:ss')}</span>
+              </Tooltip>
+              :<span className={classes.time}>{moment(nextRebaseTime).format('YYYY-MM-DD HH:mm:ss')}</span>
             </div>
           </div>
           <div className={classes.buttonGroup}>

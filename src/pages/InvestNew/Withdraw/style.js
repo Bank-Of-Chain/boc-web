@@ -27,27 +27,27 @@ const componentsStyle = () => ({
     outline: 0
   },
   withdrawContainer: {
-    padding: '2.6875rem 2.25rem',
+    padding: '1.25rem',
     border: '1px solid #A68EFD',
     borderTopLeftRadius: '1.25rem',
     borderTopRightRadius: '1.25rem',
     background: '#1E1E1F'
   },
   outputContainer: {
-    padding: '2.6875rem 2.25rem',
+    padding: '1.25rem',
     border: '1px solid #A68EFD',
     marginTop: '0.625rem',
     background: '#1E1E1F'
   },
   maxlossContainer: {
-    padding: '2.6875rem 2.25rem',
+    padding: '1.25rem',
     border: '1px solid #A68EFD',
     marginTop: '0.625rem',
     borderBottomLeftRadius: '1.25rem',
     borderBottomRightRadius: '1.25rem',
     background: '#1E1E1F'
   },
-  slippageTitlte: {
+  slippageTitle: {
     display: 'flex',
     alignItems: 'center'
   },
@@ -79,6 +79,7 @@ const componentsStyle = () => ({
   },
   tokenInfo: {
     display: 'flex',
+    height: '100%',
     alignItems: 'center'
   },
   receiveTokenItem: {

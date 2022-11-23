@@ -75,20 +75,7 @@ function Invest(props) {
 
   const [isBalanceLoading, setIsBalanceLoading] = useState(false)
 
-  const [burnTokens, setBurnTokens] = useState([
-    {
-      address: USDT_ADDRESS,
-      amount: '100000000'
-    },
-    {
-      address: USDC_ADDRESS,
-      amount: '10000000'
-    },
-    {
-      address: DAI_ADDRESS,
-      amount: '10000000000000000000'
-    }
-  ])
+  const [burnTokens, setBurnTokens] = useState([])
 
   const current = useSelector(state => state.investReducer.currentTab)
   const setCurrent = tab => {
@@ -236,6 +223,12 @@ function Invest(props) {
       history.push(path.slice(1))
     })
   }
+
+  const withdrawCallback = value => {
+    setBurnTokens(value)
+    setCurrent(INVEST_TAB.swap)
+  }
+
   return (
     <div className={classes.container}>
       <GridContainer spacing={0}>
@@ -275,17 +268,21 @@ function Invest(props) {
             <ListItem
               key="Withdraw"
               button
-              className={classNames(classes.item, current === INVEST_TAB.withdraw && classes.check)}
+              className={classNames(classes.item, { [classes.check]: current === INVEST_TAB.withdraw || current === INVEST_TAB.swap })}
               onClick={() => setCurrent(INVEST_TAB.withdraw)}
             >
               <ListItemIcon>
-                <WithdrawIcon color={current === INVEST_TAB.withdraw ? '#A68EFE' : '#fff'} />
+                <WithdrawIcon color={current === INVEST_TAB.withdraw || current === INVEST_TAB.swap ? '#A68EFE' : '#fff'} />
               </ListItemIcon>
               {!isLayoutSm && (
-                <ListItemText primary={'Withdraw'} className={classNames(current === INVEST_TAB.withdraw ? classes.check : classes.text)} />
+                <ListItemText
+                  primary={'Withdraw'}
+                  className={classNames(current === INVEST_TAB.withdraw || current === INVEST_TAB.swap ? classes.check : classes.text)}
+                />
               )}
             </ListItem>
             <ListItem
+              style={{ display: 'none' }}
               key="Swap"
               button
               className={classNames(classes.item, current === INVEST_TAB.withdraw && classes.check)}
@@ -400,7 +397,7 @@ function Invest(props) {
                     VAULT_ADDRESS={VAULT_ADDRESS}
                     VAULT_ABI={VAULT_ABI}
                     IERC20_ABI={IERC20_ABI}
-                    setBurnTokens={setBurnTokens}
+                    setBurnTokens={withdrawCallback}
                     isBalanceLoading={isBalanceLoading}
                     reloadBalance={loadCoinsBalance}
                   />

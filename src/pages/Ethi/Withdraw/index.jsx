@@ -7,7 +7,6 @@ import CircularProgress from '@material-ui/core/CircularProgress'
 import Modal from '@material-ui/core/Modal'
 import Paper from '@material-ui/core/Paper'
 import ErrorOutlineIcon from '@material-ui/icons/ErrorOutline'
-import AddIcon from '@material-ui/icons/Add'
 import Step from '@material-ui/core/Step'
 import WarningIcon from '@material-ui/icons/Warning'
 import Tooltip from '@material-ui/core/Tooltip'
@@ -21,6 +20,7 @@ import GridContainer from '@/components/Grid/GridContainer'
 import GridItem from '@/components/Grid/GridItem'
 import Button from '@/components/CustomButtons/Button'
 import Loading from '@/components/LoadingComponent'
+import SimpleSelect from '@/components/SimpleSelect'
 
 // === Hooks === //
 import { warmDialog } from '@/reducers/meta-reducer'
@@ -35,7 +35,6 @@ import debounce from 'lodash/debounce'
 import compact from 'lodash/compact'
 import isEmpty from 'lodash/isEmpty'
 import isNumber from 'lodash/isNumber'
-import { addToken } from '@/helpers/wallet'
 import { toFixed, formatBalance } from '@/helpers/number-format'
 import { isAd, isEs, isRp, isMaxLoss, isLossMuch, isExchangeFail, errorTextOutput } from '@/helpers/error-handler'
 
@@ -113,11 +112,23 @@ export default function Withdraw({
         let nextEstimateWithdrawArray = compact(
           await Promise.all(
             map(tokens, async (token, index) => {
+              const tokenContract = new ethers.Contract(token, IERC20_ABI, userProvider)
               const amount = get(amounts, index, BigNumber.from(0))
               if (amount.gt(0)) {
+                if (token === ETH_ADDRESS) {
+                  return {
+                    tokenAddress: token,
+                    decimals: ethiDecimals,
+                    symbol: 'ETH',
+                    balance: await userProvider.getBalance(address),
+                    amounts: amount
+                  }
+                }
                 return {
                   tokenAddress: token,
-                  decimals: ethiDecimals,
+                  decimals: await tokenContract.decimals(),
+                  symbol: await tokenContract.symbol(),
+                  balance: await tokenContract.balanceOf(address),
                   amounts: amount
                 }
               }
@@ -334,12 +345,6 @@ export default function Withdraw({
     })
   }
 
-  function imgError(e) {
-    const evn = e
-    const img = evn.srcElement ? evn.srcElement : evn.target
-    img.src = '/default.png'
-  }
-
   /**
    * check if toValue is valid
    * @returns
@@ -428,28 +433,37 @@ export default function Withdraw({
         </GridItem>
       )
     }
+
+    const options = map(estimateWithdrawArray, item => {
+      return {
+        label: item.symbol,
+        value: item.tokenAddress,
+        img: `./images/${item.tokenAddress}.png`
+      }
+    })
+
     return map(estimateWithdrawArray, item => {
       return (
-        <GridItem key={item.tokenAddress} xs={12} sm={12} md={6} lg={6}>
-          <Button
-            title={toFixed(item.amounts, BigNumber.from(10).pow(item.decimals))}
-            color="transparent"
-            target="_blank"
-            style={{ fontSize: 14, paddingBottom: 20 }}
-            onClick={() => addToken(item.tokenAddress)}
-          >
-            {item.tokenAddress !== ETH_ADDRESS && <AddIcon fontSize="small" style={{ position: 'absolute', top: 25, left: 45 }} />}
-            <img
-              title="Add token address to wallet"
-              className={classes.img}
-              style={{ borderRadius: '50%' }}
-              alt=""
-              src={`./images/${item.tokenAddress}.png`}
-              onError={imgError}
-            />
-            &nbsp;&nbsp;~&nbsp;
-            {toFixed(item.amounts, BigNumber.from(10).pow(item.decimals), 6)}
-          </Button>
+        <GridItem key={item.tokenAddress} xs={12} sm={12} md={12} lg={12}>
+          <GridContainer justify="center" spacing={2}>
+            <GridItem xs={4} sm={4} md={4} lg={4}>
+              <SimpleSelect disabled value={item.tokenAddress} options={options} />
+            </GridItem>
+            <GridItem xs={8} sm={8} md={8} lg={8}>
+              <CustomTextField
+                classes={{ root: classes.input }}
+                value={toFixed(item.amounts, BigNumber.from(10).pow(item.decimals), 6)}
+                placeholder="withdraw amount"
+                disabled
+              />
+            </GridItem>
+            <GridItem xs={12} sm={12} md={12} lg={12}>
+              <p className={classes.estimateText} title={formatBalance(item.balance, item.decimals, { showAll: true })}>
+                Balance:&nbsp;
+                <Loading loading={isBalanceLoading}>{formatBalance(item.balance, item.decimals)}</Loading>
+              </p>
+            </GridItem>
+          </GridContainer>
         </GridItem>
       )
     })
@@ -483,30 +497,34 @@ export default function Withdraw({
           <p className={classes.estimateText}>From</p>
         </GridItem>
         <GridItem xs={12} sm={12} md={12} lg={12}>
-          <div className={classes.inputLabelWrapper}>
-            <div className={classes.tokenInfo}>
-              <span className={classes.tokenName}>ETHi</span>
-            </div>
-            <CustomTextField
-              classes={{ root: classes.input }}
-              value={toValue}
-              placeholder="withdraw amount"
-              maxEndAdornment
-              onMaxClick={() => handleMaxClick()}
-              onChange={handleAmountChange}
-              error={!isUndefined(isValidToValueFlag) && !isValidToValueFlag && toValue !== '0'}
-            />
-          </div>
+          <GridContainer justify="center" spacing={2}>
+            <GridItem xs={4} sm={4} md={4} lg={4}>
+              <div className={classes.tokenInfo}>
+                <span className={classes.tokenName}>ETHi</span>
+              </div>
+            </GridItem>
+            <GridItem xs={8} sm={8} md={8} lg={8}>
+              <CustomTextField
+                classes={{ root: classes.input }}
+                value={toValue}
+                placeholder="withdraw amount"
+                maxEndAdornment
+                onMaxClick={() => handleMaxClick()}
+                onChange={handleAmountChange}
+                error={!isUndefined(isValidToValueFlag) && !isValidToValueFlag && toValue !== '0'}
+              />
+            </GridItem>
+          </GridContainer>
         </GridItem>
-        <GridItem xs={12} sm={12} md={12} lg={12}>
+        <GridItem xs={6} sm={6} md={6} lg={6}>
           <p className={classes.estimateText} title={formatBalance(ethiBalance, ethiDecimals, { showAll: true })}>
             Balance:&nbsp;
             <Loading loading={isBalanceLoading}>{formatBalance(ethiBalance, ethiDecimals)}</Loading>
           </p>
         </GridItem>
         {address && (
-          <GridItem xs={12} sm={12} md={12} lg={12}>
-            <p className={classes.estimateText} title={toFixed(pegTokenPrice, BN_18)}>
+          <GridItem xs={6} sm={6} md={6} lg={6}>
+            <p className={classes.estimateText} style={{ justifyContent: 'flex-end' }} title={toFixed(pegTokenPrice, BN_18)}>
               <span>1ETHi ≈ {toFixed(pegTokenPrice, BN_18, 6)}ETH</span>
             </p>
           </GridItem>
@@ -531,7 +549,7 @@ export default function Withdraw({
         )}
       </GridContainer>
       <GridContainer className={classes.maxlossContainer}>
-        <GridItem xs={4} sm={4} md={4} className={classes.slippageTitlte}>
+        <GridItem xs={4} sm={4} md={4} className={classes.slippageTitle}>
           Max loss:
         </GridItem>
         <GridItem xs={8} sm={8} md={8}>
