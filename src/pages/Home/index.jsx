@@ -52,7 +52,7 @@ export default function Home() {
             <ul className={classes.info}>
               <li>
                 <div className={classes.infoTitle}>Total Value Locked</div>
-                <div className={classes.infoText}>{tvl}</div>
+                <div className={classes.infoText}>${tvl}</div>
               </li>
               <li>
                 <div className={classes.infoTitle}>Holders</div>
