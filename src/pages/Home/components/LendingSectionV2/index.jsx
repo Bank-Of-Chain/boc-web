@@ -126,9 +126,28 @@ export default function LendingSectionV2() {
               <GridContainer className={classes.headerWrapper} justifyContent="center" alignItems="center">
                 <GridItem md={6} className={classes.switchWrapper}>
                   <span>ETHi</span>
-                  <IOSSwitch checked={isEthiEnable} onChange={() => setIsEthiEnable(!isEthiEnable)} name="checkedB" />
+                  <IOSSwitch
+                    checked={isEthiEnable}
+                    onChange={() => {
+                      setIsEthiEnable(!isEthiEnable)
+                      if (isEthiEnable && !isUsdiEnable) {
+                        setIsUsdiEnable(true)
+                      }
+                    }}
+                    name="checkedB"
+                  />
                   <span>USDi</span>
-                  <IOSSwitch isUsdi checked={isUsdiEnable} onChange={() => setIsUsdiEnable(!isUsdiEnable)} name="checkedB" />
+                  <IOSSwitch
+                    isUsdi
+                    checked={isUsdiEnable}
+                    onChange={() => {
+                      setIsUsdiEnable(!isUsdiEnable)
+                      if (isUsdiEnable && !isEthiEnable) {
+                        setIsEthiEnable(true)
+                      }
+                    }}
+                    name="checkedB"
+                  />
                 </GridItem>
                 <GridItem md={6} className={classes.symbolWrapper}>
                   <div>Current Rate</div>
