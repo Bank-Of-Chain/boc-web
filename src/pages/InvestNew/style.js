@@ -41,7 +41,7 @@ const componentsStyle = () => ({
     '&>span': {
       fontWeight: '700',
       '&:hover': {
-        letterSpacing: '0.1rem'
+        letterSpacing: '0.03rem'
       }
     }
   },
@@ -92,7 +92,7 @@ const componentsStyle = () => ({
     color: 'azure',
     '&>span:hover': {
       fontWeight: 'bold',
-      letterSpacing: '0.1rem'
+      letterSpacing: '0.03rem'
     }
   },
   notConnect: {
