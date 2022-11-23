@@ -12,16 +12,18 @@ const componentsStyle = () => ({
   },
   depositContainer: {
     border: '1px solid #A68EFD',
-    borderTopLeftRadius: '1rem',
-    borderTopRightRadius: '1rem',
-    padding: '2.6875rem 2.25rem'
+    borderTopLeftRadius: '1.25rem',
+    borderTopRightRadius: '1.25rem',
+    padding: '1.25rem',
+    background: '#1E1E1F'
   },
   estimateContainer: {
     border: '1px solid #A68EFD',
-    marginTop: '0.5rem',
-    borderBottomLeftRadius: '1rem',
-    borderBottomRightRadius: '1rem',
-    padding: '2.0625rem 2.6875rem'
+    marginTop: '0.625rem',
+    borderBottomLeftRadius: '1.25rem',
+    borderBottomRightRadius: '1.25rem',
+    padding: '1.25rem',
+    background: '#1E1E1F'
   },
   estimateText: {
     color: '#A0A0A0',
@@ -29,25 +31,20 @@ const componentsStyle = () => ({
     display: 'flex'
   },
   estimateBalanceTitle: {
-    fontSize: '1.625rem'
+    fontSize: '1.625rem',
+    margin: '0.75rem 0',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between'
   },
   estimateBalanceNum: {
-    float: 'right',
-    fontSize: '1rem'
+    width: '66.67%'
   },
   footerContainer: {
-    marginTop: '2.5rem'
+    marginTop: '0.625rem'
   },
   tokenInputWrapper: {
     marginBottom: '16px'
-  },
-  inputLabelWrapper: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center'
-  },
-  input: {
-    maxWidth: '12.5rem'
   },
   depositComfirmArea: {
     display: 'flex',
@@ -55,7 +52,8 @@ const componentsStyle = () => ({
   },
   tokenInfo: {
     display: 'flex',
-    alignItems: 'center'
+    alignItems: 'center',
+    height: '100%'
   },
   tokenLogo: {
     width: 30,

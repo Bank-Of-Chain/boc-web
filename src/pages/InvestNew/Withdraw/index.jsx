@@ -9,12 +9,10 @@ import CircularProgress from '@material-ui/core/CircularProgress'
 import Modal from '@material-ui/core/Modal'
 import Paper from '@material-ui/core/Paper'
 import ErrorOutlineIcon from '@material-ui/icons/ErrorOutline'
-import AddIcon from '@material-ui/icons/Add'
 import Tooltip from '@material-ui/core/Tooltip'
 import InfoIcon from '@material-ui/icons/Info'
 import Step from '@material-ui/core/Step'
 import WarningIcon from '@material-ui/icons/Warning'
-import Box from '@material-ui/core/Box'
 import SimpleSelect from '@/components/SimpleSelect'
 import CustomTextField from '@/components/CustomTextField'
 import BocStepper from '@/components/Stepper/Stepper'
@@ -24,16 +22,11 @@ import BocStepConnector from '@/components/Stepper/StepConnector'
 import GridContainer from '@/components/Grid/GridContainer'
 import GridItem from '@/components/Grid/GridItem'
 import Button from '@/components/CustomButtons/Button'
-import Popover from '@material-ui/core/Popover'
 import Loading from '@/components/LoadingComponent'
-import PopupState, { bindTrigger, bindPopover } from 'material-ui-popup-state'
-import ApproveArray from '@/components/ApproveArray/ApproveArrayV2'
-
 // === Constants === //
 import { warmDialog } from '@/reducers/meta-reducer'
 import { toFixed, formatBalance } from '@/helpers/number-format'
-import { addToken } from '@/helpers/wallet'
-import { USDT_ADDRESS, USDC_ADDRESS, DAI_ADDRESS, IERC20_ABI, MULTIPLE_OF_GAS, MAX_GAS_LIMIT } from '@/constants'
+import { USDT_ADDRESS, IERC20_ABI, MULTIPLE_OF_GAS, MAX_GAS_LIMIT } from '@/constants'
 import { BN_18 } from '@/constants/big-number'
 
 // === Hooks === //
@@ -66,39 +59,21 @@ export default function Withdraw({
   userProvider,
   VAULT_ADDRESS,
   VAULT_ABI,
-  EXCHANGE_AGGREGATOR_ABI,
-  exchangeManager,
-  EXCHANGE_ADAPTER_ABI,
+  setBurnTokens,
   isBalanceLoading,
   reloadBalance
 }) {
   const classes = useStyles()
   const dispatch = useDispatch()
-  const [receiveToken, setReceiveToken] = useState(RECEIVE_MIX_VALUE)
+  const [receiveToken] = useState(RECEIVE_MIX_VALUE)
   const [toValue, setToValue] = useState('')
   const [allowMaxLoss, setAllowMaxLoss] = useState('0.3')
-  const [slipper, setSlipper] = useState('0.3')
   const [estimateWithdrawArray, setEstimateWithdrawArray] = useState([])
   const [isEstimate, setIsEstimate] = useState(false)
   const [isWithdrawLoading, setIsWithdrawLoading] = useState(false)
   const [currentStep, setCurrentStep] = useState(0)
   const [withdrawError, setWithdrawError] = useState({})
 
-  const [burnTokens, setBurnTokens] = useState([
-    // {
-    //   address: USDT_ADDRESS,
-    //   amount: '100000000'
-    // },
-    // {
-    //   address: USDC_ADDRESS,
-    //   amount: '10000000'
-    // },
-    // {
-    //   address: DAI_ADDRESS,
-    //   amount: '10000000000000000000'
-    // }
-  ])
-  const [isShowZipModal, setIsShowZipModal] = useState(false)
   const [pegTokenPrice, setPegTokenPrice] = useState(BN_18)
 
   const { value: redeemFeeBps } = useRedeemFeeBps({
@@ -141,6 +116,8 @@ export default function Withdraw({
                 return {
                   tokenAddress: token,
                   decimals: await tokenContract.decimals(),
+                  symbol: await tokenContract.symbol(),
+                  balance: await tokenContract.balanceOf(address),
                   amounts: amount
                 }
               }
@@ -208,7 +185,6 @@ export default function Withdraw({
       const nextBurnTokens = compact(array)
       if (!isEmpty(nextBurnTokens)) {
         setBurnTokens(nextBurnTokens)
-        setIsShowZipModal(true)
       }
     })
   }
@@ -237,12 +213,6 @@ export default function Withdraw({
       })
     }
 
-    if (shouldExchange && !isValidSlipper()) {
-      return setWithdrawError({
-        type: 'warning',
-        message: 'Please enter the correct slippage value.'
-      })
-    }
     withdrawValidFinish = Date.now()
     setCurrentStep(1)
     const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider)
@@ -348,17 +318,6 @@ export default function Withdraw({
       transaction: `${swc}(${swcPercents}%)`
     })
   }
-
-  function imgError(e) {
-    const evn = e
-    const img = evn.srcElement ? evn.srcElement : evn.target
-    img.src = '/default.png'
-  }
-
-  const handleReceiveTokenChange = value => {
-    setReceiveToken(value)
-  }
-
   /**
    * check if toValue is valid
    * @returns
@@ -390,17 +349,10 @@ export default function Withdraw({
     return true
   }
 
-  const isValidSlipper = () => {
-    if (slipper === '' || isEmpty(slipper.replace(/ /g, ''))) return
-    if (isNaN(slipper)) return false
-    if (slipper < 0 || slipper > 45) return false
-    return true
-  }
-
   useEffect(() => {
     // need open advanced setting
-    // allowLoss, slipper, toValue need valid
-    if (isValidAllowLoss() && isValidSlipper() && isValidToValue()) {
+    // allowLoss, toValue need valid
+    if (isValidAllowLoss() && isValidToValue()) {
       estimateWithdraw()
     }
     if (isEmpty(toValue)) {
@@ -411,7 +363,7 @@ export default function Withdraw({
       setEstimateWithdrawArray([])
       return estimateWithdraw.cancel()
     }
-  }, [toValue, allowMaxLoss, slipper, shouldExchange, token])
+  }, [toValue, allowMaxLoss, shouldExchange, token])
 
   const handleAmountChange = event => {
     try {
@@ -456,52 +408,41 @@ export default function Withdraw({
         </GridItem>
       )
     }
+    console.log('estimateWithdrawArray=', estimateWithdrawArray)
+    const options = map(estimateWithdrawArray, item => {
+      return {
+        label: item.symbol,
+        value: item.tokenAddress,
+        img: `./images/${item.tokenAddress}.png`
+      }
+    })
+
     return map(estimateWithdrawArray, item => {
       return (
-        <GridItem key={item.tokenAddress} xs={12} sm={12} md={6} lg={6}>
-          <Button
-            title="Add token address to wallet"
-            color="transparent"
-            target="_blank"
-            style={{ fontSize: '1rem', color: '#A0A0A0' }}
-            onClick={() => addToken(item.tokenAddress)}
-          >
-            <AddIcon fontSize="small" style={{ position: 'absolute', top: 25, left: 45 }} />
-            <img className={classes.img} style={{ borderRadius: '50%' }} alt="" src={`./images/${item.tokenAddress}.png`} onError={imgError} />
-            &nbsp;&nbsp;~&nbsp;
-            {toFixed(item.amounts, BigNumber.from(10).pow(item.decimals), 6)}
-          </Button>
+        <GridItem key={item.tokenAddress} xs={12} sm={12} md={12} lg={12}>
+          <GridContainer justify="center" spacing={2}>
+            <GridItem xs={4} sm={4} md={4} lg={4}>
+              <SimpleSelect disabled value={item.tokenAddress} options={options} />
+            </GridItem>
+            <GridItem xs={8} sm={8} md={8} lg={8}>
+              <CustomTextField
+                classes={{ root: classes.input }}
+                value={toFixed(item.amounts, BigNumber.from(10).pow(item.decimals), 6)}
+                placeholder="withdraw amount"
+                disabled
+              />
+            </GridItem>
+            <GridItem xs={12} sm={12} md={12} lg={12}>
+              <p className={classes.estimateText} title={formatBalance(item.balance, item.decimals, { showAll: true })}>
+                Balance:&nbsp;
+                <Loading loading={isBalanceLoading}>{formatBalance(item.balance, item.decimals)}</Loading>
+              </p>
+            </GridItem>
+          </GridContainer>
         </GridItem>
       )
     })
   }
-
-  const selectOptions = [
-    {
-      label: 'USDT',
-      value: USDT_ADDRESS || 'USDT',
-      img: './images/0x55d398326f99059fF775485246999027B3197955.png'
-    },
-    {
-      label: 'USDC',
-      value: USDC_ADDRESS || 'USDC',
-      img: './images/0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d.png'
-    },
-    {
-      label: 'DAI',
-      value: DAI_ADDRESS || 'DAI',
-      img: './images/0x1AF3F329e8BE154074D8769D1FFa4eE058B1DBc3.png'
-    },
-    {
-      label: 'Mix',
-      value: RECEIVE_MIX_VALUE || 'Mix',
-      img: [
-        './images/0x55d398326f99059fF775485246999027B3197955.png',
-        './images/0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d.png',
-        './images/0x1AF3F329e8BE154074D8769D1FFa4eE058B1DBc3.png'
-      ]
-    }
-  ]
 
   const isValidToValueFlag = isValidToValue()
   const isValidAllowLossFlag = isValidAllowLoss()
@@ -526,91 +467,39 @@ export default function Withdraw({
 
   return (
     <>
-      <div className={classes.setting}>
-        <PopupState variant="popover" popupId="setting-popover">
-          {popupState => (
-            <div>
-              <svg width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg" {...bindTrigger(popupState)}>
-                <path
-                  d="M15 20.625C18.1066 20.625 20.625 18.1066 20.625 15C20.625 11.8934 18.1066 9.375 15 9.375C11.8934 9.375 9.375 11.8934 9.375 15C9.375 18.1066 11.8934 20.625 15 20.625Z"
-                  stroke="#A0A0A0"
-                  strokeWidth="1.75"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-                <path
-                  d="M21.5273 7.62891C21.8242 7.90234 22.1055 8.18359 22.3711 8.47266L25.5703 8.92969C26.0916 9.83497 26.4934 10.804 26.7656 11.8125L24.8203 14.4023C24.8203 14.4023 24.8555 15.1992 24.8203 15.5977L26.7656 18.1875C26.4946 19.1965 26.0928 20.1656 25.5703 21.0703L22.3711 21.5273C22.3711 21.5273 21.8203 22.1016 21.5273 22.3711L21.0703 25.5703C20.165 26.0916 19.196 26.4934 18.1875 26.7656L15.5977 24.8203C15.2 24.8555 14.8 24.8555 14.4023 24.8203L11.8125 26.7656C10.8035 26.4946 9.83438 26.0928 8.92969 25.5703L8.47266 22.3711C8.18359 22.0977 7.90234 21.8164 7.62891 21.5273L4.42969 21.0703C3.90842 20.165 3.50663 19.196 3.23438 18.1875L5.17969 15.5977C5.17969 15.5977 5.14453 14.8008 5.17969 14.4023L3.23438 11.8125C3.50537 10.8035 3.90722 9.83438 4.42969 8.92969L7.62891 8.47266C7.90234 8.18359 8.18359 7.90234 8.47266 7.62891L8.92969 4.42969C9.83497 3.90842 10.804 3.50663 11.8125 3.23438L14.4023 5.17969C14.8 5.14452 15.2 5.14452 15.5977 5.17969L18.1875 3.23438C19.1965 3.50537 20.1656 3.90722 21.0703 4.42969L21.5273 7.62891Z"
-                  stroke="#A0A0A0"
-                  strokeWidth="1.75"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
-              <Popover
-                classes={{ paper: classes.popover }}
-                {...bindPopover(popupState)}
-                anchorOrigin={{
-                  vertical: 'bottom',
-                  horizontal: 'center'
-                }}
-                transformOrigin={{
-                  vertical: 'top',
-                  horizontal: 'center'
-                }}
-              >
-                <Box p={2}>
-                  <GridContainer>
-                    <GridItem xs={12} sm={12} md={12} lg={12}>
-                      <p className={classes.popoverTitle}>Max Loss</p>
-                      <CustomTextField
-                        classes={{ root: classes.input }}
-                        value={allowMaxLoss}
-                        placeholder="Allow loss percent"
-                        maxEndAdornment
-                        onMaxClick={() => setAllowMaxLoss('50')}
-                        onChange={event => {
-                          const value = event.target.value
-                          setAllowMaxLoss(value)
-                        }}
-                        error={!isUndefined(isValidAllowLossFlag) && !isValidAllowLossFlag}
-                      />
-                    </GridItem>
-                  </GridContainer>
-                </Box>
-              </Popover>
-            </div>
-          )}
-        </PopupState>
-      </div>
       <GridContainer className={classes.withdrawContainer}>
         <GridItem xs={12} sm={12} md={12} lg={12}>
           <p className={classes.estimateText}>From</p>
         </GridItem>
         <GridItem xs={12} sm={12} md={12} lg={12}>
-          <div className={classes.inputLabelWrapper}>
-            <div className={classes.tokenInfo}>
-              <span className={classes.tokenName}>USDi</span>
-            </div>
-            <CustomTextField
-              classes={{ root: classes.input }}
-              value={toValue}
-              placeholder="withdraw amount"
-              maxEndAdornment
-              onMaxClick={() => handleMaxClick()}
-              onChange={handleAmountChange}
-              error={!isUndefined(isValidToValueFlag) && !isValidToValueFlag && toValue !== '0'}
-            />
-          </div>
+          <GridContainer justify="center" spacing={2}>
+            <GridItem xs={4} sm={4} md={4} lg={4}>
+              <div className={classes.tokenInfo}>
+                <span className={classes.tokenName}>USDi</span>
+              </div>
+            </GridItem>
+            <GridItem xs={8} sm={8} md={8} lg={8}>
+              <CustomTextField
+                classes={{ root: classes.input }}
+                value={toValue}
+                placeholder="withdraw amount"
+                maxEndAdornment
+                onMaxClick={() => handleMaxClick()}
+                onChange={handleAmountChange}
+                error={!isUndefined(isValidToValueFlag) && !isValidToValueFlag && toValue !== '0'}
+              />
+            </GridItem>
+          </GridContainer>
         </GridItem>
-        <GridItem xs={12} sm={12} md={12} lg={12}>
+        <GridItem xs={6} sm={6} md={6} lg={6}>
           <p className={classes.estimateText} title={formatBalance(toBalance, usdiDecimals, { showAll: true })}>
             Balance:&nbsp;
             <Loading loading={isBalanceLoading}>{formatBalance(toBalance, usdiDecimals)}</Loading>
           </p>
         </GridItem>
         {address && (
-          <GridItem xs={12} sm={12} md={12} lg={12}>
-            <p className={classes.estimateText} title={toFixed(pegTokenPrice, BN_18)}>
+          <GridItem xs={6} sm={6} md={6} lg={6}>
+            <p className={classes.estimateText} style={{ justifyContent: 'right' }} title={toFixed(pegTokenPrice, BN_18)}>
               <span>1 USDi ≈ {toFixed(pegTokenPrice, BN_18, 6)} USD</span>
             </p>
           </GridItem>
@@ -621,25 +510,26 @@ export default function Withdraw({
           <p className={classes.estimateText}>To</p>
         </GridItem>
         <GridItem xs={12} sm={12} md={12} lg={12}>
-          <div className={classes.selectorlWrapper}>
-            <SimpleSelect disabled value={receiveToken} onChange={handleReceiveTokenChange} options={selectOptions} />
-            <p className={classes.estimateText}>
-              {receiveToken === 'Mix' && (
-                <Tooltip
-                  classes={{
-                    tooltip: classes.tooltip
-                  }}
-                  placement="top"
-                  title={'Mix mode will return a variety of coins, such as USDT/USDC/TUSD/BUSD, etc.'}
-                >
-                  <InfoIcon />
-                </Tooltip>
-              )}
-            </p>
-          </div>
-        </GridItem>
-        <GridItem xs={12} sm={12} md={12} lg={12}>
           <GridContainer>{renderEstimate()}</GridContainer>
+        </GridItem>
+      </GridContainer>
+      <GridContainer className={classes.maxlossContainer}>
+        <GridItem xs={4} sm={4} md={4} className={classes.slippageTitle}>
+          Max loss:
+        </GridItem>
+        <GridItem xs={8} sm={8} md={8}>
+          <CustomTextField
+            classes={{ root: classes.input }}
+            value={allowMaxLoss}
+            placeholder="Allow loss percent"
+            maxEndAdornment
+            onMaxClick={() => setAllowMaxLoss('50')}
+            onChange={event => {
+              const value = event.target.value
+              setAllowMaxLoss(value)
+            }}
+            error={!isUndefined(isValidAllowLossFlag) && !isValidAllowLossFlag}
+          />
         </GridItem>
       </GridContainer>
       <GridContainer>
@@ -710,28 +600,6 @@ export default function Withdraw({
             </Button>
           </div>
         </Paper>
-      </Modal>
-      <Modal
-        className={classes.modal}
-        open={isShowZipModal && !!address}
-        aria-labelledby="simple-modal-title"
-        aria-describedby="simple-modal-description"
-      >
-        <div className={classes.swapBody}>
-          {!isEmpty(address) && !isEmpty(exchangeManager) && (
-            <ApproveArray
-              address={address}
-              tokens={burnTokens}
-              userProvider={userProvider}
-              exchangeManager={exchangeManager}
-              EXCHANGE_ADAPTER_ABI={EXCHANGE_ADAPTER_ABI}
-              EXCHANGE_AGGREGATOR_ABI={EXCHANGE_AGGREGATOR_ABI}
-              slippage={slipper}
-              onSlippageChange={setSlipper}
-              handleClose={() => setIsShowZipModal(false)}
-            />
-          )}
-        </div>
       </Modal>
     </>
   )

@@ -18,7 +18,8 @@ function CustomTextField({
 }) {
   const styleClasses = useStyles()
   const { root: rootClass, ...restClass } = classes
-  const { root: rootInputClass, ...restInputClass } = InputProps?.classes
+  const { classes: InputPropsClasses = {} } = InputProps
+  const { root: rootInputClass, ...restInputClass } = InputPropsClasses
 
   return (
     <TextField

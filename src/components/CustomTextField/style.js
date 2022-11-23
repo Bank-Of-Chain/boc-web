@@ -3,9 +3,9 @@ import { dangerColor } from '@/assets/jss/material-kit-react.js'
 const style = {
   root: {
     width: '100%',
-    margin: '12px 0 8px',
     '& .MuiInputBase-root': {
-      color: '#fff'
+      color: '#fff',
+      borderWidth: '1px'
     },
     '& .MuiOutlinedInput-input': {
       padding: '1rem',
