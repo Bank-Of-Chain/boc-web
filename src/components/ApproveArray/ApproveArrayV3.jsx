@@ -359,7 +359,7 @@ const ApproveArrayV3 = props => {
   return (
     <div className={classes.main}>
       <div className={classes.approveContainer}>
-        <div>Swap tokens:</div>
+        <div className={classes.title}>Swap tokens:</div>
         {map(tokens, (token, index) => {
           const style = {}
           if (token.amount === '0' || (tokens.length > 1 && isReciveToken(index))) {
