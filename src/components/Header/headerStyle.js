@@ -1,5 +1,4 @@
 import {
-  defaultFont,
   primaryColor,
   infoColor,
   successColor,
@@ -55,14 +54,27 @@ const headerStyle = {
     flex: 1
   },
   title: {
-    ...defaultFont,
-    lineHeight: '30px',
-    fontSize: '20px',
-    borderRadius: '3px',
-    textTransform: 'none',
-    color: '#fff',
-    padding: '8px 16px',
-    letterSpacing: 'unset'
+    position: 'relative',
+    display: 'inline-block',
+    '& img': {
+      height: '2.5rem'
+    },
+    '& img:last-child': {
+      position: 'absolute',
+      top: 0,
+      left: 0,
+      opacity: 0,
+      transition: 'all 0.3s linear'
+    },
+    '&:hover img:first-child': {
+      filter: 'drop-shadow(0px 0px 5px #A68EFE)'
+    },
+    '&:active img:first-child': {
+      filter: 'none'
+    },
+    '&:active img:last-child': {
+      opacity: 1
+    }
   },
   appResponsive: {
     margin: '20px 10px'

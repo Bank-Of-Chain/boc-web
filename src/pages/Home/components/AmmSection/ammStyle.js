@@ -41,6 +41,7 @@ const ammSectionStyle = {
     cursor: 'pointer',
     borderRadius: '50%',
     filter: 'grayscale(100%)',
+    transition: 'all 0.3s linear',
     '&:hover': {
       filter: 'grayscale(0%)'
     }
