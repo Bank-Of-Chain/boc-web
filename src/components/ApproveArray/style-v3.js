@@ -3,10 +3,7 @@ import { container } from '@/assets/jss/material-kit-react.js'
 const componentsStyle = () => ({
   container,
   title: {
-    paddingBottom: '1.5rem',
-    fontSize: '1.5rem',
-    lineHeight: '1.5rem',
-    textAlign: 'center'
+    marginBottom: '0.625rem'
   },
   tokenLogo: {
     width: 30,
