@@ -2,6 +2,12 @@ import { container } from '@/assets/jss/material-kit-react.js'
 
 const componentsStyle = () => ({
   container,
+  main: {
+    padding: '1.875rem',
+    color: '#A0A0A0',
+    background: 'linear-gradient(111.68deg, #2C2F36 7.59%, #333437 102.04%)',
+    borderRadius: '2.5rem'
+  },
   title: {
     paddingBottom: '1.5rem',
     fontSize: '1.5rem',

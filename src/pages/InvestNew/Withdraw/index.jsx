@@ -23,10 +23,12 @@ import GridContainer from '@/components/Grid/GridContainer'
 import GridItem from '@/components/Grid/GridItem'
 import Button from '@/components/CustomButtons/Button'
 import Loading from '@/components/LoadingComponent'
+import ApproveArray from '@/components/ApproveArray/ApproveArrayV3'
+
 // === Constants === //
 import { warmDialog } from '@/reducers/meta-reducer'
 import { toFixed, formatBalance } from '@/helpers/number-format'
-import { USDT_ADDRESS, IERC20_ABI, MULTIPLE_OF_GAS, MAX_GAS_LIMIT } from '@/constants'
+import { USDT_ADDRESS, IERC20_ABI, MULTIPLE_OF_GAS, MAX_GAS_LIMIT, USDC_ADDRESS, DAI_ADDRESS } from '@/constants'
 import { BN_18 } from '@/constants/big-number'
 
 // === Hooks === //
@@ -59,7 +61,9 @@ export default function Withdraw({
   userProvider,
   VAULT_ADDRESS,
   VAULT_ABI,
-  setBurnTokens,
+  EXCHANGE_AGGREGATOR_ABI,
+  exchangeManager,
+  EXCHANGE_ADAPTER_ABI,
   isBalanceLoading,
   reloadBalance
 }) {
@@ -68,12 +72,28 @@ export default function Withdraw({
   const [receiveToken] = useState(RECEIVE_MIX_VALUE)
   const [toValue, setToValue] = useState('')
   const [allowMaxLoss, setAllowMaxLoss] = useState('0.3')
+  const [slipper, setSlipper] = useState('0.3')
   const [estimateWithdrawArray, setEstimateWithdrawArray] = useState([])
   const [isEstimate, setIsEstimate] = useState(false)
   const [isWithdrawLoading, setIsWithdrawLoading] = useState(false)
   const [currentStep, setCurrentStep] = useState(0)
   const [withdrawError, setWithdrawError] = useState({})
 
+  const [burnTokens, setBurnTokens] = useState([
+    {
+      address: USDT_ADDRESS,
+      amount: '100000000'
+    },
+    {
+      address: USDC_ADDRESS,
+      amount: '10000000'
+    },
+    {
+      address: DAI_ADDRESS,
+      amount: '10000000000000000000'
+    }
+  ])
+  const [isShowZipModal, setIsShowZipModal] = useState(true)
   const [pegTokenPrice, setPegTokenPrice] = useState(BN_18)
 
   const { value: redeemFeeBps } = useRedeemFeeBps({
@@ -185,6 +205,7 @@ export default function Withdraw({
       const nextBurnTokens = compact(array)
       if (!isEmpty(nextBurnTokens)) {
         setBurnTokens(nextBurnTokens)
+        setIsShowZipModal(true)
       }
     })
   }
@@ -600,6 +621,28 @@ export default function Withdraw({
             </Button>
           </div>
         </Paper>
+      </Modal>
+      <Modal
+        className={classes.modal}
+        open={isShowZipModal && !!address}
+        aria-labelledby="simple-modal-title"
+        aria-describedby="simple-modal-description"
+      >
+        <div className={classes.swapBody}>
+          {!isEmpty(address) && !isEmpty(exchangeManager) && (
+            <ApproveArray
+              address={address}
+              tokens={burnTokens}
+              userProvider={userProvider}
+              exchangeManager={exchangeManager}
+              EXCHANGE_ADAPTER_ABI={EXCHANGE_ADAPTER_ABI}
+              EXCHANGE_AGGREGATOR_ABI={EXCHANGE_AGGREGATOR_ABI}
+              slippage={slipper}
+              onSlippageChange={setSlipper}
+              handleClose={() => setIsShowZipModal(false)}
+            />
+          )}
+        </div>
       </Modal>
     </>
   )

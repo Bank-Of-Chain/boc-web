@@ -357,7 +357,7 @@ const ApproveArrayV3 = props => {
   }, [exchangeManager])
 
   return (
-    <>
+    <div className={classes.main}>
       <div className={classes.approveContainer}>
         <div>Swap tokens:</div>
         {map(tokens, (token, index) => {
@@ -442,7 +442,7 @@ const ApproveArrayV3 = props => {
           </Button>
         </GridItem>
       </GridContainer>
-    </>
+    </div>
   )
 }
 

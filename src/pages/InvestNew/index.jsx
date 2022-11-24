@@ -75,8 +75,6 @@ function Invest(props) {
 
   const [isBalanceLoading, setIsBalanceLoading] = useState(false)
 
-  const [burnTokens, setBurnTokens] = useState([])
-
   const current = useSelector(state => state.investReducer.currentTab)
   const setCurrent = tab => {
     loadCoinsBalance()
@@ -222,11 +220,6 @@ function Invest(props) {
     promise.then(() => {
       history.push(path.slice(1))
     })
-  }
-
-  const withdrawCallback = value => {
-    setBurnTokens(value)
-    setCurrent(INVEST_TAB.swap)
   }
 
   return (
@@ -397,9 +390,11 @@ function Invest(props) {
                     VAULT_ADDRESS={VAULT_ADDRESS}
                     VAULT_ABI={VAULT_ABI}
                     IERC20_ABI={IERC20_ABI}
-                    setBurnTokens={withdrawCallback}
                     isBalanceLoading={isBalanceLoading}
                     reloadBalance={loadCoinsBalance}
+                    EXCHANGE_AGGREGATOR_ABI={EXCHANGE_AGGREGATOR_ABI}
+                    exchangeManager={exchangeManager}
+                    EXCHANGE_ADAPTER_ABI={EXCHANGE_ADAPTER_ABI}
                   />
                 </div>
               </GridItem>
@@ -414,20 +409,6 @@ function Invest(props) {
                   balance={toBalance}
                   vaultBufferBalance={vaultBufferBalance}
                 />
-              </GridItem>
-            )}
-            {current === INVEST_TAB.swap && (
-              <GridItem xs={9} sm={9} md={7}>
-                <div className={classes.wrapper}>
-                  <ApproveArray
-                    address={address}
-                    tokens={burnTokens}
-                    userProvider={userProvider}
-                    exchangeManager={exchangeManager}
-                    EXCHANGE_ADAPTER_ABI={EXCHANGE_ADAPTER_ABI}
-                    EXCHANGE_AGGREGATOR_ABI={EXCHANGE_AGGREGATOR_ABI}
-                  />
-                </div>
               </GridItem>
             )}
           </>
