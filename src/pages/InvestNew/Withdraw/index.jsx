@@ -28,7 +28,8 @@ import ApproveArray from '@/components/ApproveArray/ApproveArrayV3'
 // === Constants === //
 import { warmDialog } from '@/reducers/meta-reducer'
 import { toFixed, formatBalance } from '@/helpers/number-format'
-import { USDT_ADDRESS, IERC20_ABI, MULTIPLE_OF_GAS, MAX_GAS_LIMIT, USDC_ADDRESS, DAI_ADDRESS } from '@/constants'
+import { USDT_ADDRESS, IERC20_ABI, MULTIPLE_OF_GAS, MAX_GAS_LIMIT } from '@/constants'
+import { USDC_ADDRESS, DAI_ADDRESS } from '@/constants/tokens'
 import { BN_18 } from '@/constants/big-number'
 
 // === Hooks === //
@@ -80,20 +81,21 @@ export default function Withdraw({
   const [withdrawError, setWithdrawError] = useState({})
 
   const [burnTokens, setBurnTokens] = useState([
-    {
-      address: USDT_ADDRESS,
-      amount: '100000000'
-    },
-    {
-      address: USDC_ADDRESS,
-      amount: '10000000'
-    },
-    {
-      address: DAI_ADDRESS,
-      amount: '10000000000000000000'
-    }
+    // {
+    //   address: USDT_ADDRESS,
+    //   amount: '100000000'
+    // },
+    // {
+    //   address: USDC_ADDRESS,
+    //   amount: '10000000'
+    // },
+    // {
+    //   address: DAI_ADDRESS,
+    //   amount: '10000000000000000000'
+    // }
   ])
-  const [isShowZipModal, setIsShowZipModal] = useState(true)
+  console.log(USDC_ADDRESS, DAI_ADDRESS)
+  const [isShowZipModal, setIsShowZipModal] = useState(false)
   const [pegTokenPrice, setPegTokenPrice] = useState(BN_18)
 
   const { value: redeemFeeBps } = useRedeemFeeBps({

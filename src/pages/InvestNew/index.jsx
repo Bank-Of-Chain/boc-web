@@ -15,7 +15,6 @@ import Deposit from './Deposit'
 import Withdraw from './Withdraw'
 import MyStatement from '@/components/MyStatement'
 import { MyAccountIcon, SwapIcon, WithdrawIcon, DepositIcon, SwitchIcon } from '@/components/SvgIcons'
-import ApproveArray from '@/components/ApproveArray/ApproveArrayV3'
 
 // === Reducers === //
 import { useDispatch, useSelector } from 'react-redux'

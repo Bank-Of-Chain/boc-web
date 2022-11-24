@@ -82,16 +82,17 @@ export default function Withdraw({
   const [withdrawError, setWithdrawError] = useState({})
 
   const [burnTokens, setBurnTokens] = useState([
-    {
-      address: ETH_ADDRESS,
-      amount: '10000000000000000000'
-    },
-    {
-      address: WETH_ADDRESS,
-      amount: '1000000000000000000'
-    }
+    // {
+    //   address: ETH_ADDRESS,
+    //   amount: '10000000000000000000'
+    // },
+    // {
+    //   address: WETH_ADDRESS,
+    //   amount: '1000000000000000000'
+    // }
   ])
-  const [isShowZipModal, setIsShowZipModal] = useState(true)
+  console.log('WETH_ADDRESS=', WETH_ADDRESS)
+  const [isShowZipModal, setIsShowZipModal] = useState(false)
 
   const [pegTokenPrice, setPegTokenPrice] = useState(BN_18)
 

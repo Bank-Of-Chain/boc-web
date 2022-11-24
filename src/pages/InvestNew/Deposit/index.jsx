@@ -37,7 +37,7 @@ import Button from '@/components/CustomButtons/Button'
 import { warmDialog } from '@/reducers/meta-reducer'
 import { toFixed, formatBalance } from '@/helpers/number-format'
 import Loading from '@/components/LoadingComponent'
-import SimpleSelect from '@/components/SimpleSelect'
+import SimpleSelect from '@/components/SimpleSelect/SimpleSelectV2'
 import AddIcon from '@material-ui/icons/Add'
 import ExpandLessIcon from '@material-ui/icons/ExpandLess'
 import ClearIcon from '@material-ui/icons/Clear'
@@ -97,7 +97,7 @@ export default function Deposit({
 
   const nextRebaseTime = getLastPossibleRebaseTime()
 
-  const [tokenSelect, setTokenSelect] = useState([USDT_ADDRESS, USDC_ADDRESS, DAI_ADDRESS])
+  const [tokenSelect, setTokenSelect] = useState([USDT_ADDRESS, USDC_ADDRESS])
 
   const tokenBasicState = {
     [TOKEN.USDT]: {
@@ -410,34 +410,47 @@ export default function Deposit({
                     label: selectItem.name,
                     value: selectItem.address,
                     img: `./images/${selectItem.address}.png`,
-                    endDont: <AddIcon onClick={() => addSelectToken(selectItem.address)} />
+                    endDont: <AddIcon />
                   }
                 }
               })
             )
             const selectOptions = [
               {
-                key: `${item.address}-expand`,
+                key: 'expand',
                 label: item.name,
-                value: item.address,
+                value: 'expand',
                 img: `./images/${item.address}.png`,
                 endDont: <ExpandLessIcon />
               },
-              ...addItem,
-              {
-                key: `${item.address}-clear`,
-                label: item.name,
-                value: item.address,
-                img: `./images/${item.address}.png`,
-                endDont: <ClearIcon onClick={() => removeSelectToken(item.address)} />
-              }
+              ...addItem
             ]
+            if (tokenSelect.length > 1) {
+              selectOptions.push({
+                key: 'clear',
+                label: item.name,
+                value: 'clear',
+                img: `./images/${item.address}.png`,
+                endDont: <ClearIcon />
+              })
+            }
             console.log('selectOptions=', selectOptions)
             return (
               <GridItem key={item.name} xs={12} sm={12} md={12} lg={12} className={classes.tokenInputWrapper}>
                 <GridContainer justify="center" spacing={2}>
                   <GridItem xs={4} sm={4} md={4} lg={4}>
-                    <SimpleSelect options={selectOptions} value={item.address} />
+                    <SimpleSelect
+                      options={selectOptions}
+                      value={'expand'}
+                      onChange={v => {
+                        if (v === 'expand') return
+                        if (v === 'clear') {
+                          removeSelectToken(item.address)
+                          return
+                        }
+                        addSelectToken(v)
+                      }}
+                    />
                   </GridItem>
                   <GridItem xs={8} sm={8} md={8} lg={8}>
                     <CustomTextField
