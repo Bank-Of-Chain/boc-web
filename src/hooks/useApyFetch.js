@@ -56,8 +56,8 @@ export default function useApyFetch(chain = '1') {
           ...map(usdiArray, i => {
             return {
               title: i === 'YearnFinance' ? 'Yearn' : i,
-              imagePath: svg[i],
-              percent: parseFloat(data[i]),
+              imagePath: svg[i] || '/default.png',
+              percent: parseFloat(data[i] || '0'),
               text: get(apyType, i, '')
             }
           })
@@ -67,8 +67,8 @@ export default function useApyFetch(chain = '1') {
           ...map(ethiArray, i => {
             return {
               title: i === 'YearnFinance' ? 'Yearn' : i,
-              imagePath: ethiResp.svg[i],
-              percent: parseFloat(ethiResp.data[i]),
+              imagePath: ethiResp.svg[i] || '/default.png',
+              percent: parseFloat(ethiResp.data[i] || 0),
               text: get(apyType, i, '')
             }
           })

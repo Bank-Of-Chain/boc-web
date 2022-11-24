@@ -34,10 +34,12 @@ const lendingSectionStyle = {
     justifyContent: 'center'
   },
   usdiBar: {
-    background: '#7E6DD2'
+    background: '#7E6DD2',
+    border: '2px solid #7E6DD2'
   },
   ethiBar: {
-    background: '#CABBFF'
+    background: '#CABBFF',
+    border: '2px solid #CABBFF'
   },
   bar: {
     width: '2.8125rem',

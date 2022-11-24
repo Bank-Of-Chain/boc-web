@@ -97,7 +97,7 @@ export default function Deposit({
 
   const nextRebaseTime = getLastPossibleRebaseTime()
 
-  const [tokenSelect, setTokenSelect] = useState([USDT_ADDRESS, USDC_ADDRESS])
+  const [tokenSelect, setTokenSelect] = useState([USDT_ADDRESS, USDC_ADDRESS, DAI_ADDRESS])
 
   const tokenBasicState = {
     [TOKEN.USDT]: {

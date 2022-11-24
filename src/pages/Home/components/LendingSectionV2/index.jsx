@@ -91,7 +91,6 @@ export default function LendingSectionV2() {
     })
     nextEthi.forEach(element => {
       const index = findIndex(nextUsdi, { title: element.title })
-      console.log('index=', index, element.title)
       if (index !== -1) {
         nextUsdi[index] = {
           ...nextUsdi[index],
