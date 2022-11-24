@@ -2,6 +2,12 @@ import { container } from '@/assets/jss/material-kit-react.js'
 
 const componentsStyle = () => ({
   container,
+  main: {
+    padding: '1.875rem',
+    color: '#fff',
+    background: 'linear-gradient(111.68deg, #2C2F36 7.59%, #333437 102.04%)',
+    borderRadius: '2.5rem'
+  },
   title: {
     marginBottom: '0.625rem'
   },
@@ -15,7 +21,7 @@ const componentsStyle = () => ({
     padding: '1.25rem',
     border: '1px solid #A68EFD',
     borderRadius: '1.25rem 1.25rem 0 0',
-    backgroundColor: '#1F2023',
+    backgroundColor: '#1E1E1F',
     overflowY: 'auto'
   },
   approveItemWrapper: {
@@ -87,7 +93,7 @@ const componentsStyle = () => ({
     border: '1px solid #A68EFD',
     borderRadius: '0px 0px 1.25rem 1.25rem',
     marginTop: '0.625rem',
-    backgroundColor: '#1F2023'
+    backgroundColor: '#1E1E1F'
   },
   slippageTitlte: {
     display: 'flex',
@@ -97,7 +103,7 @@ const componentsStyle = () => ({
     padding: '1.25rem',
     border: '1px solid #A68EFD',
     marginTop: '0.625rem',
-    backgroundColor: '#1F2023'
+    backgroundColor: '#1E1E1F'
   },
   estimateTitle: {
     paddingBottom: '0.75rem'

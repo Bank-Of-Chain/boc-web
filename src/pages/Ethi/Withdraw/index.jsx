@@ -20,6 +20,7 @@ import GridContainer from '@/components/Grid/GridContainer'
 import GridItem from '@/components/Grid/GridItem'
 import Button from '@/components/CustomButtons/Button'
 import Loading from '@/components/LoadingComponent'
+import ApproveArrayV3 from '@/components/ApproveArray/ApproveArrayV3'
 import SimpleSelect from '@/components/SimpleSelect'
 
 // === Hooks === //
@@ -40,7 +41,7 @@ import { isAd, isEs, isRp, isMaxLoss, isLossMuch, isExchangeFail, errorTextOutpu
 
 // === Constants === //
 import { MULTIPLE_OF_GAS, MAX_GAS_LIMIT, IERC20_ABI } from '@/constants'
-// import { WETH_ADDRESS } from '@/constants/tokens'
+import { WETH_ADDRESS } from '@/constants/tokens'
 import { BN_18 } from '@/constants/big-number'
 
 // === Styles === //
@@ -56,14 +57,16 @@ const WITHDRAW_EXCHANGE_THRESHOLD = BigNumber.from(10).pow(16)
 
 export default function Withdraw({
   address,
+  exchangeManager,
   ethiBalance,
   ethiDecimals,
   userProvider,
   ETH_ADDRESS,
   VAULT_ADDRESS,
   VAULT_ABI,
+  EXCHANGE_AGGREGATOR_ABI,
+  EXCHANGE_ADAPTER_ABI,
   isBalanceLoading,
-  setBurnTokens,
   reloadBalance,
   PRICE_ORCALE_ABI
 }) {
@@ -71,11 +74,27 @@ export default function Withdraw({
   const dispatch = useDispatch()
   const [toValue, setToValue] = useState('')
   const [allowMaxLoss, setAllowMaxLoss] = useState('0.3')
+  const [slipper, setSlipper] = useState('0.3')
   const [estimateWithdrawArray, setEstimateWithdrawArray] = useState([])
   const [isEstimate, setIsEstimate] = useState(false)
   const [isWithdrawLoading, setIsWithdrawLoading] = useState(false)
   const [currentStep, setCurrentStep] = useState(0)
   const [withdrawError, setWithdrawError] = useState({})
+
+  const [burnTokens, setBurnTokens] = useState([
+    // {
+    //   address: ETH_ADDRESS,
+    //   amount: '10000000000000000000',
+    //   symbol: 'ETH'
+    // },
+    // {
+    //   address: WETH_ADDRESS,
+    //   amount: '1000000000000000000',
+    //   symbol: 'WETH'
+    // }
+  ])
+  console.log('WETH_ADDRESS=', WETH_ADDRESS)
+  const [isShowZipModal, setIsShowZipModal] = useState(false)
 
   const [pegTokenPrice, setPegTokenPrice] = useState(BN_18)
 
@@ -210,6 +229,7 @@ export default function Withdraw({
         })
       ) {
         setBurnTokens(nextBurnTokens)
+        setIsShowZipModal(true)
       }
     })
   }
@@ -635,6 +655,29 @@ export default function Withdraw({
             </Button>
           </div>
         </Paper>
+      </Modal>
+      <Modal
+        className={classes.modal}
+        open={isShowZipModal && !!address}
+        aria-labelledby="simple-modal-title"
+        aria-describedby="simple-modal-description"
+      >
+        <div className={classes.swapBody}>
+          {!isEmpty(address) && !isEmpty(exchangeManager) && (
+            <ApproveArrayV3
+              isEthi
+              address={address}
+              tokens={burnTokens}
+              userProvider={userProvider}
+              exchangeManager={exchangeManager}
+              EXCHANGE_ADAPTER_ABI={EXCHANGE_ADAPTER_ABI}
+              EXCHANGE_AGGREGATOR_ABI={EXCHANGE_AGGREGATOR_ABI}
+              slippage={slipper}
+              onSlippageChange={setSlipper}
+              handleClose={() => setIsShowZipModal(false)}
+            />
+          )}
+        </div>
       </Modal>
     </>
   )

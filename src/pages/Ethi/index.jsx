@@ -15,7 +15,6 @@ import Deposit from './Deposit'
 import Withdraw from './Withdraw'
 import MyStatement from '@/components/MyStatement'
 import { MyAccountIcon, SwapIcon, WithdrawIcon, DepositIcon, SwitchIcon } from '@/components/SvgIcons'
-import ApproveArray from '@/components/ApproveArray/ApproveArrayV3'
 import { useSelector, useDispatch } from 'react-redux'
 
 // === Reducers === //
@@ -23,7 +22,7 @@ import { warmDialog } from '@/reducers/meta-reducer'
 import { setCurrentTab } from '@/reducers/invest-reducer'
 
 // === constants === //
-import { ETH_ADDRESS, ETH_DECIMALS, WETH_ADDRESS } from '@/constants/tokens'
+import { ETH_ADDRESS, ETH_DECIMALS } from '@/constants/tokens'
 import { INVEST_TAB } from '@/constants/invest'
 import { IERC20_ABI, CHAIN_ID } from '@/constants'
 
@@ -68,17 +67,6 @@ function Ethi(props) {
   const [vaultBufferDecimals, setVaultBufferDecimals] = useState(0)
 
   const [isBalanceLoading, setIsBalanceLoading] = useState(false)
-
-  const [burnTokens, setBurnTokens] = useState([
-    {
-      address: ETH_ADDRESS,
-      amount: '10000000000000000000'
-    },
-    {
-      address: WETH_ADDRESS,
-      amount: '1000000000000000000'
-    }
-  ])
 
   const current = useSelector(state => state.investReducer.currentTab)
   const setCurrent = tab => {
@@ -157,11 +145,6 @@ function Ethi(props) {
         .getTransaction()
         .then(tx => tx.wait())
         .then(loadBalance)
-  }
-
-  const withdrawCallback = value => {
-    setBurnTokens(value)
-    setCurrent(INVEST_TAB.swap)
   }
 
   useEffect(() => {
@@ -331,10 +314,12 @@ function Ethi(props) {
                     ETH_ADDRESS={ETH_ADDRESS}
                     VAULT_ABI={VAULT_ABI}
                     IERC20_ABI={IERC20_ABI}
-                    setBurnTokens={withdrawCallback}
                     PRICE_ORCALE_ABI={PRICE_ORCALE_ABI}
                     isBalanceLoading={isBalanceLoading}
                     reloadBalance={loadCoinsBalance}
+                    exchangeManager={exchangeManager}
+                    EXCHANGE_ADAPTER_ABI={EXCHANGE_ADAPTER_ABI}
+                    EXCHANGE_AGGREGATOR_ABI={EXCHANGE_AGGREGATOR_ABI}
                   />
                 </div>
               </GridItem>
@@ -349,21 +334,6 @@ function Ethi(props) {
                   balance={ethiBalance}
                   vaultBufferBalance={vaultBufferBalance}
                 />
-              </GridItem>
-            )}
-            {current === INVEST_TAB.swap && (
-              <GridItem xs={9} sm={9} md={7}>
-                <div className={classes.wrapper}>
-                  <ApproveArray
-                    isEthi
-                    address={address}
-                    tokens={burnTokens}
-                    userProvider={userProvider}
-                    exchangeManager={exchangeManager}
-                    EXCHANGE_ADAPTER_ABI={EXCHANGE_ADAPTER_ABI}
-                    EXCHANGE_AGGREGATOR_ABI={EXCHANGE_AGGREGATOR_ABI}
-                  />
-                </div>
               </GridItem>
             )}
           </>

@@ -14,7 +14,7 @@ import Loading from '@/components/LoadingComponent'
 import AddIcon from '@material-ui/icons/Add'
 import RefreshIcon from '@material-ui/icons/Refresh'
 import CachedIcon from '@material-ui/icons/Cached'
-import TokenItem from '@/components/TokenItem'
+import TokenItem from '@/components/TokenItem/TokenItemV2'
 
 // === Utils === //
 import { useDispatch } from 'react-redux'
@@ -357,7 +357,7 @@ const ApproveArrayV3 = props => {
   }, [exchangeManager])
 
   return (
-    <>
+    <div className={classes.main}>
       <div className={classes.approveContainer}>
         <div className={classes.title}>Swap tokens:</div>
         {map(tokens, (token, index) => {
@@ -442,7 +442,7 @@ const ApproveArrayV3 = props => {
           </Button>
         </GridItem>
       </GridContainer>
-    </>
+    </div>
   )
 }
 
