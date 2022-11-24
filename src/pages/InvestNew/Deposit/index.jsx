@@ -184,17 +184,17 @@ export default function Deposit({
     const isValidDaiValue = isValidValue(TOKEN.DAI)
     const nextTokens = []
     const nextAmounts = []
-    if (isValidUsdtValue) {
+    if (tokenSelect.includes(USDT_ADDRESS) && isValidUsdtValue) {
       const nextUsdtValue = BigNumber.from(BN(usdtValue).multipliedBy(BigNumber.from(10).pow(usdtDecimals).toString()).toFixed())
       nextAmounts.push(nextUsdtValue)
       nextTokens.push(USDT_ADDRESS)
     }
-    if (isValidUsdcValue) {
+    if (tokenSelect.includes(USDC_ADDRESS) && isValidUsdcValue) {
       const nextUsdtValue = BigNumber.from(BN(usdcValue).multipliedBy(BigNumber.from(10).pow(usdcDecimals).toString()).toFixed())
       nextAmounts.push(nextUsdtValue)
       nextTokens.push(USDC_ADDRESS)
     }
-    if (isValidDaiValue) {
+    if (tokenSelect.includes(DAI_ADDRESS) && isValidDaiValue) {
       const nextUsdtValue = BigNumber.from(BN(daiValue).multipliedBy(BigNumber.from(10).pow(daiDecimals).toString()).toFixed())
       nextAmounts.push(nextUsdtValue)
       nextTokens.push(DAI_ADDRESS)
@@ -208,7 +208,11 @@ export default function Deposit({
     const isValidUsdtValue = isValidValue(TOKEN.USDT)
     const isValidUsdcValue = isValidValue(TOKEN.USDC)
     const isValidDaiValue = isValidValue(TOKEN.DAI)
-    if (!isValidUsdtValue && !isValidUsdcValue && !isValidDaiValue) {
+    if (
+      (tokenSelect.includes(USDT_ADDRESS) && isValidUsdtValue === false) ||
+      (tokenSelect.includes(USDC_ADDRESS) && isValidUsdcValue === false) ||
+      (tokenSelect.includes(DAI_ADDRESS) && isValidDaiValue === false)
+    ) {
       return dispatch(
         warmDialog({
           open: true,
@@ -354,7 +358,12 @@ export default function Deposit({
       const isValidDaiValue = isValidValue(TOKEN.DAI)
       const isFalse = v => v === false
       const [tokens, amounts] = getTokenAndAmonut()
-      if (isFalse(isValidUsdtValue) || isFalse(isValidUsdcValue) || isFalse(isValidDaiValue) || tokens.length === 0) {
+      if (
+        (tokenSelect.includes(USDT_ADDRESS) && isFalse(isValidUsdtValue)) ||
+        (tokenSelect.includes(USDC_ADDRESS) && isFalse(isValidUsdcValue)) ||
+        (tokenSelect.includes(DAI_ADDRESS) && isFalse(isValidDaiValue)) ||
+        tokens.length === 0
+      ) {
         setEstimateVaultBuffValue(BigNumber.from(0))
         setIsEstimate(false)
         return
@@ -434,7 +443,6 @@ export default function Deposit({
                 endDont: <ClearIcon />
               })
             }
-            console.log('selectOptions=', selectOptions)
             return (
               <GridItem key={item.name} xs={12} sm={12} md={12} lg={12} className={classes.tokenInputWrapper}>
                 <GridContainer justify="center" spacing={2}>

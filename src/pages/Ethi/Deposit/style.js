@@ -45,7 +45,7 @@ const componentsStyle = () => ({
     marginTop: '0.625rem'
   },
   tokenInputWrapper: {
-    marginBottom: '16px'
+    marginTop: '1rem'
   },
   inputLabelWrapper: {
     display: 'flex',

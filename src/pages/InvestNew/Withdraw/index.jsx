@@ -447,8 +447,8 @@ export default function Withdraw({
 
     return map(estimateWithdrawArray, item => {
       return (
-        <GridItem key={item.tokenAddress} xs={12} sm={12} md={12} lg={12}>
-          <GridContainer justify="center" spacing={2}>
+        <GridItem key={item.tokenAddress} xs={12} sm={12} md={12} lg={12} style={{ paddingTop: '0.5rem' }}>
+          <GridContainer justify="center" spacing={1}>
             <GridItem xs={4} sm={4} md={4} lg={4}>
               <SimpleSelect disabled value={item.tokenAddress} options={options} />
             </GridItem>
