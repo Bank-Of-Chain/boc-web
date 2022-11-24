@@ -64,7 +64,8 @@ const lendingSectionStyle = {
       width: '3rem',
       height: '3rem',
       borderRadius: '1.5rem',
-      marginTop: '1.875rem'
+      marginTop: '1.875rem',
+      transition: 'all 0.3s linear'
     },
     '&>p': {
       fontSize: '1rem',
