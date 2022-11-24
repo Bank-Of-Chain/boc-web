@@ -83,15 +83,18 @@ export default function Withdraw({
   const [burnTokens, setBurnTokens] = useState([
     // {
     //   address: USDT_ADDRESS,
-    //   amount: '100000000'
+    //   amount: '100000000',
+    //   symbol: 'USDT'
     // },
     // {
     //   address: USDC_ADDRESS,
-    //   amount: '10000000'
+    //   amount: '10000000',
+    //   symbol: 'USDC'
     // },
     // {
     //   address: DAI_ADDRESS,
-    //   amount: '10000000000000000000'
+    //   amount: '10000000000000000000',
+    //   symbol: 'DAI'
     // }
   ])
   console.log(USDC_ADDRESS, DAI_ADDRESS)
@@ -194,13 +197,15 @@ export default function Withdraw({
       map(tokens, async (token, i) => {
         const fromContract = new ethers.Contract(token, IERC20_ABI, userProvider)
         const fromDecimal = await fromContract.decimals()
+        const tokenSymbol = await fromContract.symbol()
         const exchangeAmounts = amounts[i]
         if (BigNumber.from(10).pow(fromDecimal).gt(exchangeAmounts)) {
           return
         }
         return {
           address: token,
-          amount: toFixed(amounts[i], 1)
+          amount: toFixed(amounts[i], 1),
+          symbol: tokenSymbol
         }
       })
     ).then(array => {

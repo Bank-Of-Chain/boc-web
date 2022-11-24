@@ -84,11 +84,13 @@ export default function Withdraw({
   const [burnTokens, setBurnTokens] = useState([
     // {
     //   address: ETH_ADDRESS,
-    //   amount: '10000000000000000000'
+    //   amount: '10000000000000000000',
+    //   symbol: 'ETH'
     // },
     // {
     //   address: WETH_ADDRESS,
-    //   amount: '1000000000000000000'
+    //   amount: '1000000000000000000',
+    //   symbol: 'WETH'
     // }
   ])
   console.log('WETH_ADDRESS=', WETH_ADDRESS)
