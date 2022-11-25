@@ -15,9 +15,13 @@ import MediumIcon from '@/components/HoverIcon/icons/Medium'
 import GithubIcon from '@/components/HoverIcon/icons/Github'
 import Button from '@/components/CustomButtons/Button'
 
+// === Hooks === //
+import useABTest from '@/hooks/useABTest'
+
 // === Constants === //
 import { COMMUNITY_URL, DOCUMENT_URL, TELEGRAM_URL, TWITTER_URL, LINKEDIN_URL, YOUTUBE_URL, MEDIUM_URL, GITHUB_URL } from '@/constants'
 import useMediaQuery from '@material-ui/core/useMediaQuery'
+import { MAIL_HIDDEN } from '@/constants/abtest'
 
 import styles from './footerStyle.js'
 
@@ -25,6 +29,7 @@ const useStyles = makeStyles(styles)
 
 export default function Footer(props) {
   const classes = useStyles()
+  const { [MAIL_HIDDEN]: mailHidden } = useABTest()
   const { whiteFont } = props
   const footerClasses = classNames({
     [classes.footer]: true,
@@ -119,9 +124,11 @@ export default function Footer(props) {
               [classes.center]: isLayoutSm
             })}
           >
-            <p>
-              <span className={classes.query}>Any further queries?</span> Contact us at <a className={classes.email}>contact@bankofchain.io</a>
-            </p>
+            {!mailHidden && (
+              <p>
+                <span className={classes.query}>Any further queries?</span> Contact us at <a className={classes.email}>contact@bankofchain.io</a>
+              </p>
+            )}
           </GridItem>
           {isHomePage && (
             <GridItem xs={12} sm={12} md={12} className={classNames(classes.item, classes.disclaimer)}>
