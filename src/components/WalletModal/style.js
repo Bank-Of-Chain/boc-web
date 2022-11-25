@@ -7,7 +7,7 @@ const style = {
     padding: '36px',
     borderRadius: 12,
     color: 'rgba(255,255,255, 0.87)',
-    background: '#292B2E',
+    background: '#313036',
     boxShadow: '0px 15px 15px rgba(0, 0, 0, 0.05)'
   },
   titleWrapper: {
@@ -25,7 +25,10 @@ const style = {
     top: '50%',
     right: 0,
     transform: 'translate(0, -50%)',
-    cursor: 'pointer'
+    cursor: 'pointer',
+    '&:hover': {
+      color: '#A68EFE'
+    }
   },
   content: {
     display: 'flex',
@@ -36,20 +39,21 @@ const style = {
     width: '100%',
     padding: '14px 24px',
     marginBottom: 24,
-    borderRadius: 4,
+    borderRadius: 5,
     justifyContent: 'flex-start',
     textTransform: 'none',
     fontSize: '16px',
     background: 'transparent',
-    border: '2px solid #666666',
+    border: '1px solid #F2F3F4',
     boxShadow: 'none',
     '&:hover': {
       background: '#323438',
       boxShadow: 'none'
     },
-    '&:focus': {
-      background: '#323438',
-      boxShadow: 'none'
+    '&:active': {
+      backgroundClip: 'border-box',
+      backgroundOrigin: 'border-box',
+      backgroundImage: 'linear-gradient(220.48deg, #FE3DCE 6.75%, #5B93E0 100%)'
     },
     '&:last-child': {
       marginBottom: 0

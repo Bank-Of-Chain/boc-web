@@ -1,6 +1,6 @@
 const style = {
   main: {
-    width: '68.75rem',
+    maxWidth: '68.75rem',
     padding: '8.125rem 0 11.5rem 0',
     margin: '0 auto'
   },
@@ -11,7 +11,10 @@ const style = {
     fontSize: '4.375rem',
     fontWeight: 'bold',
     textAlign: 'center',
-    color: '#fff'
+    color: '#fff',
+    '@media (max-width: 992px)': {
+      fontSize: '2.5rem'
+    }
   },
   members: {
     display: 'flex',
@@ -20,6 +23,14 @@ const style = {
     paddingBottom: '4.375rem',
     borderBottom: '1px solid #888888',
     marginTop: '6.25rem'
+  },
+  membersSm: {
+    paddingBottom: '3rem',
+    borderBottom: '1px solid #888888'
+  },
+  member: {
+    marginTop: '3rem',
+    textAlign: 'center'
   },
   membersCenter: {
     marginTop: '4.375rem',
