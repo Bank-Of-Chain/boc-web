@@ -31,6 +31,7 @@ const configBase = {
   youtube_url: 'https://www.youtube.com/channel/UCnACZpYuAksuSeoLniDXlOQ/featured',
   medium_url: 'https://medium.com/bankofchain',
   document_url: 'https://docs.bankofchain.io',
+  github_url: 'https://github.com/Bank-Of-Chain',
   boc_server: '{{{API_SERVER}}}',
   rpc_url: {
     1: '{{{RPC_FOR_1}}}',

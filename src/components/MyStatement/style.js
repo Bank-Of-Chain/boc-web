@@ -26,6 +26,17 @@ const componentsStyle = () => ({
     '&:hover': {
       backgroundColor: '#A68EFE'
     }
+  },
+  unit: {
+    margin: '0 0.5rem',
+    backgroundImage: 'linear-gradient(223.3deg,#a68efd 20.71%,#f4acf3 103.56%)',
+    '-webkitBackgroundClip': 'text',
+    textFillColor: 'transparent'
+  },
+  addTokenIcon: {
+    marginLeft: '0.625rem',
+    fontSize: '1.875rem',
+    cursor: 'pointer',
   }
 })
 

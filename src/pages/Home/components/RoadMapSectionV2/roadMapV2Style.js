@@ -19,9 +19,16 @@ const style = {
     fontSize: '2.5rem',
     fontWeight: 700,
     borderRadius: '8rem',
-    lineHeight: '7.375rem'
+    lineHeight: '7.375rem',
+    '@media (max-width: 960px)': {
+      fontSize: '2rem'
+    },
+    '@media (max-width: 768px)': {
+      fontSize: '1.5rem'
+    }
   },
   text: {
+    position: 'relative',
     fontSize: '1.375rem',
     textAlign: 'center',
     borderRadius: '12rem',
@@ -43,17 +50,20 @@ const style = {
     padding: '2rem 2.3rem 0.6rem'
   },
   itemTitle: {
+    boxSizing: 'border-box',
     margin: 0,
-    display: 'inline-block',
-    padding: '0 0.5rem',
-    borderRadius: '2.5rem',
+    display: 'flex',
+    alignItems: 'center',
+    borderRadius: '50%',
     position: 'absolute',
-    transform: 'translate(-50%,-50%)',
+    top: 0,
+    right: 0,
+    width: '3.75rem',
+    height: '3.75rem',
     letterSpacing: '0.01em',
-    lineHeight: '1.875rem',
+    lineHeight: '1.1',
     fontWeight: 'bold',
-    fontStyle: 'italic',
-    fontSize: '0.875rem'
+    fontSize: '1rem'
   },
   dot: {
     marginTop: '0.5rem'

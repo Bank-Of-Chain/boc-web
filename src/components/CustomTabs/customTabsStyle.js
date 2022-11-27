@@ -36,10 +36,10 @@ const customTabsStyle = {
   },
   tabSelected: {
     background: '#A68EFE',
-    color: '#313036'
+    color: '#fff'
   },
   tabWrapper: {
-    fontSize: '1rem',
+    fontSize: '1.25rem',
     whiteSpace: 'nowrap',
     margin: '.3125rem 1px',
     display: 'inline-block',

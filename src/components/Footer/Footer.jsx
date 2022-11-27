@@ -113,7 +113,7 @@ export default function Footer(props) {
               [classes.center]: isLayoutSm
             })}
           >
-            <p className={classes.text}>@{1900 + new Date().getYear()} Bank of Chain, all rights reserved.</p>
+            <p className={classes.text}>©{1900 + new Date().getYear()} Bank of Chain, all rights reserved.</p>
           </GridItem>
           <GridItem
             xs={12}

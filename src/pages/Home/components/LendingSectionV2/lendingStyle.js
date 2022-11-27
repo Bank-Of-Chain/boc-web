@@ -42,13 +42,16 @@ const lendingSectionStyle = {
     border: '2px solid #CABBFF'
   },
   bar: {
+    position: 'relative',
     width: '2.8125rem',
     cursor: 'pointer',
     borderRadius: '0.3rem',
     '&>p': {
       position: 'absolute',
+      width: '100%',
       transform: 'translate(0, -3rem)',
-      fontSize: '0.875rem'
+      fontSize: '0.875rem',
+      textAlign: 'center'
     },
     '&:last-child': {
       marginLeft: '0.3125rem'
@@ -75,10 +78,7 @@ const lendingSectionStyle = {
     }
   },
   label: {
-    float: 'right',
-    textAlign: 'left',
-    width: '10rem',
-    paddingTop: '2rem'
+    marginLeft: '1.875rem'
   },
   switchWrapper: {
     display: 'flex',
@@ -94,7 +94,7 @@ const lendingSectionStyle = {
     height: '1.375rem',
     width: '1.375rem',
     borderRadius: '50%',
-    margin: '0 1rem'
+    margin: '0 0.625rem'
   },
   box1: {
     // for usdi current rate

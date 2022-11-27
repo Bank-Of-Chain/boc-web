@@ -415,17 +415,17 @@ export default function Deposit({
           </div>
           <div className={classes.itemBottom}>
             <div className={classes.exchangeInfo}>
-              <div>Receive: {toFixed(estimateVaultBuffValue, BigNumber.from(10).pow(ethiDecimals), 2)} Estimated USDi Tickets</div>
-              <div className={classes.toInfo}>
-                Exchange to
-                <Tooltip placement="top" title="Estimated amount of USDi that can be exchanged">
-                  <InfoIcon classes={{ root: classes.labelToolTipIcon }} />
-                </Tooltip>
-                :
-                <span className={classes.usdiInfo}>
-                  {toFixed(estimateVaultBuffValue.mul(9987).div(10000), BigNumber.from(10).pow(ethiDecimals), 2)} ETHi
-                </span>
-              </div>
+              Receive: {toFixed(estimateVaultBuffValue, BigNumber.from(10).pow(ethiDecimals), 2)} Estimated USDi Tickets
+            </div>
+            <div className={classes.toInfo}>
+              Exchange to
+              <Tooltip placement="top" title="Estimated amount of USDi that can be exchanged">
+                <InfoIcon classes={{ root: classes.labelToolTipIcon }} />
+              </Tooltip>
+              :
+              <span className={classes.usdiInfo}>
+                {toFixed(estimateVaultBuffValue.mul(9987).div(10000), BigNumber.from(10).pow(ethiDecimals), 2)} ETHi
+              </span>
             </div>
             <div className={classes.timeInfo}>
               Exchange Time
@@ -436,7 +436,7 @@ export default function Deposit({
                 placement="top"
                 title="The latest planned execution date may not be executed due to cost and other factors"
               >
-                <InfoIcon classes={{ root: classes.labelToolTipIcon }} />
+                <InfoIcon />
               </Tooltip>
               :<span className={classes.time}>{moment(nextRebaseTime).format('YYYY-MM-DD HH:mm:ss')}</span>
             </div>

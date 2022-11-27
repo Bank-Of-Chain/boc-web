@@ -333,6 +333,8 @@ function Ethi(props) {
                   type={'ETHi'}
                   balance={ethiBalance}
                   vaultBufferBalance={vaultBufferBalance}
+                  tokenAddress={ETHI_ADDRESS}
+                  tokenDecimal={ethiDecimals}
                 />
               </GridItem>
             )}

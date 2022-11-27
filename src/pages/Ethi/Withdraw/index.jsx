@@ -209,16 +209,19 @@ export default function Withdraw({
         }
 
         let balance = BigNumber.from(0)
+        let tokenSymbol = 'ETH'
         if (token === ETH_ADDRESS) {
           balance = await userProvider.getBalance(address)
         } else {
           const contract = new ethers.Contract(token, IERC20_ABI, userProvider)
           balance = await contract.balanceOf(address)
+          tokenSymbol = await contract.symbol()
         }
 
         return {
           address: token,
-          amount: balance.gt(amounts[i]) ? amount : balance.toString()
+          amount: balance.gt(amounts[i]) ? amount : balance.toString(),
+          symbol: tokenSymbol
         }
       })
     ).then(array => {
@@ -565,7 +568,7 @@ export default function Withdraw({
       </GridContainer>
       <GridContainer className={classes.maxlossContainer}>
         <GridItem xs={4} sm={4} md={4} className={classes.slippageTitle}>
-          Max loss:
+          Max loss(%):
         </GridItem>
         <GridItem xs={8} sm={8} md={8}>
           <CustomTextField

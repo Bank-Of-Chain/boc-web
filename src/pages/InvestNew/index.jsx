@@ -407,6 +407,8 @@ function Invest(props) {
                   type={'USDi'}
                   balance={toBalance}
                   vaultBufferBalance={vaultBufferBalance}
+                  tokenAddress={USDI_ADDRESS}
+                  tokenDecimal={usdiDecimals}
                 />
               </GridItem>
             )}

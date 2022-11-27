@@ -126,16 +126,15 @@ const componentsStyle = () => ({
     color: '#DADADA'
   },
   exchangeInfo: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    height: '1.875rem',
-    fontSize: '0.75rem'
+    height: '0.875rem',
+    lineHeight: '0.875rem',
+    fontSize: '0.875rem'
   },
   toInfo: {
     display: 'flex',
     alignItems: 'center',
     height: '1.875rem',
+    marginTop: '0.625rem',
     fontSize: '1rem',
     fontWeight: 'bold'
   },
@@ -148,8 +147,11 @@ const componentsStyle = () => ({
     alignItems: 'center',
     height: '1rem',
     lineHeight: '1rem',
-    marginTop: '1.875rem',
-    fontSize: '0.75rem'
+    marginTop: '0.625rem',
+    fontSize: '0.75rem',
+    '& > svg': {
+      fontSize: '0.75rem'
+    }
   },
   time: {
     marginLeft: '0.625rem'

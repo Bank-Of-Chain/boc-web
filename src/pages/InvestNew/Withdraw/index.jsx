@@ -543,7 +543,7 @@ export default function Withdraw({
       </GridContainer>
       <GridContainer className={classes.maxlossContainer}>
         <GridItem xs={4} sm={4} md={4} className={classes.slippageTitle}>
-          Max loss:
+          Max loss(%):
         </GridItem>
         <GridItem xs={8} sm={8} md={8}>
           <CustomTextField
