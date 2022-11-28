@@ -543,7 +543,7 @@ export default function Withdraw({
       </GridContainer>
       <GridContainer className={classes.maxlossContainer}>
         <GridItem xs={4} sm={4} md={4} className={classes.slippageTitle}>
-          Max loss:
+          Max loss(%):
         </GridItem>
         <GridItem xs={8} sm={8} md={8}>
           <CustomTextField
@@ -587,7 +587,16 @@ export default function Withdraw({
       <Modal className={classes.modal} open={isWithdrawLoading} aria-labelledby="simple-modal-title" aria-describedby="simple-modal-description">
         <Paper elevation={3} className={classes.widthdrawLoadingPaper}>
           <div className={classes.modalBody}>
-            <div className={classes.itemTop}>{isEmpty(withdrawError) ? <div>Withdrawing...</div> : <div>Withdraw Error !</div>}</div>
+            <div className={classes.itemTop}>
+              {isEmpty(withdrawError) ? (
+                <>
+                  <CircularProgress size={20} color="inherit" />
+                  <span className={classes.text}>Withdrawing...</span>
+                </>
+              ) : (
+                <div>Withdraw Error !</div>
+              )}
+            </div>
             <BocStepper
               classes={{
                 root: classes.root

@@ -3,25 +3,25 @@
 exports[`InfoArea Component Render 1`] = `
 <DocumentFragment>
   <div
-    class="makeStyles-infoArea-15"
+    class="makeStyles-infoArea-4"
   >
     <div
-      class="makeStyles-iconWrapper-1 makeStyles-gray-8"
+      class="makeStyles-iconWrapper-5"
     >
       <span>
         test
       </span>
     </div>
     <div
-      class="makeStyles-descriptionWrapper-10"
+      class="makeStyles-descriptionWrapper-1"
     >
       <div
-        class="makeStyles-title-11"
+        class="makeStyles-title-2"
       >
         test
       </div>
       <p
-        class="makeStyles-description-12"
+        class="makeStyles-description-3"
       >
         description
       </p>

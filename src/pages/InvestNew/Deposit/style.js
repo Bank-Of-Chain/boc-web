@@ -108,11 +108,11 @@ const componentsStyle = () => ({
   },
   tokens: {
     display: 'flex',
-    justifyContent: 'space-between',
     marginTop: '0.625rem'
   },
   token: {
     display: 'flex',
+    width: '33.33%',
     alignItems: 'center'
   },
   name: {
@@ -126,30 +126,32 @@ const componentsStyle = () => ({
     color: '#DADADA'
   },
   exchangeInfo: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    height: '1.875rem',
-    fontSize: '0.75rem'
+    height: '1rem',
+    lineHeight: '1rem',
+    fontSize: '1rem'
   },
   toInfo: {
     display: 'flex',
     alignItems: 'center',
     height: '1.875rem',
-    fontSize: '1rem',
-    fontWeight: 'bold'
+    marginTop: '0.625rem',
+    fontSize: '1rem'
   },
   usdiInfo: {
     marginLeft: '0.625rem',
-    fontSize: '1.5rem'
+    fontSize: '1.5rem',
+    fontWeight: 'bold'
   },
   timeInfo: {
     display: 'flex',
     alignItems: 'center',
     height: '1rem',
     lineHeight: '1rem',
-    marginTop: '1.875rem',
-    fontSize: '0.75rem'
+    marginTop: '0.625rem',
+    fontSize: '0.75rem',
+    '& > svg': {
+      fontSize: '0.75rem'
+    }
   },
   time: {
     marginLeft: '0.625rem'

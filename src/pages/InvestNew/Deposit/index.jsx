@@ -63,7 +63,10 @@ const steps = [
     <div>Deposit</div>
   </>,
   'Get USDi Ticket',
-  'Step2: Allocation Action',
+  <>
+    <div>Step2:</div>
+    <div>Allocation</div>
+  </>,
   'Get USDi'
 ]
 
@@ -454,6 +457,7 @@ export default function Deposit({
                         if (v === 'expand') return
                         if (v === 'clear') {
                           removeSelectToken(item.address)
+                          item.setValue('')
                           return
                         }
                         addSelectToken(v)
@@ -563,7 +567,7 @@ export default function Deposit({
                   <div className={classes.token} key={address}>
                     <img className={classes.ModalTokenLogo} alt="" src={image} />
                     <span className={classes.name}>{name}: </span>
-                    <span className={classes.name}>{value}</span>
+                    <span className={classes.name}>{Number(value).toFixed(2)}</span>
                   </div>
                 )
               })}
@@ -571,17 +575,17 @@ export default function Deposit({
           </div>
           <div className={classes.itemBottom}>
             <div className={classes.exchangeInfo}>
-              <div>Receive: {toFixed(estimateVaultBuffValue, BigNumber.from(10).pow(usdiDecimals), 2)} Estimated USDi Tickets</div>
-              <div className={classes.toInfo}>
-                Exchange to
-                <Tooltip placement="top" title="Estimated amount of USDi that can be exchanged">
-                  <InfoIcon classes={{ root: classes.labelToolTipIcon }} />
-                </Tooltip>
-                :
-                <span className={classes.usdiInfo}>
-                  {toFixed(estimateVaultBuffValue.mul(9987).div(10000), BigNumber.from(10).pow(usdiDecimals), 2)} USDi
-                </span>
-              </div>
+              Receive: {toFixed(estimateVaultBuffValue, BigNumber.from(10).pow(usdiDecimals), 2)} USDi Tickets
+            </div>
+            <div className={classes.toInfo}>
+              Exchange to
+              <Tooltip placement="top" title="Estimated amount of USDi that can be exchanged">
+                <InfoIcon classes={{ root: classes.labelToolTipIcon }} />
+              </Tooltip>
+              :
+              <span className={classes.usdiInfo}>
+                {toFixed(estimateVaultBuffValue.mul(9987).div(10000), BigNumber.from(10).pow(usdiDecimals), 2)} USDi
+              </span>
             </div>
             <div className={classes.timeInfo}>
               Exchange Time
@@ -592,7 +596,7 @@ export default function Deposit({
                 placement="top"
                 title="The latest planned execution date may not be executed due to cost and other factors"
               >
-                <InfoIcon classes={{ root: classes.labelToolTipIcon }} />
+                <InfoIcon />
               </Tooltip>
               :<span className={classes.time}>{moment(nextRebaseTime).format('YYYY-MM-DD HH:mm:ss')}</span>
             </div>

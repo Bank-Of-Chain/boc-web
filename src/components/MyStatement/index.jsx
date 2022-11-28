@@ -11,6 +11,7 @@ import InfoIcon from '@material-ui/icons/InfoOutlined'
 import Tooltip from '@material-ui/core/Tooltip'
 import Button from '@material-ui/core/Button'
 import ButtonGroup from '@material-ui/core/ButtonGroup'
+import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutlineOutlined'
 
 // === Services === //
 import getLineEchartOpt from '@/components/Echarts/options/line/getLineEchartOpt'
@@ -28,6 +29,7 @@ import isEmpty from 'lodash/isEmpty'
 import findIndex from 'lodash/findIndex'
 import { toFixed, formatBalance } from '@/helpers/number-format'
 import { getLastPossibleRebaseTime } from '@/helpers/time-util'
+import { addToken } from '@/helpers/wallet'
 
 // === Constants === //
 import { SEGMENT_TYPES, DAY, WEEK, MONTH } from '@/constants/date'
@@ -45,7 +47,7 @@ const getMarker = color => {
 }
 
 const MyStatement = props => {
-  const { address, type, chain, balance, vaultBufferBalance } = props
+  const { address, type, chain, balance, vaultBufferBalance, tokenAddress, tokenDecimal } = props
 
   const isUSDi = type === 'USDi'
   const lastRebaseTime = getLastPossibleRebaseTime()
@@ -75,6 +77,10 @@ const MyStatement = props => {
       return `${m}-${d}`
     }
     return title
+  }
+
+  const handleAddToken = () => {
+    addToken(tokenAddress, type, tokenDecimal)
   }
 
   useEffect(() => {
@@ -215,11 +221,9 @@ const MyStatement = props => {
       ),
       content: numeral(formatBalance(balance, USDI_DECIMALS)).format(isUSDi ? '0,0.[00]' : '0,0.[0000]'),
       footer: (
-        <span>
-          {`+${numeral(formatBalance(vaultBufferBalance, USDI_DECIMALS)).format(isUSDi ? '0,0.[00]' : '0,0.[000000]')} ${
-            isUSDi ? 'USDi' : 'ETHi'
-          } Ticket`}
-          &nbsp;&nbsp;
+        <>
+          <span>+{numeral(formatBalance(vaultBufferBalance, USDI_DECIMALS)).format(isUSDi ? '0,0.[00]' : '0,0.[000000]')}</span>
+          <span className={classes.unit}>{isUSDi ? 'USDi' : 'ETHi'} Ticket</span>
           <Tooltip
             classes={{
               tooltip: classes.tooltip
@@ -230,9 +234,14 @@ const MyStatement = props => {
           >
             <InfoIcon style={{ fontSize: '0.875rem', color: 'rgba(255,255,255,0.45)' }} />
           </Tooltip>
-        </span>
+        </>
       ),
-      unit: isUSDi ? 'USDi' : 'ETHi'
+      unit: isUSDi ? 'USDi' : 'ETHi',
+      addWallet: (
+        <span title="Add token address to wallet">
+          <AddCircleOutlineIcon className={classes.addTokenIcon} onClick={handleAddToken} fontSize="small" />
+        </span>
+      )
     },
     {
       title: 'Profits',
@@ -251,8 +260,9 @@ const MyStatement = props => {
         isUSDi ? '0,0.[00]' : '0,0.[0000]'
       ),
       footer: (
-        <span>
-          {`+${numeral(latestProfit?.profit).format(isUSDi ? '0,0.[00]' : '0,0.[000000]')} ${latestProfit?.tokenType}`}&nbsp;&nbsp;
+        <>
+          <span>+{numeral(latestProfit?.profit).format(isUSDi ? '0,0.[00]' : '0,0.[000000]')}</span>
+          <span className={classes.unit}>{latestProfit?.tokenType}</span>
           <Tooltip
             classes={{
               tooltip: classes.tooltip
@@ -262,7 +272,7 @@ const MyStatement = props => {
           >
             <InfoIcon style={{ fontSize: '0.875rem', color: 'rgba(255,255,255,0.45)' }} />
           </Tooltip>
-        </span>
+        </>
       ),
       unit: latestProfit?.tokenType
     },

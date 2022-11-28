@@ -9,11 +9,6 @@ const productStyle = {
     margin: '0 0 3rem 0',
     fontSize: '4.375rem'
   },
-  title: {
-    fontSize: '1.5rem',
-    color: '#fff',
-    margin: 0
-  },
   swiper: {
     boxSizing: 'border-box',
     position: 'relative',
@@ -21,9 +16,32 @@ const productStyle = {
     padding: '0 4rem',
     margin: '0 auto'
   },
-  '@media screen and (max-width: 1333px)': {
+  item: {
+    display: 'flex',
+    padding: '1.25rem',
+    borderRadius: '1rem',
+    marginTop: '1.25rem',
+    backgroundColor: '#1E1E1F'
+  },
+  img: {
+    display: 'flex',
+    width: '3.75rem',
+    alignItems: 'center'
+  },
+  info: {
+    flex: 1,
+    paddingLeft: '1.875rem',
+    textAlign: 'left'
+  },
+  title: {
+    fontSize: '1.375rem'
+  },
+  description: {
+    fontSize: '0.875rem'
+  },
+  '@media screen and (max-width: 960px)': {
     swiper: {
-      width: 'calc(100% - 15rem)'
+      width: '100%'
     }
   }
 }

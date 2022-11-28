@@ -124,7 +124,7 @@ export default function LendingSectionV2() {
             <GridItem>
               <GridContainer className={classes.headerWrapper} justifyContent="center" alignItems="center">
                 <GridItem md={6} className={classes.switchWrapper}>
-                  <span>ETHi</span>
+                  <span>ETH</span>
                   <IOSSwitch
                     checked={isEthiEnable}
                     onChange={() => {
@@ -135,7 +135,7 @@ export default function LendingSectionV2() {
                     }}
                     name="checkedB"
                   />
-                  <span>USDi</span>
+                  <span className={classes.label}>USD</span>
                   <IOSSwitch
                     isUsdi
                     checked={isUsdiEnable}
@@ -152,7 +152,7 @@ export default function LendingSectionV2() {
                   <div>Current Rate</div>
                   <div className={classNames(classes.box, classes.box3)}></div>
                   <div className={classNames(classes.box, classes.box1)}></div>
-                  <div>Fixed Rate</div>
+                  <div className={classes.label}>Fixed Rate</div>
                   <div className={classNames(classes.box, classes.box4)}></div>
                   <div className={classNames(classes.box, classes.box2)}></div>
                 </GridItem>

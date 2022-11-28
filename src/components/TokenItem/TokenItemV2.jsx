@@ -49,7 +49,8 @@ const TokenItem = (props, ref) => {
     EXCHANGE_AGGREGATOR_ABI,
     style,
     onChange,
-    onStaticCallFinish
+    onStaticCallFinish,
+    disabled
   } = props
   const { address, symbol } = token
 
@@ -526,6 +527,7 @@ const TokenItem = (props, ref) => {
             placeholder="approve amount"
             maxEndAdornment
             onMaxClick={() => handleInputChange(toFixed(balance, decimals))}
+            disabled={disabled || isReciveToken || isFetching}
             error={isErrorValue()}
           />
         </GridItem>

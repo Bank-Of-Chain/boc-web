@@ -1,6 +1,6 @@
 const style = {
   container: {
-    width: '68.75rem',
+    maxWidth: '68.75rem',
     margin: '6rem auto 0',
     color: '#FFFFFF'
   },
@@ -22,7 +22,7 @@ const style = {
     fontSize: '1.5625rem'
   },
   founders: {
-    marginBottom: '7.5rem'
+    marginBottom: '4.375rem'
   },
   member: {
     boxSizing: 'border-box',

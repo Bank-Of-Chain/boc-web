@@ -2,7 +2,7 @@ import React from 'react'
 import { makeStyles } from '@material-ui/core/styles'
 import Button from '@/components/CustomButtons/Button'
 import HoverIcon from '@/components/HoverIcon'
-
+import useMediaQuery from '@material-ui/core/useMediaQuery'
 import styles from './style'
 
 const ND_SVG = (
@@ -595,15 +595,37 @@ const useStyles = makeStyles(styles)
 
 const SupportMembers = () => {
   const classes = useStyles()
+  const isLayoutSm = useMediaQuery('(max-width: 992px)')
 
-  return (
-    <div className={classes.main}>
-      <h1 className={classes.title}>Supported by members from:</h1>
+  const renderMembers = () => {
+    if (isLayoutSm) {
+      return (
+        <div className={classes.membersSm}>
+          <div className={classes.member}>
+            <HoverIcon defaultIcon={ND_SVG} hoverIcon={ND_SVG_HOVER} />
+          </div>
+          <div className={classes.member}>
+            <HoverIcon defaultIcon={IDG_SVG} hoverIcon={IDG_SVG_HOVER} />
+          </div>
+          <div className={classes.member}>
+            <HoverIcon defaultIcon={IRIS_SVG} hoverIcon={IRIS_SVG_HOVER} />
+          </div>
+        </div>
+      )
+    }
+    return (
       <div className={classes.members}>
         <HoverIcon defaultIcon={ND_SVG} hoverIcon={ND_SVG_HOVER} />
         <HoverIcon defaultIcon={IDG_SVG} hoverIcon={IDG_SVG_HOVER} />
         <HoverIcon defaultIcon={IRIS_SVG} hoverIcon={IRIS_SVG_HOVER} />
       </div>
+    )
+  }
+
+  return (
+    <div className={classes.main}>
+      <h1 className={classes.title}>Supported by members from:</h1>
+      {renderMembers()}
       <div className={classes.membersCenter}>
         <HoverIcon defaultIcon={UCL_SVG} hoverIcon={UCL_SVG_HOVER} />
       </div>

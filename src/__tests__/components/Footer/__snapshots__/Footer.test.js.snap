@@ -840,7 +840,7 @@ exports[`Footer Component Render 1`] = `
           <p
             class="makeStyles-text-2"
           >
-            @2022 Bank of Chain, all rights reserved.
+            ©2022 Bank of Chain, all rights reserved.
           </p>
         </div>
         <div

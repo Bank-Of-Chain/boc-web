@@ -47,9 +47,11 @@ const useStyles = makeStyles({
     fontWeight: 700
   },
   footer: {
+    display: 'flex',
+    alignItems: 'center',
     height: '1rem',
-    lineHeight: '1rem',
-    fontSize: '0.75rem'
+    fontSize: '0.75rem',
+    fontFamily: 'DM Sans'
   },
   header: {
     padding: '2.5rem 2.5rem 0'
@@ -60,7 +62,7 @@ const useStyles = makeStyles({
 })
 
 const CardComponent = props => {
-  const { title, children, footer, content, loading, tip, unit, loadingOption = {} } = props
+  const { title, children, footer, content, loading, tip, unit, addWallet, loadingOption = {} } = props
   const classes = useStyles()
 
   return (
@@ -84,6 +86,7 @@ const CardComponent = props => {
             <Typography className={classes.content} style={{ fontFamily: 'DM Sans' }} variant="h5" component="h2">
               {content}
               <span className={classes.unit}>{unit}</span>
+              {addWallet}
             </Typography>
           </Loading>
         )}
