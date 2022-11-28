@@ -1,6 +1,6 @@
 import React from 'react'
 import { makeStyles } from '@material-ui/core/styles'
-import Button from '@/components/CustomButtons/Button'
+// import Button from '@/components/CustomButtons/Button'
 import HoverIcon from '@/components/HoverIcon'
 import useMediaQuery from '@material-ui/core/useMediaQuery'
 import styles from './style'
@@ -629,11 +629,11 @@ const SupportMembers = () => {
       <div className={classes.membersCenter}>
         <HoverIcon defaultIcon={UCL_SVG} hoverIcon={UCL_SVG_HOVER} />
       </div>
-      <div className={classes.buttonRow}>
+      {/* <div className={classes.buttonRow}>
         <Button color="white-border" size="lg" href="/#/team">
           Our Team
         </Button>
-      </div>
+      </div> */}
     </div>
   )
 }
