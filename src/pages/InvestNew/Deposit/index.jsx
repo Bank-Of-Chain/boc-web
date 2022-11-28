@@ -63,7 +63,10 @@ const steps = [
     <div>Deposit</div>
   </>,
   'Get USDi Ticket',
-  'Step2: Allocation Action',
+  <>
+    <div>Step2:</div>
+    <div>Allocation</div>
+  </>,
   'Get USDi'
 ]
 
@@ -454,6 +457,7 @@ export default function Deposit({
                         if (v === 'expand') return
                         if (v === 'clear') {
                           removeSelectToken(item.address)
+                          item.setValue('')
                           return
                         }
                         addSelectToken(v)
@@ -563,7 +567,7 @@ export default function Deposit({
                   <div className={classes.token} key={address}>
                     <img className={classes.ModalTokenLogo} alt="" src={image} />
                     <span className={classes.name}>{name}: </span>
-                    <span className={classes.name}>{value}</span>
+                    <span className={classes.name}>{Number(value).toFixed(2)}</span>
                   </div>
                 )
               })}

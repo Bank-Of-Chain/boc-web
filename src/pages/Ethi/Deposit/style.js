@@ -113,11 +113,11 @@ const componentsStyle = () => ({
   },
   tokens: {
     display: 'flex',
-    justifyContent: 'space-between',
     marginTop: '0.625rem'
   },
   token: {
     display: 'flex',
+    width: '33.33%',
     alignItems: 'center'
   },
   name: {

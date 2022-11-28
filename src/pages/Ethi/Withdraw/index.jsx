@@ -612,7 +612,16 @@ export default function Withdraw({
       <Modal className={classes.modal} open={isWithdrawLoading} aria-labelledby="simple-modal-title" aria-describedby="simple-modal-description">
         <Paper elevation={3} className={classes.widthdrawLoadingPaper}>
           <div className={classes.modalBody}>
-            <div className={classes.itemTop}>{isEmpty(withdrawError) ? <div>Withdrawing...</div> : <div>Withdraw Error !</div>}</div>
+            <div className={classes.itemTop}>
+              {isEmpty(withdrawError) ? (
+                <>
+                  <CircularProgress size={20} color="inherit" />
+                  <span className={classes.text}>Withdrawing...</span>
+                </>
+              ) : (
+                <div>Withdraw Error !</div>
+              )}
+            </div>
             <BocStepper
               classes={{
                 root: classes.root

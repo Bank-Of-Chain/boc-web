@@ -47,8 +47,9 @@ const useStyles = makeStyles({
     fontWeight: 700
   },
   footer: {
+    display: 'flex',
+    alignItems: 'center',
     height: '1rem',
-    lineHeight: '1rem',
     fontSize: '0.75rem',
     fontFamily: 'DM Sans'
   },

@@ -184,10 +184,16 @@ const componentsStyle = () => ({
     borderRadius: 20
   },
   itemTop: {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
     padding: '1.25rem',
     borderRadius: '1.25rem 1.25rem 0 0',
     backgroundColor: '#313036',
     color: '#DADADA'
+  },
+  text: {
+    marginLeft: '0.5rem'
   },
   cancelButton: {
     height: '3.625rem',

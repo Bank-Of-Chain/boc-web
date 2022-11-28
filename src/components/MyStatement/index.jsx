@@ -224,18 +224,16 @@ const MyStatement = props => {
         <>
           <span>+{numeral(formatBalance(vaultBufferBalance, USDI_DECIMALS)).format(isUSDi ? '0,0.[00]' : '0,0.[000000]')}</span>
           <span className={classes.unit}>{isUSDi ? 'USDi' : 'ETHi'} Ticket</span>
-          <span>
-            <Tooltip
-              classes={{
-                tooltip: classes.tooltip
-              }}
-              placement="right"
-              title={`USDi Ticket functions as parallel USDi that will be converted into USDi after fund allocations have been successful. Last
+          <Tooltip
+            classes={{
+              tooltip: classes.tooltip
+            }}
+            placement="right"
+            title={`USDi Ticket functions as parallel USDi that will be converted into USDi after fund allocations have been successful. Last
             execution time was ${moment(lastRebaseTime).format('yyyy-MM-DD HH:mm')}`}
-            >
-              <InfoIcon style={{ fontSize: '0.875rem', color: 'rgba(255,255,255,0.45)' }} />
-            </Tooltip>
-          </span>
+          >
+            <InfoIcon style={{ fontSize: '0.875rem', color: 'rgba(255,255,255,0.45)' }} />
+          </Tooltip>
         </>
       ),
       unit: isUSDi ? 'USDi' : 'ETHi',
@@ -265,17 +263,15 @@ const MyStatement = props => {
         <>
           <span>+{numeral(latestProfit?.profit).format(isUSDi ? '0,0.[00]' : '0,0.[000000]')}</span>
           <span className={classes.unit}>{latestProfit?.tokenType}</span>
-          <span>
-            <Tooltip
-              classes={{
-                tooltip: classes.tooltip
-              }}
-              placement="right"
-              title={'Profits obtained each time after rebase.'}
-            >
-              <InfoIcon style={{ fontSize: '0.875rem', color: 'rgba(255,255,255,0.45)' }} />
-            </Tooltip>
-          </span>
+          <Tooltip
+            classes={{
+              tooltip: classes.tooltip
+            }}
+            placement="right"
+            title={'Profits obtained each time after rebase.'}
+          >
+            <InfoIcon style={{ fontSize: '0.875rem', color: 'rgba(255,255,255,0.45)' }} />
+          </Tooltip>
         </>
       ),
       unit: latestProfit?.tokenType

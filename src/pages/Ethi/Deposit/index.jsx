@@ -42,7 +42,18 @@ import styles from './style'
 const { BigNumber } = ethers
 const useStyles = makeStyles(styles)
 
-const steps = ['Step1: Deposit', 'Get ETHi Ticket', 'Step2: Allocation Action', 'Get ETHi']
+const steps = [
+  <>
+    <div>Step1:</div>
+    <div>Deposit</div>
+  </>,
+  'Get ETHi Ticket',
+  <>
+    <div>Step2:</div>
+    <div>Allocation</div>
+  </>,
+  'Get ETHi'
+]
 
 export default function Deposit({
   address,
@@ -415,7 +426,7 @@ export default function Deposit({
           </div>
           <div className={classes.itemBottom}>
             <div className={classes.exchangeInfo}>
-              Receive: {toFixed(estimateVaultBuffValue, BigNumber.from(10).pow(ethiDecimals), 2)} Estimated USDi Tickets
+              Receive: {toFixed(estimateVaultBuffValue, BigNumber.from(10).pow(ethiDecimals), 2)} Estimated ETHi Tickets
             </div>
             <div className={classes.toInfo}>
               Exchange to

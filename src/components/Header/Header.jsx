@@ -52,7 +52,7 @@ export default function Header(props) {
   })
   const brandComponent = (
     <a className={classes.title} href="/#/">
-      <img alt="" src="/logo.svg" />
+      <img alt="" src="/logo-v2.svg" />
       <img alt="" src="/logo-active.svg" />
     </a>
   )

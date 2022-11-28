@@ -409,7 +409,7 @@ const ApproveArrayV3 = props => {
       </div>
       <GridContainer className={classes.slippage}>
         <GridItem xs={4} sm={4} md={4} className={classes.slippageTitlte}>
-          Slippage tolerance:
+          Slippage tolerance(%):
         </GridItem>
         <GridItem xs={8} sm={8} md={8}>
           <CustomTextField
