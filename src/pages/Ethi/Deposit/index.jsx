@@ -426,7 +426,7 @@ export default function Deposit({
           </div>
           <div className={classes.itemBottom}>
             <div className={classes.exchangeInfo}>
-              Receive: {toFixed(estimateVaultBuffValue, BigNumber.from(10).pow(ethiDecimals), 2)} Estimated ETHi Tickets
+              Receive: {toFixed(estimateVaultBuffValue, BigNumber.from(10).pow(ethiDecimals), 2)} ETHi Tickets
             </div>
             <div className={classes.toInfo}>
               Exchange to

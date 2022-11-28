@@ -126,21 +126,21 @@ const componentsStyle = () => ({
     color: '#DADADA'
   },
   exchangeInfo: {
-    height: '0.875rem',
-    lineHeight: '0.875rem',
-    fontSize: '0.875rem'
+    height: '1rem',
+    lineHeight: '1rem',
+    fontSize: '1rem'
   },
   toInfo: {
     display: 'flex',
     alignItems: 'center',
     height: '1.875rem',
     marginTop: '0.625rem',
-    fontSize: '1rem',
-    fontWeight: 'bold'
+    fontSize: '1rem'
   },
   usdiInfo: {
     marginLeft: '0.625rem',
-    fontSize: '1.5rem'
+    fontSize: '1.5rem',
+    fontWeight: 'bold'
   },
   timeInfo: {
     display: 'flex',
