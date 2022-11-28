@@ -49,10 +49,10 @@ const lendingSectionStyle = {
       position: 'absolute',
       transform: 'translate(0, -3rem)',
       fontSize: '0.875rem'
-    },
-    '&:last-child': {
-      marginLeft: '0.3125rem'
     }
+  },
+  margin: {
+    marginLeft: '0.3125rem'
   },
   fixed: {
     border: '2px solid #FE3DCE'
