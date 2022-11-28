@@ -31,7 +31,8 @@ const useStyles = makeStyles({
   title: {
     color: '#fff',
     fontSize: '1.25rem',
-    lineHeight: '1.875rem'
+    lineHeight: '1.875rem',
+    fontFamily: 'DM Sans'
   },
   pos: {
     marginBottom: 12

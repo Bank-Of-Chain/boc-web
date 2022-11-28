@@ -430,7 +430,7 @@ export default function Deposit({
             </div>
             <div className={classes.toInfo}>
               Exchange to
-              <Tooltip placement="top" title="Estimated amount of USDi that can be exchanged">
+              <Tooltip placement="top" title="Estimated amount of ETHi that can be exchanged">
                 <InfoIcon classes={{ root: classes.labelToolTipIcon }} />
               </Tooltip>
               :

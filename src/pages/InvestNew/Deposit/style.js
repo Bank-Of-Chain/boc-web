@@ -73,7 +73,7 @@ const componentsStyle = () => ({
   },
   depositModal: {
     padding: '1.25rem',
-    width: '35rem',
+    width: '37rem',
     color: 'rgba(255, 255, 255, 0.87)',
     border: '1px solid #A68EFE',
     backgroundColor: '#1f1d27',
@@ -113,7 +113,16 @@ const componentsStyle = () => ({
   token: {
     display: 'flex',
     width: '33.33%',
-    alignItems: 'center'
+    alignItems: 'center',
+    '&:last-child': {
+      justifyContent: 'right'
+    },
+    '&:nth-child(2n)': {
+      justifyContent: 'center'
+    },
+    '&:first-child': {
+      justifyContent: 'left'
+    },
   },
   name: {
     marginLeft: '0.625rem'

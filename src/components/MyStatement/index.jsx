@@ -277,7 +277,7 @@ const MyStatement = props => {
       unit: latestProfit?.tokenType
     },
     {
-      title: 'APY (last 7 days)',
+      title: 'APY (Last 7 days)',
       tip: (
         <Tooltip
           classes={{
@@ -294,7 +294,7 @@ const MyStatement = props => {
       unit: '%'
     },
     {
-      title: 'APY (last 30 days)',
+      title: 'APY (Last 30 days)',
       tip: (
         <Tooltip
           classes={{
