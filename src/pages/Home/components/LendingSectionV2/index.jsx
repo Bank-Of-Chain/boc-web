@@ -186,7 +186,12 @@ export default function LendingSectionV2() {
                             {!isUndefined(ethiApy) && (
                               <Tooltip title={text}>
                                 <div
-                                  className={classNames(classes.bar, classes.ethiBar, text === 'Fixed Rate' && classes.fixed)}
+                                  className={classNames(
+                                    classes.bar,
+                                    classes.ethiBar,
+                                    text === 'Fixed Rate' && classes.fixed,
+                                    !isUndefined(usdiApy) && classes.margin
+                                  )}
                                   style={{ height: ethiPercentText }}
                                 >
                                   <p>{ethiApy}%</p>

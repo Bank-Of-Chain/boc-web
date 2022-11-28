@@ -54,8 +54,11 @@ const lendingSectionStyle = {
       textAlign: 'center'
     },
     '&:last-child': {
-      marginLeft: '0.3125rem'
+      fontSize: '0.875rem'
     }
+  },
+  margin: {
+    marginLeft: '0.3125rem'
   },
   fixed: {
     border: '2px solid #FE3DCE'
