@@ -52,7 +52,8 @@ const useStyles = makeStyles({
     alignItems: 'center',
     height: '1rem',
     fontSize: '0.75rem',
-    fontFamily: 'DM Sans'
+    fontFamily: 'DM Sans',
+    fontWeight: 'bold'
   },
   header: {
     padding: '2.5rem 2.5rem 0'
