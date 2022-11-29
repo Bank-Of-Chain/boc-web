@@ -291,7 +291,6 @@ const MyStatement = props => {
         </Tooltip>
       ),
       content: numeral(day7Apy?.apy).format('0,0.00'),
-      footer: ' ',
       unit: '%'
     },
     {
@@ -308,7 +307,6 @@ const MyStatement = props => {
         </Tooltip>
       ),
       content: numeral(day30Apy?.apy).format('0,0.00'),
-      footer: ' ',
       unit: '%'
     }
   ]
