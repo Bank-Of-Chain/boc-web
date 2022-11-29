@@ -17,7 +17,7 @@ const customDropdownStyle = theme => ({
     pointerEvents: 'none'
   },
   dropdown: {
-    borderRadius: '12px',
+    borderRadius: '10px',
     border: '0',
     top: '100%',
     zIndex: '1000',

@@ -31,7 +31,8 @@ const componentsStyle = () => ({
     margin: '0 0.5rem',
     backgroundImage: 'linear-gradient(223.3deg,#a68efd 20.71%,#f4acf3 103.56%)',
     '-webkitBackgroundClip': 'text',
-    textFillColor: 'transparent'
+    textFillColor: 'transparent',
+    fontWeight: 'bold'
   },
   addTokenIcon: {
     marginLeft: '0.625rem',
