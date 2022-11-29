@@ -230,7 +230,7 @@ const MyStatement = props => {
               tooltip: classes.tooltip
             }}
             placement="right"
-            title={`${token} Ticket functions as parallel ${token} that will be converted into USDi after fund allocations have been successful. Last
+            title={`${token} Ticket functions as parallel ${token} that will be converted into ${token} after fund allocations have been successful. Last
             execution time was ${moment(lastRebaseTime).format('yyyy-MM-DD HH:mm')}`}
           >
             <InfoIcon style={{ fontSize: '0.875rem', color: 'rgba(255,255,255,0.45)' }} />
