@@ -60,10 +60,6 @@ const getLineEchartOpt = (data, dataValueKey, seriesName, options = {}) => {
   if (needMinMax) {
     option.yAxis.min = yAxisMin
     option.yAxis.max = yAxisMax
-    option.yAxis.axisLabel = {
-      showMinLabel: false,
-      showMaxLabel: false
-    }
   }
   option.series[0].connectNulls = true
   option.series[0].showSymbol = size(filter(seriesData, i => !isNil(i))) === 1
