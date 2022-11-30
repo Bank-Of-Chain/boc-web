@@ -11,6 +11,7 @@ import InfoIcon from '@material-ui/icons/InfoOutlined'
 import Tooltip from '@material-ui/core/Tooltip'
 import Button from '@material-ui/core/Button'
 import ButtonGroup from '@material-ui/core/ButtonGroup'
+import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutlineOutlined'
 
 // === Services === //
 import getLineEchartOpt from '@/components/Echarts/options/line/getLineEchartOpt'
@@ -26,12 +27,15 @@ import map from 'lodash/map'
 import reverse from 'lodash/reverse'
 import isEmpty from 'lodash/isEmpty'
 import findIndex from 'lodash/findIndex'
-import { toFixed } from '@/helpers/number-format'
+import { toFixed, formatBalance } from '@/helpers/number-format'
+import { getLastPossibleRebaseTime } from '@/helpers/time-util'
+import { addToken } from '@/helpers/wallet'
 
 // === Constants === //
 import { SEGMENT_TYPES, DAY, WEEK, MONTH } from '@/constants/date'
 import { ETHI_BN_DECIMALS, ETHI_DISPLAY_DECIMALS, ETHI_PROFITS_DISPLAY_DECIMALS } from '@/constants/ethi'
 import { TOKEN_DISPLAY_DECIMALS } from '@/constants/vault'
+import { USDI_DECIMALS } from '@/constants/usdi'
 
 // === Styles === //
 import styles from './style'
@@ -43,9 +47,11 @@ const getMarker = color => {
 }
 
 const MyStatement = props => {
-  const { address, type, chain } = props
+  const { address, type, chain, balance, vaultBufferBalance, tokenAddress, tokenDecimal } = props
 
   const isUSDi = type === 'USDi'
+  const token = isUSDi ? 'USDi' : 'ETHi'
+  const lastRebaseTime = getLastPossibleRebaseTime()
   const classes = useStyles()
 
   const [data, setData] = useState([])
@@ -72,6 +78,10 @@ const MyStatement = props => {
       return `${m}-${d}`
     }
     return title
+  }
+
+  const handleAddToken = () => {
+    addToken(tokenAddress, type, tokenDecimal)
   }
 
   useEffect(() => {
@@ -198,6 +208,43 @@ const MyStatement = props => {
   const { day7Apy, day30Apy, profit, latestProfit = { profit: '0', tokenType: '' } } = dataSource
   const cardProps = [
     {
+      title: 'Balance',
+      tip: (
+        <Tooltip
+          classes={{
+            tooltip: classes.tooltip
+          }}
+          placement="right"
+          title="Current available balance on your account"
+        >
+          <InfoIcon style={{ fontSize: '1.375rem', color: 'rgba(255,255,255,0.45)' }} />
+        </Tooltip>
+      ),
+      content: numeral(formatBalance(balance, USDI_DECIMALS)).format(isUSDi ? '0,0.[00]' : '0,0.[0000]'),
+      footer: (
+        <>
+          <span>+{numeral(formatBalance(vaultBufferBalance, USDI_DECIMALS)).format(isUSDi ? '0,0.[00]' : '0,0.[000000]')}</span>
+          <span className={classes.unit}>{token} Ticket</span>
+          <Tooltip
+            classes={{
+              tooltip: classes.tooltip
+            }}
+            placement="right"
+            title={`${token} Ticket functions as parallel ${token} that will be converted into ${token} after fund allocations have been successful. Last
+            execution time was ${moment(lastRebaseTime).format('yyyy-MM-DD HH:mm')}`}
+          >
+            <InfoIcon style={{ fontSize: '0.875rem', color: 'rgba(255,255,255,0.45)' }} />
+          </Tooltip>
+        </>
+      ),
+      unit: token,
+      addWallet: (
+        <span title="Add token address to wallet">
+          <AddCircleOutlineIcon className={classes.addTokenIcon} onClick={handleAddToken} fontSize="small" />
+        </span>
+      )
+    },
+    {
       title: 'Profits',
       tip: (
         <Tooltip
@@ -214,8 +261,9 @@ const MyStatement = props => {
         isUSDi ? '0,0.[00]' : '0,0.[0000]'
       ),
       footer: (
-        <span>
-          {`+${numeral(latestProfit?.profit).format(isUSDi ? '0,0.[00]' : '0,0.[000000]')} ${latestProfit?.tokenType}`}&nbsp;&nbsp;
+        <>
+          <span>+{numeral(latestProfit?.profit).format(isUSDi ? '0,0.[00]' : '0,0.[000000]')}</span>
+          <span className={classes.unit}>{latestProfit?.tokenType}</span>
           <Tooltip
             classes={{
               tooltip: classes.tooltip
@@ -225,12 +273,12 @@ const MyStatement = props => {
           >
             <InfoIcon style={{ fontSize: '0.875rem', color: 'rgba(255,255,255,0.45)' }} />
           </Tooltip>
-        </span>
+        </>
       ),
       unit: latestProfit?.tokenType
     },
     {
-      title: 'APY (last 7 days)',
+      title: 'APY (Last 7 days)',
       tip: (
         <Tooltip
           classes={{
@@ -243,11 +291,10 @@ const MyStatement = props => {
         </Tooltip>
       ),
       content: numeral(day7Apy?.apy).format('0,0.00'),
-      isAPY: true,
       unit: '%'
     },
     {
-      title: 'APY (last 30 days)',
+      title: 'APY (Last 30 days)',
       tip: (
         <Tooltip
           classes={{
@@ -260,7 +307,6 @@ const MyStatement = props => {
         </Tooltip>
       ),
       content: numeral(day30Apy?.apy).format('0,0.00'),
-      isAPY: true,
       unit: '%'
     }
   ]
@@ -268,10 +314,10 @@ const MyStatement = props => {
   return (
     <GridContainer>
       <GridItem xs={12} sm={12} md={12} lg={12}>
-        <GridContainer>
+        <GridContainer spacing={3}>
           {map(cardProps, (i, index) => {
             return (
-              <GridItem key={index} xs={12} sm={12} md={4} lg={4}>
+              <GridItem key={index} xs={12} sm={12} md={6} lg={6}>
                 <Card {...i} />
               </GridItem>
             )
@@ -283,8 +329,8 @@ const MyStatement = props => {
               loading={chartLoading}
               title={
                 <span>
-                  {isUSDi ? 'USDi' : 'ETHi'} variation curve
-                  <Tooltip title={`Curve of daily change in the total ${isUSDi ? 'USDi' : 'ETHi'} held by the user.`}>
+                  {token} variation curve
+                  <Tooltip title={`Curve of daily change in the total ${token} held by the user.`}>
                     <InfoIcon style={{ marginLeft: 8, fontSize: '1rem' }} />
                   </Tooltip>
                 </span>

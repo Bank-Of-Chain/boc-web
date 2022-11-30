@@ -1,6 +1,4 @@
 import {
-  container,
-  defaultFont,
   primaryColor,
   infoColor,
   successColor,
@@ -20,7 +18,7 @@ const headerStyle = {
     color: '#555',
     width: '100%',
     backgroundColor: '#1F2023 !important',
-    boxShadow: '0 4px 18px 0px rgba(0, 0, 0, 0.12), 0 7px 10px -5px rgba(0, 0, 0, 0.15)',
+    boxShadow: 'none',
     transition: 'all 150ms ease 0s',
     alignItems: 'center',
     flexFlow: 'row nowrap',
@@ -37,13 +35,15 @@ const headerStyle = {
     zIndex: '1100'
   },
   container: {
-    ...container,
     minHeight: '50px',
     flex: '1',
     alignItems: 'center',
     justifyContent: 'space-between',
     display: 'flex',
-    flexWrap: 'nowrap'
+    flexWrap: 'nowrap',
+    width: '100%',
+    maxWidth: '1412px',
+    margin: '0 auto'
   },
   '@media (max-width: 991px) and (min-width: 960px)': {
     toolbar: {
@@ -54,14 +54,27 @@ const headerStyle = {
     flex: 1
   },
   title: {
-    ...defaultFont,
-    lineHeight: '30px',
-    fontSize: '20px',
-    borderRadius: '3px',
-    textTransform: 'none',
-    color: '#fff',
-    padding: '8px 16px',
-    letterSpacing: 'unset'
+    position: 'relative',
+    display: 'inline-block',
+    '& img': {
+      height: '2.5rem'
+    },
+    '& img:last-child': {
+      position: 'absolute',
+      top: 0,
+      left: 0,
+      opacity: 0,
+      transition: 'all 0.3s linear'
+    },
+    '&:hover img:first-child': {
+      filter: 'drop-shadow(0px 0px 5px #A68EFE)'
+    },
+    '&:active img:first-child': {
+      filter: 'none'
+    },
+    '&:active img:last-child': {
+      opacity: 1
+    }
   },
   appResponsive: {
     margin: '20px 10px'
@@ -109,8 +122,7 @@ const headerStyle = {
   white: {
     border: '0',
     color: '#555',
-    backgroundColor: '#070b10',
-    boxShadow: '0 4px 18px 0px rgba(0, 0, 0, 0.12), 0 7px 10px -5px rgba(0, 0, 0, 0.15)'
+    backgroundColor: '#070b10'
   },
   drawerPaper: {
     backgroundColor: 'rgb(19, 24, 35)',

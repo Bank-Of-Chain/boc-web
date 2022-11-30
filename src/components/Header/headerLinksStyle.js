@@ -7,11 +7,14 @@ const headerLinksStyle = theme => ({
     ...defaultFont,
     fontSize: '14px',
     margin: 0,
-    paddingLeft: '0',
+    padding: '0',
     listStyle: 'none',
-    paddingTop: '0',
-    paddingBottom: '0',
-    color: 'inherit'
+    color: 'inherit',
+    display: 'flex',
+    alignItems: 'center',
+    '& > li + li': {
+      marginLeft: '1.25rem'
+    }
   },
   listItem: {
     float: 'left',
@@ -42,9 +45,7 @@ const headerLinksStyle = theme => ({
   navLink: {
     color: '#fff',
     position: 'relative',
-    padding: '1.275rem',
     fontWeight: '400',
-    fontSize: '14px',
     textTransform: 'initial',
     borderRadius: '3px',
     lineHeight: '20px',
@@ -135,11 +136,12 @@ const headerLinksStyle = theme => ({
     '&,&:hover,&:focus': {
       color: 'inherit',
       textDecoration: 'none',
-      padding: '10px 14px'
+      padding: '6px 14px'
     }
   },
-  dropdownLinkIcon: {
-    marginRight: '8px'
+  dropdownLinkText: {
+    marginLeft: '8px',
+    fontFamily: 'DM Sans'
   },
   ...tooltip,
   marginRight5: {

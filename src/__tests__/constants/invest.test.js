@@ -1,5 +1,5 @@
 import { INVEST_TAB } from '@/constants/invest'
 
-test('INVEST_TAB has 3 items', () => {
-  expect(Object.keys(INVEST_TAB).length).toBe(4)
+test('INVEST_TAB has 5 items', () => {
+  expect(Object.keys(INVEST_TAB).length).toBe(5)
 })

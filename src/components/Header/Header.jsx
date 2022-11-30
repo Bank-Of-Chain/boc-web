@@ -8,7 +8,6 @@ import { makeStyles } from '@material-ui/core/styles'
 import AppBar from '@material-ui/core/AppBar'
 import Toolbar from '@material-ui/core/Toolbar'
 import IconButton from '@material-ui/core/IconButton'
-import Button from '@material-ui/core/Button'
 import Hidden from '@material-ui/core/Hidden'
 import Drawer from '@material-ui/core/Drawer'
 // @material-ui/icons
@@ -52,13 +51,14 @@ export default function Header(props) {
     [classes.fixed]: fixed
   })
   const brandComponent = (
-    <Button className={classes.title} href="/#/">
-      <img alt="" src="/logo.svg" style={{ width: 228, height: 36 }} />
-    </Button>
+    <a className={classes.title} href="/#/">
+      <img alt="" src="/logo-v2.svg" />
+      <img alt="" src="/logo-active.svg" />
+    </a>
   )
 
   return (
-    <AppBar className={appBarClasses} style={{ flexDirection: 'column', padding: '1rem', height: '6rem' }}>
+    <AppBar className={appBarClasses} style={{ height: '6rem' }}>
       <Toolbar className={`${classes.container} ${classes.toolbar}`}>
         {leftLinks !== undefined ? brandComponent : null}
         <div className={classes.flex}>

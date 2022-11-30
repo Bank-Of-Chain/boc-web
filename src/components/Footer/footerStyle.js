@@ -1,15 +1,13 @@
-import { container, primaryColor } from '@/assets/jss/material-kit-react.js'
-
 const footerStyle = {
   title: {
     display: 'block',
     marginTop: '0.5rem'
   },
   text: {
-    color: '#A0A0A0'
+    color: '#888888'
   },
   item: {
-    padding: '2rem 0'
+    padding: '1.5rem 0'
   },
   '@media (max-width: 1200px)': {
     item: {
@@ -36,24 +34,22 @@ const footerStyle = {
     display: 'flex',
     zIndex: '2',
     position: 'relative',
-    padding: '0 8.75rem'
+    padding: '1.5rem 0'
   },
   '@media (max-width: 960px)': {
     footer: {
       padding: '0 3rem'
     }
   },
-  a: {
-    color: primaryColor,
-    textDecoration: 'none',
-    backgroundColor: 'transparent'
-  },
   footerWhiteFont: {
     '&,&:hover,&:focus': {
       color: '#FFFFFF'
     }
   },
-  container: container,
+  container: {
+    maxWidth: '75rem',
+    margin: '0 auto'
+  },
   list: {
     padding: '0',
     margin: '0 -0.9375rem 0 0'
@@ -73,14 +69,23 @@ const footerStyle = {
     textAlign: 'center'
   },
   disclaimer: {
-    padding: '2rem 0',
     color: '#A0A0A0',
     textAlign: 'left',
     fontSize: '0.75rem',
     lineHeight: '1.375rem'
   },
+  query: {
+    color: '#BEBEBE'
+  },
   email: {
     textDecoration: 'underline'
+  },
+  social: {
+    height: '100%',
+    paddingTop: '0.75rem',
+    '& a + a': {
+      marginLeft: '0.75rem'
+    }
   }
 }
 export default footerStyle

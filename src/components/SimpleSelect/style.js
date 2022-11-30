@@ -56,6 +56,7 @@ const style = {
     alignItems: 'center',
     padding: '0 24px',
     cursor: 'pointer',
+    justifyContent: 'space-between',
 
     '&:hover': {
       background: '#323438'
@@ -85,6 +86,10 @@ const style = {
   },
   optLabel: {
     color: '#A0A0A0'
+  },
+  endDont: {
+    display: 'flex',
+    alignItems: 'center'
   }
 }
 

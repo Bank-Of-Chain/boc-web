@@ -28,7 +28,7 @@ const componentsStyle = () => ({
     overflowY: 'auto'
   },
   approveItemWrapper: {
-    paddingBottom: '0.5rem',
+    paddingBottom: '1rem',
     '&:last-child': {
       padding: 0
     }

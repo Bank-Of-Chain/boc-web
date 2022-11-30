@@ -65,23 +65,26 @@ function Select({ value, onChange = () => {}, options = [], disabled, className 
         >
           {map(options, opt => (
             <li
-              key={opt.value}
+              key={opt.key || opt.value}
               className={classNames(classes.selectItem, {
                 [classes.selectActiveItem]: value === opt.value
               })}
               onClick={() => handlePopSelect(opt.value)}
             >
-              {opt.img &&
-                (!isArray(opt.img) ? (
-                  <img className={classes.optImg} src={opt.img} alt="logo" />
-                ) : (
-                  <div className={classes.optMultiImgWrapper}>
-                    {map(opt.img, img => (
-                      <img key={img} className={classes.optMultiImg} src={img} alt="logo" />
-                    ))}
-                  </div>
-                ))}
-              <span className={classes.optLabel}>{opt.label}</span>
+              <span className={classNames(classes.optLabel, classes.endDont)}>
+                {opt.img &&
+                  (!isArray(opt.img) ? (
+                    <img className={classes.optImg} src={opt.img} alt="logo" />
+                  ) : (
+                    <div className={classes.optMultiImgWrapper}>
+                      {map(opt.img, img => (
+                        <img key={img} className={classes.optMultiImg} src={img} alt="logo" />
+                      ))}
+                    </div>
+                  ))}
+                {opt.label}
+              </span>
+              <span className={classes.endDont}>{opt.endDont}</span>
             </li>
           ))}
         </ul>

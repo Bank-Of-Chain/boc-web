@@ -8,6 +8,15 @@ body {
   font-family: "DM Sans";
 }
 
+ul {
+  padding: 0;
+  margin: 0;
+}
+
+li {
+  list-style: none;
+}
+
 .MuiButton-root,
 .MuiTab-root,
 .MuiTypography-body1,
@@ -25,5 +34,17 @@ code {
   }
   to {
     transform: rotate(0deg);
+  }
+}
+
+@keyframes gradientText {
+  0% {
+    background-position: 0 0;
+  }
+  50% {
+    background-position: 100% 0;
+  }
+  100% {
+    background-position: 0 0;
   }
 }

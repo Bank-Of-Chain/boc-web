@@ -13,12 +13,9 @@ import isEmpty from 'lodash/isEmpty'
 
 const useStyles = makeStyles({
   root: {
-    background: '#323338',
+    background: 'linear-gradient(111.68deg, rgba(87, 97, 125, 0.2) 7.59%, rgba(255, 255, 255, 0.078) 102.04%)',
     borderRadius: '20px',
-    color: '#fff',
-    marginRight: '1rem',
-    height: '100%',
-    padding: '0 0.5rem'
+    color: '#fff'
   },
   action: {
     flex: 'none',
@@ -33,33 +30,45 @@ const useStyles = makeStyles({
   title: {
     color: '#fff',
     fontSize: '1.25rem',
-    lineHeight: '1.875rem'
+    lineHeight: '1.875rem',
+    fontFamily: 'DM Sans'
   },
   pos: {
     marginBottom: 12
   },
   unit: {
-    marginLeft: '0.5rem',
-    fontSize: '1.3rem',
+    marginLeft: '0.625rem',
     backgroundImage: 'linear-gradient(223.3deg,#a68efd 20.71%,#f4acf3 103.56%)',
     '-webkitBackgroundClip': 'text',
     textFillColor: 'transparent'
   },
   content: {
+    height: '3rem',
+    lineHeight: '3rem',
     fontSize: '2.5rem',
     fontWeight: 700
   },
   footer: {
-    paddingTop: '1rem'
+    display: 'flex',
+    alignItems: 'center',
+    height: '1rem',
+    lineHeight: 1,
+    fontSize: '0.75rem',
+    fontFamily: 'DM Sans'
   },
   header: {
-    paddingTop: '2rem',
-    paddingBottom: 0
+    padding: '2.5rem 2.5rem 0'
+  },
+  cardContent: {
+    padding: '0.625rem 2.5rem 2.5rem',
+    '&:last-child': {
+      padding: '0.625rem 2.5rem 2.5rem'
+    }
   }
 })
 
 const CardComponent = props => {
-  const { title, children, footer, content, loading, tip, unit, loadingOption = {} } = props
+  const { title, children, footer, content, loading, tip, unit, addWallet, loadingOption = {} } = props
   const classes = useStyles()
 
   return (
@@ -73,12 +82,17 @@ const CardComponent = props => {
         action={tip}
         title={title}
       />
-      <CardContent>
+      <CardContent
+        classes={{
+          root: classes.cardContent
+        }}
+      >
         {!isEmpty(content) && (
           <Loading loading={loading}>
             <Typography className={classes.content} style={{ fontFamily: 'DM Sans' }} variant="h5" component="h2">
               {content}
               <span className={classes.unit}>{unit}</span>
+              {addWallet}
             </Typography>
           </Loading>
         )}

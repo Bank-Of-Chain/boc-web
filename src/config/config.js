@@ -31,6 +31,7 @@ const configBase = {
   youtube_url: 'https://www.youtube.com/channel/UCnACZpYuAksuSeoLniDXlOQ/featured',
   medium_url: 'https://medium.com/bankofchain',
   document_url: 'https://docs.bankofchain.io',
+  github_url: 'https://github.com/Bank-Of-Chain',
   boc_server: 'https://service-pr02-sg.bankofchain.io',
   rpc_url: {
     1: 'https://rpc.ankr.com/eth',
@@ -64,7 +65,7 @@ const config137 = {
     {
       id: 'mutilCoins',
       name: 'Vault for USDi',
-      path: '#/mutils',
+      path: '#/usdi',
       abi_version: 'usdi-v1.6.0',
       VAULT_ADDRESS: USDI_VAULT_FOR_MATIC,
       USDI_ADDRESS: USDI_FOR_MATIC,
@@ -111,7 +112,7 @@ const config1 = {
     {
       id: 'mutilCoins',
       name: 'Vault for USDi',
-      path: '#/mutils',
+      path: '#/usdi',
       abi_version: 'usdi-v1.6.0',
       VAULT_ADDRESS: USDI_VAULT_FOR_ETH,
       USDI_ADDRESS: USDI_FOR_ETH,

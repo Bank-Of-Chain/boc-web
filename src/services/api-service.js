@@ -140,3 +140,11 @@ export const getSegmentProfit = (address, chainId, tokenType, segmentType) => {
     })
     .then(resp => resp.data)
 }
+
+/**
+ * get homepage data
+ * @returns
+ */
+export const getHomePageData = () => {
+  return axios.get(`${BOC_SERVER}/home-page`).then(resp => resp.data)
+}

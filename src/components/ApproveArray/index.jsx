@@ -1035,7 +1035,7 @@ const ApproveArray = props => {
         </GridItem>
         <GridItem xs={8} sm={8} md={8} className={classes.okWrapper}>
           <Button
-            color="colorfull"
+            color="colorful"
             onClick={clickSwap}
             disabled={
               noNeedSwap ||

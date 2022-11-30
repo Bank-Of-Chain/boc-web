@@ -21,7 +21,7 @@ const UNDONE = <FiberManualRecordIcon style={{ fontSize: 30 }} />
 
 const paths = [
   {
-    title: 'Q1_2022',
+    title: 'Q1 2022',
     color: '#95AAB9',
     background: '#2C2D30',
     data: [
@@ -32,7 +32,7 @@ const paths = [
     ]
   },
   {
-    title: 'Q2_2022',
+    title: 'Q2 2022',
     color: '#558CDE',
     background: '#2B2E32',
     data: [
@@ -43,7 +43,7 @@ const paths = [
     ]
   },
   {
-    title: 'Q4_2022',
+    title: 'Q4 2022',
     color: '#558CDE',
     background: '#2B2E32',
     data: [
@@ -58,7 +58,7 @@ const paths = [
     ]
   },
   {
-    title: 'Q1_2023',
+    title: 'Q1 2023',
     color: '#D28EC1',
     background: '#2B2E32',
     data: [
@@ -88,7 +88,7 @@ const paths = [
   //   ]
   // },
   {
-    title: 'future and beyond',
+    title: 'future & beyond',
     color: '#7E6DD2',
     background: '#292835',
     data: [
@@ -118,7 +118,7 @@ export default function RoadMapSectionV2() {
       if (length === 2) return 30
       return 12.5 * length
     }
-    return 19 * length
+    return 17 * length
   }
 
   return (
@@ -132,9 +132,7 @@ export default function RoadMapSectionV2() {
             border: `2px dashed ${color}`
           }
           if (i === paths.length - 1) {
-            titleStyle.padding = '0 1.25rem'
-            titleStyle.fontSize = '1.25rem'
-            titleStyle.lineHeight = '2rem'
+            titleStyle.fontSize = '0.75rem'
           }
           return (
             <GridItem style={{ lineHeight: '2rem' }} key={i} xs={12} sm={12} md={12}>
@@ -171,7 +169,7 @@ export default function RoadMapSectionV2() {
           )
         })}
       </GridContainer>
-      <h3 className={classes.bottomButton}>DeB</h3>
+      <div className={classes.bottomButton}>... To a full-fledged Decentralized Bank</div>
     </div>
   )
 }

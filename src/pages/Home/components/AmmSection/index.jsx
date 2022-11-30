@@ -63,7 +63,7 @@ export default function AmmSection() {
             )
           },
           {
-            tabName: 'Major chain(s)',
+            tabName: 'Major Chain(s)',
             tabContent: (
               <GridItem xs={12} sm={12} md={12} className={classes.iconContainer}>
                 {map(CHAINS, c => (

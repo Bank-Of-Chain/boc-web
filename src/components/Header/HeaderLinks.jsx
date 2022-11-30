@@ -10,14 +10,8 @@ import { makeStyles } from '@material-ui/core/styles'
 // === Components === //
 import List from '@material-ui/core/List'
 import ListItem from '@material-ui/core/ListItem'
+import { AccountIcon, CopyIcon, ChangeWalletIcon, ExitIcon } from '@/components/SvgIcons'
 
-// @material-ui/icons
-import AccountBalanceWalletOutlinedIcon from '@material-ui/icons/AccountBalanceWalletOutlined'
-import ExitToAppOutlinedIcon from '@material-ui/icons/ExitToAppOutlined'
-import FileCopyOutlinedIcon from '@material-ui/icons/FileCopyOutlined'
-import PaymentOutlinedIcon from '@material-ui/icons/PaymentOutlined'
-
-// core components
 import Button from '../CustomButtons/Button'
 import styles from './headerLinksStyle'
 import Address from '../Address/Address'
@@ -31,12 +25,13 @@ import get from 'lodash/get'
 import find from 'lodash/find'
 import { isInMobileWalletApp, isInMobileH5 } from '@/helpers/plugin-util'
 import { isMarketingHost } from '@/helpers/location'
+import { useLocation } from 'react-router-dom'
 
 // === Constants === //
 import { NET_WORKS, DASHBOARD_URL, DOCUMENT_URL, CHAIN_ID, LEGACYS, POLYGON_HIDDEN } from '@/constants'
 import { INVEST_TAB } from '@/constants/invest'
 
-const CHAIN_SELECTOR_SHOW_ROUTER = ['#/mutils']
+const CHAIN_SELECTOR_SHOW_ROUTER = ['/usdi']
 
 const useStyles = makeStyles(styles)
 export default function HeaderLinks(props) {
@@ -45,6 +40,7 @@ export default function HeaderLinks(props) {
   const classes = useStyles()
   const dispatch = useDispatch()
   const connectTimer = useRef(null)
+  const { pathname } = useLocation()
 
   const handleClickConnect = () => {
     if (isInMobileWalletApp()) {
@@ -104,7 +100,7 @@ export default function HeaderLinks(props) {
 
   const dashboardUrlRender = () => {
     let nextChainId = CHAIN_ID || '1'
-    let nextVault = window.location.hash === '#/ethi' ? 'ethi' : 'usdi'
+    let nextVault = pathname === '/ethi' ? 'ethi' : 'usdi'
 
     // If it's in ETHi, jump to eth chain
     if (nextVault === 'ethi') {
@@ -117,19 +113,14 @@ export default function HeaderLinks(props) {
 
   return (
     <>
-      <List className={classes.list} classes={{ root: classes.iii }}>
+      <List className={classes.list}>
         <ListItem className={classes.listItem}>
-          <Button color="transparent" href={'/'} className={classes.navLink}>
-            Home
-          </Button>
-        </ListItem>
-        <ListItem className={classes.listItem}>
-          <Button color="transparent" target="_blank" href={dashboardUrlRender()} className={classes.navLink}>
+          <Button color="colorful-text" target="_blank" href={dashboardUrlRender()} disableRipple={true}>
             Dashboard
           </Button>
         </ListItem>
         <ListItem className={classes.listItem}>
-          <Button color="transparent" target="_blank" href={DOCUMENT_URL} className={classes.navLink}>
+          <Button color="colorful-text" target="_blank" href={DOCUMENT_URL} disableRipple={true}>
             Docs
           </Button>
         </ListItem>
@@ -156,14 +147,14 @@ export default function HeaderLinks(props) {
             />
           </ListItem>
         )}
-        {CHAIN_SELECTOR_SHOW_ROUTER.includes(window.location.hash) && (
+        {CHAIN_SELECTOR_SHOW_ROUTER.includes(pathname) && NET_WORKS.length > 1 && (
           <ListItem className={classes.listItem}>
             <CustomDropdown
               noLiPadding
               buttonText={get(find(NET_WORKS, { chainId: CHAIN_ID }), 'name', 'Networks')}
               buttonProps={{
-                className: classes.navLink,
-                color: 'transparent'
+                color: 'colorful-text',
+                disableRipple: true
               }}
               dropdownList={map(NET_WORKS, i => (
                 <a onClick={() => props.changeNetwork(i)} className={classes.dropdownLink}>
@@ -180,9 +171,9 @@ export default function HeaderLinks(props) {
             </Button>
           </ListItem>
         )}
-        {window.location.hash === '#/' ? (
+        {pathname === '/' ? (
           <ListItem className={classes.listItem}>
-            <Button className={`${classes.navLink} ${classes.colorfulLink}`} color="colorfull-border" href="/#/mutils">
+            <Button color="colorful-border" href="/#/usdi">
               Launch App
             </Button>
           </ListItem>
@@ -193,16 +184,11 @@ export default function HeaderLinks(props) {
             })}
           >
             {isEmpty(userProvider) ? (
-              <Button
-                color="colorfull-border-2"
-                target="_blank"
-                className={`${classes.navLink} ${classes.colorfulLink}`}
-                onClick={handleClickConnect}
-              >
+              <Button color="colorful-border" target="_blank" onClick={handleClickConnect}>
                 Connect Wallet
               </Button>
             ) : isInMobileWalletApp() ? (
-              <Button color="colorfull-border-2" target="_blank" className={`${classes.navLink} ${classes.colorfulLink}`} onClick={disconnect}>
+              <Button color="colorful-border" target="_blank" onClick={disconnect}>
                 <Address size="short" address={address} />
               </Button>
             ) : (
@@ -210,25 +196,25 @@ export default function HeaderLinks(props) {
                 noLiPadding
                 buttonText={() => <Address size="short" address={address} />}
                 buttonProps={{
-                  color: 'colorfull-border-2',
-                  className: `${classes.navLink} ${classes.colorfulLink} ${classes.accountLink}`
+                  color: 'colorful-border',
+                  className: classes.accountLink
                 }}
                 dropdownList={[
                   <div key="My Account" className={classes.dropdownLink} onClick={handleGoToAccount}>
-                    <AccountBalanceWalletOutlinedIcon className={classes.dropdownLinkIcon} />
-                    <a>My Account</a>
+                    <AccountIcon />
+                    <a className={classes.dropdownLinkText}>My Account</a>
                   </div>,
                   <div key="Copy Addres" onClick={handleCopyAddress} className={classes.dropdownLink}>
-                    <FileCopyOutlinedIcon className={classes.dropdownLinkIcon} />
-                    <a>Copy Address</a>
+                    <CopyIcon />
+                    <a className={classes.dropdownLinkText}>Copy Address</a>
                   </div>,
                   <div key="Change Wallet" onClick={handleClickConnect} className={classes.dropdownLink}>
-                    <PaymentOutlinedIcon className={classes.dropdownLinkIcon} />
-                    <a>Change Wallet</a>
+                    <ChangeWalletIcon />
+                    <a className={classes.dropdownLinkText}>Change Wallet</a>
                   </div>,
                   <div key="Disconnect" onClick={disconnect} className={classes.dropdownLink}>
-                    <ExitToAppOutlinedIcon className={classes.dropdownLinkIcon} />
-                    <a>Disconnect</a>
+                    <ExitIcon />
+                    <a className={classes.dropdownLinkText}>Disconnect</a>
                   </div>
                 ]}
               />
