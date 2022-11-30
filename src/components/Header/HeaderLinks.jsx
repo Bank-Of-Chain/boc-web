@@ -147,7 +147,7 @@ export default function HeaderLinks(props) {
             />
           </ListItem>
         )}
-        {CHAIN_SELECTOR_SHOW_ROUTER.includes(pathname) && (
+        {CHAIN_SELECTOR_SHOW_ROUTER.includes(pathname) && NET_WORKS.length > 1 && (
           <ListItem className={classes.listItem}>
             <CustomDropdown
               noLiPadding

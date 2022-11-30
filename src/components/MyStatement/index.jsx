@@ -50,6 +50,7 @@ const MyStatement = props => {
   const { address, type, chain, balance, vaultBufferBalance, tokenAddress, tokenDecimal } = props
 
   const isUSDi = type === 'USDi'
+  const token = isUSDi ? 'USDi' : 'ETHi'
   const lastRebaseTime = getLastPossibleRebaseTime()
   const classes = useStyles()
 
@@ -223,20 +224,20 @@ const MyStatement = props => {
       footer: (
         <>
           <span>+{numeral(formatBalance(vaultBufferBalance, USDI_DECIMALS)).format(isUSDi ? '0,0.[00]' : '0,0.[000000]')}</span>
-          <span className={classes.unit}>{isUSDi ? 'USDi' : 'ETHi'} Ticket</span>
+          <span className={classes.unit}>{token} Ticket</span>
           <Tooltip
             classes={{
               tooltip: classes.tooltip
             }}
             placement="right"
-            title={`USDi Ticket functions as parallel USDi that will be converted into USDi after fund allocations have been successful. Last
+            title={`${token} Ticket functions as parallel ${token} that will be converted into ${token} after fund allocations have been successful. Last
             execution time was ${moment(lastRebaseTime).format('yyyy-MM-DD HH:mm')}`}
           >
             <InfoIcon style={{ fontSize: '0.875rem', color: 'rgba(255,255,255,0.45)' }} />
           </Tooltip>
         </>
       ),
-      unit: isUSDi ? 'USDi' : 'ETHi',
+      unit: token,
       addWallet: (
         <span title="Add token address to wallet">
           <AddCircleOutlineIcon className={classes.addTokenIcon} onClick={handleAddToken} fontSize="small" />
@@ -277,7 +278,7 @@ const MyStatement = props => {
       unit: latestProfit?.tokenType
     },
     {
-      title: 'APY (last 7 days)',
+      title: 'APY (Last 7 days)',
       tip: (
         <Tooltip
           classes={{
@@ -290,11 +291,10 @@ const MyStatement = props => {
         </Tooltip>
       ),
       content: numeral(day7Apy?.apy).format('0,0.00'),
-      footer: ' ',
       unit: '%'
     },
     {
-      title: 'APY (last 30 days)',
+      title: 'APY (Last 30 days)',
       tip: (
         <Tooltip
           classes={{
@@ -307,7 +307,6 @@ const MyStatement = props => {
         </Tooltip>
       ),
       content: numeral(day30Apy?.apy).format('0,0.00'),
-      footer: ' ',
       unit: '%'
     }
   ]
@@ -330,8 +329,8 @@ const MyStatement = props => {
               loading={chartLoading}
               title={
                 <span>
-                  {isUSDi ? 'USDi' : 'ETHi'} variation curve
-                  <Tooltip title={`Curve of daily change in the total ${isUSDi ? 'USDi' : 'ETHi'} held by the user.`}>
+                  {token} variation curve
+                  <Tooltip title={`Curve of daily change in the total ${token} held by the user.`}>
                     <InfoIcon style={{ marginLeft: 8, fontSize: '1rem' }} />
                   </Tooltip>
                 </span>

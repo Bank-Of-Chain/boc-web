@@ -15,8 +15,7 @@ const useStyles = makeStyles({
   root: {
     background: 'linear-gradient(111.68deg, rgba(87, 97, 125, 0.2) 7.59%, rgba(255, 255, 255, 0.078) 102.04%)',
     borderRadius: '20px',
-    color: '#fff',
-    height: '100%'
+    color: '#fff'
   },
   action: {
     flex: 'none',
@@ -31,7 +30,8 @@ const useStyles = makeStyles({
   title: {
     color: '#fff',
     fontSize: '1.25rem',
-    lineHeight: '1.875rem'
+    lineHeight: '1.875rem',
+    fontFamily: 'DM Sans'
   },
   pos: {
     marginBottom: 12
@@ -43,6 +43,8 @@ const useStyles = makeStyles({
     textFillColor: 'transparent'
   },
   content: {
+    height: '3rem',
+    lineHeight: '3rem',
     fontSize: '2.5rem',
     fontWeight: 700
   },
@@ -50,6 +52,7 @@ const useStyles = makeStyles({
     display: 'flex',
     alignItems: 'center',
     height: '1rem',
+    lineHeight: 1,
     fontSize: '0.75rem',
     fontFamily: 'DM Sans'
   },
@@ -57,7 +60,10 @@ const useStyles = makeStyles({
     padding: '2.5rem 2.5rem 0'
   },
   cardContent: {
-    padding: '0.625rem 2.5rem 1.5rem'
+    padding: '0.625rem 2.5rem 2.5rem',
+    '&:last-child': {
+      padding: '0.625rem 2.5rem 2.5rem'
+    }
   }
 })
 

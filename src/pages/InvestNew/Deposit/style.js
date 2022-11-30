@@ -108,12 +108,12 @@ const componentsStyle = () => ({
   },
   tokens: {
     display: 'flex',
-    marginTop: '0.625rem'
+    flexWrap: 'wrap'
   },
   token: {
     display: 'flex',
-    width: '33.33%',
-    alignItems: 'center'
+    alignItems: 'center',
+    margin: '0.625rem 0.625rem 0 0'
   },
   name: {
     marginLeft: '0.625rem'
