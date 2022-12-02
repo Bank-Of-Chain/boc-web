@@ -68,8 +68,6 @@ export default function Deposit({
   VAULT_ABI,
   VAULT_ADDRESS,
   ETH_ADDRESS,
-  vaultBufferBalance,
-  vaultBufferDecimals,
   isBalanceLoading,
   minimumInvestmentAmount
 }) {
@@ -437,12 +435,6 @@ export default function Deposit({
                   </span>
                 </div>
                 <p className={classes.estimateText}>Estimated Gas Fee: {toFixed(getGasFee(), BigNumber.from(10).pow(ethDecimals), 6)} ETH</p>
-                <p className={classes.estimateText} style={{ marginTop: '1rem' }}>
-                  Balance:&nbsp;&nbsp;
-                  <span>
-                    <Loading loading={isBalanceLoading}>{formatBalance(vaultBufferBalance, vaultBufferDecimals)}</Loading>
-                  </span>
-                </p>
               </GridItem>
               {isEmpty(VAULT_ADDRESS) && (
                 <GridItem xs={12} sm={12} md={12} lg={12}>
