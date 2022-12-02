@@ -281,25 +281,23 @@ function Ethi(props) {
           <>
             {current === INVEST_TAB.deposit && (
               <GridItem xs={9} sm={9} md={7}>
-                <div className={classes.wrapper}>
-                  <Deposit
-                    address={address}
-                    ethBalance={ethBalance}
-                    ethDecimals={ethDecimals}
-                    ethiBalance={ethiBalance}
-                    ethiDecimals={ethiDecimals}
-                    userProvider={userProvider}
-                    VAULT_ABI={VAULT_ABI}
-                    IERC20_ABI={IERC20_ABI}
-                    VAULT_ADDRESS={VAULT_ADDRESS}
-                    ETH_ADDRESS={ETH_ADDRESS}
-                    vaultBufferBalance={vaultBufferBalance}
-                    vaultBufferDecimals={vaultBufferDecimals}
-                    isBalanceLoading={isBalanceLoading}
-                    reloadBalance={loadCoinsBalance}
-                    minimumInvestmentAmount={minimumInvestmentAmount}
-                  />
-                </div>
+                <Deposit
+                  address={address}
+                  ethBalance={ethBalance}
+                  ethDecimals={ethDecimals}
+                  ethiBalance={ethiBalance}
+                  ethiDecimals={ethiDecimals}
+                  userProvider={userProvider}
+                  VAULT_ABI={VAULT_ABI}
+                  IERC20_ABI={IERC20_ABI}
+                  VAULT_ADDRESS={VAULT_ADDRESS}
+                  ETH_ADDRESS={ETH_ADDRESS}
+                  vaultBufferBalance={vaultBufferBalance}
+                  vaultBufferDecimals={vaultBufferDecimals}
+                  isBalanceLoading={isBalanceLoading}
+                  reloadBalance={loadCoinsBalance}
+                  minimumInvestmentAmount={minimumInvestmentAmount}
+                />
               </GridItem>
             )}
             {current === INVEST_TAB.withdraw && (

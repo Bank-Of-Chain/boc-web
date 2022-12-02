@@ -2,7 +2,8 @@ const style = {
   selectWrapper: {
     height: '51px',
     position: 'relative',
-    lineHeight: '51px'
+    lineHeight: '51px',
+    userSelect: 'none'
   },
   selectTrigger: {
     display: 'flex',
@@ -45,7 +46,8 @@ const style = {
     borderRadius: '12px',
     transformOrigin: 'top',
     transform: 'translate(-50%, 0)',
-    boxShadow: '0 0 0px 1px rgba(161, 161, 161, 0.2)'
+    boxShadow: '0 0 0px 1px rgba(161, 161, 161, 0.2)',
+    userSelect: 'none'
   },
   selectPopVisible: {
     display: 'block'
