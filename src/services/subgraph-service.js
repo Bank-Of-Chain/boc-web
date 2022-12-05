@@ -32,25 +32,6 @@ const getSubgraphForEthEthi = () => {
   return `https://${env}-subgraph.bankofchain.io/subgraphs/name/boc-v1_5/subgraph-ethi`
 }
 
-const client = {
-  USDi: {
-    1: new ApolloClient({
-      uri: getSubgraphForEthUsdi(),
-      cache: new InMemoryCache()
-    }),
-    137: new ApolloClient({
-      uri: getSubgraphForMaticUsdi(),
-      cache: new InMemoryCache()
-    })
-  },
-  ETHi: {
-    1: new ApolloClient({
-      uri: getSubgraphForEthEthi(),
-      cache: new InMemoryCache()
-    })
-  }
-}
-
 const QUERY = `query ($vaultAddress: Bytes) {
   vault(id: $vaultAddress) {
     totalAssets
@@ -58,6 +39,25 @@ const QUERY = `query ($vaultAddress: Bytes) {
 }`
 
 export const getPegTokenDetail = (type, vaultAddress) => {
+  const client = {
+    USDi: {
+      1: new ApolloClient({
+        uri: getSubgraphForEthUsdi(),
+        cache: new InMemoryCache()
+      }),
+      137: new ApolloClient({
+        uri: getSubgraphForMaticUsdi(),
+        cache: new InMemoryCache()
+      })
+    },
+    ETHi: {
+      1: new ApolloClient({
+        uri: getSubgraphForEthEthi(),
+        cache: new InMemoryCache()
+      })
+    }
+  }
+
   return client[type][chain_id]
     .query({
       query: gql(QUERY),

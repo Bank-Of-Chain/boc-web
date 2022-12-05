@@ -206,6 +206,9 @@ const MyStatement = props => {
   }, [data, address])
 
   const { day7Apy, day30Apy, profit, latestProfit = { profit: '0', tokenType: '' } } = dataSource
+  const fullBalance = formatBalance(balance, USDI_DECIMALS)
+  const balanceFormat = numeral(fullBalance).format(isUSDi ? '0,0.[00] a' : '0,0.[0000] a')
+  const [balanceText, balanceSymbol] = balanceFormat.split(' ')
   const cardProps = [
     {
       title: 'Balance',
@@ -220,7 +223,8 @@ const MyStatement = props => {
           <InfoIcon style={{ fontSize: '1.375rem', color: 'rgba(255,255,255,0.45)' }} />
         </Tooltip>
       ),
-      content: numeral(formatBalance(balance, USDI_DECIMALS)).format(isUSDi ? '0,0.[00]' : '0,0.[0000]'),
+      content: balanceText,
+      fullAmount: fullBalance,
       footer: (
         <>
           <span>+{numeral(formatBalance(vaultBufferBalance, USDI_DECIMALS)).format(isUSDi ? '0,0.[00]' : '0,0.[000000]')}</span>
@@ -237,7 +241,7 @@ const MyStatement = props => {
           </Tooltip>
         </>
       ),
-      unit: token,
+      unit: `${balanceSymbol}${balanceSymbol ? ' ' : ''}${token}`,
       addWallet: (
         <span title="Add token address to wallet">
           <AddCircleOutlineIcon className={classes.addTokenIcon} onClick={handleAddToken} fontSize="small" />

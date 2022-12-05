@@ -145,7 +145,7 @@ const componentsStyle = () => ({
     fontSize: '1rem'
   },
   usdiInfo: {
-    marginLeft: '0 0.625rem',
+    margin: '0 0.625rem',
     fontSize: '1.5rem',
     fontWeight: 'bold'
   },

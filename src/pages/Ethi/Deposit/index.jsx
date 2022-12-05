@@ -85,6 +85,7 @@ export default function Deposit({
   const nextRebaseTime = getLastPossibleRebaseTime()
   const decimal = BigNumber.from(10).pow(ethiDecimals)
   const [tvl, setTvl] = useState('-')
+  const [fullTvl, setFullTvl] = useState('')
   const [tvlSymbol, setTvlSymbol] = useState('')
   const [apy, setApy] = useState('-')
 
@@ -324,6 +325,7 @@ export default function Deposit({
       const tvlWithSymbol = numeral(tvlFormat).format('0.00 a')
       const [tvl, tvlSymbol] = tvlWithSymbol.split(' ')
       setTvl(tvl)
+      setFullTvl(tvlFormat)
       setTvlSymbol(tvlSymbol)
     })
     getAPY({ tokenType: 'ETHi' }).then(data => {
@@ -342,6 +344,7 @@ export default function Deposit({
           <Card
             title="TVL"
             content={tvl}
+            fullAmount={fullTvl}
             unit={`${tvlSymbol}${tvlSymbol ? ' ' : ''}ETH`}
             tip={
               <Tooltip

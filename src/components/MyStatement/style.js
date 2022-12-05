@@ -35,7 +35,7 @@ const componentsStyle = () => ({
   },
   addTokenIcon: {
     marginLeft: '0.625rem',
-    fontSize: '1.875rem',
+    fontSize: '1.5rem',
     cursor: 'pointer',
   }
 })
