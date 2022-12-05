@@ -183,6 +183,11 @@ const componentsStyle = () => ({
     display: 'flex',
     alignItems: 'center',
     color: '#BEBEBE'
+  },
+  tip: {
+    marginTop: '0.75rem',
+    fontSize: '0.75rem',
+    color: '#BEBEBE'
   }
 })
 

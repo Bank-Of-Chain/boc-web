@@ -423,7 +423,7 @@ export default function Deposit({
                 <p className={classes.estimateText}>To</p>
                 <div className={classes.estimateBalanceTitle}>
                   ETHi Ticket
-                  <Tooltip
+                  {/* <Tooltip
                     classes={{
                       tooltip: classes.tooltip
                     }}
@@ -432,12 +432,18 @@ export default function Deposit({
             execution time was ${moment(nextRebaseTime).format('yyyy-MM-DD HH:mm')}`}
                   >
                     <InfoIcon style={{ fontSize: '1.25rem', marginLeft: 8, color: '#888' }} />
-                  </Tooltip>
+                  </Tooltip> */}
                   <span className={classes.estimateBalanceNum}>
                     <Loading loading={isEstimate}>{toFixed(estimateVaultBuffValue, decimal)}</Loading>
                   </span>
                 </div>
                 <p className={classes.estimateText}>Estimated Gas Fee: {toFixed(getGasFee(), BigNumber.from(10).pow(ethDecimals), 6)} ETH</p>
+              </GridItem>
+              <GridItem xs={12} sm={12} md={12} lg={12}>
+                <div className={classes.tip}>
+                  ETHi Ticket functions as parallel ETHi that will be converted into ETHi after fund allocations have been successful. Last execution
+                  time was {moment(nextRebaseTime).format('yyyy-MM-DD HH:mm')}
+                </div>
               </GridItem>
               {isEmpty(VAULT_ADDRESS) && (
                 <GridItem xs={12} sm={12} md={12} lg={12}>
