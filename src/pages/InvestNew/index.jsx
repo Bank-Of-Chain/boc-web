@@ -352,7 +352,7 @@ function Invest(props) {
         {userProvider && (
           <>
             {current === INVEST_TAB.deposit && (
-              <GridItem xs={9} sm={9} md={8}>
+              <GridItem xs={9} sm={9} md={7}>
                 <Deposit
                   address={address}
                   usdtBalance={usdtBalance}

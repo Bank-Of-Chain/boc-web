@@ -442,10 +442,10 @@ export default function Deposit({
       <GridContainer spacing={3}>
         <GridItem xs={12} sm={12} md={6} lg={6}>
           <Card
-            title="TVL"
+            title="TVL (/USD)"
             content={tvl}
             fullAmount={fullTvl}
-            unit={`${tvlSymbol}${tvlSymbol ? ' ' : ''}USD`}
+            unit={tvlSymbol}
             tip={
               <Tooltip
                 classes={{
@@ -454,7 +454,7 @@ export default function Deposit({
                 placement="right"
                 title="Total Value Locked."
               >
-                <InfoIcon style={{ fontSize: '1rem', color: '#888888' }} />
+                <InfoIcon style={{ fontSize: '1.125rem', color: '#888888' }} />
               </Tooltip>
             }
           />
@@ -472,7 +472,7 @@ export default function Deposit({
                 placement="right"
                 title="Yield over the past month."
               >
-                <InfoIcon style={{ fontSize: '1rem', color: '#888888' }} />
+                <InfoIcon style={{ fontSize: '1.125rem', color: '#888888' }} />
               </Tooltip>
             }
           />

@@ -342,10 +342,10 @@ export default function Deposit({
       <GridContainer spacing={3}>
         <GridItem xs={12} sm={12} md={6} lg={6}>
           <Card
-            title="TVL"
+            title="TVL (/ETH)"
             content={tvl}
             fullAmount={fullTvl}
-            unit={`${tvlSymbol}${tvlSymbol ? ' ' : ''}ETH`}
+            unit={tvlSymbol}
             tip={
               <Tooltip
                 classes={{
