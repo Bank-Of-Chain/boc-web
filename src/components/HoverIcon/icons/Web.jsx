@@ -43,7 +43,7 @@ const SVG_HOVER = (
 
 const Web = props => {
   const { href } = props
-  return <HoverIcon defaultIcon={SVG} hoverIcon={SVG_HOVER} href={href} />
+  return <HoverIcon style={!href ? { visibility: 'hidden' } : {}} defaultIcon={SVG} hoverIcon={SVG_HOVER} href={href} />
 }
 
 export default Web
