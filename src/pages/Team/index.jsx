@@ -37,8 +37,7 @@ const TeamMembers = [
   {
     avatar: './images/avatar/HongChen.png',
     label: 'Head of Technology',
-    name: 'Hong Chen',
-    web: 'http://ir.nd.com.cn/en/staff/chen-hong-2'
+    name: 'H'
   },
   {
     avatar: './images/avatar/BrainZhang.png',
@@ -133,6 +132,7 @@ export default function Home() {
                 {github && <GithubIcon href={github} />}
                 {twitter && <TwitterIcon href={twitter} />}
                 {linked && <LinkedInIcon href={linked} />}
+                {!web && !github && !twitter && !linked && <WebIcon />}
               </div>
             </li>
           )
