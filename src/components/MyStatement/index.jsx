@@ -249,7 +249,7 @@ const MyStatement = props => {
       )
     },
     {
-      title: `Profits (/${isUSDi ? 'USD' : 'ETH'})`,
+      title: `Profits`,
       tip: (
         <Tooltip
           classes={{
@@ -267,7 +267,7 @@ const MyStatement = props => {
       footer: (
         <>
           <span>+{numeral(latestProfit?.profit).format(isUSDi ? '0,0.[00]' : '0,0.[000000]')}</span>
-          <span className={classes.unit}>{isUSDi ? 'USD' : 'ETH'}</span>
+          <span className={classes.unit}>{token}</span>
           <Tooltip
             classes={{
               tooltip: classes.tooltip
@@ -278,7 +278,8 @@ const MyStatement = props => {
             <InfoIcon style={{ fontSize: '0.875rem', color: 'rgba(255,255,255,0.45)' }} />
           </Tooltip>
         </>
-      )
+      ),
+      unit: token
     },
     {
       title: 'APY (Last 7 days)',
