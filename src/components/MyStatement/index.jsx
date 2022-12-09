@@ -267,7 +267,7 @@ const MyStatement = props => {
       footer: (
         <>
           <span>+{numeral(latestProfit?.profit).format(isUSDi ? '0,0.[00]' : '0,0.[000000]')}</span>
-          <span className={classes.unit}>{token}</span>
+          <span className={classes.unit}>{token?.replace('i', '')}</span>
           <Tooltip
             classes={{
               tooltip: classes.tooltip
@@ -279,7 +279,7 @@ const MyStatement = props => {
           </Tooltip>
         </>
       ),
-      unit: token
+      unit: token?.replace('i', '')
     },
     {
       title: 'APY (Last 7 days)',
