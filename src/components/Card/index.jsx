@@ -68,7 +68,7 @@ const useStyles = makeStyles({
 })
 
 const CardComponent = props => {
-  const { title, children, footer, content, loading, tip, unit, addWallet, loadingOption = {} } = props
+  const { title, children, footer, content, loading, tip, unit, addWallet, fullAmount, loadingOption = {} } = props
   const classes = useStyles()
 
   return (
@@ -89,7 +89,7 @@ const CardComponent = props => {
       >
         {!isEmpty(content) && (
           <Loading loading={loading}>
-            <Typography className={classes.content} style={{ fontFamily: 'DM Sans' }} variant="h5" component="h2">
+            <Typography className={classes.content} style={{ fontFamily: 'DM Sans' }} variant="h5" component="h2" title={fullAmount}>
               {content}
               <span className={classes.unit}>{unit}</span>
               {addWallet}
