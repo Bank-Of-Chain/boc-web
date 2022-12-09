@@ -320,7 +320,7 @@ export default function Deposit({
 
   useEffect(() => {
     getPegTokenDetail('ETHi', VAULT_ADDRESS).then(data => {
-      const { totalAssets } = data.vault
+      const { totalAssets } = data?.vault || { totalAssets: '0' }
       const tvlFormat = toFixed(totalAssets, BN_18, 4)
       const tvlWithSymbol = numeral(tvlFormat).format('0.0000 a')
       const [tvl, tvlSymbol] = tvlWithSymbol.split(' ')

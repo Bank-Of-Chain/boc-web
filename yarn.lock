@@ -11438,10 +11438,10 @@ pify@^5.0.0:
   resolved "https://registry.npmjs.org/pify/-/pify-5.0.0.tgz#1f5eca3f5e87ebec28cc6d54a0e4aaf00acc127f"
   integrity sha512-eW/gHNMlxdSP6dmG6uJip6FXN0EQBwm2clYYd8Wul42Cwu/DK8HEftzsapcNdYe2MfLiIwZqsDk2RDEsTE79hA==
 
-piggy-finance-utils@1.0.64:
-  version "1.0.64"
-  resolved "https://registry.yarnpkg.com/piggy-finance-utils/-/piggy-finance-utils-1.0.64.tgz#7635babd3f5580cd52b3cc93eac0a641decd63ba"
-  integrity sha512-ln+tPrabkRd5qx5YYVPjueYxwIuOE0jUmpublLkFM2qYzk+vP3pZpdjS2NwZopize37p4gyFxwOfcJ/AJFTqbQ==
+piggy-finance-utils@1.0.62:
+  version "1.0.62"
+  resolved "https://registry.npmmirror.com/piggy-finance-utils/-/piggy-finance-utils-1.0.62.tgz#f42e77c84557acece511eb364e6f1f3c549f741e"
+  integrity sha512-K4ZHFgzMS+J5LcwhIDBImIm2r0NsDQeOKMcj5VHI8ZkMeVVlRWbRoksUNPgwxzP4C29bF1Xh04Mzj5Cb+n+5lQ==
   dependencies:
     "@babel/runtime" "^7.11.4"
     axios "^0.21.4"

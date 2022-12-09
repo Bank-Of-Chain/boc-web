@@ -44,7 +44,7 @@
     "lodash": "^4.17.21",
     "moment": "^2.29.4",
     "numeral": "^2.0.6",
-    "piggy-finance-utils": "1.0.64",
+    "piggy-finance-utils": "1.0.62",
     "prop-types": "^15.8.1",
     "react": "16.9.0",
     "react-async-hook": "^4.0.0",
