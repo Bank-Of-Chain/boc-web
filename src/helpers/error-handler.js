@@ -5,6 +5,9 @@
  */
 export const errorTextOutput = error => {
   let errorMsg = error.toString()
+  if (error?.reason) {
+    errorMsg = error.reason
+  }
   if (error?.message) {
     errorMsg = error.message
   }

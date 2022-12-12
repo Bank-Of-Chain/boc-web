@@ -173,10 +173,36 @@ export default function Deposit({
     const nVaultWithUser = vaultContract.connect(signer)
     let isSuccess = false
 
+    const errorHandle = error => {
+      const errorMsg = errorTextOutput(error)
+      let tip = ''
+      if (isEs(errorMsg)) {
+        tip = 'Vault has been shut down, please try again later!'
+      } else if (isAd(errorMsg)) {
+        tip = 'Vault is in adjustment status, please try again later!'
+      } else if (isRp(errorMsg)) {
+        tip = 'Vault is in rebase status, please try again later!'
+      } else if (isDistributing(errorMsg)) {
+        tip = 'Vault is in distributing, please try again later!'
+      } else if (isLessThanMinValue(errorMsg)) {
+        tip = `Deposit Amount must be greater than ${toFixed(minimumInvestmentAmount, BN_18, 2)}ETH!`
+      }
+      if (tip) {
+        dispatch(
+          warmDialog({
+            open: true,
+            type: 'error',
+            message: tip
+          })
+        )
+      }
+      setIsLoading(false)
+    }
     const extendObj = {}
     // if gasLimit times not 1, need estimateGas
     if (isNumber(MULTIPLE_OF_GAS) && MULTIPLE_OF_GAS !== 1) {
-      const gas = await nVaultWithUser.estimateGas.mint(ETH_ADDRESS, amount, 0, { from: address, value: amount })
+      const gas = await nVaultWithUser.estimateGas.mint(ETH_ADDRESS, amount, 0, { from: address, value: amount }).catch(errorHandle)
+      if (isUndefined(gas)) return
       const gasLimit = Math.ceil(gas * MULTIPLE_OF_GAS)
       // gasLimit not exceed maximum
       const maxGasLimit = gasLimit < MAX_GAS_LIMIT ? gasLimit : MAX_GAS_LIMIT
@@ -192,31 +218,7 @@ export default function Deposit({
       .then(() => {
         isSuccess = true
       })
-      .catch(error => {
-        const errorMsg = errorTextOutput(error)
-        let tip = ''
-        if (isEs(errorMsg)) {
-          tip = 'Vault has been shut down, please try again later!'
-        } else if (isAd(errorMsg)) {
-          tip = 'Vault is in adjustment status, please try again later!'
-        } else if (isRp(errorMsg)) {
-          tip = 'Vault is in rebase status, please try again later!'
-        } else if (isDistributing(errorMsg)) {
-          tip = 'Vault is in distributing, please try again later!'
-        } else if (isLessThanMinValue(errorMsg)) {
-          tip = `Deposit Amount must be greater than ${toFixed(minimumInvestmentAmount, BN_18, 2)}ETH!`
-        }
-        if (tip) {
-          dispatch(
-            warmDialog({
-              open: true,
-              type: 'error',
-              message: tip
-            })
-          )
-        }
-        setIsLoading(false)
-      })
+      .catch(errorHandle)
 
     if (isSuccess) {
       setEthValue('')
