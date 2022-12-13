@@ -9,6 +9,7 @@ import map from 'lodash/map'
 import isNumber from 'lodash/isNumber'
 import moment from 'moment'
 import { makeStyles } from '@material-ui/core/styles'
+import numeral from 'numeral'
 
 // === Components === //
 import Step from '@material-ui/core/Step'
@@ -20,9 +21,9 @@ import CircularProgress from '@material-ui/core/CircularProgress'
 import Modal from '@material-ui/core/Modal'
 import Paper from '@material-ui/core/Paper'
 import Tooltip from '@material-ui/core/Tooltip'
-import InfoIcon from '@material-ui/icons/Info'
+import InfoIcon from '@material-ui/icons/InfoOutlined'
 import Loading from '@/components/LoadingComponent'
-
+import Card from '@/components/Card'
 import GridContainer from '@/components/Grid/GridContainer'
 import GridItem from '@/components/Grid/GridItem'
 import CustomTextField from '@/components/CustomTextField'
@@ -36,6 +37,9 @@ import { BN_18 } from '@/constants/big-number'
 import { MULTIPLE_OF_GAS, MAX_GAS_LIMIT } from '@/constants'
 import { warmDialog } from '@/reducers/meta-reducer'
 import { toFixed, formatBalance } from '@/helpers/number-format'
+
+import { getPegTokenDetail } from '@/services/subgraph-service'
+import { getAPY } from '@/services/api-service'
 
 import styles from './style'
 
@@ -64,8 +68,6 @@ export default function Deposit({
   VAULT_ABI,
   VAULT_ADDRESS,
   ETH_ADDRESS,
-  vaultBufferBalance,
-  vaultBufferDecimals,
   isBalanceLoading,
   minimumInvestmentAmount
 }) {
@@ -81,6 +83,12 @@ export default function Deposit({
   const loadingTimer = useRef()
 
   const nextRebaseTime = getLastPossibleRebaseTime()
+  const decimal = BigNumber.from(10).pow(ethiDecimals)
+  const [tvl, setTvl] = useState('-')
+  const [fullTvl, setFullTvl] = useState('')
+  const [tvlSymbol, setTvlSymbol] = useState('')
+  const [apy, setApy] = useState('-')
+
   const getGasFee = () => {
     if (!gasPriceCurrent) {
       return BigNumber.from(0)
@@ -135,11 +143,14 @@ export default function Deposit({
       return
     }
     const maxValue = ethBalance.sub(v)
-    setEthValue(
-      formatBalance(maxValue.gt(0) ? maxValue : 0, ethDecimals, {
-        showAll: true
-      })
-    )
+    const maxBalance = formatBalance(maxValue.gt(0) ? maxValue : 0, ethDecimals, {
+      showAll: true
+    })
+    if (maxValue === ethValue) {
+      return
+    }
+    setIsEstimate(true)
+    setEthValue(maxBalance)
   }
 
   const deposit = async () => {
@@ -307,92 +318,154 @@ export default function Deposit({
       .catch(noop)
   }, [userProvider, VAULT_ADDRESS, ethBalance, VAULT_ABI])
 
+  useEffect(() => {
+    getPegTokenDetail('ETHi', VAULT_ADDRESS).then(data => {
+      const { totalAssets } = data?.vault || { totalAssets: '0' }
+      const tvlFormat = toFixed(totalAssets, BN_18, 4)
+      const tvlWithSymbol = numeral(tvlFormat).format('0.0000 a')
+      const [tvl, tvlSymbol] = tvlWithSymbol.split(' ')
+      setTvl(tvl)
+      setFullTvl(tvlFormat)
+      setTvlSymbol(tvlSymbol)
+    })
+    getAPY({ tokenType: 'ETHi' }).then(data => {
+      const apy = isNaN(data) ? '-' : Number(data)
+      setApy(apy.toFixed(2))
+    })
+  }, [])
+
   const isLogin = !isEmpty(userProvider)
   const isValid = isValidValue()
 
   return (
     <>
-      <GridContainer classes={{ root: classes.depositContainer }}>
-        <p className={classes.estimateText}>From</p>
-        <GridItem xs={12} sm={12} md={12} lg={12} className={classes.tokenInputWrapper}>
-          <GridContainer>
-            <GridItem xs={12} sm={12} md={12} lg={12}>
-              <GridContainer justify="center" spacing={2}>
-                <GridItem xs={4} sm={4} md={4} lg={4}>
-                  <div className={classes.tokenInfo}>
-                    <img className={classes.tokenLogo} alt="" src={`./images/0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE.png`} />
-                    <span className={classes.tokenName}>ETH</span>
-                  </div>
-                </GridItem>
-                <GridItem xs={8} sm={8} md={8} lg={8}>
-                  <CustomTextField
-                    classes={{ root: classes.input }}
-                    value={ethValue}
-                    onChange={handleInputChange}
-                    placeholder="deposit amount"
-                    maxEndAdornment
-                    onMaxClick={handleMaxClick}
-                    error={!isUndefined(isValid) && !isValid}
-                  />
-                </GridItem>
-              </GridContainer>
-            </GridItem>
-            <GridItem xs={12} sm={12} md={12} lg={12}>
-              <p
-                className={classes.estimateText}
-                title={formatBalance(ethBalance, ethDecimals, {
-                  showAll: true
-                })}
+      <GridContainer spacing={3}>
+        <GridItem xs={12} sm={12} md={6} lg={6}>
+          <Card
+            title="TVL"
+            content={tvl}
+            fullAmount={fullTvl}
+            unit={`${tvlSymbol}${tvlSymbol ? ' ' : ''}ETH`}
+            tip={
+              <Tooltip
+                classes={{
+                  tooltip: classes.tooltip
+                }}
+                placement="right"
+                title="Total Value Locked."
               >
-                Balance:&nbsp;&nbsp;
-                <Loading loading={isBalanceLoading}>{formatBalance(ethBalance, ethDecimals)}</Loading>
-              </p>
-            </GridItem>
-          </GridContainer>
+                <InfoIcon style={{ fontSize: '1rem', color: '#888888' }} />
+              </Tooltip>
+            }
+          />
         </GridItem>
-      </GridContainer>
-      <GridContainer classes={{ root: classes.estimateContainer }}>
-        <GridItem xs={12} sm={12} md={12} lg={12}>
-          <p className={classes.estimateText}>To</p>
-          <div className={classes.estimateBalanceTitle}>
-            ETHi Ticket:
-            <span className={classes.estimateBalanceNum}>
-              <Loading loading={isEstimate}>
-                <CustomTextField
-                  disabled
-                  classes={{ root: classes.input }}
-                  value={toFixed(estimateVaultBuffValue, BigNumber.from(10).pow(ethiDecimals))}
-                  error={false}
-                />
-              </Loading>
-            </span>
-          </div>
-          <p className={classes.estimateText}>Estimated Gas Fee: {toFixed(getGasFee(), BigNumber.from(10).pow(ethDecimals), 6)} ETH</p>
-          <p className={classes.estimateText} style={{ marginTop: '1rem' }}>
-            Balance:&nbsp;&nbsp;
-            <span>
-              <Loading loading={isBalanceLoading}>{formatBalance(vaultBufferBalance, vaultBufferDecimals)}</Loading>
-            </span>
-          </p>
+        <GridItem xs={12} sm={12} md={6} lg={6}>
+          <Card
+            title="APY (Last 30 days)"
+            content={apy}
+            unit="%"
+            tip={
+              <Tooltip
+                classes={{
+                  tooltip: classes.tooltip
+                }}
+                placement="right"
+                title="Yield over the past month."
+              >
+                <InfoIcon style={{ fontSize: '1rem', color: '#888888' }} />
+              </Tooltip>
+            }
+          />
         </GridItem>
-        {isEmpty(VAULT_ADDRESS) && (
-          <GridItem xs={12} sm={12} md={12} lg={12}>
-            <p style={{ textAlign: 'center', color: 'red' }}>Switch to the ETH chain firstly!</p>
-          </GridItem>
-        )}
-      </GridContainer>
-      <GridContainer>
         <GridItem xs={12} sm={12} md={12} lg={12}>
-          <div className={classes.footerContainer}>
-            <Button
-              disabled={!isLogin || (isLogin && !isValid)}
-              color="colorful"
-              onClick={openEstimateModal}
-              className={classes.blockButton}
-              fullWidth={true}
-            >
-              Deposit
-            </Button>
+          <div className={classes.wrapper}>
+            <GridContainer classes={{ root: classes.depositContainer }}>
+              <p className={classes.estimateText}>From</p>
+              <GridItem xs={12} sm={12} md={12} lg={12} className={classes.tokenInputWrapper}>
+                <GridContainer>
+                  <GridItem xs={12} sm={12} md={12} lg={12}>
+                    <GridContainer justify="center" spacing={2}>
+                      <GridItem xs={4} sm={4} md={4} lg={4}>
+                        <div className={classes.tokenInfo}>
+                          <img className={classes.tokenLogo} alt="" src={`./images/0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE.png`} />
+                          <span className={classes.tokenName}>ETH</span>
+                        </div>
+                      </GridItem>
+                      <GridItem xs={8} sm={8} md={8} lg={8}>
+                        <CustomTextField
+                          classes={{ root: classes.input }}
+                          value={ethValue}
+                          onChange={handleInputChange}
+                          placeholder="deposit amount"
+                          maxEndAdornment
+                          onMaxClick={handleMaxClick}
+                          error={!isUndefined(isValid) && !isValid}
+                        />
+                      </GridItem>
+                    </GridContainer>
+                  </GridItem>
+                  <GridItem xs={12} sm={12} md={12} lg={12}>
+                    <div
+                      className={classes.balance}
+                      title={formatBalance(ethBalance, ethDecimals, {
+                        showAll: true
+                      })}
+                    >
+                      Balance:&nbsp;&nbsp;
+                      <Loading loading={isBalanceLoading}>{formatBalance(ethBalance, ethDecimals)}</Loading>
+                    </div>
+                  </GridItem>
+                </GridContainer>
+              </GridItem>
+            </GridContainer>
+            <GridContainer classes={{ root: classes.estimateContainer }}>
+              <GridItem xs={12} sm={12} md={12} lg={12}>
+                <p className={classes.estimateText}>To</p>
+                <div className={classes.estimateBalanceTitle}>
+                  ETHi Ticket
+                  {/* <Tooltip
+                    classes={{
+                      tooltip: classes.tooltip
+                    }}
+                    placement="right"
+                    title={`ETHi Ticket functions as parallel ETHi that will be converted into ETHi after fund allocations have been successful. Last
+            execution time was ${moment(nextRebaseTime).format('yyyy-MM-DD HH:mm')}`}
+                  >
+                    <InfoIcon style={{ fontSize: '1.25rem', marginLeft: 8, color: '#888' }} />
+                  </Tooltip> */}
+                  <span className={classes.estimateBalanceNum}>
+                    <Loading loading={isEstimate}>{toFixed(estimateVaultBuffValue, decimal)}</Loading>
+                  </span>
+                </div>
+                <p className={classes.estimateText}>Estimated Gas Fee: {toFixed(getGasFee(), BigNumber.from(10).pow(ethDecimals), 6)} ETH</p>
+              </GridItem>
+              <GridItem xs={12} sm={12} md={12} lg={12}>
+                <div className={classes.tip}>
+                  ETHi Ticket functions as parallel ETHi that will be converted into ETHi after fund allocations have been successful. Last execution
+                  time was {moment(nextRebaseTime).format('yyyy-MM-DD HH:mm')}
+                </div>
+              </GridItem>
+              {isEmpty(VAULT_ADDRESS) && (
+                <GridItem xs={12} sm={12} md={12} lg={12}>
+                  <p style={{ textAlign: 'center', color: 'red' }}>Switch to the ETH chain firstly!</p>
+                </GridItem>
+              )}
+            </GridContainer>
+            <GridContainer>
+              <GridItem xs={12} sm={12} md={12} lg={12}>
+                <div className={classes.footerContainer}>
+                  <Button
+                    disabled={!isLogin || (isLogin && !isValid)}
+                    color="colorful"
+                    onClick={openEstimateModal}
+                    className={classes.blockButton}
+                    fullWidth={true}
+                  >
+                    Deposit
+                  </Button>
+                </div>
+              </GridItem>
+            </GridContainer>
           </div>
         </GridItem>
       </GridContainer>
@@ -426,30 +499,8 @@ export default function Deposit({
           </div>
           <div className={classes.itemBottom}>
             <div className={classes.exchangeInfo}>
-              Receive: {toFixed(estimateVaultBuffValue, BigNumber.from(10).pow(ethiDecimals), 2)} ETHi Tickets
-            </div>
-            <div className={classes.toInfo}>
-              Exchange to
-              <Tooltip placement="top" title="Estimated amount of ETHi that can be exchanged">
-                <InfoIcon classes={{ root: classes.labelToolTipIcon }} />
-              </Tooltip>
-              :
-              <span className={classes.usdiInfo}>
-                {toFixed(estimateVaultBuffValue.mul(9987).div(10000), BigNumber.from(10).pow(ethiDecimals), 2)} ETHi
-              </span>
-            </div>
-            <div className={classes.timeInfo}>
-              Exchange Time
-              <Tooltip
-                classes={{
-                  tooltip: classes.tooltip
-                }}
-                placement="top"
-                title="The latest planned execution date may not be executed due to cost and other factors"
-              >
-                <InfoIcon />
-              </Tooltip>
-              :<span className={classes.time}>{moment(nextRebaseTime).format('YYYY-MM-DD HH:mm:ss')}</span>
+              Receive:
+              <span className={classes.usdiInfo}>{toFixed(estimateVaultBuffValue, decimal, 2)}</span>ETHi Tickets
             </div>
           </div>
           <div className={classes.buttonGroup}>

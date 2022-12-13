@@ -206,6 +206,9 @@ const MyStatement = props => {
   }, [data, address])
 
   const { day7Apy, day30Apy, profit, latestProfit = { profit: '0', tokenType: '' } } = dataSource
+  const fullBalance = formatBalance(balance, USDI_DECIMALS)
+  const balanceFormat = numeral(fullBalance).format(isUSDi ? '0,0.[00] a' : '0,0.[0000] a')
+  const [balanceText, balanceSymbol] = balanceFormat.split(' ')
   const cardProps = [
     {
       title: 'Balance',
@@ -217,13 +220,14 @@ const MyStatement = props => {
           placement="right"
           title="Current available balance on your account"
         >
-          <InfoIcon style={{ fontSize: '1.375rem', color: 'rgba(255,255,255,0.45)' }} />
+          <InfoIcon style={{ fontSize: '1.125rem', color: 'rgba(255,255,255,0.45)' }} />
         </Tooltip>
       ),
-      content: numeral(formatBalance(balance, USDI_DECIMALS)).format(isUSDi ? '0,0.[00]' : '0,0.[0000]'),
+      content: balanceText,
+      fullAmount: fullBalance,
       footer: (
         <>
-          <span>+{numeral(formatBalance(vaultBufferBalance, USDI_DECIMALS)).format(isUSDi ? '0,0.[00]' : '0,0.[000000]')}</span>
+          <span>{numeral(formatBalance(vaultBufferBalance, USDI_DECIMALS)).format(isUSDi ? '0,0.[00]' : '0,0.[000000]')}</span>
           <span className={classes.unit}>{token} Ticket</span>
           <Tooltip
             classes={{
@@ -237,7 +241,7 @@ const MyStatement = props => {
           </Tooltip>
         </>
       ),
-      unit: token,
+      unit: `${balanceSymbol}${balanceSymbol ? ' ' : ''}${token}`,
       addWallet: (
         <span title="Add token address to wallet">
           <AddCircleOutlineIcon className={classes.addTokenIcon} onClick={handleAddToken} fontSize="small" />
@@ -245,7 +249,7 @@ const MyStatement = props => {
       )
     },
     {
-      title: 'Profits',
+      title: `Profits`,
       tip: (
         <Tooltip
           classes={{
@@ -254,7 +258,7 @@ const MyStatement = props => {
           placement="right"
           title={'Total profits from BoC that are withdrawable and cumulative.'}
         >
-          <InfoIcon style={{ fontSize: '1.375rem', color: 'rgba(255,255,255,0.45)' }} />
+          <InfoIcon style={{ fontSize: '1.125rem', color: 'rgba(255,255,255,0.45)' }} />
         </Tooltip>
       ),
       content: numeral(toFixed(profit, ETHI_BN_DECIMALS, isUSDi ? TOKEN_DISPLAY_DECIMALS : ETHI_DISPLAY_DECIMALS)).format(
@@ -263,7 +267,7 @@ const MyStatement = props => {
       footer: (
         <>
           <span>+{numeral(latestProfit?.profit).format(isUSDi ? '0,0.[00]' : '0,0.[000000]')}</span>
-          <span className={classes.unit}>{latestProfit?.tokenType}</span>
+          <span className={classes.unit}>{token?.replace('i', '')}</span>
           <Tooltip
             classes={{
               tooltip: classes.tooltip
@@ -275,7 +279,7 @@ const MyStatement = props => {
           </Tooltip>
         </>
       ),
-      unit: latestProfit?.tokenType
+      unit: token?.replace('i', '')
     },
     {
       title: 'APY (Last 7 days)',
@@ -287,7 +291,7 @@ const MyStatement = props => {
           placement="right"
           title={'Yield over the past week.'}
         >
-          <InfoIcon style={{ fontSize: '1.375rem', color: 'rgba(255,255,255,0.45)' }} />
+          <InfoIcon style={{ fontSize: '1.125rem', color: 'rgba(255,255,255,0.45)' }} />
         </Tooltip>
       ),
       content: numeral(day7Apy?.apy).format('0,0.00'),
@@ -303,7 +307,7 @@ const MyStatement = props => {
           placement="right"
           title={'Yield over the past month.'}
         >
-          <InfoIcon style={{ fontSize: '1.375rem', color: 'rgba(255,255,255,0.45)' }} />
+          <InfoIcon style={{ fontSize: '1.125rem', color: 'rgba(255,255,255,0.45)' }} />
         </Tooltip>
       ),
       content: numeral(day30Apy?.apy).format('0,0.00'),

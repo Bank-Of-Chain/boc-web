@@ -353,29 +353,27 @@ function Invest(props) {
           <>
             {current === INVEST_TAB.deposit && (
               <GridItem xs={9} sm={9} md={7}>
-                <div className={classes.wrapper}>
-                  <Deposit
-                    address={address}
-                    usdtBalance={usdtBalance}
-                    usdtDecimals={usdtDecimals}
-                    usdcBalance={usdcBalance}
-                    usdcDecimals={usdcDecimals}
-                    daiBalance={daiBalance}
-                    daiDecimals={daiDecimals}
-                    usdiDecimals={usdiDecimals}
-                    userProvider={userProvider}
-                    VAULT_ABI={VAULT_ABI}
-                    IERC20_ABI={IERC20_ABI}
-                    VAULT_ADDRESS={VAULT_ADDRESS}
-                    abi_version={abi_version}
-                    toBalance={toBalance}
-                    vaultBufferBalance={vaultBufferBalance}
-                    vaultBufferDecimals={vaultBufferDecimals}
-                    isBalanceLoading={isBalanceLoading}
-                    reloadBalance={loadCoinsBalance}
-                    minimumInvestmentAmount={minimumInvestmentAmount}
-                  />
-                </div>
+                <Deposit
+                  address={address}
+                  usdtBalance={usdtBalance}
+                  usdtDecimals={usdtDecimals}
+                  usdcBalance={usdcBalance}
+                  usdcDecimals={usdcDecimals}
+                  daiBalance={daiBalance}
+                  daiDecimals={daiDecimals}
+                  usdiDecimals={usdiDecimals}
+                  userProvider={userProvider}
+                  VAULT_ABI={VAULT_ABI}
+                  IERC20_ABI={IERC20_ABI}
+                  VAULT_ADDRESS={VAULT_ADDRESS}
+                  abi_version={abi_version}
+                  toBalance={toBalance}
+                  vaultBufferBalance={vaultBufferBalance}
+                  vaultBufferDecimals={vaultBufferDecimals}
+                  isBalanceLoading={isBalanceLoading}
+                  reloadBalance={loadCoinsBalance}
+                  minimumInvestmentAmount={minimumInvestmentAmount}
+                />
               </GridItem>
             )}
             {current === INVEST_TAB.withdraw && (

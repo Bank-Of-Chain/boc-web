@@ -3,7 +3,6 @@ import { container } from '@/assets/jss/material-kit-react.js'
 const componentsStyle = () => ({
   container,
   lineChart: {
-    minHeight: '20rem',
     paddingTop: '1.5rem'
   },
   barChart: {
@@ -36,7 +35,7 @@ const componentsStyle = () => ({
   },
   addTokenIcon: {
     marginLeft: '0.625rem',
-    fontSize: '1.875rem',
+    fontSize: '1.5rem',
     cursor: 'pointer',
   }
 })

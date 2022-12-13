@@ -15,6 +15,7 @@ import isNumber from 'lodash/isNumber'
 import compact from 'lodash/compact'
 import filter from 'lodash/filter'
 import moment from 'moment'
+import numeral from 'numeral'
 import { getLastPossibleRebaseTime } from '@/helpers/time-util'
 import { isAd, isEs, isRp, isDistributing, errorTextOutput, isLessThanMinValue } from '@/helpers/error-handler'
 
@@ -28,8 +29,8 @@ import CircularProgress from '@material-ui/core/CircularProgress'
 import Modal from '@material-ui/core/Modal'
 import Paper from '@material-ui/core/Paper'
 import Tooltip from '@material-ui/core/Tooltip'
-import InfoIcon from '@material-ui/icons/Info'
-
+import InfoIcon from '@material-ui/icons/InfoOutlined'
+import Card from '@/components/Card'
 import GridContainer from '@/components/Grid/GridContainer'
 import GridItem from '@/components/Grid/GridItem'
 import CustomTextField from '@/components/CustomTextField'
@@ -45,6 +46,9 @@ import ClearIcon from '@material-ui/icons/Clear'
 // === Constants === //
 import { USDT_ADDRESS, USDC_ADDRESS, DAI_ADDRESS, IERC20_ABI, MULTIPLE_OF_GAS, MAX_GAS_LIMIT } from '@/constants'
 import { BN_18 } from '@/constants/big-number'
+
+import { getPegTokenDetail } from '@/services/subgraph-service'
+import { getAPY } from '@/services/api-service'
 
 // === Styles === //
 import styles from './style'
@@ -82,8 +86,6 @@ export default function Deposit({
   userProvider,
   VAULT_ABI,
   VAULT_ADDRESS,
-  vaultBufferBalance,
-  vaultBufferDecimals,
   isBalanceLoading,
   minimumInvestmentAmount
 }) {
@@ -99,8 +101,12 @@ export default function Deposit({
   const loadingTimer = useRef()
 
   const nextRebaseTime = getLastPossibleRebaseTime()
-
+  const decimal = BigNumber.from(10).pow(usdiDecimals)
   const [tokenSelect, setTokenSelect] = useState([USDT_ADDRESS, USDC_ADDRESS, DAI_ADDRESS])
+  const [tvl, setTvl] = useState('-')
+  const [fullTvl, setFullTvl] = useState('')
+  const [tvlSymbol, setTvlSymbol] = useState('')
+  const [apy, setApy] = useState('-')
 
   const tokenBasicState = {
     [TOKEN.USDT]: {
@@ -178,7 +184,13 @@ export default function Deposit({
   }
 
   const handleMaxClick = item => {
-    item.setValue(formatBalance(item.balance, item.decimals, { showAll: true }))
+    const { balance, decimals, value } = item
+    const maxValue = formatBalance(balance, decimals, { showAll: true })
+    if (maxValue === value) {
+      return
+    }
+    setIsEstimate(true)
+    item.setValue(maxValue)
   }
 
   const getTokenAndAmonut = () => {
@@ -407,133 +419,195 @@ export default function Deposit({
     return () => estimateMint.cancel()
   }, [usdcValue, usdtValue, daiValue])
 
+  useEffect(() => {
+    getPegTokenDetail('USDi', VAULT_ADDRESS).then(data => {
+      const { totalAssets } = data?.vault || { totalAssets: '0' }
+      const tvlFormat = toFixed(totalAssets, BN_18, 2)
+      const tvlWithSymbol = numeral(tvlFormat).format('0.00 a')
+      const [tvl, tvlSymbol] = tvlWithSymbol.split(' ')
+      setTvl(tvl)
+      setFullTvl(tvlFormat)
+      setTvlSymbol(tvlSymbol)
+    })
+    getAPY({ tokenType: 'USDi' }).then(data => {
+      const apy = isNaN(data) ? '-' : Number(data)
+      setApy(apy.toFixed(2))
+    })
+  }, [])
+
   const isLogin = !isEmpty(userProvider)
 
   return (
     <>
-      <GridContainer classes={{ root: classes.depositContainer }}>
-        <p className={classes.estimateText}>From</p>
-        {map(formConfig, item => {
-          if (tokenSelect.includes(item.address)) {
-            const addItem = compact(
-              map(formConfig, selectItem => {
-                if (!tokenSelect.includes(selectItem.address)) {
-                  return {
-                    label: selectItem.name,
-                    value: selectItem.address,
-                    img: `./images/${selectItem.address}.png`,
-                    endDont: <AddIcon />
-                  }
-                }
-              })
-            )
-            const selectOptions = [
-              {
-                key: 'expand',
-                label: item.name,
-                value: 'expand',
-                img: `./images/${item.address}.png`,
-                endDont: <ExpandLessIcon />
-              },
-              ...addItem
-            ]
-            if (tokenSelect.length > 1) {
-              selectOptions.push({
-                key: 'clear',
-                label: item.name,
-                value: 'clear',
-                img: `./images/${item.address}.png`,
-                endDont: <ClearIcon />
-              })
+      <GridContainer spacing={3}>
+        <GridItem xs={12} sm={12} md={6} lg={6}>
+          <Card
+            title="TVL"
+            content={tvl}
+            fullAmount={fullTvl}
+            unit={`${tvlSymbol}${tvlSymbol ? ' ' : ''}USD`}
+            tip={
+              <Tooltip
+                classes={{
+                  tooltip: classes.tooltip
+                }}
+                placement="right"
+                title="Total Value Locked."
+              >
+                <InfoIcon style={{ fontSize: '1.125rem', color: '#888888' }} />
+              </Tooltip>
             }
-            return (
-              <GridItem key={item.name} xs={12} sm={12} md={12} lg={12} className={classes.tokenInputWrapper}>
-                <GridContainer justify="center" spacing={2}>
-                  <GridItem xs={4} sm={4} md={4} lg={4}>
-                    <SimpleSelect
-                      options={selectOptions}
-                      value={'expand'}
-                      onChange={v => {
-                        if (v === 'expand') return
-                        if (v === 'clear') {
-                          removeSelectToken(item.address)
-                          item.setValue('')
-                          return
+          />
+        </GridItem>
+        <GridItem xs={12} sm={12} md={6} lg={6}>
+          <Card
+            title="APY (Last 30 days)"
+            content={apy}
+            unit="%"
+            tip={
+              <Tooltip
+                classes={{
+                  tooltip: classes.tooltip
+                }}
+                placement="right"
+                title="Yield over the past month."
+              >
+                <InfoIcon style={{ fontSize: '1.125rem', color: '#888888' }} />
+              </Tooltip>
+            }
+          />
+        </GridItem>
+        <GridItem xs={12} sm={12} md={12} lg={12}>
+          <div className={classes.wrapper}>
+            <GridContainer classes={{ root: classes.depositContainer }}>
+              <p className={classes.estimateText}>From</p>
+              {map(formConfig, item => {
+                if (tokenSelect.includes(item.address)) {
+                  const addItem = compact(
+                    map(formConfig, selectItem => {
+                      if (!tokenSelect.includes(selectItem.address)) {
+                        return {
+                          label: selectItem.name,
+                          value: selectItem.address,
+                          img: `./images/${selectItem.address}.png`,
+                          endDont: <AddIcon />
                         }
-                        addSelectToken(v)
-                      }}
-                    />
-                  </GridItem>
-                  <GridItem xs={8} sm={8} md={8} lg={8}>
-                    <CustomTextField
-                      classes={{ root: classes.input }}
-                      value={item.value}
-                      onChange={event => handleInputChange(event, item)}
-                      placeholder="deposit amount"
-                      maxEndAdornment
-                      onMaxClick={() => handleMaxClick(item)}
-                      error={!isUndefined(item.isValid) && !item.isValid}
-                    />
-                  </GridItem>
-                  <GridItem xs={12} sm={12} md={12} lg={12}>
-                    <p
-                      className={classes.estimateText}
-                      title={formatBalance(item.balance, item.decimals, {
-                        showAll: true
-                      })}
-                    >
-                      Balance:&nbsp;&nbsp;
-                      <Loading loading={isBalanceLoading}>{formatBalance(item.balance, item.decimals)}</Loading>
-                    </p>
-                  </GridItem>
-                </GridContainer>
+                      }
+                    })
+                  )
+                  const selectOptions = [
+                    {
+                      key: 'expand',
+                      label: item.name,
+                      value: 'expand',
+                      img: `./images/${item.address}.png`,
+                      endDont: <ExpandLessIcon />
+                    },
+                    ...addItem
+                  ]
+                  if (tokenSelect.length > 1) {
+                    selectOptions.push({
+                      key: 'clear',
+                      label: item.name,
+                      value: 'clear',
+                      img: `./images/${item.address}.png`,
+                      endDont: <ClearIcon />
+                    })
+                  }
+                  return (
+                    <GridItem key={item.name} xs={12} sm={12} md={12} lg={12} className={classes.tokenInputWrapper}>
+                      <GridContainer justify="center" spacing={2}>
+                        <GridItem xs={4} sm={4} md={4} lg={4}>
+                          <SimpleSelect
+                            options={selectOptions}
+                            value={'expand'}
+                            onChange={v => {
+                              if (v === 'expand') return
+                              if (v === 'clear') {
+                                removeSelectToken(item.address)
+                                item.setValue('')
+                                return
+                              }
+                              addSelectToken(v)
+                            }}
+                          />
+                        </GridItem>
+                        <GridItem xs={8} sm={8} md={8} lg={8}>
+                          <CustomTextField
+                            classes={{ root: classes.input }}
+                            value={item.value}
+                            onChange={event => handleInputChange(event, item)}
+                            placeholder="deposit amount"
+                            maxEndAdornment
+                            onMaxClick={() => handleMaxClick(item)}
+                            error={!isUndefined(item.isValid) && !item.isValid}
+                          />
+                        </GridItem>
+                        <GridItem xs={12} sm={12} md={12} lg={12}>
+                          <div
+                            className={classes.balance}
+                            title={formatBalance(item.balance, item.decimals, {
+                              showAll: true
+                            })}
+                          >
+                            Balance:&nbsp;&nbsp;
+                            <Loading loading={isBalanceLoading}>{formatBalance(item.balance, item.decimals)}</Loading>
+                          </div>
+                        </GridItem>
+                      </GridContainer>
+                    </GridItem>
+                  )
+                }
+              })}
+            </GridContainer>
+            <GridContainer classes={{ root: classes.estimateContainer }}>
+              <GridItem xs={12} sm={12} md={12} lg={12}>
+                <p className={classes.estimateText}>To</p>
               </GridItem>
-            )
-          }
-        })}
-      </GridContainer>
-      <GridContainer classes={{ root: classes.estimateContainer }}>
-        <GridItem xs={12} sm={12} md={12} lg={12}>
-          <p className={classes.estimateText}>To</p>
-        </GridItem>
-        <GridItem xs={12} sm={12} md={12} lg={12}>
-          <div className={classes.estimateBalanceTitle}>
-            USDi Ticket:
-            <span className={classes.estimateBalanceNum}>
-              <Loading loading={isEstimate}>
-                <CustomTextField
-                  disabled
-                  classes={{ root: classes.input }}
-                  value={toFixed(estimateVaultBuffValue, BigNumber.from(10).pow(usdiDecimals))}
-                  error={false}
-                />
-              </Loading>
-            </span>
-          </div>
-          <p className={classes.estimateText}>
-            Balance:&nbsp;&nbsp;
-            <span>
-              <Loading loading={isBalanceLoading}>{formatBalance(vaultBufferBalance, vaultBufferDecimals)}</Loading>
-            </span>
-          </p>
-        </GridItem>
-      </GridContainer>
-      <GridContainer>
-        <GridItem xs={12} sm={12} md={12} lg={12}>
-          <div className={classes.footerContainer}>
-            <Button
-              disabled={
-                !isLogin ||
-                (isLogin &&
-                  (some(formConfig, item => isValidValue(item.name) === false) || every(formConfig, item => isValidValue(item.name) !== true)))
-              }
-              color="colorful"
-              onClick={openEstimateModal}
-              className={classes.blockButton}
-              fullWidth={true}
-            >
-              Deposit
-            </Button>
+              <GridItem xs={12} sm={12} md={12} lg={12}>
+                <div className={classes.estimateBalanceTitle}>
+                  USDi Ticket
+                  {/* <Tooltip
+                    classes={{
+                      tooltip: classes.tooltip
+                    }}
+                    placement="right"
+                    title={`USDi Ticket functions as parallel USDi that will be converted into USDi after fund allocations have been successful. Last
+            execution time was ${moment(nextRebaseTime).format('yyyy-MM-DD HH:mm')}`}
+                  >
+                    <InfoIcon style={{ fontSize: '1.25rem', marginLeft: 8, color: '#888' }} />
+                  </Tooltip> */}
+                  <span className={classes.estimateBalanceNum}>
+                    <Loading loading={isEstimate}>{toFixed(estimateVaultBuffValue, decimal)}</Loading>
+                  </span>
+                </div>
+              </GridItem>
+              <GridItem xs={12} sm={12} md={12} lg={12}>
+                <div className={classes.tip}>
+                  USDi Ticket functions as parallel USDi that will be converted into USDi after fund allocations have been successful. Last execution
+                  time was {moment(nextRebaseTime).format('yyyy-MM-DD HH:mm')}
+                </div>
+              </GridItem>
+            </GridContainer>
+            <GridContainer>
+              <GridItem xs={12} sm={12} md={12} lg={12}>
+                <div className={classes.footerContainer}>
+                  <Button
+                    disabled={
+                      !isLogin ||
+                      (isLogin &&
+                        (some(formConfig, item => isValidValue(item.name) === false) || every(formConfig, item => isValidValue(item.name) !== true)))
+                    }
+                    color="colorful"
+                    onClick={openEstimateModal}
+                    className={classes.blockButton}
+                    fullWidth={true}
+                  >
+                    Deposit
+                  </Button>
+                </div>
+              </GridItem>
+            </GridContainer>
           </div>
         </GridItem>
       </GridContainer>
@@ -575,30 +649,8 @@ export default function Deposit({
           </div>
           <div className={classes.itemBottom}>
             <div className={classes.exchangeInfo}>
-              Receive: {toFixed(estimateVaultBuffValue, BigNumber.from(10).pow(usdiDecimals), 2)} USDi Tickets
-            </div>
-            <div className={classes.toInfo}>
-              Exchange to
-              <Tooltip placement="top" title="Estimated amount of USDi that can be exchanged">
-                <InfoIcon classes={{ root: classes.labelToolTipIcon }} />
-              </Tooltip>
-              :
-              <span className={classes.usdiInfo}>
-                {toFixed(estimateVaultBuffValue.mul(9987).div(10000), BigNumber.from(10).pow(usdiDecimals), 2)} USDi
-              </span>
-            </div>
-            <div className={classes.timeInfo}>
-              Exchange Time
-              <Tooltip
-                classes={{
-                  tooltip: classes.tooltip
-                }}
-                placement="top"
-                title="The latest planned execution date may not be executed due to cost and other factors"
-              >
-                <InfoIcon />
-              </Tooltip>
-              :<span className={classes.time}>{moment(nextRebaseTime).format('YYYY-MM-DD HH:mm:ss')}</span>
+              Receive:
+              <span className={classes.usdiInfo}>{toFixed(estimateVaultBuffValue, decimal, 2)}</span>USDi Tickets
             </div>
           </div>
           <div className={classes.buttonGroup}>

@@ -435,7 +435,6 @@ const TokenItem = (props, ref) => {
 
   useEffect(() => {
     reload()
-    // TODO: 待开启
     // const timer = setInterval(reload, 3000)
     // return () => clearInterval(timer)
   }, [reload])

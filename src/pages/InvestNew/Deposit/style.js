@@ -1,7 +1,9 @@
-import { container } from '@/assets/jss/material-kit-react.js'
-
 const componentsStyle = () => ({
-  container,
+  wrapper: {
+    padding: '1.875rem',
+    borderRadius: '1.25rem',
+    background: 'linear-gradient(111.68deg, rgba(87, 97, 125, 0.2) 7.59%, rgba(255, 255, 255, 0.078) 102.04%);'
+  },
   modal: {
     display: 'flex',
     alignItems: 'center',
@@ -26,7 +28,6 @@ const componentsStyle = () => ({
     background: '#1E1E1F'
   },
   estimateText: {
-    color: '#A0A0A0',
     margin: 0,
     display: 'flex'
   },
@@ -38,7 +39,8 @@ const componentsStyle = () => ({
     justifyContent: 'space-between'
   },
   estimateBalanceNum: {
-    width: '66.67%'
+    flex: 1,
+    textAlign: 'right'
   },
   footerContainer: {
     marginTop: '0.625rem'
@@ -126,8 +128,9 @@ const componentsStyle = () => ({
     color: '#DADADA'
   },
   exchangeInfo: {
+    display: 'flex',
+    alignItems: 'center',
     height: '1rem',
-    lineHeight: '1rem',
     fontSize: '1rem'
   },
   toInfo: {
@@ -138,7 +141,7 @@ const componentsStyle = () => ({
     fontSize: '1rem'
   },
   usdiInfo: {
-    marginLeft: '0.625rem',
+    margin: '0 0.625rem',
     fontSize: '1.5rem',
     fontWeight: 'bold'
   },
@@ -171,6 +174,15 @@ const componentsStyle = () => ({
     width: '19.375rem',
     padding: '1.25rem 0',
     borderRadius: '1.25rem'
+  },
+  balance: {
+    display: 'flex',
+    alignItems: 'center',
+    color: '#BEBEBE'
+  },
+  tip: {
+    fontSize: '0.75rem',
+    color: '#BEBEBE'
   }
 })
 
