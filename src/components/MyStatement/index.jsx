@@ -205,7 +205,11 @@ const MyStatement = props => {
     setOptionForBarChart(option)
   }, [data, address])
 
-  const { day7Apy, day30Apy, profit, latestProfit = { profit: '0', tokenType: '' } } = dataSource
+  const {
+    // day7Apy, day30Apy,
+    profit,
+    latestProfit = { profit: '0', tokenType: '' }
+  } = dataSource
   const fullBalance = formatBalance(balance, USDI_DECIMALS)
   const balanceFormat = numeral(fullBalance).format(isUSDi ? '0,0.[00] a' : '0,0.[0000] a')
   const [balanceText, balanceSymbol] = balanceFormat.split(' ')
@@ -280,39 +284,39 @@ const MyStatement = props => {
         </>
       ),
       unit: token?.replace('i', '')
-    },
-    {
-      title: 'APY (Last 7 days)',
-      tip: (
-        <Tooltip
-          classes={{
-            tooltip: classes.tooltip
-          }}
-          placement="right"
-          title={'Yield over the past week.'}
-        >
-          <InfoIcon style={{ fontSize: '1.125rem', color: 'rgba(255,255,255,0.45)' }} />
-        </Tooltip>
-      ),
-      content: numeral(day7Apy?.apy).format('0,0.00'),
-      unit: '%'
-    },
-    {
-      title: 'APY (Last 30 days)',
-      tip: (
-        <Tooltip
-          classes={{
-            tooltip: classes.tooltip
-          }}
-          placement="right"
-          title={'Yield over the past month.'}
-        >
-          <InfoIcon style={{ fontSize: '1.125rem', color: 'rgba(255,255,255,0.45)' }} />
-        </Tooltip>
-      ),
-      content: numeral(day30Apy?.apy).format('0,0.00'),
-      unit: '%'
     }
+    // {
+    //   title: 'APY (Last 7 days)',
+    //   tip: (
+    //     <Tooltip
+    //       classes={{
+    //         tooltip: classes.tooltip
+    //       }}
+    //       placement="right"
+    //       title={'Yield over the past week.'}
+    //     >
+    //       <InfoIcon style={{ fontSize: '1.125rem', color: 'rgba(255,255,255,0.45)' }} />
+    //     </Tooltip>
+    //   ),
+    //   content: numeral(day7Apy?.apy).format('0,0.00'),
+    //   unit: '%'
+    // },
+    // {
+    //   title: 'APY (Last 30 days)',
+    //   tip: (
+    //     <Tooltip
+    //       classes={{
+    //         tooltip: classes.tooltip
+    //       }}
+    //       placement="right"
+    //       title={'Yield over the past month.'}
+    //     >
+    //       <InfoIcon style={{ fontSize: '1.125rem', color: 'rgba(255,255,255,0.45)' }} />
+    //     </Tooltip>
+    //   ),
+    //   content: numeral(day30Apy?.apy).format('0,0.00'),
+    //   unit: '%'
+    // }
   ]
 
   return (
