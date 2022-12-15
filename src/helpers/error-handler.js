@@ -51,6 +51,33 @@ export const isRp = (errorMsg = '') => {
 }
 
 /**
+ * redeemFeeBps invalid
+ * @param {*} errorMsg
+ * @returns
+ */
+export const isRi = (errorMsg = '') => {
+  return errorMsg.endsWith("'RI'")
+}
+
+/**
+ * amount invalid
+ * @param {*} errorMsg
+ * @returns
+ */
+export const isAi = (errorMsg = '') => {
+  return errorMsg.endsWith("'AI'")
+}
+
+/**
+ * received less than minimum
+ * @param {*} errorMsg
+ * @returns
+ */
+export const isRLTM = (errorMsg = '') => {
+  return errorMsg.endsWith("'RLTM'")
+}
+
+/**
  * exchange error slippage not enough
  * @param {*} errorMsg
  * @returns
