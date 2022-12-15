@@ -80,7 +80,7 @@ function Invest(props) {
     dispatch(setCurrentTab(tab))
   }
 
-  const { minimumInvestmentAmount, exchangeManager } = useVault(VAULT_ADDRESS, VAULT_ABI, userProvider)
+  const { minimumInvestmentAmount, exchangeManager, trusteeFeeBps, redeemFeeBps } = useVault(VAULT_ADDRESS, VAULT_ABI, userProvider)
   // load user balance
   const loadBalance = () => {
     if (isEmpty(address) || isEmpty(USDI_ADDRESS) || isEmpty(VAULT_BUFFER_ADDRESS)) return
@@ -392,6 +392,8 @@ function Invest(props) {
                     EXCHANGE_AGGREGATOR_ABI={EXCHANGE_AGGREGATOR_ABI}
                     exchangeManager={exchangeManager}
                     EXCHANGE_ADAPTER_ABI={EXCHANGE_ADAPTER_ABI}
+                    redeemFeeBps={redeemFeeBps}
+                    trusteeFeeBps={trusteeFeeBps}
                   />
                 </div>
               </GridItem>

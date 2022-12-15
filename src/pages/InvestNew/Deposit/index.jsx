@@ -17,7 +17,7 @@ import filter from 'lodash/filter'
 import moment from 'moment'
 import numeral from 'numeral'
 import { getLastPossibleRebaseTime } from '@/helpers/time-util'
-import { isAd, isEs, isRp, isDistributing, errorTextOutput, isLessThanMinValue } from '@/helpers/error-handler'
+import { isAd, isEs, isRp, isDistributing, errorTextOutput, isLessThanMinValue, isAi, isRLTM } from '@/helpers/error-handler'
 
 // === Components === //
 import Step from '@material-ui/core/Step'
@@ -103,10 +103,10 @@ export default function Deposit({
   const nextRebaseTime = getLastPossibleRebaseTime()
   const decimal = BigNumber.from(10).pow(usdiDecimals)
   const [tokenSelect, setTokenSelect] = useState([USDT_ADDRESS, USDC_ADDRESS, DAI_ADDRESS])
-  const [tvl, setTvl] = useState('-')
+  const [tvl, setTvl] = useState('0')
   const [fullTvl, setFullTvl] = useState('')
   const [tvlSymbol, setTvlSymbol] = useState('')
-  const [apy, setApy] = useState('-')
+  const [apy, setApy] = useState('0')
 
   const tokenBasicState = {
     [TOKEN.USDT]: {
@@ -297,7 +297,7 @@ export default function Deposit({
         tip = 'Vault is in rebase status, please try again later!'
       } else if (isDistributing(errorMsg)) {
         tip = 'Vault is in distributing, please try again later!'
-      } else if (isLessThanMinValue(errorMsg)) {
+      } else if (isLessThanMinValue(errorMsg) || isAi(errorMsg) || isRLTM(errorMsg)) {
         tip = `Deposit Amount must be greater than ${toFixed(minimumInvestmentAmount, BN_18, 2)}USD!`
       }
       if (tip) {
@@ -398,7 +398,7 @@ export default function Deposit({
           tip = 'Vault is in rebase status, please try again later!'
         } else if (isDistributing(errorMsg)) {
           tip = 'Vault is in distributing, please try again later!'
-        } else if (isLessThanMinValue(errorMsg)) {
+        } else if (isLessThanMinValue(errorMsg) || isAi(errorMsg) || isRLTM(errorMsg)) {
           tip = `Deposit Amount must be greater than ${toFixed(minimumInvestmentAmount, BN_18, 2)}USD!`
         }
         if (tip) {
