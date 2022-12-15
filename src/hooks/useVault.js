@@ -19,6 +19,9 @@ const useVault = (VAULT_ADDRESS, VAULT_ABI, userProvider) => {
   const [underlyingUnitsPerShare, setUnderlyingUnitsPerShare] = useState(ethers.BigNumber.from(0))
   const [minimumInvestmentAmount, setMinimumInvestmentAmount] = useState(ethers.BigNumber.from(0))
 
+  const [redeemFeeBps, setRedeemFeeBps] = useState(ethers.BigNumber.from(0))
+  const [trusteeFeeBps, setTrusteeFeeBps] = useState(ethers.BigNumber.from(0))
+
   const address = useUserAddress(userProvider)
 
   const valid = () => {
@@ -42,15 +45,19 @@ const useVault = (VAULT_ADDRESS, VAULT_ABI, userProvider) => {
       vaultContract.rebaseThreshold().catch(() => ethers.BigNumber.from(0)),
       vaultContract.minimumInvestmentAmount(),
       vaultContract.exchangeManager(),
+      vaultContract.redeemFeeBps(),
+      vaultContract.trusteeFeeBps(),
       fetchUnderlyingUnitsPerShare()
     ]
     return Promise.all(requestArray)
-      .then(([totalAsset, decimals, rebaseThreshold, minimumInvestmentAmount, exchangeManager]) => {
+      .then(([totalAsset, decimals, rebaseThreshold, minimumInvestmentAmount, exchangeManager, redeemFeeBps, trusteeFeeBps]) => {
         setTotalAsset(totalAsset)
         setDecimals(decimals)
         setRebaseThreshold(rebaseThreshold)
         setMinimumInvestmentAmount(minimumInvestmentAmount)
         setExchangeManager(exchangeManager)
+        setRedeemFeeBps(redeemFeeBps)
+        setTrusteeFeeBps(trusteeFeeBps)
         return {
           totalAsset,
           decimals,
@@ -119,7 +126,9 @@ const useVault = (VAULT_ADDRESS, VAULT_ABI, userProvider) => {
     queryBaseInfo,
     updateRebaseThreshold,
     updateMinimumInvestmentAmount,
-    underlyingUnitsPerShare
+    underlyingUnitsPerShare,
+    redeemFeeBps,
+    trusteeFeeBps
   }
 }
 
