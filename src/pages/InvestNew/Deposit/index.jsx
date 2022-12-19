@@ -464,7 +464,7 @@ export default function Deposit({
         </GridItem>
         <GridItem xs={12} sm={12} md={6} lg={6}>
           <Card
-            title="APY (Last 30 days)"
+            title="APY (Last 7 days)"
             content={apy}
             unit="%"
             tip={
@@ -473,7 +473,7 @@ export default function Deposit({
                   tooltip: classes.tooltip
                 }}
                 placement="right"
-                title="Yield over the past month."
+                title="Yield over the past week."
               >
                 <InfoIcon style={{ fontSize: '1.125rem', color: '#888888' }} />
               </Tooltip>
