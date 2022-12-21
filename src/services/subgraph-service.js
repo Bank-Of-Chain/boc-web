@@ -1,6 +1,7 @@
 import { ApolloClient, InMemoryCache, gql } from '@apollo/client'
 import genConfig from '@/config/config'
 import get from 'lodash/get'
+import isNil from 'lodash/isNil'
 
 const ENV_NETWORK_TYPE = get(process, 'env.REACT_APP_NETWORK_TYPE', localStorage.REACT_APP_NETWORK_TYPE)
 const config = genConfig[ENV_NETWORK_TYPE] || genConfig[undefined]
@@ -58,7 +59,10 @@ export const getPegTokenDetail = (type, vaultAddress) => {
     }
   }
 
-  return client[type][chain_id]
+  const targetClient = get(client, `${type}${chain_id}`)
+  if (isNil(chain_id) || isNil(targetClient)) return Promise.resolve()
+
+  return targetClient
     .query({
       query: gql(QUERY),
       variables: {
