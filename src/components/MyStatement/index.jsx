@@ -205,7 +205,11 @@ const MyStatement = props => {
     setOptionForBarChart(option)
   }, [data, address])
 
-  const { day7Apy, day30Apy, profit, latestProfit = { profit: '0', tokenType: '' } } = dataSource
+  const {
+    day7Apy, day30Apy,
+    profit,
+    latestProfit = { profit: '0', tokenType: '' }
+  } = dataSource
   const fullBalance = formatBalance(balance, USDI_DECIMALS)
   const balanceFormat = numeral(fullBalance).format(isUSDi ? '0,0.[00] a' : '0,0.[0000] a')
   const [balanceText, balanceSymbol] = balanceFormat.split(' ')

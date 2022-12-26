@@ -54,7 +54,7 @@ export default function Home() {
                 <div className={classes.infoTitle}>Total Value Locked</div>
                 <div className={classes.infoText}>${tvl}</div>
               </li>
-              <li>
+              <li style={{ display: 'none' }}>
                 <div className={classes.infoTitle}>Holders</div>
                 <div className={classes.infoText}>{holders}</div>
               </li>

@@ -285,10 +285,37 @@ export default function Deposit({
     const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider)
     const nVaultWithUser = vaultContract.connect(signer)
     let isSuccess = false
+
+    const errorHandle = error => {
+      const errorMsg = errorTextOutput(error)
+      let tip = ''
+      if (isEs(errorMsg)) {
+        tip = 'Vault has been shut down, please try again later!'
+      } else if (isAd(errorMsg)) {
+        tip = 'Vault is in adjustment status, please try again later!'
+      } else if (isRp(errorMsg)) {
+        tip = 'Vault is in rebase status, please try again later!'
+      } else if (isDistributing(errorMsg)) {
+        tip = 'Vault is in distributing, please try again later!'
+      } else if (isLessThanMinValue(errorMsg)) {
+        tip = `Deposit Amount must be greater than ${toFixed(minimumInvestmentAmount, BN_18, 2)}USD!`
+      }
+      if (tip) {
+        dispatch(
+          warmDialog({
+            open: true,
+            type: 'error',
+            message: tip
+          })
+        )
+      }
+      setIsLoading(false)
+    }
     const extendObj = {}
     // if gasLimit times not 1, need estimateGas
     if (isNumber(MULTIPLE_OF_GAS) && MULTIPLE_OF_GAS !== 1) {
-      const gas = await nVaultWithUser.estimateGas.mint(nextTokens, nextAmounts, 0)
+      const gas = await nVaultWithUser.estimateGas.mint(nextTokens, nextAmounts, 0).catch(errorHandle)
+      if (isUndefined(gas)) return
       const gasLimit = Math.ceil(gas * MULTIPLE_OF_GAS)
       // gasLimit not exceed maximum
       const maxGasLimit = gasLimit < MAX_GAS_LIMIT ? gasLimit : MAX_GAS_LIMIT
@@ -300,31 +327,7 @@ export default function Deposit({
       .then(() => {
         isSuccess = true
       })
-      .catch(error => {
-        const errorMsg = errorTextOutput(error)
-        let tip = ''
-        if (isEs(errorMsg)) {
-          tip = 'Vault has been shut down, please try again later!'
-        } else if (isAd(errorMsg)) {
-          tip = 'Vault is in adjustment status, please try again later!'
-        } else if (isRp(errorMsg)) {
-          tip = 'Vault is in rebase status, please try again later!'
-        } else if (isDistributing(errorMsg)) {
-          tip = 'Vault is in distributing, please try again later!'
-        } else if (isLessThanMinValue(errorMsg)) {
-          tip = `Deposit Amount must be greater than ${toFixed(minimumInvestmentAmount, BN_18, 2)}USD!`
-        }
-        if (tip) {
-          dispatch(
-            warmDialog({
-              open: true,
-              type: 'error',
-              message: tip
-            })
-          )
-        }
-        setIsLoading(false)
-      })
+      .catch(errorHandle)
 
     if (isSuccess) {
       setUsdtValue('')
@@ -461,7 +464,7 @@ export default function Deposit({
         </GridItem>
         <GridItem xs={12} sm={12} md={6} lg={6}>
           <Card
-            title="APY (Last 30 days)"
+            title="APY (Last 7 days)"
             content={apy}
             unit="%"
             tip={
@@ -470,7 +473,7 @@ export default function Deposit({
                   tooltip: classes.tooltip
                 }}
                 placement="right"
-                title="Yield over the past month."
+                title="Yield over the past week."
               >
                 <InfoIcon style={{ fontSize: '1.125rem', color: '#888888' }} />
               </Tooltip>
