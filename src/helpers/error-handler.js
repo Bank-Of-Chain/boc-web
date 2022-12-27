@@ -123,7 +123,7 @@ export const isExchangeFail = (errorMsg = '') => {
  * @returns
  */
 export const isDistributing = (errorMsg = '') => {
-  return errorMsg.endsWith("'is distributing'")
+  return errorMsg.endsWith("'ID'")
 }
 
 /**
