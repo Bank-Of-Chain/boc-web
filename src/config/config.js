@@ -16,7 +16,7 @@ const VAULT_BUFFER_FOR_USDI_ETH = '0x0b8D3634a05cc6b50E4D026c0eaFa8469cA98480'
 const VAULT_BUFFER_FOR_USDI_MATIC = ''
 
 const POOL_ADDRESS = ''
-const CREDIT_ADDRESS = ''
+const CREDIT_POOL_ADDRESS = ''
 
 const configBase = {
   env: 'pr02-sg',
@@ -144,7 +144,7 @@ const config1 = {
       name: 'risk-on lever',
       path: '#/risk-on',
       abi_version: 'usdi-v1.6.0',
-      CREDIT_ADDRESS: CREDIT_ADDRESS
+      CREDIT_POOL_ADDRESS: CREDIT_POOL_ADDRESS
     }
   ]
 }

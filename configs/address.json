@@ -19,5 +19,5 @@
   "KEEPER_FOR_ETH_USDI": "https://pr02-sg-keeper-eth.bankofchain.io",
   "KEEPER_FOR_MATIC_USDI": "https://pr02-sg-keeper-polygon.bankofchain.io",
   "POOL_ADDRESS": "",
-  "CREDIT_ADDRESS": ""
+  "CREDIT_POOL_ADDRESS": ""
 }
