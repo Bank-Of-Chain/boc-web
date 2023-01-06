@@ -138,13 +138,6 @@ const config1 = {
       path: '#/lend',
       abi_version: 'usdi-v1.6.0',
       POOL_ADDRESS: POOL_ADDRESS
-    },
-    {
-      id: 'lever',
-      name: 'risk-on lever',
-      path: '#/risk-on',
-      abi_version: 'usdi-v1.6.0',
-      CREDIT_POOL_ADDRESS: CREDIT_POOL_ADDRESS
     }
   ]
 }
