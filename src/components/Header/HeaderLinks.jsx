@@ -135,10 +135,7 @@ export default function HeaderLinks(props) {
                 ETHi
               </a>,
               <a key="lend" target="_blank" className={classes.dropdownLink} rel="noreferrer" onClick={() => history.push('/lend')}>
-                Pool Lending
-              </a>,
-              <a key="Risk-On" target="_blank" className={classes.dropdownLink} rel="noreferrer" onClick={() => history.push('/risk-on')}>
-                Risk-On Lever
+                Lending Pools
               </a>
             ]}
           />
