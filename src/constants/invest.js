@@ -3,5 +3,7 @@ export const INVEST_TAB = {
   deposit: 1,
   withdraw: 2,
   statement: 3,
-  swap: 4
+  swap: 4,
+  lending: 5,
+  lever: 6
 }
