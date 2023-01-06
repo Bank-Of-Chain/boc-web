@@ -58,8 +58,8 @@ const WITHDRAW_EXCHANGE_THRESHOLD = BigNumber.from(10).pow(16)
 export default function Withdraw({
   address,
   exchangeManager,
-  ethiBalance,
-  ethiDecimals,
+  ethiBalance = '0',
+  ethiDecimals = 18,
   userProvider,
   ETH_ADDRESS,
   VAULT_ADDRESS,
@@ -515,179 +515,181 @@ export default function Withdraw({
   }, [address])
 
   return (
-    <GridContainer spacing={3}>
-      <GridItem xs={12} sm={12} md={12} lg={12}>
-        <div className={classes.wrapper}>
-          <GridContainer className={classes.withdrawContainer}>
-            <GridItem xs={12} sm={12} md={12} lg={12}>
-              <p className={classes.estimateText}>From</p>
-            </GridItem>
-            <GridItem xs={12} sm={12} md={12} lg={12}>
-              <GridContainer justify="center" spacing={2}>
-                <GridItem xs={4} sm={4} md={4} lg={4}>
-                  <div className={classes.tokenInfo}>
-                    <span className={classes.tokenName}>Diesel Token</span>
-                  </div>
-                </GridItem>
-                <GridItem xs={8} sm={8} md={8} lg={8}>
-                  <CustomTextField
-                    classes={{ root: classes.input }}
-                    value={toValue}
-                    placeholder="withdraw amount"
-                    maxEndAdornment
-                    onMaxClick={() => handleMaxClick()}
-                    onChange={handleAmountChange}
-                    error={!isUndefined(isValidToValueFlag) && !isValidToValueFlag && toValue !== '0'}
-                  />
-                </GridItem>
-              </GridContainer>
-            </GridItem>
-            <GridItem xs={6} sm={6} md={6} lg={6}>
-              <p className={classes.estimateText} title={formatBalance(ethiBalance, ethiDecimals, { showAll: true })}>
-                Balance:&nbsp;
-                <Loading loading={isBalanceLoading}>{formatBalance(ethiBalance, ethiDecimals)}</Loading>
-              </p>
-            </GridItem>
-            {address && (
+    <>
+      <GridContainer spacing={3}>
+        <GridItem xs={12} sm={12} md={12} lg={12}>
+          <div className={classes.wrapper}>
+            <GridContainer className={classes.withdrawContainer}>
+              <GridItem xs={12} sm={12} md={12} lg={12}>
+                <p className={classes.estimateText}>From</p>
+              </GridItem>
+              <GridItem xs={12} sm={12} md={12} lg={12}>
+                <GridContainer justify="center" spacing={2}>
+                  <GridItem xs={4} sm={4} md={4} lg={4}>
+                    <div className={classes.tokenInfo}>
+                      <span className={classes.tokenName}>LP</span>
+                    </div>
+                  </GridItem>
+                  <GridItem xs={8} sm={8} md={8} lg={8}>
+                    <CustomTextField
+                      classes={{ root: classes.input }}
+                      value={toValue}
+                      placeholder="withdraw amount"
+                      maxEndAdornment
+                      onMaxClick={() => handleMaxClick()}
+                      onChange={handleAmountChange}
+                      error={!isUndefined(isValidToValueFlag) && !isValidToValueFlag && toValue !== '0'}
+                    />
+                  </GridItem>
+                </GridContainer>
+              </GridItem>
               <GridItem xs={6} sm={6} md={6} lg={6}>
-                <p className={classes.estimateText} style={{ justifyContent: 'flex-end' }} title={toFixed(pegTokenPrice, BN_18)}>
-                  <span>1 Diesel Token ≈ {toFixed(pegTokenPrice, BN_18, 6)}ETH</span>
+                <p className={classes.estimateText} title={formatBalance(ethiBalance, ethiDecimals, { showAll: true })}>
+                  Balance:&nbsp;
+                  <Loading loading={isBalanceLoading}>{formatBalance(ethiBalance, ethiDecimals)}</Loading>
                 </p>
               </GridItem>
-            )}
-          </GridContainer>
-          <GridContainer className={classes.outputContainer}>
-            <GridItem xs={12} sm={12} md={12} lg={12}>
-              <p className={classes.estimateText}>To</p>
-            </GridItem>
-            <GridItem xs={12} sm={12} md={12} lg={12}>
-              {renderEstimate()}
-            </GridItem>
-          </GridContainer>
-          <GridContainer className={classes.maxlossContainer}>
-            <GridItem xs={4} sm={4} md={4} className={classes.slippageTitle}>
-              Max loss(%):
-            </GridItem>
-            <GridItem xs={8} sm={8} md={8}>
-              <CustomTextField
-                classes={{ root: classes.input }}
-                value={allowMaxLoss}
-                placeholder="Allow loss percent"
-                maxEndAdornment
-                onMaxClick={() => setAllowMaxLoss('50')}
-                onChange={event => {
-                  const value = event.target.value
-                  setAllowMaxLoss(value)
-                }}
-                error={!isUndefined(isValidAllowLossFlag) && !isValidAllowLossFlag}
-              />
-            </GridItem>
-          </GridContainer>
-          <GridContainer>
-            <GridItem xs={12} sm={12} md={12} lg={12}>
-              <div className={classes.buttonGroup}>
-                <Button
-                  disabled={!isLogin || (isLogin && (isUndefined(isValidToValueFlag) || !isValidToValueFlag))}
-                  color="colorful"
-                  onClick={withdraw}
-                  className={classes.blockButton}
-                >
-                  Withdraw
-                  <Tooltip
-                    classes={{
-                      tooltip: classes.tooltip
-                    }}
-                    placement="top"
-                    title={`${redeemFeeBpsPercent}% withdrawal fee of the principal.`}
-                  >
-                    <InfoIcon style={{ marginLeft: '0.5rem' }} />
-                  </Tooltip>
-                </Button>
-                <Button color="danger" onClick={onCancel} className={classes.blockButton}>
-                  Cancel
-                </Button>
-              </div>
-            </GridItem>
-          </GridContainer>
-          <Modal className={classes.modal} open={isWithdrawLoading} aria-labelledby="simple-modal-title" aria-describedby="simple-modal-description">
-            <Paper elevation={3} className={classes.widthdrawLoadingPaper}>
-              <div className={classes.modalBody}>
-                <div className={classes.itemTop}>
-                  {isEmpty(withdrawError) ? (
-                    <>
-                      <CircularProgress size={20} color="inherit" />
-                      <span className={classes.text}>Withdrawing...</span>
-                    </>
-                  ) : (
-                    <div>Withdraw Error !</div>
-                  )}
-                </div>
-                <BocStepper
-                  classes={{
-                    root: classes.root
-                  }}
-                  alternativeLabel
-                  activeStep={currentStep}
-                  connector={<BocStepConnector />}
-                >
-                  {map(steps, (i, index) => {
-                    return (
-                      <Step key={index}>
-                        <BocStepLabel StepIconComponent={BocStepIcon}>{i.title}</BocStepLabel>
-                      </Step>
-                    )
-                  })}
-                </BocStepper>
-                {!isEmpty(withdrawError) && (
-                  <p
-                    style={{
-                      color: withdrawError.type === 'error' ? 'red' : 'yellow'
-                    }}
-                  >
-                    <WarningIcon style={{ verticalAlign: 'bottom' }}></WarningIcon>
-                    &nbsp;&nbsp;&nbsp;{withdrawError.message}
+              {address && (
+                <GridItem xs={6} sm={6} md={6} lg={6}>
+                  <p className={classes.estimateText} style={{ justifyContent: 'flex-end' }} title={toFixed(pegTokenPrice, BN_18)}>
+                    <span>1ETHi ≈ {toFixed(pegTokenPrice, BN_18, 6)}ETH</span>
                   </p>
-                )}
-                <Button
-                  color="danger"
-                  fullWidth={true}
-                  className={classes.cancelButton}
-                  onClick={() => {
-                    setIsWithdrawLoading(false)
-                    setWithdrawError({})
-                    setCurrentStep(0)
+                </GridItem>
+              )}
+            </GridContainer>
+            <GridContainer className={classes.outputContainer}>
+              <GridItem xs={12} sm={12} md={12} lg={12}>
+                <p className={classes.estimateText}>To</p>
+              </GridItem>
+              <GridItem xs={12} sm={12} md={12} lg={12}>
+                {renderEstimate()}
+              </GridItem>
+            </GridContainer>
+            <GridContainer className={classes.maxlossContainer}>
+              <GridItem xs={4} sm={4} md={4} className={classes.slippageTitle}>
+                Max loss(%):
+              </GridItem>
+              <GridItem xs={8} sm={8} md={8}>
+                <CustomTextField
+                  classes={{ root: classes.input }}
+                  value={allowMaxLoss}
+                  placeholder="Allow loss percent"
+                  maxEndAdornment
+                  onMaxClick={() => setAllowMaxLoss('50')}
+                  onChange={event => {
+                    const value = event.target.value
+                    setAllowMaxLoss(value)
                   }}
-                >
-                  Cancel
-                </Button>
-              </div>
-            </Paper>
-          </Modal>
-          <Modal
-            className={classes.modal}
-            open={isShowZipModal && !!address}
-            aria-labelledby="simple-modal-title"
-            aria-describedby="simple-modal-description"
-          >
-            <div className={classes.swapBody}>
-              {!isEmpty(address) && !isEmpty(exchangeManager) && (
-                <ApproveArrayV3
-                  isEthi
-                  address={address}
-                  tokens={burnTokens}
-                  userProvider={userProvider}
-                  exchangeManager={exchangeManager}
-                  EXCHANGE_ADAPTER_ABI={EXCHANGE_ADAPTER_ABI}
-                  EXCHANGE_AGGREGATOR_ABI={EXCHANGE_AGGREGATOR_ABI}
-                  slippage={slipper}
-                  onSlippageChange={setSlipper}
-                  handleClose={() => setIsShowZipModal(false)}
+                  error={!isUndefined(isValidAllowLossFlag) && !isValidAllowLossFlag}
                 />
+              </GridItem>
+            </GridContainer>
+            <GridContainer>
+              <GridItem xs={12} sm={12} md={12} lg={12}>
+                <div className={classes.buttonGroup}>
+                  <Button
+                    disabled={!isLogin || (isLogin && (isUndefined(isValidToValueFlag) || !isValidToValueFlag))}
+                    color="colorful"
+                    onClick={withdraw}
+                    className={classes.blockButton}
+                  >
+                    Withdraw
+                    <Tooltip
+                      classes={{
+                        tooltip: classes.tooltip
+                      }}
+                      placement="top"
+                      title={`${redeemFeeBpsPercent}% withdrawal fee of the principal.`}
+                    >
+                      <InfoIcon style={{ marginLeft: '0.5rem' }} />
+                    </Tooltip>
+                  </Button>
+                  <Button color="danger" onClick={onCancel} className={classes.blockButton}>
+                    Cancel
+                  </Button>
+                </div>
+              </GridItem>
+            </GridContainer>
+          </div>
+        </GridItem>
+      </GridContainer>
+      <Modal className={classes.modal} open={isWithdrawLoading} aria-labelledby="simple-modal-title" aria-describedby="simple-modal-description">
+        <Paper elevation={3} className={classes.widthdrawLoadingPaper}>
+          <div className={classes.modalBody}>
+            <div className={classes.itemTop}>
+              {isEmpty(withdrawError) ? (
+                <>
+                  <CircularProgress size={20} color="inherit" />
+                  <span className={classes.text}>Withdrawing...</span>
+                </>
+              ) : (
+                <div>Withdraw Error !</div>
               )}
             </div>
-          </Modal>
+            <BocStepper
+              classes={{
+                root: classes.root
+              }}
+              alternativeLabel
+              activeStep={currentStep}
+              connector={<BocStepConnector />}
+            >
+              {map(steps, (i, index) => {
+                return (
+                  <Step key={index}>
+                    <BocStepLabel StepIconComponent={BocStepIcon}>{i.title}</BocStepLabel>
+                  </Step>
+                )
+              })}
+            </BocStepper>
+            {!isEmpty(withdrawError) && (
+              <p
+                style={{
+                  color: withdrawError.type === 'error' ? 'red' : 'yellow'
+                }}
+              >
+                <WarningIcon style={{ verticalAlign: 'bottom' }}></WarningIcon>
+                &nbsp;&nbsp;&nbsp;{withdrawError.message}
+              </p>
+            )}
+            <Button
+              color="danger"
+              fullWidth={true}
+              className={classes.cancelButton}
+              onClick={() => {
+                setIsWithdrawLoading(false)
+                setWithdrawError({})
+                setCurrentStep(0)
+              }}
+            >
+              Cancel
+            </Button>
+          </div>
+        </Paper>
+      </Modal>
+      <Modal
+        className={classes.modal}
+        open={isShowZipModal && !!address}
+        aria-labelledby="simple-modal-title"
+        aria-describedby="simple-modal-description"
+      >
+        <div className={classes.swapBody}>
+          {!isEmpty(address) && !isEmpty(exchangeManager) && (
+            <ApproveArrayV3
+              isEthi
+              address={address}
+              tokens={burnTokens}
+              userProvider={userProvider}
+              exchangeManager={exchangeManager}
+              EXCHANGE_ADAPTER_ABI={EXCHANGE_ADAPTER_ABI}
+              EXCHANGE_AGGREGATOR_ABI={EXCHANGE_AGGREGATOR_ABI}
+              slippage={slipper}
+              onSlippageChange={setSlipper}
+              handleClose={() => setIsShowZipModal(false)}
+            />
+          )}
         </div>
-      </GridItem>
-    </GridContainer>
+      </Modal>
+    </>
   )
 }

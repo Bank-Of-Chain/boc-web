@@ -14,8 +14,11 @@ import useMediaQuery from '@material-ui/core/useMediaQuery'
 import Deposit from './Deposit'
 import Withdraw from './Withdraw'
 import MyStatement from '@/components/MyStatement/MyStatementForLend'
-import { MyAccountIcon, SwapIcon, WithdrawIcon, DepositIcon, SwitchIcon } from '@/components/SvgIcons'
+import PoolsTable from './PoolsTable'
+import { DepositIcon, SwitchIcon } from '@/components/SvgIcons'
 import { useSelector, useDispatch } from 'react-redux'
+import Modal from '@material-ui/core/Modal'
+import Paper from '@material-ui/core/Paper'
 
 // === Reducers === //
 import { warmDialog } from '@/reducers/meta-reducer'
@@ -74,6 +77,9 @@ const Lend = props => {
   const [vaultBufferDecimals, setVaultBufferDecimals] = useState(0)
 
   const [isBalanceLoading, setIsBalanceLoading] = useState(false)
+
+  const [operateIndex, setOperateIndex] = useState(-1)
+  const [operateType, setOperateType] = useState(false)
 
   const current = useSelector(state => state.investReducer.currentTab)
   const setCurrent = tab => {
@@ -174,54 +180,96 @@ const Lend = props => {
     return listener()
   }, [address, VAULT_ADDRESS, VAULT_ABI, userProvider])
 
+  useEffect(() => {
+    setCurrent(INVEST_TAB.lending)
+  }, [])
+
+  const renderBody = () => {
+    if (!userProvider)
+      return (
+        <GridItem xs={9} sm={9} md={9}>
+          <div className={classes.notConnect}>
+            <div>Wallet not connected.</div>
+            <div className={classes.textBottom}>Connect to your Wallet address to operate.</div>
+          </div>
+        </GridItem>
+      )
+    return (
+      <>
+        {current === INVEST_TAB.deposit && (
+          <GridItem xs={9} sm={9} md={7}>
+            <Deposit
+              address={address}
+              ethBalance={ethBalance}
+              ethDecimals={ethDecimals}
+              ethiBalance={ethiBalance}
+              ethiDecimals={ethiDecimals}
+              userProvider={userProvider}
+              VAULT_ABI={VAULT_ABI}
+              IERC20_ABI={IERC20_ABI}
+              VAULT_ADDRESS={VAULT_ADDRESS}
+              ETH_ADDRESS={ETH_ADDRESS}
+              vaultBufferBalance={vaultBufferBalance}
+              vaultBufferDecimals={vaultBufferDecimals}
+              isBalanceLoading={isBalanceLoading}
+              reloadBalance={loadCoinsBalance}
+              minimumInvestmentAmount={minimumInvestmentAmount}
+            />
+          </GridItem>
+        )}
+        {current === INVEST_TAB.withdraw && (
+          <GridItem xs={9} sm={9} md={7}>
+            <div className={classes.wrapper}>
+              <Withdraw
+                address={address}
+                ethiBalance={ethiBalance}
+                ethiDecimals={ethiDecimals}
+                userProvider={userProvider}
+                VAULT_ADDRESS={VAULT_ADDRESS}
+                ETH_ADDRESS={ETH_ADDRESS}
+                VAULT_ABI={VAULT_ABI}
+                IERC20_ABI={IERC20_ABI}
+                PRICE_ORCALE_ABI={PRICE_ORCALE_ABI}
+                isBalanceLoading={isBalanceLoading}
+                reloadBalance={loadCoinsBalance}
+                exchangeManager={exchangeManager}
+                EXCHANGE_ADAPTER_ABI={EXCHANGE_ADAPTER_ABI}
+                EXCHANGE_AGGREGATOR_ABI={EXCHANGE_AGGREGATOR_ABI}
+              />
+            </div>
+          </GridItem>
+        )}
+        {current === INVEST_TAB.account && (
+          <GridItem xs={9} sm={9} md={9}>
+            <MyStatement balance={balance} supply={supply} />
+          </GridItem>
+        )}
+        {current === INVEST_TAB.lending && (
+          <GridItem xs={9} sm={9} md={9}>
+            <PoolsTable
+              actions={(index, type) => {
+                setOperateIndex(index)
+                setOperateType(type)
+              }}
+            />
+          </GridItem>
+        )}
+      </>
+    )
+  }
+
   return (
     <div className={classes.container}>
       <GridContainer spacing={0}>
         <GridItem xs={2} sm={2} md={3} style={{ paddingRight: '2rem' }}>
           <List disablePadding={true}>
-            <ListItem key="My Account" button className={classNames(classes.item)} onClick={() => setCurrent(INVEST_TAB.account)}>
+            <ListItem key="Lending Pools" button className={classNames(classes.item)} onClick={() => setCurrent(INVEST_TAB.lending)}>
               <ListItemIcon>
-                <MyAccountIcon color={current === INVEST_TAB.account ? '#A68EFE' : '#fff'} />
+                <DepositIcon color={current === INVEST_TAB.lending ? '#A68EFE' : '#fff'} />
               </ListItemIcon>
               {!isLayoutSm && (
-                <ListItemText primary={'My Account'} className={classNames(current === INVEST_TAB.account ? classes.check : classes.text)} />
+                <ListItemText primary={'Lending Pools'} className={classNames(current === INVEST_TAB.lending ? classes.check : classes.text)} />
               )}
-            </ListItem>
-            <ListItem
-              key="Deposit"
-              button
-              className={classNames(classes.item, current === INVEST_TAB.deposit && classes.check)}
-              onClick={() => setCurrent(INVEST_TAB.deposit)}
-            >
-              <ListItemIcon>
-                <DepositIcon color={current === INVEST_TAB.deposit ? '#A68EFE' : '#fff'} />
-              </ListItemIcon>
-              {!isLayoutSm && (
-                <ListItemText primary={'Deposit'} className={classNames(current === INVEST_TAB.deposit ? classes.check : classes.text)} />
-              )}
-            </ListItem>
-            <ListItem key="Withdraw" button className={classNames(classes.item)} onClick={() => setCurrent(INVEST_TAB.withdraw)}>
-              <ListItemIcon>
-                <WithdrawIcon color={current === INVEST_TAB.withdraw || current === INVEST_TAB.swap ? '#A68EFE' : '#fff'} />
-              </ListItemIcon>
-              {!isLayoutSm && (
-                <ListItemText
-                  primary={'Withdraw'}
-                  className={classNames(current === INVEST_TAB.withdraw || current === INVEST_TAB.swap ? classes.check : classes.text)}
-                />
-              )}
-            </ListItem>
-            <ListItem
-              style={{ display: 'none' }}
-              key="Swap"
-              button
-              className={classNames(classes.item, current === INVEST_TAB.swap && classes.check)}
-              onClick={() => setCurrent(INVEST_TAB.swap)}
-            >
-              <ListItemIcon>
-                <SwapIcon color={current === INVEST_TAB.swap ? '#A68EFE' : '#fff'} />
-              </ListItemIcon>
-              {!isLayoutSm && <ListItemText primary={'Swap'} className={classNames(current === INVEST_TAB.swap ? classes.check : classes.text)} />}
             </ListItem>
             <ListItem key="Back to ETHi" button className={classNames(classes.item)} onClick={() => history.push('/ethi')}>
               <ListItemIcon>
@@ -231,114 +279,61 @@ const Lend = props => {
             </ListItem>
           </List>
         </GridItem>
-        {/* 
-        // legacy "My Account" page hidden. Using "My Statement" page
-        {current === INVEST_TAB.account && (
-          <GridItem xs={9} sm={9} md={6}>
-            <Card className={classes.balanceCard}>
-              <div className={classes.balanceCardItem}>
-                <div className={classes.balanceCardValue}>
-                  <span
-                    title={formatBalance(ethiBalance, ethiDecimals, {
-                      showAll: true
-                    })}
-                  >
-                    <Loading loading={isBalanceLoading}>{formatBalance(ethiBalance, ethiDecimals)}</Loading>
-                  </span>
-                  <span className={classes.symbol}>ETHi</span>
-                  {userProvider && (
-                    <span title="Add token address to wallet">
-                      <AddCircleOutlineIcon className={classes.addTokenIcon} onClick={handleAddETHi} fontSize="small" />
-                    </span>
-                  )}
-                </div>
-                <div className={classes.balanceCardValue} style={{ fontSize: '1rem' }}>
-                  <span title={formatBalance(vaultBufferBalance, vaultBufferDecimals, { showAll: true })}>
-                    <Loading loading={isBalanceLoading}>{formatBalance(vaultBufferBalance, vaultBufferDecimals)}</Loading>
-                  </span>
-                  <span className={classes.symbol}>ETHi Ticket&nbsp;&nbsp;</span>
-                  <Tooltip
-                    classes={{
-                      tooltip: classes.tooltip
-                    }}
-                    placement="right"
-                    title={
-                      <span>
-                        ETHi Ticket functions as parallel ETHi that will be converted into ETHi after fund allocations have been successful. Last
-                        execution time was&nbsp;
-                        <span style={{ fontWeight: 'bold' }}>{moment(lastRebaseTime).format('yyyy-MM-DD HH:mm')}</span>
-                      </span>
-                    }
-                  >
-                    <InfoIcon style={{ fontSize: '1rem' }} />
-                  </Tooltip>
-                </div>
-                <div className={classes.balanceCardLabel}>AVAILABLE BALANCE</div>
-              </div>
-            </Card>
-          </GridItem>
-        )} */}
-        {!userProvider && (
-          <GridItem xs={9} sm={9} md={9}>
-            <div className={classes.notConnect}>
-              <div>Wallet not connected.</div>
-              <div className={classes.textBottom}>Connect to your Wallet address to operate.</div>
-            </div>
-          </GridItem>
-        )}
-        {userProvider && (
-          <>
-            {current === INVEST_TAB.deposit && (
-              <GridItem xs={9} sm={9} md={7}>
-                <Deposit
-                  address={address}
-                  ethBalance={ethBalance}
-                  ethDecimals={ethDecimals}
-                  ethiBalance={ethiBalance}
-                  ethiDecimals={ethiDecimals}
-                  userProvider={userProvider}
-                  VAULT_ABI={VAULT_ABI}
-                  IERC20_ABI={IERC20_ABI}
-                  VAULT_ADDRESS={VAULT_ADDRESS}
-                  ETH_ADDRESS={ETH_ADDRESS}
-                  vaultBufferBalance={vaultBufferBalance}
-                  vaultBufferDecimals={vaultBufferDecimals}
-                  isBalanceLoading={isBalanceLoading}
-                  reloadBalance={loadCoinsBalance}
-                  minimumInvestmentAmount={minimumInvestmentAmount}
-                />
-              </GridItem>
-            )}
-            {current === INVEST_TAB.withdraw && (
-              <GridItem xs={9} sm={9} md={7}>
-                <div className={classes.wrapper}>
-                  <Withdraw
-                    address={address}
-                    ethiBalance={ethiBalance}
-                    ethiDecimals={ethiDecimals}
-                    userProvider={userProvider}
-                    VAULT_ADDRESS={VAULT_ADDRESS}
-                    ETH_ADDRESS={ETH_ADDRESS}
-                    VAULT_ABI={VAULT_ABI}
-                    IERC20_ABI={IERC20_ABI}
-                    PRICE_ORCALE_ABI={PRICE_ORCALE_ABI}
-                    isBalanceLoading={isBalanceLoading}
-                    reloadBalance={loadCoinsBalance}
-                    exchangeManager={exchangeManager}
-                    EXCHANGE_ADAPTER_ABI={EXCHANGE_ADAPTER_ABI}
-                    EXCHANGE_AGGREGATOR_ABI={EXCHANGE_AGGREGATOR_ABI}
-                  />
-                </div>
-              </GridItem>
-            )}
-            {current === INVEST_TAB.account && (
-              <GridItem xs={9} sm={9} md={9}>
-                <MyStatement balance={balance} supply={supply} />
-              </GridItem>
-            )}
-          </>
-        )}
+        {renderBody()}
       </GridContainer>
+      <Modal
+        className={classes.modal}
+        open={operateIndex !== -1 && operateType === false}
+        aria-labelledby="simple-modal-title"
+        aria-describedby="simple-modal-description"
+      >
+        <Paper elevation={3} className={classes.depositModal}>
+          <Withdraw
+            address={address}
+            ethiBalance={ethiBalance}
+            ethiDecimals={ethiDecimals}
+            userProvider={userProvider}
+            VAULT_ADDRESS={VAULT_ADDRESS}
+            ETH_ADDRESS={ETH_ADDRESS}
+            VAULT_ABI={VAULT_ABI}
+            IERC20_ABI={IERC20_ABI}
+            PRICE_ORCALE_ABI={PRICE_ORCALE_ABI}
+            isBalanceLoading={isBalanceLoading}
+            reloadBalance={loadCoinsBalance}
+            exchangeManager={exchangeManager}
+            EXCHANGE_ADAPTER_ABI={EXCHANGE_ADAPTER_ABI}
+            EXCHANGE_AGGREGATOR_ABI={EXCHANGE_AGGREGATOR_ABI}
+            onCancel={() => setOperateIndex(-1)}
+          />
+        </Paper>
+      </Modal>
+      <Modal
+        className={classes.modal}
+        open={operateIndex !== -1 && operateType === true}
+        aria-labelledby="simple-modal-title"
+        aria-describedby="simple-modal-description"
+      >
+        <Paper elevation={3} className={classes.depositModal}>
+          <Deposit
+            address={address}
+            ethBalance={ethBalance}
+            ethDecimals={ethDecimals}
+            ethiBalance={ethiBalance}
+            ethiDecimals={ethiDecimals}
+            userProvider={userProvider}
+            VAULT_ABI={VAULT_ABI}
+            IERC20_ABI={IERC20_ABI}
+            VAULT_ADDRESS={VAULT_ADDRESS}
+            ETH_ADDRESS={ETH_ADDRESS}
+            vaultBufferBalance={vaultBufferBalance}
+            vaultBufferDecimals={vaultBufferDecimals}
+            isBalanceLoading={isBalanceLoading}
+            reloadBalance={loadCoinsBalance}
+            minimumInvestmentAmount={minimumInvestmentAmount}
+            onCancel={() => setOperateIndex(-1)}
+          />
+        </Paper>
+      </Modal>
     </div>
   )
 }

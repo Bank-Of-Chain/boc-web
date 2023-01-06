@@ -24,12 +24,6 @@ const componentsStyle = () => ({
     alignItems: 'center',
     justifyContent: 'center'
   },
-  buttonGroup: {
-    marginTop: '0.625rem',
-    '& button + button': {
-      marginLeft: '0.625rem'
-    }
-  },
   modalBody: {
     textAlign: 'center'
   },
@@ -218,6 +212,12 @@ const componentsStyle = () => ({
     padding: 0,
     borderRadius: '1.25rem',
     marginTop: '0.625rem'
+  },
+  buttonGroup: {
+    marginTop: '0.625rem',
+    '& button + button': {
+      marginLeft: '0.625rem'
+    }
   }
 })
 

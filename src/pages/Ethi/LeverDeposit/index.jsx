@@ -53,9 +53,9 @@ const steps = [
 
 export default function Deposit({
   address,
-  ethBalance,
-  ethDecimals,
-  ethiDecimals,
+  ethBalance = '0',
+  ethDecimals = 18,
+  ethiDecimals = 18,
   userProvider,
   VAULT_ABI,
   VAULT_ADDRESS,
@@ -359,7 +359,7 @@ export default function Deposit({
               <GridItem xs={12} sm={12} md={12} lg={12}>
                 <p className={classes.estimateText}>To</p>
                 <div className={classes.estimateBalanceTitle}>
-                  Diesel Token
+                  LP
                   <span className={classes.estimateBalanceNum}>
                     <Loading loading={isEstimate}>{toFixed(estimateVaultBuffValue, decimal)}</Loading>
                   </span>

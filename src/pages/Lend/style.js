@@ -9,7 +9,7 @@ const componentsStyle = () => ({
   },
   wrapper: {
     padding: '1.875rem',
-    borderRadius: '2.5rem',
+    borderRadius: '1.25rem',
     background: 'linear-gradient(111.68deg, rgba(87, 97, 125, 0.2) 7.59%, rgba(255, 255, 255, 0.078) 102.04%);'
   },
   wrapperMobile: {
@@ -112,6 +112,18 @@ const componentsStyle = () => ({
   },
   textBottom: {
     marginTop: '0.25rem'
+  },
+  depositModal: {
+    padding: '1.25rem',
+    width: '35rem',
+    color: 'rgba(255, 255, 255, 0.87)',
+    border: '1px solid #A68EFE',
+    backgroundColor: '#1f1d27',
+    borderRadius: '2.5rem',
+    outline: 0,
+    '&:active': {
+      outline: 'none'
+    }
   }
 })
 
