@@ -16,6 +16,7 @@ const VAULT_BUFFER_FOR_USDI_ETH = '{{VAULT_BUFFER_FOR_USDI_ETH}}'
 const VAULT_BUFFER_FOR_USDI_MATIC = '{{VAULT_BUFFER_FOR_USDI_MATIC}}'
 
 const POOL_ADDRESS = '{{POOL_ADDRESS}}'
+const DIESEL_ADDRESS = '{{DIESEL_ADDRESS}}'
 const CREDIT_POOL_ADDRESS = '{{CREDIT_POOL_ADDRESS}}'
 
 const configBase = {
@@ -136,8 +137,9 @@ const config1 = {
       id: 'lend',
       name: 'lending pool',
       path: '#/lend',
-      abi_version: 'usdi-v1.6.0',
-      POOL_ADDRESS: POOL_ADDRESS
+      abi_version: 'ethi-v1.6.0',
+      POOL_ADDRESS: POOL_ADDRESS,
+      DIESEL_ADDRESS: DIESEL_ADDRESS
     }
   ]
 }
