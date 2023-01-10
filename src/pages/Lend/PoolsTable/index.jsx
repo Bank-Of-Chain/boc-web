@@ -12,7 +12,7 @@ import Paper from '@material-ui/core/Paper'
 import Button from '@/components/CustomButtons/Button'
 
 // === Constants === //
-import { DAI_ADDRESS } from '@/constants/tokens'
+import { WETH_ADDRESS } from '@/constants/tokens'
 
 // === Styles === //
 import styles from './style'
@@ -21,8 +21,8 @@ const useStyles = makeStyles(styles)
 
 const datas = [
   {
-    asset: DAI_ADDRESS,
-    supply: '1.32 b DAI',
+    asset: WETH_ADDRESS,
+    supply: '1.32 b ETH',
     supplyApy: '5.22%',
     BorrowApy: '3.23%',
     balance: '1.233 m'

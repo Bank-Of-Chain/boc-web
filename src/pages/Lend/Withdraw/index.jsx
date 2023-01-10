@@ -9,8 +9,6 @@ import Paper from '@material-ui/core/Paper'
 import ErrorOutlineIcon from '@material-ui/icons/ErrorOutline'
 import Step from '@material-ui/core/Step'
 import WarningIcon from '@material-ui/icons/Warning'
-import Tooltip from '@material-ui/core/Tooltip'
-import InfoIcon from '@material-ui/icons/Info'
 import CustomTextField from '@/components/CustomTextField'
 import BocStepper from '@/components/Stepper/Stepper'
 import BocStepLabel from '@/components/Stepper/StepLabel'
@@ -20,143 +18,89 @@ import GridContainer from '@/components/Grid/GridContainer'
 import GridItem from '@/components/Grid/GridItem'
 import Button from '@/components/CustomButtons/Button'
 import Loading from '@/components/LoadingComponent'
-import ApproveArrayV3 from '@/components/ApproveArray/ApproveArrayV3'
 import SimpleSelect from '@/components/SimpleSelect'
 
 // === Hooks === //
 import { warmDialog } from '@/reducers/meta-reducer'
-import useRedeemFeeBps from '@/hooks/useRedeemFeeBps'
-import usePriceProvider from '@/hooks/usePriceProvider'
+import useUserAddress from '@/hooks/useUserAddress'
 
 // === Utils === //
 import isUndefined from 'lodash/isUndefined'
 import map from 'lodash/map'
-import get from 'lodash/get'
 import debounce from 'lodash/debounce'
-import compact from 'lodash/compact'
 import isEmpty from 'lodash/isEmpty'
 import isNumber from 'lodash/isNumber'
 import { toFixed, formatBalance } from '@/helpers/number-format'
 import { isAd, isEs, isRp, isMaxLoss, isLossMuch, isExchangeFail, errorTextOutput } from '@/helpers/error-handler'
 
 // === Constants === //
-import { MULTIPLE_OF_GAS, MAX_GAS_LIMIT, IERC20_ABI } from '@/constants'
+import { MULTIPLE_OF_GAS, MAX_GAS_LIMIT } from '@/constants'
 import { WETH_ADDRESS } from '@/constants/tokens'
 import { BN_18 } from '@/constants/big-number'
 
 // === Styles === //
 import styles from './style'
-import { some } from 'lodash'
 
 const { BigNumber } = ethers
 const useStyles = makeStyles(styles)
 
 const steps = [{ title: 'Shares Validation' }, { title: 'Gas Estimates' }, { title: 'Withdraw' }]
 
-const WITHDRAW_EXCHANGE_THRESHOLD = BigNumber.from(10).pow(16)
-
 export default function Withdraw({
-  address,
-  exchangeManager,
-  ethiBalance,
-  ethiDecimals,
+  dieselBalance,
+  dieselDecimals,
+  wethBalance,
+  wethDecimals,
   userProvider,
-  ETH_ADDRESS,
-  VAULT_ADDRESS,
-  VAULT_ABI,
-  EXCHANGE_AGGREGATOR_ABI,
-  EXCHANGE_ADAPTER_ABI,
+  onCancel,
   isBalanceLoading,
   reloadBalance,
-  PRICE_ORCALE_ABI,
-  onCancel
+  POOL_ADDRESS,
+  POOL_SERVICE_ABI
 }) {
   const classes = useStyles()
   const dispatch = useDispatch()
   const [toValue, setToValue] = useState('')
   const [allowMaxLoss, setAllowMaxLoss] = useState('0.3')
-  const [slipper, setSlipper] = useState('0.3')
   const [estimateWithdrawArray, setEstimateWithdrawArray] = useState([])
   const [isEstimate, setIsEstimate] = useState(false)
   const [isWithdrawLoading, setIsWithdrawLoading] = useState(false)
   const [currentStep, setCurrentStep] = useState(0)
   const [withdrawError, setWithdrawError] = useState({})
 
-  const [burnTokens, setBurnTokens] = useState([
-    // {
-    //   address: ETH_ADDRESS,
-    //   amount: '10000000000000000000',
-    //   symbol: 'ETH'
-    // },
-    // {
-    //   address: WETH_ADDRESS,
-    //   amount: '1000000000000000000',
-    //   symbol: 'WETH'
-    // }
-  ])
-  console.log('WETH_ADDRESS=', WETH_ADDRESS)
-  const [isShowZipModal, setIsShowZipModal] = useState(false)
+  const address = useUserAddress(userProvider)
 
-  const [pegTokenPrice, setPegTokenPrice] = useState(BN_18)
+  // const [burnTokens, setBurnTokens] = useState([
+  //   // {
+  //   //   address: ETH_ADDRESS,
+  //   //   amount: '10000000000000000000',
+  //   //   symbol: 'ETH'
+  //   // },
+  //   // {
+  //   //   address: WETH_ADDRESS,
+  //   //   amount: '1000000000000000000',
+  //   //   symbol: 'WETH'
+  //   // }
+  // ])
+  console.log('WETH_ADDRESS=', WETH_ADDRESS, wethBalance, wethDecimals)
+  const [isShowZipModal] = useState(false)
 
-  const { value: redeemFeeBps } = useRedeemFeeBps({
-    userProvider,
-    VAULT_ADDRESS,
-    VAULT_ABI
-  })
-
-  const { getPriceProvider } = usePriceProvider({
-    userProvider,
-    VAULT_ADDRESS,
-    VAULT_ABI,
-    PRICE_ORCALE_ABI
-  })
-
-  const redeemFeeBpsPercent = redeemFeeBps.toNumber() / 100
+  const [pegTokenPrice] = useState(BN_18)
 
   const estimateWithdraw = useCallback(
     debounce(async () => {
       setIsEstimate(true)
-      const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider)
-      const nextValue = BigNumber.from(BN(toValue).multipliedBy(BigNumber.from(10).pow(ethiDecimals).toString()).toFixed())
-      const usdValue = nextValue.mul(pegTokenPrice).div(BN_18.toFixed())
-      const allowMaxLossValue = BigNumber.from(10000 - parseInt(100 * (parseFloat(allowMaxLoss) + redeemFeeBpsPercent)))
-        .mul(usdValue)
-        .div(BigNumber.from(1e4))
+      const vaultContract = new ethers.Contract(POOL_ADDRESS, POOL_SERVICE_ABI, userProvider)
+      const nextValue = BigNumber.from(BN(toValue).multipliedBy(BigNumber.from(10).pow(dieselDecimals).toString()).toFixed())
+      const allowMaxLossValue = BigNumber.from(1)
       const signer = userProvider.getSigner()
       const vaultContractWithSigner = vaultContract.connect(signer)
 
       try {
         const [tokens, amounts] = await vaultContractWithSigner.callStatic.burn(nextValue, allowMaxLossValue)
         console.log('estimate withdraw result:', tokens, amounts)
-        let nextEstimateWithdrawArray = compact(
-          await Promise.all(
-            map(tokens, async (token, index) => {
-              const tokenContract = new ethers.Contract(token, IERC20_ABI, userProvider)
-              const amount = get(amounts, index, BigNumber.from(0))
-              if (amount.gt(0)) {
-                if (token === ETH_ADDRESS) {
-                  return {
-                    tokenAddress: token,
-                    decimals: ethiDecimals,
-                    symbol: 'ETH',
-                    balance: await userProvider.getBalance(address),
-                    amounts: amount
-                  }
-                }
-                return {
-                  tokenAddress: token,
-                  decimals: await tokenContract.decimals(),
-                  symbol: await tokenContract.symbol(),
-                  balance: await tokenContract.balanceOf(address),
-                  amounts: amount
-                }
-              }
-            })
-          )
-        )
 
-        setEstimateWithdrawArray(nextEstimateWithdrawArray)
+        setEstimateWithdrawArray([])
       } catch (error) {
         console.log('estimate withdraw error', error)
         console.log('withdraw original error :', error)
@@ -193,49 +137,9 @@ export default function Withdraw({
     }, 1500)
   )
 
-  const handleBurn = async (a, b, c, d, tokens, amounts) => {
+  const handleBurn = async (a, b, c, d, tokens) => {
     console.log('handleBurn')
     console.log('tokens', tokens)
-    console.log(
-      'amounts',
-      amounts.map(el => el.toString())
-    )
-    const priceProvider = await getPriceProvider()
-    return Promise.all(
-      map(tokens, async (token, i) => {
-        const amount = toFixed(amounts[i], 1)
-        const amountsInEth = await priceProvider.valueInEth(token, amount)
-        if (WITHDRAW_EXCHANGE_THRESHOLD.gt(amountsInEth)) {
-          return
-        }
-
-        let balance = BigNumber.from(0)
-        let tokenSymbol = 'ETH'
-        if (token === ETH_ADDRESS) {
-          balance = await userProvider.getBalance(address)
-        } else {
-          const contract = new ethers.Contract(token, IERC20_ABI, userProvider)
-          balance = await contract.balanceOf(address)
-          tokenSymbol = await contract.symbol()
-        }
-
-        return {
-          address: token,
-          amount: balance.gt(amounts[i]) ? amount : balance.toString(),
-          symbol: tokenSymbol
-        }
-      })
-    ).then(array => {
-      const nextBurnTokens = compact(array)
-      if (
-        some(nextBurnTokens, i => {
-          return i.address !== ETH_ADDRESS && i.amount !== '0'
-        })
-      ) {
-        setBurnTokens(nextBurnTokens)
-        setIsShowZipModal(true)
-      }
-    })
   }
 
   const withdraw = async () => {
@@ -264,13 +168,9 @@ export default function Withdraw({
 
     withdrawValidFinish = Date.now()
     setCurrentStep(1)
-    const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider)
+    const vaultContract = new ethers.Contract(POOL_ADDRESS, POOL_SERVICE_ABI, userProvider)
     const signer = userProvider.getSigner()
-    const nextValue = BigNumber.from(BN(toValue).multipliedBy(BigNumber.from(10).pow(ethiDecimals).toString()).toFixed())
-    const usdValue = nextValue.mul(pegTokenPrice).div(BN_18.toFixed())
-    const allowMaxLossValue = BigNumber.from(10000 - parseInt(100 * (parseFloat(allowMaxLoss) + redeemFeeBpsPercent)))
-      .mul(usdValue)
-      .div(BigNumber.from(1e4))
+    const nextValue = BigNumber.from(BN(toValue).multipliedBy(BigNumber.from(10).pow(dieselDecimals).toString()).toFixed())
     try {
       const vaultContractWithSigner = vaultContract.connect(signer)
 
@@ -279,17 +179,17 @@ export default function Withdraw({
       let tx
       // if gasLimit times not 1, need estimateGas
       if (isNumber(MULTIPLE_OF_GAS) && MULTIPLE_OF_GAS !== 1) {
-        const gas = await vaultContractWithSigner.estimateGas.burn(nextValue, allowMaxLossValue)
+        const gas = await vaultContractWithSigner.estimateGas.burn(nextValue)
         setCurrentStep(3)
         estimateGasFinish = Date.now()
         const gasLimit = Math.ceil(gas * MULTIPLE_OF_GAS)
         // gasLimit not exceed maximum
         const maxGasLimit = gasLimit < MAX_GAS_LIMIT ? gasLimit : MAX_GAS_LIMIT
-        tx = await vaultContractWithSigner.burn(nextValue, allowMaxLossValue, {
+        tx = await vaultContractWithSigner.burn(nextValue, {
           gasLimit: maxGasLimit
         })
       } else {
-        tx = await vaultContractWithSigner.burn(nextValue, allowMaxLossValue)
+        tx = await vaultContractWithSigner.burn(nextValue)
       }
       withdrawFinish = Date.now()
 
@@ -378,14 +278,14 @@ export default function Withdraw({
     // should be a number
     if (isNaN(Number(toValue))) return false
     const nextValue = BN(toValue)
-    const nextToValue = nextValue.multipliedBy(BigNumber.from(10).pow(ethiDecimals).toString())
+    const nextToValue = nextValue.multipliedBy(BigNumber.from(10).pow(dieselDecimals).toString())
     // should be positive
     if (nextToValue.lte(0)) return false
     // should be integer
-    const nextToValueString = nextValue.multipliedBy(BigNumber.from(10).pow(ethiDecimals).toString())
+    const nextToValueString = nextValue.multipliedBy(BigNumber.from(10).pow(dieselDecimals).toString())
     if (nextToValueString.toFixed().indexOf('.') !== -1) return false
     // balance less than value
-    if (ethiBalance.lt(BigNumber.from(nextToValue.toFixed()))) return false
+    if (dieselBalance.lt(BigNumber.from(nextToValue.toFixed()))) return false
     return true
   }
 
@@ -425,7 +325,7 @@ export default function Withdraw({
 
   const handleMaxClick = async () => {
     const [nextEthiBalance] = await reloadBalance()
-    setToValue(formatBalance(nextEthiBalance, ethiDecimals, { showAll: true }))
+    setToValue(formatBalance(nextEthiBalance, dieselDecimals, { showAll: true }))
   }
 
   const renderEstimate = () => {
@@ -498,22 +398,6 @@ export default function Withdraw({
 
   const isLogin = !isEmpty(userProvider)
 
-  const getPegTokenPrice = () => {
-    const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider)
-    vaultContract.getPegTokenPrice().then(result => {
-      setTimeout(() => {
-        setPegTokenPrice(result)
-      }, 500)
-    })
-    return getPegTokenPrice
-  }
-
-  useEffect(() => {
-    if (isEmpty(address) || isEmpty(VAULT_ADDRESS) || isEmpty(VAULT_ABI)) return
-    const timer = setInterval(getPegTokenPrice(), 10000)
-    return () => clearInterval(timer)
-  }, [address])
-
   return (
     <GridContainer spacing={3}>
       <GridItem xs={12} sm={12} md={12} lg={12}>
@@ -543,9 +427,9 @@ export default function Withdraw({
               </GridContainer>
             </GridItem>
             <GridItem xs={6} sm={6} md={6} lg={6}>
-              <p className={classes.estimateText} title={formatBalance(ethiBalance, ethiDecimals, { showAll: true })}>
+              <p className={classes.estimateText} title={formatBalance(dieselBalance, dieselDecimals, { showAll: true })}>
                 Balance:&nbsp;
-                <Loading loading={isBalanceLoading}>{formatBalance(ethiBalance, ethiDecimals)}</Loading>
+                <Loading loading={isBalanceLoading}>{formatBalance(dieselBalance, dieselDecimals)}</Loading>
               </p>
             </GridItem>
             {address && (
@@ -593,15 +477,6 @@ export default function Withdraw({
                   className={classes.blockButton}
                 >
                   Withdraw
-                  <Tooltip
-                    classes={{
-                      tooltip: classes.tooltip
-                    }}
-                    placement="top"
-                    title={`${redeemFeeBpsPercent}% withdrawal fee of the principal.`}
-                  >
-                    <InfoIcon style={{ marginLeft: '0.5rem' }} />
-                  </Tooltip>
                 </Button>
                 <Button color="danger" onClick={onCancel} className={classes.blockButton}>
                   Cancel
@@ -670,7 +545,7 @@ export default function Withdraw({
             aria-describedby="simple-modal-description"
           >
             <div className={classes.swapBody}>
-              {!isEmpty(address) && !isEmpty(exchangeManager) && (
+              {/* {!isEmpty(address) && !isEmpty(exchangeManager) && (
                 <ApproveArrayV3
                   isEthi
                   address={address}
@@ -683,7 +558,7 @@ export default function Withdraw({
                   onSlippageChange={setSlipper}
                   handleClose={() => setIsShowZipModal(false)}
                 />
-              )}
+              )} */}
             </div>
           </Modal>
         </div>
