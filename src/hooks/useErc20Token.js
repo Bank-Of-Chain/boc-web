@@ -20,26 +20,22 @@ const useErc20Token = (tokenAddress, userProvider) => {
   const [decimals, setDecimals] = useState(1)
   const [loading, setLoading] = useState(false)
 
-  const queryBalance = useCallback(() => {
+  const queryBalance = useCallback(async () => {
+    let nextBalance = BigNumber.from(0)
     if (isEmpty(tokenAddress) || isEmpty(address)) {
-      setBalance(BigNumber.from(0))
+      setBalance(nextBalance)
       setDecimals(1)
-      return
+      return nextBalance
     }
     setLoading(true)
     if (tokenAddress === ETH_ADDRESS) {
-      userProvider
-        .getBalance(address)
-        .then(setBalance)
-        .finally(() => setLoading(false))
-      return
+      nextBalance = await userProvider.getBalance(address).finally(() => setLoading(false))
+    } else {
+      const tokenContract = new ethers.Contract(tokenAddress, IERC20_ABI, userProvider)
+      nextBalance = await tokenContract.balanceOf(address).finally(() => setLoading(false))
     }
-
-    const tokenContract = new ethers.Contract(tokenAddress, IERC20_ABI, userProvider)
-    tokenContract
-      .balanceOf(address)
-      .then(setBalance)
-      .finally(() => setLoading(false))
+    setBalance(nextBalance)
+    return nextBalance
   }, [tokenAddress, address])
 
   const queryDecimals = useCallback(() => {
