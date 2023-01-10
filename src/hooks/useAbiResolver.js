@@ -22,12 +22,18 @@ function abiLoader(version, file) {
 function useAbiResolver(abiPrefix) {
   if (isEmpty(abiPrefix)) return {}
 
-  let VAULT_BUFFER_ABI, VAULT_ABI, EXCHANGE_ADAPTER_ABI, PRICE_ORCALE_ABI, EXCHANGE_AGGREGATOR_ABI
+  let VAULT_BUFFER_ABI, VAULT_ABI, EXCHANGE_ADAPTER_ABI, PRICE_ORCALE_ABI, EXCHANGE_AGGREGATOR_ABI, POOL_SERVICE_ABI
 
   try {
     VAULT_ABI = abiLoader(abiPrefix, 'vault-abi.json')
   } catch (error) {
     VAULT_ABI = []
+  }
+
+  try {
+    POOL_SERVICE_ABI = abiLoader(abiPrefix, 'pool-service-abi.json')
+  } catch (error) {
+    POOL_SERVICE_ABI = []
   }
 
   try {
@@ -56,6 +62,7 @@ function useAbiResolver(abiPrefix) {
 
   return {
     VAULT_ABI,
+    POOL_SERVICE_ABI,
     VAULT_BUFFER_ABI,
     PRICE_ORCALE_ABI,
     EXCHANGE_ADAPTER_ABI,
