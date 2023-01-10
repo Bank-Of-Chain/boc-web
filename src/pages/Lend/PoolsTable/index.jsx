@@ -11,6 +11,12 @@ import TableRow from '@material-ui/core/TableRow'
 import Paper from '@material-ui/core/Paper'
 import Button from '@/components/CustomButtons/Button'
 
+// === Hooks === //
+import usePool from '@/hooks/usePool'
+
+// === Utils === //
+import { toFixed } from '@/helpers/number-format'
+
 // === Constants === //
 import { WETH_ADDRESS } from '@/constants/tokens'
 
@@ -19,19 +25,21 @@ import styles from './style'
 
 const useStyles = makeStyles(styles)
 
-const datas = [
-  {
-    asset: WETH_ADDRESS,
-    supply: '1.32 b ETH',
-    supplyApy: '5.22%',
-    BorrowApy: '3.23%',
-    balance: '1.233 m'
-  }
-]
-
 const PoolsTable = props => {
   const classes = useStyles()
-  const { actions } = props
+  const { actions, POOL_ADDRESS, POOL_SERVICE_ABI, userProvider } = props
+
+  const { balance, supply } = usePool(POOL_ADDRESS, POOL_SERVICE_ABI, userProvider)
+
+  const datas = [
+    {
+      asset: WETH_ADDRESS,
+      supply: `${toFixed(supply)} WETH`,
+      supplyApy: '5.22%',
+      BorrowApy: '3.23%',
+      balance: toFixed(balance)
+    }
+  ]
 
   return (
     <div

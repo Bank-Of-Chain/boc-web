@@ -5,7 +5,6 @@ import { useDispatch } from 'react-redux'
 import isUndefined from 'lodash/isUndefined'
 import debounce from 'lodash/debounce'
 import isEmpty from 'lodash/isEmpty'
-import isNumber from 'lodash/isNumber'
 import { makeStyles } from '@material-ui/core/styles'
 
 // === Components === //
@@ -21,17 +20,18 @@ import Button from '@/components/CustomButtons/Button'
 // === Utils === //
 import noop from 'lodash/noop'
 import { isAd, isEs, isRp, isDistributing, errorTextOutput } from '@/helpers/error-handler'
-import { MULTIPLE_OF_GAS, MAX_GAS_LIMIT } from '@/constants'
 import { warmDialog } from '@/reducers/meta-reducer'
 import { toFixed, formatBalance } from '@/helpers/number-format'
 
 // === Hooks === //
-import useUserAddress from '@/hooks/useUserAddress'
+import usePool from '@/hooks/usePool'
 import useErc20Token from '@/hooks/useErc20Token'
+
+// === Constants === //
+import { WETH_ADDRESS } from '../../../constants/tokens'
 
 // === Styles === //
 import styles from './style'
-import { WETH_ADDRESS } from '../../../constants/tokens'
 
 const { BigNumber } = ethers
 const useStyles = makeStyles(styles)
@@ -43,9 +43,9 @@ export default function Deposit({
   wethDecimals,
   userProvider,
   onCancel,
-  isBalanceLoading,
   POOL_ADDRESS,
-  POOL_SERVICE_ABI
+  POOL_SERVICE_ABI,
+  wethBalanceLoading
 }) {
   const classes = useStyles()
   const dispatch = useDispatch()
@@ -57,9 +57,9 @@ export default function Deposit({
   const [estimateVaultBuffValue, setEstimateVaultBuffValue] = useState(BigNumber.from(0))
   const loadingTimer = useRef()
 
-  const address = useUserAddress(userProvider)
-
   const { approve } = useErc20Token(WETH_ADDRESS, userProvider)
+
+  const { addLiquidity } = usePool(POOL_ADDRESS, POOL_SERVICE_ABI, userProvider)
 
   console.log('mintGasLimit=', dieselBalance)
 
@@ -141,9 +141,6 @@ export default function Deposit({
     }
     setIsLoading(true)
     const amount = BigNumber.from(BN(ethValue).multipliedBy(BigNumber.from(10).pow(wethDecimals).toString()).toFixed())
-    const signer = userProvider.getSigner()
-    const poolContract = new ethers.Contract(POOL_ADDRESS, POOL_SERVICE_ABI, userProvider)
-    const poolContractWithUser = poolContract.connect(signer)
     let isSuccess = false
 
     // approve value
@@ -173,23 +170,7 @@ export default function Deposit({
       }
       setIsLoading(false)
     }
-    const extendObj = {}
-    // if gasLimit times not 1, need estimateGas
-    if (isNumber(MULTIPLE_OF_GAS) && MULTIPLE_OF_GAS !== 1) {
-      console.log('amount, address, 0=', amount.toString(), address, 0)
-      const gas = await poolContractWithUser.estimateGas.addLiquidity(amount, address, 0).catch(errorHandle)
-      if (isUndefined(gas)) return
-      const gasLimit = Math.ceil(gas * MULTIPLE_OF_GAS)
-      // gasLimit not exceed maximum
-      const maxGasLimit = gasLimit < MAX_GAS_LIMIT ? gasLimit : MAX_GAS_LIMIT
-      extendObj.gasLimit = maxGasLimit
-    }
-    console.log('extendObj=', extendObj)
-    await poolContractWithUser
-      .addLiquidity(amount, address, 0, {
-        ...extendObj,
-        from: address
-      })
+    await addLiquidity(amount)
       .then(tx => tx.wait())
       .then(() => {
         isSuccess = true
@@ -310,7 +291,7 @@ export default function Deposit({
                       })}
                     >
                       Balance:&nbsp;&nbsp;
-                      <Loading loading={isBalanceLoading}>{formatBalance(wethBalance, wethDecimals)}</Loading>
+                      <Loading loading={wethBalanceLoading}>{formatBalance(wethBalance, wethDecimals)}</Loading>
                     </div>
                   </GridItem>
                 </GridContainer>

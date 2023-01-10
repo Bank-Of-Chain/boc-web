@@ -27,7 +27,6 @@ import { WETH_ADDRESS } from '@/constants/tokens'
 import { INVEST_TAB } from '@/constants/invest'
 
 // === Hooks === //
-import usePool from '@/hooks/usePool'
 import useErc20Token from '@/hooks/useErc20Token'
 
 // === Utils === //
@@ -52,15 +51,18 @@ const Lend = props => {
   const [operateType, setOperateType] = useState(false)
 
   const current = useSelector(state => state.investReducer.currentTab)
+
   const setCurrent = tab => {
     dispatch(setCurrentTab(tab))
   }
-  const { balance, supply } = usePool(POOL_ADDRESS, POOL_SERVICE_ABI, userProvider)
 
   const { balance: wethBalance, decimals: wethDecimals, loading: wethBalanceLoading } = useErc20Token(WETH_ADDRESS, userProvider)
-  const { balance: dieselBalance, decimals: dieselDecimals, loading: dieselBalanceLoading } = useErc20Token(DIESEL_ADDRESS, userProvider)
-
-  console.log('aa=', wethBalance, wethDecimals, dieselBalance, dieselDecimals, balance, supply, dieselBalanceLoading)
+  const {
+    balance: dieselBalance,
+    decimals: dieselDecimals,
+    loading: dieselBalanceLoading,
+    queryBalance: queryDieselBalance
+  } = useErc20Token(DIESEL_ADDRESS, userProvider)
 
   useEffect(() => {
     setCurrent(INVEST_TAB.lending)
@@ -83,6 +85,9 @@ const Lend = props => {
             setOperateIndex(index)
             setOperateType(type)
           }}
+          POOL_ADDRESS={POOL_ADDRESS}
+          POOL_SERVICE_ABI={POOL_SERVICE_ABI}
+          userProvider={userProvider}
         />
       </GridItem>
     )
@@ -126,6 +131,8 @@ const Lend = props => {
             wethBalance={wethBalance}
             wethDecimals={wethDecimals}
             userProvider={userProvider}
+            reloadBalance={queryDieselBalance}
+            dieselBalanceLoading={dieselBalanceLoading}
             onCancel={() => setOperateIndex(-1)}
           />
         </Paper>
@@ -146,6 +153,7 @@ const Lend = props => {
             isBalanceLoading={wethBalanceLoading}
             wethDecimals={wethDecimals}
             userProvider={userProvider}
+            wethBalanceLoading={wethBalanceLoading}
             onCancel={() => setOperateIndex(-1)}
           />
         </Paper>

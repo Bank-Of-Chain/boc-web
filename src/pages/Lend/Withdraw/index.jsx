@@ -23,18 +23,17 @@ import SimpleSelect from '@/components/SimpleSelect'
 // === Hooks === //
 import { warmDialog } from '@/reducers/meta-reducer'
 import useUserAddress from '@/hooks/useUserAddress'
+import usePool from '@/hooks/usePool'
 
 // === Utils === //
 import isUndefined from 'lodash/isUndefined'
 import map from 'lodash/map'
 import debounce from 'lodash/debounce'
 import isEmpty from 'lodash/isEmpty'
-import isNumber from 'lodash/isNumber'
 import { toFixed, formatBalance } from '@/helpers/number-format'
 import { isAd, isEs, isRp, isMaxLoss, isLossMuch, isExchangeFail, errorTextOutput } from '@/helpers/error-handler'
 
 // === Constants === //
-import { MULTIPLE_OF_GAS, MAX_GAS_LIMIT } from '@/constants'
 import { WETH_ADDRESS } from '@/constants/tokens'
 import { BN_18 } from '@/constants/big-number'
 
@@ -53,15 +52,14 @@ export default function Withdraw({
   wethDecimals,
   userProvider,
   onCancel,
-  isBalanceLoading,
   reloadBalance,
   POOL_ADDRESS,
-  POOL_SERVICE_ABI
+  POOL_SERVICE_ABI,
+  dieselBalanceLoading
 }) {
   const classes = useStyles()
   const dispatch = useDispatch()
   const [toValue, setToValue] = useState('')
-  const [allowMaxLoss, setAllowMaxLoss] = useState('0.3')
   const [estimateWithdrawArray, setEstimateWithdrawArray] = useState([])
   const [isEstimate, setIsEstimate] = useState(false)
   const [isWithdrawLoading, setIsWithdrawLoading] = useState(false)
@@ -69,6 +67,8 @@ export default function Withdraw({
   const [withdrawError, setWithdrawError] = useState({})
 
   const address = useUserAddress(userProvider)
+
+  const { removeLiquidity } = usePool(POOL_ADDRESS, POOL_SERVICE_ABI, userProvider)
 
   // const [burnTokens, setBurnTokens] = useState([
   //   // {
@@ -90,50 +90,53 @@ export default function Withdraw({
   const estimateWithdraw = useCallback(
     debounce(async () => {
       setIsEstimate(true)
-      const vaultContract = new ethers.Contract(POOL_ADDRESS, POOL_SERVICE_ABI, userProvider)
-      const nextValue = BigNumber.from(BN(toValue).multipliedBy(BigNumber.from(10).pow(dieselDecimals).toString()).toFixed())
-      const allowMaxLossValue = BigNumber.from(1)
-      const signer = userProvider.getSigner()
-      const vaultContractWithSigner = vaultContract.connect(signer)
+      // const vaultContract = new ethers.Contract(POOL_ADDRESS, POOL_SERVICE_ABI, userProvider)
+      // const nextValue = BigNumber.from(BN(toValue).multipliedBy(BigNumber.from(10).pow(dieselDecimals).toString()).toFixed())
+      // const allowMaxLossValue = BigNumber.from(1)
+      // const signer = userProvider.getSigner()
+      // const vaultContractWithSigner = vaultContract.connect(signer)
 
-      try {
-        const [tokens, amounts] = await vaultContractWithSigner.callStatic.burn(nextValue, allowMaxLossValue)
-        console.log('estimate withdraw result:', tokens, amounts)
+      // try {
+      //   const [tokens, amounts] = await vaultContractWithSigner.callStatic.burn(nextValue, allowMaxLossValue)
+      //   console.log('estimate withdraw result:', tokens, amounts)
 
-        setEstimateWithdrawArray([])
-      } catch (error) {
-        console.log('estimate withdraw error', error)
-        console.log('withdraw original error :', error)
-        const errorMsg = errorTextOutput(error)
-        let tip = ''
-        if (isEs(errorMsg)) {
-          tip = 'Vault has been shut down, please try again later!'
-        } else if (isAd(errorMsg)) {
-          tip = 'Vault is in adjustment status, please try again later!'
-        } else if (isRp(errorMsg)) {
-          tip = 'Vault is in rebase status, please try again later!'
-        } else if (isMaxLoss(errorMsg)) {
-          tip = 'Failed to withdraw, please increase the Max Loss!'
-        } else if (isLossMuch(errorMsg)) {
-          tip = 'Failed to exchange, please increase the exchange slippage!'
-        } else if (isExchangeFail(errorMsg)) {
-          tip = 'Failed to exchange, Please try again later!'
-        } else {
-          tip = errorMsg
-        }
-        dispatch(
-          warmDialog({
-            open: true,
-            type: 'error',
-            message: tip
-          })
-        )
-        setEstimateWithdrawArray(undefined)
-      } finally {
-        setTimeout(() => {
-          setIsEstimate(false)
-        }, 500)
-      }
+      //   setEstimateWithdrawArray([])
+      // } catch (error) {
+      //   console.log('estimate withdraw error', error)
+      //   console.log('withdraw original error :', error)
+      //   const errorMsg = errorTextOutput(error)
+      //   let tip = ''
+      //   if (isEs(errorMsg)) {
+      //     tip = 'Vault has been shut down, please try again later!'
+      //   } else if (isAd(errorMsg)) {
+      //     tip = 'Vault is in adjustment status, please try again later!'
+      //   } else if (isRp(errorMsg)) {
+      //     tip = 'Vault is in rebase status, please try again later!'
+      //   } else if (isMaxLoss(errorMsg)) {
+      //     tip = 'Failed to withdraw, please increase the Max Loss!'
+      //   } else if (isLossMuch(errorMsg)) {
+      //     tip = 'Failed to exchange, please increase the exchange slippage!'
+      //   } else if (isExchangeFail(errorMsg)) {
+      //     tip = 'Failed to exchange, Please try again later!'
+      //   } else {
+      //     tip = errorMsg
+      //   }
+      //   dispatch(
+      //     warmDialog({
+      //       open: true,
+      //       type: 'error',
+      //       message: tip
+      //     })
+      //   )
+      //   setEstimateWithdrawArray(undefined)
+      // } finally {
+      //   setTimeout(() => {
+      //     setIsEstimate(false)
+      //   }, 500)
+      // }
+      setTimeout(() => {
+        setIsEstimate(false)
+      }, 500)
     }, 1500)
   )
 
@@ -159,38 +162,13 @@ export default function Withdraw({
       })
     }
 
-    if (!isValidAllowLoss()) {
-      return setWithdrawError({
-        type: 'warning',
-        message: 'Enter the correct Max Loss value.'
-      })
-    }
-
     withdrawValidFinish = Date.now()
     setCurrentStep(1)
-    const vaultContract = new ethers.Contract(POOL_ADDRESS, POOL_SERVICE_ABI, userProvider)
-    const signer = userProvider.getSigner()
     const nextValue = BigNumber.from(BN(toValue).multipliedBy(BigNumber.from(10).pow(dieselDecimals).toString()).toFixed())
     try {
-      const vaultContractWithSigner = vaultContract.connect(signer)
-
       getSwapInfoFinish = Date.now()
       setCurrentStep(2)
-      let tx
-      // if gasLimit times not 1, need estimateGas
-      if (isNumber(MULTIPLE_OF_GAS) && MULTIPLE_OF_GAS !== 1) {
-        const gas = await vaultContractWithSigner.estimateGas.burn(nextValue)
-        setCurrentStep(3)
-        estimateGasFinish = Date.now()
-        const gasLimit = Math.ceil(gas * MULTIPLE_OF_GAS)
-        // gasLimit not exceed maximum
-        const maxGasLimit = gasLimit < MAX_GAS_LIMIT ? gasLimit : MAX_GAS_LIMIT
-        tx = await vaultContractWithSigner.burn(nextValue, {
-          gasLimit: maxGasLimit
-        })
-      } else {
-        tx = await vaultContractWithSigner.burn(nextValue)
-      }
+      let tx = await removeLiquidity(nextValue)
       withdrawFinish = Date.now()
 
       const { events } = await tx.wait()
@@ -289,21 +267,10 @@ export default function Withdraw({
     return true
   }
 
-  /**
-   * check if allow loss is valid
-   * @returns
-   */
-  const isValidAllowLoss = () => {
-    if (allowMaxLoss === '' || isEmpty(allowMaxLoss.replace(/ /g, ''))) return
-    if (isNaN(allowMaxLoss)) return false
-    if (allowMaxLoss < 0 || allowMaxLoss > 50) return false
-    return true
-  }
-
   useEffect(() => {
     // need open advanced setting
     // allowLoss, toValue need valid
-    if (isValidAllowLoss() && isValidToValue()) {
+    if (isValidToValue()) {
       estimateWithdraw()
     }
     if (isEmpty(toValue)) {
@@ -313,7 +280,7 @@ export default function Withdraw({
       setEstimateWithdrawArray([])
       return estimateWithdraw.cancel()
     }
-  }, [toValue, allowMaxLoss])
+  }, [toValue])
 
   const handleAmountChange = event => {
     try {
@@ -324,7 +291,7 @@ export default function Withdraw({
   }
 
   const handleMaxClick = async () => {
-    const [nextEthiBalance] = await reloadBalance()
+    const nextEthiBalance = await reloadBalance()
     setToValue(formatBalance(nextEthiBalance, dieselDecimals, { showAll: true }))
   }
 
@@ -383,8 +350,7 @@ export default function Withdraw({
             </GridItem>
             <GridItem xs={12} sm={12} md={12} lg={12}>
               <p className={classes.estimateText} title={formatBalance(item.balance, item.decimals, { showAll: true })}>
-                Balance:&nbsp;
-                <Loading loading={isBalanceLoading}>{formatBalance(item.balance, item.decimals)}</Loading>
+                Balance:&nbsp;{formatBalance(item.balance, item.decimals)}
               </p>
             </GridItem>
           </GridContainer>
@@ -394,8 +360,6 @@ export default function Withdraw({
   }
 
   const isValidToValueFlag = isValidToValue()
-  const isValidAllowLossFlag = isValidAllowLoss()
-
   const isLogin = !isEmpty(userProvider)
 
   return (
@@ -410,7 +374,7 @@ export default function Withdraw({
               <GridContainer justify="center" spacing={2}>
                 <GridItem xs={4} sm={4} md={4} lg={4}>
                   <div className={classes.tokenInfo}>
-                    <span className={classes.tokenName}>Diesel Token</span>
+                    <span className={classes.tokenName}>Diesel</span>
                   </div>
                 </GridItem>
                 <GridItem xs={8} sm={8} md={8} lg={8}>
@@ -429,7 +393,7 @@ export default function Withdraw({
             <GridItem xs={6} sm={6} md={6} lg={6}>
               <p className={classes.estimateText} title={formatBalance(dieselBalance, dieselDecimals, { showAll: true })}>
                 Balance:&nbsp;
-                <Loading loading={isBalanceLoading}>{formatBalance(dieselBalance, dieselDecimals)}</Loading>
+                <Loading loading={dieselBalanceLoading}>{formatBalance(dieselBalance, dieselDecimals)}</Loading>
               </p>
             </GridItem>
             {address && (
@@ -446,25 +410,6 @@ export default function Withdraw({
             </GridItem>
             <GridItem xs={12} sm={12} md={12} lg={12}>
               {renderEstimate()}
-            </GridItem>
-          </GridContainer>
-          <GridContainer className={classes.maxlossContainer}>
-            <GridItem xs={4} sm={4} md={4} className={classes.slippageTitle}>
-              Max loss(%):
-            </GridItem>
-            <GridItem xs={8} sm={8} md={8}>
-              <CustomTextField
-                classes={{ root: classes.input }}
-                value={allowMaxLoss}
-                placeholder="Allow loss percent"
-                maxEndAdornment
-                onMaxClick={() => setAllowMaxLoss('50')}
-                onChange={event => {
-                  const value = event.target.value
-                  setAllowMaxLoss(value)
-                }}
-                error={!isUndefined(isValidAllowLossFlag) && !isValidAllowLossFlag}
-              />
             </GridItem>
           </GridContainer>
           <GridContainer>
