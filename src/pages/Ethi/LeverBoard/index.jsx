@@ -192,8 +192,8 @@ const LeverBoard = props => {
         <CardV2
           content={
             <GridContainer>
-              {map(data, i => (
-                <GridItem xs={6} sm={6} md={6}>
+              {map(data, (i, index) => (
+                <GridItem key={index} xs={6} sm={6} md={6}>
                   {i.title && <span>{i.title}:</span>}
                   <span>{i.content}</span>
                 </GridItem>
@@ -208,8 +208,8 @@ const LeverBoard = props => {
           title="调节杠杆率"
           content={
             <GridContainer>
-              {map(resetData, i => (
-                <GridItem xs={6} sm={6} md={6}>
+              {map(resetData, (i, index) => (
+                <GridItem key={index} xs={6} sm={6} md={6}>
                   {i.title && <span>{i.title}:</span>}
                   <span>{i.content}</span>
                 </GridItem>
