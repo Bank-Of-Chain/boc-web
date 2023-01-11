@@ -9,6 +9,7 @@ import Slider from '@material-ui/core/Slider'
 import Button from '@/components/CustomButtons/Button'
 import LeverDeposit from './../LeverDeposit'
 import LeverWithdraw from './../LeverWithdraw'
+import CreditCreate from './../CreditCreate'
 import CardV2 from '@/components/Card/CardV2'
 import Modal from '@material-ui/core/Modal'
 import Paper from '@material-ui/core/Paper'
@@ -33,23 +34,42 @@ const LeverBoard = props => {
   const classes = useStyles()
   const { CREDIT_POOL_ADDRESS, CREDIT_POOL_ABI, userProvider } = props
   const [isDeposit, setIsDeposit] = useState()
-  const { balance, mortgageAmount, creditAddress, debtAmount, healthRatio, leverRatio, borrowInterest, vaultApy, personalApy } = useCredit(
-    CREDIT_POOL_ADDRESS,
-    CREDIT_POOL_ABI,
-    userProvider
-  )
+  const [creditCreateModal, setCreditCreateModal] = useState(false)
+  const creditInfo = useCredit(CREDIT_POOL_ADDRESS, CREDIT_POOL_ABI, userProvider)
+  const {
+    balance,
+    mortgageAmount,
+    creditAddress,
+    debtAmount,
+    healthRatio,
+    leverRatio,
+    borrowInterest,
+    vaultApy,
+    personalApy,
+    hasOpenedCreditAccount
+  } = creditInfo
 
-  if (isEmpty(creditAddress)) {
+  if (!hasOpenedCreditAccount) {
     return (
       <GridItem xs={9} sm={9} md={9}>
         <div className={classes.notConnect}>
           <div>We have not credit account!</div>
           <div className={classes.textBottom}>
-            <Button color="colorful-border" size="lg">
+            <Button color="colorful-border" size="lg" onClick={() => setCreditCreateModal(true)}>
               Going to create a credit account
             </Button>
           </div>
         </div>
+        <Modal className={classes.modal} open={creditCreateModal} aria-labelledby="simple-modal-title" aria-describedby="simple-modal-description">
+          <Paper elevation={3} className={classes.depositModal}>
+            <CreditCreate
+              CREDIT_POOL_ADDRESS={CREDIT_POOL_ADDRESS}
+              CREDIT_POOL_ABI={CREDIT_POOL_ABI}
+              userProvider={userProvider}
+              onCancel={() => setCreditCreateModal(false)}
+            />
+          </Paper>
+        </Modal>
       </GridItem>
     )
   }

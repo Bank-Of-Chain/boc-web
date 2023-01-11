@@ -56,7 +56,12 @@ const Lend = props => {
     dispatch(setCurrentTab(tab))
   }
 
-  const { balance: wethBalance, decimals: wethDecimals, loading: wethBalanceLoading } = useErc20Token(WETH_ADDRESS, userProvider)
+  const {
+    balance: wethBalance,
+    decimals: wethDecimals,
+    loading: wethBalanceLoading,
+    queryBalance: queryWethBalance
+  } = useErc20Token(WETH_ADDRESS, userProvider)
   const {
     balance: dieselBalance,
     decimals: dieselDecimals,
@@ -64,34 +69,15 @@ const Lend = props => {
     queryBalance: queryDieselBalance
   } = useErc20Token(DIESEL_ADDRESS, userProvider)
 
+  const reloadBalance = () => {
+    setOperateIndex(-1)
+    queryDieselBalance()
+    queryWethBalance()
+  }
+
   useEffect(() => {
     setCurrent(INVEST_TAB.lending)
   }, [])
-
-  const renderBody = () => {
-    if (!userProvider)
-      return (
-        <GridItem xs={9} sm={9} md={9}>
-          <div className={classes.notConnect}>
-            <div>Wallet not connected.</div>
-            <div className={classes.textBottom}>Connect to your Wallet address to operate.</div>
-          </div>
-        </GridItem>
-      )
-    return (
-      <GridItem xs={9} sm={9} md={9}>
-        <PoolsTable
-          actions={(index, type) => {
-            setOperateIndex(index)
-            setOperateType(type)
-          }}
-          POOL_ADDRESS={POOL_ADDRESS}
-          POOL_SERVICE_ABI={POOL_SERVICE_ABI}
-          userProvider={userProvider}
-        />
-      </GridItem>
-    )
-  }
 
   return (
     <div className={classes.container}>
@@ -114,7 +100,17 @@ const Lend = props => {
             </ListItem>
           </List>
         </GridItem>
-        {renderBody()}
+        <GridItem xs={9} sm={9} md={9}>
+          <PoolsTable
+            actions={(index, type) => {
+              setOperateIndex(index)
+              setOperateType(type)
+            }}
+            POOL_ADDRESS={POOL_ADDRESS}
+            POOL_SERVICE_ABI={POOL_SERVICE_ABI}
+            userProvider={userProvider}
+          />
+        </GridItem>
       </GridContainer>
       <Modal
         className={classes.modal}
@@ -126,13 +122,12 @@ const Lend = props => {
           <Withdraw
             dieselBalance={dieselBalance}
             dieselDecimals={dieselDecimals}
+            dieselBalanceLoading={dieselBalanceLoading}
             POOL_ADDRESS={POOL_ADDRESS}
             POOL_SERVICE_ABI={POOL_SERVICE_ABI}
-            wethBalance={wethBalance}
-            wethDecimals={wethDecimals}
             userProvider={userProvider}
-            reloadBalance={queryDieselBalance}
-            dieselBalanceLoading={dieselBalanceLoading}
+            reloadBalance={reloadBalance}
+            queryDieselBalance={queryDieselBalance}
             onCancel={() => setOperateIndex(-1)}
           />
         </Paper>
@@ -145,7 +140,6 @@ const Lend = props => {
       >
         <Paper elevation={3} className={classes.depositModal}>
           <Deposit
-            dieselBalance={dieselBalance}
             dieselDecimals={dieselDecimals}
             POOL_ADDRESS={POOL_ADDRESS}
             POOL_SERVICE_ABI={POOL_SERVICE_ABI}
@@ -153,6 +147,7 @@ const Lend = props => {
             isBalanceLoading={wethBalanceLoading}
             wethDecimals={wethDecimals}
             userProvider={userProvider}
+            reloadBalance={reloadBalance}
             wethBalanceLoading={wethBalanceLoading}
             onCancel={() => setOperateIndex(-1)}
           />

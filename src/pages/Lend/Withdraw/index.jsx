@@ -34,7 +34,6 @@ import { toFixed, formatBalance } from '@/helpers/number-format'
 import { isAd, isEs, isRp, isMaxLoss, isLossMuch, isExchangeFail, errorTextOutput } from '@/helpers/error-handler'
 
 // === Constants === //
-import { WETH_ADDRESS } from '@/constants/tokens'
 import { BN_18 } from '@/constants/big-number'
 
 // === Styles === //
@@ -43,16 +42,15 @@ import styles from './style'
 const { BigNumber } = ethers
 const useStyles = makeStyles(styles)
 
-const steps = [{ title: 'Shares Validation' }, { title: 'Gas Estimates' }, { title: 'Withdraw' }]
+const steps = [{ title: 'Amounts Validation' }, { title: 'Gas Estimates' }, { title: 'Withdraw' }]
 
 export default function Withdraw({
   dieselBalance,
   dieselDecimals,
-  wethBalance,
-  wethDecimals,
   userProvider,
   onCancel,
   reloadBalance,
+  queryDieselBalance,
   POOL_ADDRESS,
   POOL_SERVICE_ABI,
   dieselBalanceLoading
@@ -70,70 +68,11 @@ export default function Withdraw({
 
   const { removeLiquidity } = usePool(POOL_ADDRESS, POOL_SERVICE_ABI, userProvider)
 
-  // const [burnTokens, setBurnTokens] = useState([
-  //   // {
-  //   //   address: ETH_ADDRESS,
-  //   //   amount: '10000000000000000000',
-  //   //   symbol: 'ETH'
-  //   // },
-  //   // {
-  //   //   address: WETH_ADDRESS,
-  //   //   amount: '1000000000000000000',
-  //   //   symbol: 'WETH'
-  //   // }
-  // ])
-  console.log('WETH_ADDRESS=', WETH_ADDRESS, wethBalance, wethDecimals)
-  const [isShowZipModal] = useState(false)
-
   const [pegTokenPrice] = useState(BN_18)
 
   const estimateWithdraw = useCallback(
     debounce(async () => {
       setIsEstimate(true)
-      // const vaultContract = new ethers.Contract(POOL_ADDRESS, POOL_SERVICE_ABI, userProvider)
-      // const nextValue = BigNumber.from(BN(toValue).multipliedBy(BigNumber.from(10).pow(dieselDecimals).toString()).toFixed())
-      // const allowMaxLossValue = BigNumber.from(1)
-      // const signer = userProvider.getSigner()
-      // const vaultContractWithSigner = vaultContract.connect(signer)
-
-      // try {
-      //   const [tokens, amounts] = await vaultContractWithSigner.callStatic.burn(nextValue, allowMaxLossValue)
-      //   console.log('estimate withdraw result:', tokens, amounts)
-
-      //   setEstimateWithdrawArray([])
-      // } catch (error) {
-      //   console.log('estimate withdraw error', error)
-      //   console.log('withdraw original error :', error)
-      //   const errorMsg = errorTextOutput(error)
-      //   let tip = ''
-      //   if (isEs(errorMsg)) {
-      //     tip = 'Vault has been shut down, please try again later!'
-      //   } else if (isAd(errorMsg)) {
-      //     tip = 'Vault is in adjustment status, please try again later!'
-      //   } else if (isRp(errorMsg)) {
-      //     tip = 'Vault is in rebase status, please try again later!'
-      //   } else if (isMaxLoss(errorMsg)) {
-      //     tip = 'Failed to withdraw, please increase the Max Loss!'
-      //   } else if (isLossMuch(errorMsg)) {
-      //     tip = 'Failed to exchange, please increase the exchange slippage!'
-      //   } else if (isExchangeFail(errorMsg)) {
-      //     tip = 'Failed to exchange, Please try again later!'
-      //   } else {
-      //     tip = errorMsg
-      //   }
-      //   dispatch(
-      //     warmDialog({
-      //       open: true,
-      //       type: 'error',
-      //       message: tip
-      //     })
-      //   )
-      //   setEstimateWithdrawArray(undefined)
-      // } finally {
-      //   setTimeout(() => {
-      //     setIsEstimate(false)
-      //   }, 500)
-      // }
       setTimeout(() => {
         setIsEstimate(false)
       }, 500)
@@ -222,6 +161,7 @@ export default function Withdraw({
       setIsWithdrawLoading(false)
       setWithdrawError({})
       setCurrentStep(0)
+      reloadBalance()
     }, 2000)
     // log withdraw total time
     const totalTime = withdrawTransationFinish - withdrawTimeStart
@@ -291,7 +231,7 @@ export default function Withdraw({
   }
 
   const handleMaxClick = async () => {
-    const nextEthiBalance = await reloadBalance()
+    const nextEthiBalance = await queryDieselBalance()
     setToValue(formatBalance(nextEthiBalance, dieselDecimals, { showAll: true }))
   }
 
@@ -482,29 +422,6 @@ export default function Withdraw({
                 </Button>
               </div>
             </Paper>
-          </Modal>
-          <Modal
-            className={classes.modal}
-            open={isShowZipModal && !!address}
-            aria-labelledby="simple-modal-title"
-            aria-describedby="simple-modal-description"
-          >
-            <div className={classes.swapBody}>
-              {/* {!isEmpty(address) && !isEmpty(exchangeManager) && (
-                <ApproveArrayV3
-                  isEthi
-                  address={address}
-                  tokens={burnTokens}
-                  userProvider={userProvider}
-                  exchangeManager={exchangeManager}
-                  EXCHANGE_ADAPTER_ABI={EXCHANGE_ADAPTER_ABI}
-                  EXCHANGE_AGGREGATOR_ABI={EXCHANGE_AGGREGATOR_ABI}
-                  slippage={slipper}
-                  onSlippageChange={setSlipper}
-                  handleClose={() => setIsShowZipModal(false)}
-                />
-              )} */}
-            </div>
           </Modal>
         </div>
       </GridItem>
