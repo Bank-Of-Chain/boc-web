@@ -38,6 +38,7 @@ const CreditCreate = ({ userProvider, onCancel, CREDIT_POOL_ADDRESS, CREDIT_POOL
   const classes = useStyles()
   const dispatch = useDispatch()
   const [ethValue, setEthValue] = useState('')
+  const [lever, setLever] = useState(1)
   const [isLoading, setIsLoading] = useState(false)
   const loadingTimer = useRef()
 
@@ -101,7 +102,8 @@ const CreditCreate = ({ userProvider, onCancel, CREDIT_POOL_ADDRESS, CREDIT_POOL
     await approve(CREDIT_POOL_ADDRESS, amount)
     console.log('approve success')
 
-    await openCreditAccount(amount, 300)
+    const nextLever = 100 * lever
+    await openCreditAccount(amount, nextLever)
       .then(tx => tx.wait())
       .then(() => {
         isSuccess = true
@@ -177,11 +179,12 @@ const CreditCreate = ({ userProvider, onCancel, CREDIT_POOL_ADDRESS, CREDIT_POOL
                 <p className={classes.estimateText}>To</p>
                 <div className={classes.estimateBalanceTitle}>
                   <Slider
-                    defaultValue={1}
+                    defaultValue={lever}
                     getAriaValueText={v => v}
                     aria-labelledby="discrete-slider"
                     valueLabelDisplay="auto"
                     step={0.5}
+                    onChange={(e, v) => setLever(v)}
                     marks
                     min={0}
                     max={3}

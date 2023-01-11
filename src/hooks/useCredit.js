@@ -37,7 +37,7 @@ const useCredit = (CREDIT_POOL_ADDRESS, CREDIT_POOL_ABI, userProvider) => {
   const openCreditAccount = (borrowedAmount, leverageFactor) => {
     const creditPoolContract = new ethers.Contract(CREDIT_POOL_ADDRESS, CREDIT_POOL_ABI, userProvider)
     const signer = userProvider.getSigner()
-    return creditPoolContract.connect(signer).openCreditAccount(borrowedAmount, leverageFactor)
+    return creditPoolContract.connect(signer).openCreditAccount(borrowedAmount, leverageFactor).then(queryCreditAddress)
   }
 
   /**
