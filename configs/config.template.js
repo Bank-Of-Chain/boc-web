@@ -131,7 +131,8 @@ const config1 = {
       abi_version: 'ethi-v1.6.0',
       VAULT_ADDRESS: ETHI_VAULT,
       ETHI_ADDRESS: ETHI_FOR_ETH,
-      VAULT_BUFFER_ADDRESS: VAULT_BUFFER_FOR_ETHI_ETH
+      VAULT_BUFFER_ADDRESS: VAULT_BUFFER_FOR_ETHI_ETH,
+      CREDIT_POOL_ADDRESS: CREDIT_POOL_ADDRESS
     },
     {
       id: 'lend',
