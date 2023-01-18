@@ -32,7 +32,7 @@ export default function Home() {
   useEffect(() => {
     getHomePageData().then(data => {
       const { totalValueLocked, holders } = data
-      setTvl(numeral(toFixed(totalValueLocked, BN_18)).format('0.0 a'))
+      setTvl(numeral(toFixed(totalValueLocked, BN_18)).format('0,0 a'))
       setHolders(numeral(holders).format('0,0'))
     })
   }, [])
