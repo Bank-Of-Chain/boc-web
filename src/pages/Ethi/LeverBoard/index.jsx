@@ -20,7 +20,6 @@ import Slider from '@/components/Slider'
 // === Hooks === //
 import useErc20Token from '@/hooks/useErc20Token'
 import useCreditFacade from '@/hooks/useCreditFacade'
-import useCreditManager from '@/hooks/useCreditManager'
 
 // === Reducers === //
 import { warmDialog } from '@/reducers/meta-reducer'
@@ -71,10 +70,11 @@ const LeverBoard = props => {
     distributePegTokenTick,
     creditManagerAddress,
     queryBaseInfo,
-    withdrawFromVault
+    withdrawFromVault,
+    creditAddress,
+    getCreditAddress,
+    getCreditAccountPegTokenAmount
   } = creditInfo
-
-  const { creditAddress, getCreditAddress, getCreditAccountPegTokenAmount } = useCreditManager(creditManagerAddress, CREDIT_MANAGER_ABI, userProvider)
 
   const { collateralAmount } = useCreditAccount(creditAddress, CREDIT_ADDRESS_ABI, userProvider)
 

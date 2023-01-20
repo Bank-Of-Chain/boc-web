@@ -31,7 +31,6 @@ function useAbiResolver(abiPrefix) {
     CREDIT_FACADE_ABI,
     CREDIT_ADDRESS_ABI,
     STAKING_POOL_ABI,
-    CREDIT_MANAGER_ABI,
     DIESEL_TOKEN_ABI
 
   try {
@@ -71,12 +70,6 @@ function useAbiResolver(abiPrefix) {
   }
 
   try {
-    CREDIT_MANAGER_ABI = abiLoader(abiPrefix, 'credit-manager-abi.json')
-  } catch (error) {
-    CREDIT_MANAGER_ABI = []
-  }
-
-  try {
     EXCHANGE_AGGREGATOR_ABI = abiLoader(abiPrefix, 'exchange-aggregator-abi.json')
   } catch (error) {
     EXCHANGE_AGGREGATOR_ABI = []
@@ -108,7 +101,6 @@ function useAbiResolver(abiPrefix) {
     PRICE_ORCALE_ABI,
     STAKING_POOL_ABI,
     DIESEL_TOKEN_ABI,
-    CREDIT_MANAGER_ABI,
     CREDIT_ADDRESS_ABI,
     EXCHANGE_ADAPTER_ABI,
     EXCHANGE_AGGREGATOR_ABI

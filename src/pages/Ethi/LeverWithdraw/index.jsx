@@ -23,7 +23,6 @@ import { warmDialog } from '@/reducers/meta-reducer'
 import useCreditFacade from '@/hooks/useCreditFacade'
 import useErc20Token from '@/hooks/useErc20Token'
 import useUserAddress from '@/hooks/useUserAddress'
-import useCreditManager from '@/hooks/useCreditManager'
 
 // === Utils === //
 import isUndefined from 'lodash/isUndefined'
@@ -40,16 +39,7 @@ const useStyles = makeStyles(styles)
 
 const steps = [{ title: 'Shares Validation' }, { title: 'Gas Estimates' }, { title: 'Withdraw' }]
 
-const LeverWithdraw = ({
-  userProvider,
-  ETHI_ADDRESS,
-  VAULT_BUFFER_ADDRESS,
-  CREDIT_FACADE_ADDRESS,
-  CREDIT_FACADE_ABI,
-  creditManagerAddress,
-  CREDIT_MANAGER_ABI,
-  onCancel
-}) => {
+const LeverWithdraw = ({ userProvider, ETHI_ADDRESS, VAULT_BUFFER_ADDRESS, CREDIT_FACADE_ADDRESS, CREDIT_FACADE_ABI, onCancel }) => {
   const classes = useStyles()
   const dispatch = useDispatch()
   const [toValue, setToValue] = useState('')
@@ -57,8 +47,7 @@ const LeverWithdraw = ({
   const [currentStep, setCurrentStep] = useState(0)
   const [withdrawError, setWithdrawError] = useState({})
 
-  const { withdrawFromVault } = useCreditFacade(CREDIT_FACADE_ADDRESS, CREDIT_FACADE_ABI, userProvider)
-  const { creditAddress, getCreditAccountPegTokenAmount } = useCreditManager(creditManagerAddress, CREDIT_MANAGER_ABI, userProvider)
+  const { withdrawFromVault, creditAddress, getCreditAccountPegTokenAmount } = useCreditFacade(CREDIT_FACADE_ADDRESS, CREDIT_FACADE_ABI, userProvider)
 
   const [ethiBalance, setEthiBalance] = useState(BigNumber.from(0))
   const [, setEthiVaultBufferBalance] = useState(BigNumber.from(0))
