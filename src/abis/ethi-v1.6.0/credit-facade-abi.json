@@ -11,11 +11,6 @@
   },
   {
     "inputs": [],
-    "name": "AdaptersOrCreditFacadeOnlyException",
-    "type": "error"
-  },
-  {
-    "inputs": [],
     "name": "AllowanceFailedException",
     "type": "error"
   },
@@ -53,6 +48,16 @@
   {
     "inputs": [],
     "name": "CantTransferLiquidatableAccountException",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "CloseCreditAccountNotAllowedException",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "CreditAccountIsWaitingForSwapException",
     "type": "error"
   },
   {
@@ -122,11 +127,6 @@
   },
   {
     "inputs": [],
-    "name": "TargetContractNotAllowedException",
-    "type": "error"
-  },
-  {
-    "inputs": [],
     "name": "TokenAlreadyAddedException",
     "type": "error"
   },
@@ -192,12 +192,6 @@
         "indexed": true,
         "internalType": "address",
         "name": "borrower",
-        "type": "address"
-      },
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "to",
         "type": "address"
       }
     ],
@@ -281,12 +275,6 @@
         "internalType": "address",
         "name": "to",
         "type": "address"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "remainingFunds",
-        "type": "uint256"
       }
     ],
     "name": "LiquidateCreditAccount",
@@ -365,6 +353,25 @@
       }
     ],
     "name": "OpenCreditAccount",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "onBehalfOf",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "value",
+        "type": "uint256"
+      }
+    ],
+    "name": "RedeemCollateral",
     "type": "event"
   },
   {
@@ -460,34 +467,16 @@
         "internalType": "uint256",
         "name": "_amount",
         "type": "uint256"
+      },
+      {
+        "internalType": "uint16",
+        "name": "_leverageFactor",
+        "type": "uint16"
       }
     ],
     "name": "addCollateral",
     "outputs": [],
     "stateMutability": "payable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "targetContract",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "token",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "amount",
-        "type": "uint256"
-      }
-    ],
-    "name": "approve",
-    "outputs": [],
-    "stateMutability": "nonpayable",
     "type": "function"
   },
   {
@@ -546,63 +535,6 @@
       }
     ],
     "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "components": [
-          {
-            "internalType": "address",
-            "name": "platform",
-            "type": "address"
-          },
-          {
-            "internalType": "uint8",
-            "name": "method",
-            "type": "uint8"
-          },
-          {
-            "internalType": "bytes",
-            "name": "data",
-            "type": "bytes"
-          },
-          {
-            "components": [
-              {
-                "internalType": "uint256",
-                "name": "amount",
-                "type": "uint256"
-              },
-              {
-                "internalType": "address",
-                "name": "srcToken",
-                "type": "address"
-              },
-              {
-                "internalType": "address",
-                "name": "dstToken",
-                "type": "address"
-              },
-              {
-                "internalType": "address",
-                "name": "receiver",
-                "type": "address"
-              }
-            ],
-            "internalType": "struct IExchangeAdapter.SwapDescription",
-            "name": "swapDescription",
-            "type": "tuple"
-          }
-        ],
-        "internalType": "struct IExchangeAggregator.SwapParam[]",
-        "name": "_swapParams",
-        "type": "tuple[]"
-      }
-    ],
-    "name": "closeCreditAccount",
-    "outputs": [],
-    "stateMutability": "payable",
     "type": "function"
   },
   {
@@ -678,6 +610,19 @@
   {
     "inputs": [
       {
+        "internalType": "address[]",
+        "name": "_creditAccounts",
+        "type": "address[]"
+      }
+    ],
+    "name": "distributePegTokenTick",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
         "internalType": "address",
         "name": "token",
         "type": "address"
@@ -686,19 +631,6 @@
     "name": "enableToken",
     "outputs": [],
     "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "getCreditAccount",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "_creditAccount",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
     "type": "function"
   },
   {
@@ -827,31 +759,6 @@
   {
     "inputs": [
       {
-        "components": [
-          {
-            "internalType": "address",
-            "name": "target",
-            "type": "address"
-          },
-          {
-            "internalType": "bytes",
-            "name": "callData",
-            "type": "bytes"
-          }
-        ],
-        "internalType": "struct MultiCall[]",
-        "name": "calls",
-        "type": "tuple[]"
-      }
-    ],
-    "name": "multicall",
-    "outputs": [],
-    "stateMutability": "payable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
         "internalType": "uint256",
         "name": "_amount",
         "type": "uint256"
@@ -892,16 +799,60 @@
     "type": "function"
   },
   {
-    "inputs": [],
-    "name": "pegToken",
-    "outputs": [
+    "inputs": [
       {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
+        "components": [
+          {
+            "internalType": "address",
+            "name": "platform",
+            "type": "address"
+          },
+          {
+            "internalType": "uint8",
+            "name": "method",
+            "type": "uint8"
+          },
+          {
+            "internalType": "bytes",
+            "name": "data",
+            "type": "bytes"
+          },
+          {
+            "components": [
+              {
+                "internalType": "uint256",
+                "name": "amount",
+                "type": "uint256"
+              },
+              {
+                "internalType": "address",
+                "name": "srcToken",
+                "type": "address"
+              },
+              {
+                "internalType": "address",
+                "name": "dstToken",
+                "type": "address"
+              },
+              {
+                "internalType": "address",
+                "name": "receiver",
+                "type": "address"
+              }
+            ],
+            "internalType": "struct IExchangeAdapter.SwapDescription",
+            "name": "swapDescription",
+            "type": "tuple"
+          }
+        ],
+        "internalType": "struct IExchangeAggregator.SwapParam[]",
+        "name": "_swapParams",
+        "type": "tuple[]"
       }
     ],
-    "stateMutability": "view",
+    "name": "redeemCollateral",
+    "outputs": [],
+    "stateMutability": "nonpayable",
     "type": "function"
   },
   {
@@ -954,19 +905,6 @@
     "outputs": [
       {
         "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "vault",
-    "outputs": [
-      {
-        "internalType": "contract IVault",
         "name": "",
         "type": "address"
       }
