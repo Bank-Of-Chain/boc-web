@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 
 // === Hooks === //
 import useUserAddress from '@/hooks/useUserAddress'
@@ -9,8 +9,7 @@ import isEmpty from 'lodash/isEmpty'
 
 // === Constants === //
 import { IERC20_ABI } from '@/constants'
-import { ETH_ADDRESS } from '@/constants/tokens'
-import { useCallback } from 'react'
+import { ETH_ADDRESS, WETH_ADDRESS } from '@/constants/tokens'
 
 const { BigNumber } = ethers
 
@@ -20,6 +19,23 @@ const useErc20Token = (tokenAddress, userProvider) => {
   const [decimals, setDecimals] = useState(1)
   const [loading, setLoading] = useState(false)
 
+  const balanceOf = useCallback(
+    async address => {
+      let nextBalance = BigNumber.from(0)
+      if (isEmpty(tokenAddress) || isEmpty(address)) {
+        return nextBalance
+      }
+      if (tokenAddress === ETH_ADDRESS) {
+        nextBalance = await userProvider.getBalance(address)
+      } else {
+        const tokenContract = new ethers.Contract(tokenAddress, IERC20_ABI, userProvider)
+        nextBalance = await tokenContract.balanceOf(address)
+      }
+      return nextBalance
+    },
+    [tokenAddress]
+  )
+
   const queryBalance = useCallback(async () => {
     let nextBalance = BigNumber.from(0)
     if (isEmpty(tokenAddress) || isEmpty(address)) {
@@ -28,12 +44,8 @@ const useErc20Token = (tokenAddress, userProvider) => {
       return nextBalance
     }
     setLoading(true)
-    if (tokenAddress === ETH_ADDRESS) {
-      nextBalance = await userProvider.getBalance(address).finally(() => setLoading(false))
-    } else {
-      const tokenContract = new ethers.Contract(tokenAddress, IERC20_ABI, userProvider)
-      nextBalance = await tokenContract.balanceOf(address).finally(() => setLoading(false))
-    }
+
+    nextBalance = await balanceOf(address).finally(() => setLoading(false))
     setBalance(nextBalance)
     return nextBalance
   }, [tokenAddress, address])
@@ -64,7 +76,8 @@ const useErc20Token = (tokenAddress, userProvider) => {
     // If deposit amount greater than allow amount, reset amount
     if (amount.gt(allowanceAmount)) {
       // If allowance equal 0, approve nextAmount, otherwise approve 0 and approve nextAmount
-      if (allowanceAmount.gt(0)) {
+      // WETH used increaseAllowance with no effect
+      if (allowanceAmount.gt(0) && tokenAddress !== WETH_ADDRESS) {
         console.log('add allowance:', amount.sub(allowanceAmount).toString())
         console.groupEnd('approve')
         return tokenContractWithUser
@@ -113,7 +126,8 @@ const useErc20Token = (tokenAddress, userProvider) => {
     // actions
     approve,
     queryBalance,
-    queryDecimals
+    queryDecimals,
+    balanceOf
   }
 }
 
