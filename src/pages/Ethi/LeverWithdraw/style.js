@@ -46,15 +46,9 @@ const componentsStyle = () => ({
     padding: '1.25rem',
     border: '1px solid #A68EFD',
     marginTop: '0.625rem',
-    background: '#1E1E1F'
-  },
-  maxlossContainer: {
-    padding: '1.25rem',
-    border: '1px solid #A68EFD',
-    marginTop: '0.625rem',
+    background: '#1E1E1F',
     borderBottomLeftRadius: '1.25rem',
-    borderBottomRightRadius: '1.25rem',
-    background: '#1E1E1F'
+    borderBottomRightRadius: '1.25rem'
   },
   estimateText: {
     height: '1.25rem',

@@ -10,7 +10,7 @@ const componentsStyle = () => ({
     fontSize: '1.25rem'
   },
   textBottom: {
-    marginTop: '0.25rem'
+    marginTop: '1rem'
   },
   modal: {
     display: 'flex',

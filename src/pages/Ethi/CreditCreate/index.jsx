@@ -15,10 +15,10 @@ import GridContainer from '@/components/Grid/GridContainer'
 import GridItem from '@/components/Grid/GridItem'
 import CustomTextField from '@/components/CustomTextField'
 import Button from '@/components/CustomButtons/Button'
-import Slider from '@material-ui/core/Slider'
+import Slider from '@/components/Slider'
 
 // === Hooks === //
-import useCredit from '@/hooks/useCredit'
+import useCreditFacade from '@/hooks/useCreditFacade'
 import useErc20Token from '@/hooks/useErc20Token'
 
 // === Utils === //
@@ -34,7 +34,7 @@ import styles from './style'
 const { BigNumber } = ethers
 const useStyles = makeStyles(styles)
 
-const CreditCreate = ({ userProvider, onCancel, CREDIT_POOL_ADDRESS, CREDIT_POOL_ABI }) => {
+const CreditCreate = ({ userProvider, onCancel, CREDIT_FACADE_ADDRESS, CREDIT_FACADE_ABI, getCreditAddress }) => {
   const classes = useStyles()
   const dispatch = useDispatch()
   const [ethValue, setEthValue] = useState('')
@@ -42,9 +42,8 @@ const CreditCreate = ({ userProvider, onCancel, CREDIT_POOL_ADDRESS, CREDIT_POOL
   const [isLoading, setIsLoading] = useState(false)
   const loadingTimer = useRef()
 
-  const { openCreditAccount } = useCredit(CREDIT_POOL_ADDRESS, CREDIT_POOL_ABI, userProvider)
+  const { openCreditAccount, creditManagerAddress } = useCreditFacade(CREDIT_FACADE_ADDRESS, CREDIT_FACADE_ABI, userProvider)
   const { approve, balance: wethBalance, decimals: wethDecimals, loading: wethBalanceLoading } = useErc20Token(WETH_ADDRESS, userProvider)
-
   /**
    * check if value is valid
    * @returns
@@ -99,15 +98,17 @@ const CreditCreate = ({ userProvider, onCancel, CREDIT_POOL_ADDRESS, CREDIT_POOL
     setIsLoading(true)
     let isSuccess = false
     const amount = BigNumber.from(BN(ethValue).multipliedBy(BigNumber.from(10).pow(wethDecimals).toString()).toFixed())
-    await approve(CREDIT_POOL_ADDRESS, amount)
+    await approve(creditManagerAddress, amount)
     console.log('approve success')
 
-    const nextLever = 100 * lever
+    const nextLever = 100 * (lever - 1)
     await openCreditAccount(amount, nextLever)
       .then(tx => tx.wait())
       .then(() => {
         isSuccess = true
+        onCancel()
       })
+      .then(getCreditAddress)
 
     if (isSuccess) {
       setEthValue('')
@@ -176,18 +177,38 @@ const CreditCreate = ({ userProvider, onCancel, CREDIT_POOL_ADDRESS, CREDIT_POOL
             </GridContainer>
             <GridContainer classes={{ root: classes.estimateContainer }}>
               <GridItem xs={12} sm={12} md={12} lg={12}>
-                <p className={classes.estimateText}>To</p>
+                <p className={classes.estimateText}>Current Lever: {lever}</p>
                 <div className={classes.estimateBalanceTitle}>
                   <Slider
-                    defaultValue={lever}
-                    getAriaValueText={v => v}
+                    defaultValue={1}
                     aria-labelledby="discrete-slider"
                     valueLabelDisplay="auto"
-                    step={0.5}
+                    step={0.01}
                     onChange={(e, v) => setLever(v)}
-                    marks
-                    min={0}
-                    max={3}
+                    min={1}
+                    max={5}
+                    marks={[
+                      {
+                        value: 1,
+                        label: '1'
+                      },
+                      {
+                        value: 2,
+                        label: '2'
+                      },
+                      {
+                        value: 3,
+                        label: '3'
+                      },
+                      {
+                        value: 4,
+                        label: '4'
+                      },
+                      {
+                        value: 5,
+                        label: '5'
+                      }
+                    ]}
                   />
                 </div>
               </GridItem>

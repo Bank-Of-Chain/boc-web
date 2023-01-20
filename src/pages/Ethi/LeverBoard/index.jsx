@@ -1,11 +1,10 @@
-/* eslint-disable */
-import React, { useState } from 'react'
+import React, { useState, useCallback, useEffect } from 'react'
 import { makeStyles } from '@material-ui/core/styles'
+import { useDispatch } from 'react-redux'
 
 // === Components === //
 import GridContainer from '@/components/Grid/GridContainer'
 import GridItem from '@/components/Grid/GridItem'
-import Slider from '@material-ui/core/Slider'
 import Button from '@/components/CustomButtons/Button'
 import LeverDeposit from './../LeverDeposit'
 import LeverWithdraw from './../LeverWithdraw'
@@ -15,16 +14,33 @@ import Modal from '@material-ui/core/Modal'
 import Paper from '@material-ui/core/Paper'
 import Tooltip from '@material-ui/core/Tooltip'
 import InfoIcon from '@material-ui/icons/Info'
+import Loading from '@/components/LoadingComponent'
+import Slider from '@/components/Slider'
 
 // === Hooks === //
-import useCredit from '@/hooks/useCredit'
+import useErc20Token from '@/hooks/useErc20Token'
+import useCreditFacade from '@/hooks/useCreditFacade'
+import useCreditManager from '@/hooks/useCreditManager'
+
+// === Reducers === //
+import { warmDialog } from '@/reducers/meta-reducer'
 
 // === Utils === //
+import BN from 'bignumber.js'
+import * as ethers from 'ethers'
+import map from 'lodash/map'
 import isEmpty from 'lodash/isEmpty'
+import isFunction from 'lodash/isFunction'
+import { toFixed } from '@/helpers/number-format'
+
+// === Constants === //
+import { WETH_ADDRESS } from '@/constants/tokens'
 
 // === Styles === //
 import styles from './style'
-import { map } from 'lodash'
+import useCreditAccount from '../../../hooks/useCreditAccount'
+
+const { BigNumber } = ethers
 
 const useStyles = makeStyles(styles)
 
@@ -32,40 +48,122 @@ const icon = <InfoIcon style={{ marginLeft: '0.2rem', fontSize: '1rem' }} />
 
 const LeverBoard = props => {
   const classes = useStyles()
-  const { CREDIT_POOL_ADDRESS, CREDIT_POOL_ABI, userProvider } = props
+  const dispatch = useDispatch()
+  const { CREDIT_FACADE_ADDRESS, CREDIT_FACADE_ABI, userProvider, ETHI_ADDRESS, VAULT_BUFFER_ADDRESS, CREDIT_ADDRESS_ABI, CREDIT_MANAGER_ABI } = props
   const [isDeposit, setIsDeposit] = useState()
+  const [lever, setLever] = useState(1)
+  const [ethiBalance, setEthiBalance] = useState(BigNumber.from(0))
+
   const [creditCreateModal, setCreditCreateModal] = useState(false)
-  const creditInfo = useCredit(CREDIT_POOL_ADDRESS, CREDIT_POOL_ABI, userProvider)
+  const creditInfo = useCreditFacade(CREDIT_FACADE_ADDRESS, CREDIT_FACADE_ABI, userProvider)
+  const { decimals: ethiDecimals } = useErc20Token(ETHI_ADDRESS, userProvider)
+  const { decimals: wethDecimals } = useErc20Token(WETH_ADDRESS, userProvider)
   const {
-    balance,
-    mortgageAmount,
-    creditAddress,
-    debtAmount,
-    healthRatio,
-    leverRatio,
+    decimals,
+    isCreditAddressLoading,
     borrowInterest,
     vaultApy,
     personalApy,
-    hasOpenedCreditAccount
+    increaseDebt,
+    decreaseDebt,
+    redeemCollateral,
+    hasOpenedCreditAccount,
+    distributePegTokenTick,
+    creditManagerAddress,
+    queryBaseInfo,
+    withdrawFromVault
   } = creditInfo
 
-  if (!hasOpenedCreditAccount) {
+  const { creditAddress, getCreditAddress, getCreditAccountPegTokenAmount } = useCreditManager(creditManagerAddress, CREDIT_MANAGER_ABI, userProvider)
+
+  const { collateralAmount } = useCreditAccount(creditAddress, CREDIT_ADDRESS_ABI, userProvider)
+
+  const [estimateApy, setEstimateApy] = useState(BigNumber.from(0))
+  const [balance, setBalance] = useState(BigNumber.from(0))
+  const [debtAmount, setDebtAmount] = useState(BigNumber.from(0))
+  const [healthRatio, setHealthRatio] = useState(0)
+
+  const calcCurrentLeverRadio = useCallback(() => {
+    if (balance.eq(0) || collateralAmount.eq(0)) {
+      return 0
+    }
+    const calcDecimals = BigNumber.from(10).pow(wethDecimals)
+    const currentLeverRadio = toFixed(balance.mul(BigNumber.from(10).pow(wethDecimals)).div(collateralAmount), calcDecimals, 2)
+    return 1 * currentLeverRadio
+  }, [collateralAmount, balance, wethDecimals])
+
+  const updateLever = useCallback(() => {
+    const currentLeverRadio = calcCurrentLeverRadio()
+
+    if (currentLeverRadio === lever) {
+      return dispatch(
+        warmDialog({
+          open: true,
+          type: 'warning',
+          message: 'Please set the correct leverage value'
+        })
+      )
+    }
+    // lever 当前设置的杠杆率
+    const isIncrease = currentLeverRadio > lever
+    const callFunc = isIncrease ? withdrawFromVault : increaseDebt
+    const leverDecimals = BigNumber.from(10).pow(4)
+    const newLever = BigNumber.from(BN(lever).multipliedBy(leverDecimals.toString()).toString())
+    const nextValue = balance.mul(leverDecimals).sub(balance.sub(debtAmount).mul(newLever)).div(leverDecimals).abs()
+    console.log('nextValue=', nextValue.toString())
+    callFunc(nextValue)
+  }, [lever, increaseDebt, decreaseDebt, calcCurrentLeverRadio, debtAmount, balance])
+
+  const leverageRadioValue = calcCurrentLeverRadio()
+
+  const calcEstimateApy = useCallback(() => {
+    const nextEstimateApy = (vaultApy / calcCurrentLeverRadio()) * lever
+    setEstimateApy(nextEstimateApy)
+  }, [lever, calcCurrentLeverRadio])
+
+  useEffect(calcEstimateApy, [calcEstimateApy])
+
+  useEffect(() => {
+    if (isEmpty(creditAddress)) return
+    if (!isFunction(queryBaseInfo)) return
+    queryBaseInfo(creditAddress).then(v => {
+      const { hf, _borrowAmountWithInterestAndFees, _total } = v
+      setBalance(_total)
+      setHealthRatio(hf)
+      setDebtAmount(_borrowAmountWithInterestAndFees)
+    })
+  }, [creditAddress, queryBaseInfo])
+
+  useEffect(() => {
+    setLever(leverageRadioValue)
+  }, [leverageRadioValue])
+
+  useEffect(() => {
+    if (isEmpty(creditAddress)) return
+    if (!isFunction(getCreditAccountPegTokenAmount)) return
+    getCreditAccountPegTokenAmount(creditAddress).then(setEthiBalance)
+  }, [creditAddress, getCreditAccountPegTokenAmount])
+
+  if (!hasOpenedCreditAccount || isCreditAddressLoading !== false) {
     return (
       <GridItem xs={9} sm={9} md={9}>
         <div className={classes.notConnect}>
-          <div>We have not credit account!</div>
-          <div className={classes.textBottom}>
-            <Button color="colorful-border" size="lg" onClick={() => setCreditCreateModal(true)}>
-              Going to create a credit account
-            </Button>
-          </div>
+          <Loading loading={isCreditAddressLoading !== false} className={classes.reloadIcon}>
+            <div>We have not credit account!</div>
+            <div className={classes.textBottom}>
+              <Button color="colorful-border" size="lg" onClick={() => setCreditCreateModal(true)}>
+                Going to create a credit account
+              </Button>
+            </div>
+          </Loading>
         </div>
         <Modal className={classes.modal} open={creditCreateModal} aria-labelledby="simple-modal-title" aria-describedby="simple-modal-description">
           <Paper elevation={3} className={classes.depositModal}>
             <CreditCreate
-              CREDIT_POOL_ADDRESS={CREDIT_POOL_ADDRESS}
-              CREDIT_POOL_ABI={CREDIT_POOL_ABI}
+              CREDIT_FACADE_ADDRESS={CREDIT_FACADE_ADDRESS}
+              CREDIT_FACADE_ABI={CREDIT_FACADE_ABI}
               userProvider={userProvider}
+              getCreditAddress={getCreditAddress}
               onCancel={() => setCreditCreateModal(false)}
             />
           </Paper>
@@ -77,7 +175,7 @@ const LeverBoard = props => {
   const data = [
     {
       title: (
-        <span>
+        <span onClick={() => distributePegTokenTick([creditAddress])}>
           Balance
           <Tooltip
             classes={{
@@ -90,12 +188,18 @@ const LeverBoard = props => {
           </Tooltip>
         </span>
       ),
-      content: balance.toString()
+      content: `${toFixed(balance, BigNumber.from(10).pow(ethiDecimals), 6)} WETH`
     },
     {
       title: (
-        <span>
-          Mortgage
+        <span
+          onClick={() =>
+            redeemCollateral([])
+              .then(tx => tx.wait())
+              .then(getCreditAddress)
+          }
+        >
+          Collateral
           <Tooltip
             classes={{
               tooltip: classes.tooltip
@@ -107,11 +211,17 @@ const LeverBoard = props => {
           </Tooltip>
         </span>
       ),
-      content: mortgageAmount.toString()
+      content: `${toFixed(collateralAmount, BigNumber.from(10).pow(ethiDecimals), 6)} WETH`
     },
     {
       title: (
-        <span>
+        <span
+          onClick={() =>
+            decreaseDebt([])
+              .then(tx => tx.wait())
+              .then(getCreditAddress)
+          }
+        >
           Debts
           <Tooltip
             classes={{
@@ -124,7 +234,7 @@ const LeverBoard = props => {
           </Tooltip>
         </span>
       ),
-      content: debtAmount.toString()
+      content: `${toFixed(debtAmount, BigNumber.from(10).pow(ethiDecimals), 6)} WETH`
     },
     {
       title: (
@@ -141,12 +251,12 @@ const LeverBoard = props => {
           </Tooltip>
         </span>
       ),
-      content: `${healthRatio.toString()}%`
+      content: toFixed(healthRatio, 10000)
     },
     {
       title: (
         <span>
-          Lever Ratio
+          Leverage Ratio
           <Tooltip
             classes={{
               tooltip: classes.tooltip
@@ -158,7 +268,7 @@ const LeverBoard = props => {
           </Tooltip>
         </span>
       ),
-      content: leverRatio
+      content: leverageRadioValue.toFixed(4)
     },
     {
       title: (
@@ -178,10 +288,44 @@ const LeverBoard = props => {
       content: borrowInterest.toString()
     },
     {
+      title: (
+        <span>
+          Vault APY
+          <Tooltip
+            classes={{
+              tooltip: classes.tooltip
+            }}
+            placement="top"
+            title={`ETHi in Credit account.`}
+          >
+            {icon}
+          </Tooltip>
+        </span>
+      ),
+      content: `${vaultApy / 100}%`
+    },
+    {
+      title: (
+        <span>
+          Personal APY
+          <Tooltip
+            classes={{
+              tooltip: classes.tooltip
+            }}
+            placement="top"
+            title={`ETHi in Credit account.`}
+          >
+            {icon}
+          </Tooltip>
+        </span>
+      ),
+      content: `${personalApy / 100}%`
+    },
+    {
       title: '',
       content: (
         <Button color="colorful-border" size="sm" onClick={() => setIsDeposit(true)}>
-          Add Assets
+          Increase Collateral
         </Button>
       )
     },
@@ -189,7 +333,7 @@ const LeverBoard = props => {
       title: '',
       content: (
         <Button color="colorful-border" size="sm" onClick={() => setIsDeposit(false)}>
-          Withdraw
+          Decrease Collateral
         </Button>
       )
     }
@@ -197,12 +341,12 @@ const LeverBoard = props => {
 
   const resetData = [
     {
-      title: '调节后的杠杆率',
-      content: balance.toString()
+      title: 'The next leverage ratio',
+      content: `${lever.toString()}`
     },
     {
-      title: '预期APY',
-      content: `${balance.toString()}%`
+      title: 'Estimate APY',
+      content: `${(estimateApy / 100).toFixed(4)}%`
     }
   ]
 
@@ -214,40 +358,78 @@ const LeverBoard = props => {
             <GridContainer>
               {map(data, (i, index) => (
                 <GridItem key={index} xs={6} sm={6} md={6}>
-                  {i.title && <span>{i.title}:</span>}
+                  {i.title && <span>{i.title}:&nbsp;&nbsp;</span>}
                   <span>{i.content}</span>
                 </GridItem>
               ))}
             </GridContainer>
           }
-          title="BaseInfo"
+          title="Base Info"
         />
       </GridItem>
       <GridItem xs={9} sm={9} md={9}>
         <CardV2
-          title="调节杠杆率"
+          title="Leverage update"
           content={
             <GridContainer>
               {map(resetData, (i, index) => (
                 <GridItem key={index} xs={6} sm={6} md={6}>
-                  {i.title && <span>{i.title}:</span>}
+                  {i.title && <span>{i.title}:&nbsp;&nbsp;</span>}
                   <span>{i.content}</span>
                 </GridItem>
               ))}
-              <GridItem xs={12} sm={12} md={12}>
+              <GridItem xs={12} sm={12} md={12} style={{ marginTop: '2rem' }}>
                 <Slider
-                  defaultValue={1}
-                  getAriaValueText={v => v}
+                  defaultValue={leverageRadioValue}
                   aria-labelledby="discrete-slider"
                   valueLabelDisplay="auto"
-                  step={0.5}
-                  marks
-                  min={0}
-                  max={3}
+                  step={0.01}
+                  onChange={(e, v) => setLever(v)}
+                  min={1}
+                  max={5}
+                  marks={[
+                    {
+                      value: 1,
+                      label: '1'
+                    },
+                    {
+                      value: 2,
+                      label: '2'
+                    },
+                    {
+                      value: 3,
+                      label: '3'
+                    },
+                    {
+                      value: 4,
+                      label: '4'
+                    },
+                    {
+                      value: 5,
+                      label: '5'
+                    }
+                  ]}
                 />
               </GridItem>
               <GridItem xs={12} sm={12} md={12}>
-                <Button color="colorful-border" size="sm">
+                <Button
+                  color="colorful-border"
+                  size="sm"
+                  onClick={() => {
+                    if (ethiBalance.gt(0)) {
+                      updateLever()
+                    }
+                  }}
+                >
+                  <Tooltip
+                    classes={{
+                      tooltip: classes.tooltip
+                    }}
+                    placement="top"
+                    title={'Sufficient ethi is required for leverage adjustment'}
+                  >
+                    {icon}
+                  </Tooltip>
                   Setting
                 </Button>
               </GridItem>
@@ -257,12 +439,30 @@ const LeverBoard = props => {
       </GridItem>
       <Modal className={classes.modal} open={isDeposit === true} aria-labelledby="simple-modal-title" aria-describedby="simple-modal-description">
         <Paper elevation={3} className={classes.depositModal}>
-          <LeverDeposit onCancel={() => setIsDeposit()} />
+          <LeverDeposit
+            CREDIT_FACADE_ADDRESS={CREDIT_FACADE_ADDRESS}
+            CREDIT_FACADE_ABI={CREDIT_FACADE_ABI}
+            leverageRadioValue={leverageRadioValue}
+            userProvider={userProvider}
+            onCancel={() => setIsDeposit()}
+          />
         </Paper>
       </Modal>
       <Modal className={classes.modal} open={isDeposit === false} aria-labelledby="simple-modal-title" aria-describedby="simple-modal-description">
         <Paper elevation={3} className={classes.depositModal}>
-          <LeverWithdraw onCancel={() => setIsDeposit()} />
+          <LeverWithdraw
+            balance={balance}
+            decimals={decimals}
+            creditManagerAddress={creditManagerAddress}
+            CREDIT_MANAGER_ABI={CREDIT_MANAGER_ABI}
+            ETHI_ADDRESS={ETHI_ADDRESS}
+            CREDIT_ADDRESS_ABI={CREDIT_ADDRESS_ABI}
+            VAULT_BUFFER_ADDRESS={VAULT_BUFFER_ADDRESS}
+            CREDIT_FACADE_ADDRESS={CREDIT_FACADE_ADDRESS}
+            CREDIT_FACADE_ABI={CREDIT_FACADE_ABI}
+            userProvider={userProvider}
+            onCancel={() => setIsDeposit()}
+          />
         </Paper>
       </Modal>
     </GridContainer>

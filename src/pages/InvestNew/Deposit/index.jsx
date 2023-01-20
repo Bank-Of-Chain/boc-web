@@ -420,7 +420,7 @@ export default function Deposit({
   useEffect(() => {
     estimateMint()
     return () => estimateMint.cancel()
-  }, [usdcValue, usdtValue, daiValue])
+  }, [estimateMint])
 
   useEffect(() => {
     getPegTokenDetail('USDi', VAULT_ADDRESS).then(data => {
@@ -436,7 +436,7 @@ export default function Deposit({
       const apy = isNaN(data) ? '-' : Number(data)
       setApy(apy.toFixed(2))
     })
-  }, [])
+  }, [VAULT_ADDRESS])
 
   const isLogin = !isEmpty(userProvider)
 

@@ -1,9 +1,8 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react'
+import React, { useState, useRef } from 'react'
 import * as ethers from 'ethers'
 import BN from 'bignumber.js'
 import { useDispatch } from 'react-redux'
 import isUndefined from 'lodash/isUndefined'
-import debounce from 'lodash/debounce'
 import isEmpty from 'lodash/isEmpty'
 import { makeStyles } from '@material-ui/core/styles'
 
@@ -18,13 +17,12 @@ import CustomTextField from '@/components/CustomTextField'
 import Button from '@/components/CustomButtons/Button'
 
 // === Utils === //
-import noop from 'lodash/noop'
 import { isAd, isEs, isRp, isDistributing, errorTextOutput } from '@/helpers/error-handler'
 import { warmDialog } from '@/reducers/meta-reducer'
-import { toFixed, formatBalance } from '@/helpers/number-format'
+import { formatBalance } from '@/helpers/number-format'
 
 // === Hooks === //
-import usePool from '@/hooks/usePool'
+import usePoolService from '@/hooks/usePoolService'
 import useErc20Token from '@/hooks/useErc20Token'
 
 // === Constants === //
@@ -37,39 +35,24 @@ const { BigNumber } = ethers
 const useStyles = makeStyles(styles)
 
 export default function Deposit({
-  dieselDecimals,
   wethBalance,
   wethDecimals,
   userProvider,
   onCancel,
   reloadBalance,
-  POOL_ADDRESS,
+  POOL_SERVICE_ADDRESS,
   POOL_SERVICE_ABI,
   wethBalanceLoading
 }) {
   const classes = useStyles()
   const dispatch = useDispatch()
   const [ethValue, setEthValue] = useState('')
-  const [mintGasLimit] = useState(BigNumber.from(0))
-  const [gasPriceCurrent, setGasPriceCurrent] = useState()
   const [isLoading, setIsLoading] = useState(false)
-  const [isEstimate, setIsEstimate] = useState(false)
-  const [estimateVaultBuffValue, setEstimateVaultBuffValue] = useState(BigNumber.from(0))
   const loadingTimer = useRef()
 
   const { approve } = useErc20Token(WETH_ADDRESS, userProvider)
 
-  const { addLiquidity } = usePool(POOL_ADDRESS, POOL_SERVICE_ABI, userProvider)
-
-  const getGasFee = () => {
-    if (!gasPriceCurrent) {
-      return BigNumber.from(0)
-    }
-    const gasPrice = BigNumber.from(parseInt(gasPriceCurrent, 16).toString())
-    // metamask gaslimit great than contract gaslimit, so add extra limit
-    const metamaskExtraLimit = 114
-    return mintGasLimit.add(metamaskExtraLimit).mul(gasPrice)
-  }
+  const { addLiquidity } = usePoolService(POOL_SERVICE_ADDRESS, POOL_SERVICE_ABI, userProvider)
 
   /**
    * check if value is valid
@@ -92,36 +75,21 @@ export default function Deposit({
     // balance less than value
     if (balance.lt(BigNumber.from(nextFromValue.toFixed()))) return false
 
-    if (balance.sub(BigNumber.from(nextFromValue.toFixed())).lt(getGasFee())) return false
-
     return true
   }
 
   const handleInputChange = event => {
-    setIsEstimate(true)
     setEthValue(event.target.value)
   }
 
   const handleMaxClick = () => {
-    const v = getGasFee()
-    if (v.lte(0)) {
-      dispatch(
-        warmDialog({
-          open: true,
-          type: 'warning',
-          message: 'Since the latest Gasprice is not available, it is impossible to estimate the gas fee currently!'
-        })
-      )
-      return
-    }
-    const maxValue = wethBalance.sub(v)
+    const maxValue = wethBalance
     const maxBalance = formatBalance(maxValue.gt(0) ? maxValue : 0, wethDecimals, {
       showAll: true
     })
     if (maxValue === ethValue) {
       return
     }
-    setIsEstimate(true)
     setEthValue(maxBalance)
   }
 
@@ -142,7 +110,7 @@ export default function Deposit({
     let isSuccess = false
 
     // approve value
-    await approve(POOL_ADDRESS, amount)
+    await approve(POOL_SERVICE_ADDRESS, amount)
 
     console.log('approve success')
     const errorHandle = error => {
@@ -194,35 +162,6 @@ export default function Deposit({
     }, 2000)
   }
 
-  const estimateMint = useCallback(
-    debounce(async () => {
-      const isValid = isValidValue()
-      if (!isValid) {
-        setIsEstimate(false)
-        setEstimateVaultBuffValue(BigNumber.from(0))
-        return
-      }
-      setIsEstimate(false)
-    }, 1500)
-  )
-
-  useEffect(() => {
-    estimateMint()
-    return () => estimateMint.cancel()
-  }, [ethValue])
-
-  // get gasprice per 15s
-  useEffect(() => {
-    if (!userProvider) {
-      return
-    }
-    userProvider.send('eth_gasPrice').then(setGasPriceCurrent).catch(noop)
-    const timer = setInterval(() => {
-      userProvider.send('eth_gasPrice').then(setGasPriceCurrent).catch(noop)
-    }, 15000)
-    return () => clearInterval(timer)
-  }, [userProvider])
-
   const isLogin = !isEmpty(userProvider)
   const isValid = isValidValue()
 
@@ -248,7 +187,7 @@ export default function Deposit({
                           classes={{ root: classes.input }}
                           value={ethValue}
                           onChange={handleInputChange}
-                          placeholder="deposit amount"
+                          placeholder="supply amount"
                           maxEndAdornment
                           onMaxClick={handleMaxClick}
                           error={!isUndefined(isValid) && !isValid}
@@ -271,16 +210,12 @@ export default function Deposit({
               </GridItem>
             </GridContainer>
             <GridContainer classes={{ root: classes.estimateContainer }}>
-              <GridItem xs={12} sm={12} md={12} lg={12}>
-                <p className={classes.estimateText}>To</p>
-                <div className={classes.estimateBalanceTitle}>
-                  Diesel
-                  <span className={classes.estimateBalanceNum}>
-                    <Loading loading={isEstimate}>{toFixed(estimateVaultBuffValue, BigNumber.from(10).pow(dieselDecimals))}</Loading>
-                  </span>
-                </div>
-                <p className={classes.estimateText}>Estimated Gas Fee: {toFixed(getGasFee(), BigNumber.from(10).pow(wethDecimals), 6)} ETH</p>
-              </GridItem>
+              {/* <GridItem xs={12} sm={12} md={12} lg={12}>
+                <p className={classes.estimateText}>
+                  <Checkbox defaultChecked color="primary" inputProps={{ 'aria-label': 'secondary checkbox' }} /> Staking all of your Diesel tokens
+                  into pool
+                </p>
+              </GridItem> */}
             </GridContainer>
             <GridContainer>
               <GridItem xs={12} sm={12} md={12} lg={12}>

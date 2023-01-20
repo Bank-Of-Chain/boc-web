@@ -51,7 +51,7 @@ const usePoolService = (POOL_SERVICE_ADDRESS, POOL_SERVICE_ABI, userProvider) =>
         from: address
       })
     },
-    [address]
+    [address, POOL_SERVICE_ADDRESS, POOL_SERVICE_ABI, userProvider]
   )
 
   /**
@@ -81,7 +81,7 @@ const usePoolService = (POOL_SERVICE_ADDRESS, POOL_SERVICE_ABI, userProvider) =>
         from: address
       })
     },
-    [address]
+    [address, POOL_SERVICE_ADDRESS, POOL_SERVICE_ABI, userProvider]
   )
 
   /**
@@ -203,7 +203,7 @@ const usePoolService = (POOL_SERVICE_ADDRESS, POOL_SERVICE_ABI, userProvider) =>
       }
     }
     return listener()
-  }, [address, POOL_SERVICE_ADDRESS, POOL_SERVICE_ABI, userProvider])
+  }, [address, POOL_SERVICE_ADDRESS, POOL_SERVICE_ABI, userProvider, handleMint, handleBurn])
 
   return {
     balance,

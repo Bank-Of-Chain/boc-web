@@ -33,7 +33,7 @@ const componentsStyle = () => ({
   },
   estimateBalanceTitle: {
     fontSize: '1.625rem',
-    margin: '0.75rem 0',
+    margin: '3rem 0 0.75rem',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'space-between'
@@ -183,7 +183,8 @@ const componentsStyle = () => ({
   balance: {
     display: 'flex',
     alignItems: 'center',
-    color: '#BEBEBE'
+    color: '#BEBEBE',
+    marginTop: '1rem'
   },
   tip: {
     marginTop: '0.75rem',

@@ -57,8 +57,10 @@ function Ethi(props) {
     PRICE_ORCALE_ABI,
     VAULT_BUFFER_ADDRESS,
     VAULT_BUFFER_ABI,
-    CREDIT_POOL_ADDRESS,
-    CREDIT_POOL_ABI
+    CREDIT_FACADE_ADDRESS,
+    CREDIT_FACADE_ABI,
+    CREDIT_ADDRESS_ABI,
+    CREDIT_MANAGER_ABI
   } = props
 
   const [ethBalance, setEthBalance] = useState(BigNumber.from(0))
@@ -245,7 +247,18 @@ function Ethi(props) {
         )}
         {current === INVEST_TAB.lever && (
           <GridItem xs={9} sm={9} md={9}>
-            <LeverBoard CREDIT_POOL_ADDRESS={CREDIT_POOL_ADDRESS} CREDIT_POOL_ABI={CREDIT_POOL_ABI} userProvider={userProvider} />
+            <LeverBoard
+              exchangeManager={exchangeManager}
+              ETHI_ADDRESS={ETHI_ADDRESS}
+              CREDIT_FACADE_ADDRESS={CREDIT_FACADE_ADDRESS}
+              VAULT_BUFFER_ADDRESS={VAULT_BUFFER_ADDRESS}
+              CREDIT_FACADE_ABI={CREDIT_FACADE_ABI}
+              CREDIT_MANAGER_ABI={CREDIT_MANAGER_ABI}
+              CREDIT_ADDRESS_ABI={CREDIT_ADDRESS_ABI}
+              EXCHANGE_ADAPTER_ABI={EXCHANGE_ADAPTER_ABI}
+              EXCHANGE_AGGREGATOR_ABI={EXCHANGE_AGGREGATOR_ABI}
+              userProvider={userProvider}
+            />
           </GridItem>
         )}
       </>
@@ -298,7 +311,7 @@ function Ethi(props) {
               <ListItemIcon>
                 <DepositIcon color={current === INVEST_TAB.lever ? '#A68EFE' : '#fff'} />
               </ListItemIcon>
-              {!isLayoutSm && <ListItemText primary={'Lever'} className={classNames(current === INVEST_TAB.lever ? classes.check : classes.text)} />}
+              {!isLayoutSm && <ListItemText primary={'Credit Account'} className={classNames(current === INVEST_TAB.lever ? classes.check : classes.text)} />}
             </ListItem>
             <ListItem
               style={{ display: 'none' }}

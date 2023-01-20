@@ -33,7 +33,7 @@ const useErc20Token = (tokenAddress, userProvider) => {
       }
       return nextBalance
     },
-    [tokenAddress]
+    [tokenAddress, userProvider]
   )
 
   const queryBalance = useCallback(async () => {
@@ -48,7 +48,7 @@ const useErc20Token = (tokenAddress, userProvider) => {
     nextBalance = await balanceOf(address).finally(() => setLoading(false))
     setBalance(nextBalance)
     return nextBalance
-  }, [tokenAddress, address])
+  }, [tokenAddress, address, balanceOf])
 
   const queryDecimals = useCallback(() => {
     if (isEmpty(tokenAddress)) {
@@ -61,7 +61,7 @@ const useErc20Token = (tokenAddress, userProvider) => {
     }
     const tokenContract = new ethers.Contract(tokenAddress, IERC20_ABI, userProvider)
     tokenContract.decimals().then(setDecimals)
-  }, [tokenAddress])
+  }, [tokenAddress, userProvider])
 
   const approve = async (targetAddress, amount) => {
     const tokenContract = new ethers.Contract(tokenAddress, IERC20_ABI, userProvider)

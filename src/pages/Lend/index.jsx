@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import classNames from 'classnames'
 import { makeStyles } from '@material-ui/core/styles'
 import { useHistory } from 'react-router-dom'
@@ -43,18 +43,19 @@ const Lend = props => {
   const history = useHistory()
   const isLayoutSm = useMediaQuery('(max-width: 960px)')
 
-  const { userProvider, POOL_ADDRESS, POOL_SERVICE_ABI, DIESEL_ADDRESS } = props
-
-  console.log('POOL_ADDRESS=', POOL_ADDRESS, DIESEL_ADDRESS, POOL_SERVICE_ABI)
+  const { userProvider, POOL_SERVICE_ADDRESS, POOL_SERVICE_ABI, DIESEL_ADDRESS, DIESEL_TOKEN_ABI } = props
 
   const [operateIndex, setOperateIndex] = useState(-1)
   const [operateType, setOperateType] = useState(false)
 
   const current = useSelector(state => state.investReducer.currentTab)
 
-  const setCurrent = tab => {
-    dispatch(setCurrentTab(tab))
-  }
+  const setCurrent = useCallback(
+    tab => {
+      dispatch(setCurrentTab(tab))
+    },
+    [dispatch]
+  )
 
   const {
     balance: wethBalance,
@@ -62,6 +63,7 @@ const Lend = props => {
     loading: wethBalanceLoading,
     queryBalance: queryWethBalance
   } = useErc20Token(WETH_ADDRESS, userProvider)
+
   const {
     balance: dieselBalance,
     decimals: dieselDecimals,
@@ -77,7 +79,7 @@ const Lend = props => {
 
   useEffect(() => {
     setCurrent(INVEST_TAB.lending)
-  }, [])
+  }, [setCurrent])
 
   return (
     <div className={classes.container}>
@@ -101,15 +103,19 @@ const Lend = props => {
           </List>
         </GridItem>
         <GridItem xs={9} sm={9} md={9}>
-          <PoolsTable
-            actions={(index, type) => {
-              setOperateIndex(index)
-              setOperateType(type)
-            }}
-            POOL_ADDRESS={POOL_ADDRESS}
-            POOL_SERVICE_ABI={POOL_SERVICE_ABI}
-            userProvider={userProvider}
-          />
+          {current === INVEST_TAB.lending && (
+            <PoolsTable
+              actions={(index, type) => {
+                setOperateIndex(index)
+                setOperateType(type)
+              }}
+              DIESEL_TOKEN_ADDRESS={DIESEL_ADDRESS}
+              DIESEL_TOKEN_ABI={DIESEL_TOKEN_ABI}
+              POOL_SERVICE_ABI={POOL_SERVICE_ABI}
+              POOL_SERVICE_ADDRESS={POOL_SERVICE_ADDRESS}
+              userProvider={userProvider}
+            />
+          )}
         </GridItem>
       </GridContainer>
       <Modal
@@ -123,7 +129,7 @@ const Lend = props => {
             dieselBalance={dieselBalance}
             dieselDecimals={dieselDecimals}
             dieselBalanceLoading={dieselBalanceLoading}
-            POOL_ADDRESS={POOL_ADDRESS}
+            POOL_SERVICE_ADDRESS={POOL_SERVICE_ADDRESS}
             POOL_SERVICE_ABI={POOL_SERVICE_ABI}
             userProvider={userProvider}
             reloadBalance={reloadBalance}
@@ -141,7 +147,7 @@ const Lend = props => {
         <Paper elevation={3} className={classes.depositModal}>
           <Deposit
             dieselDecimals={dieselDecimals}
-            POOL_ADDRESS={POOL_ADDRESS}
+            POOL_SERVICE_ADDRESS={POOL_SERVICE_ADDRESS}
             POOL_SERVICE_ABI={POOL_SERVICE_ABI}
             wethBalance={wethBalance}
             isBalanceLoading={wethBalanceLoading}

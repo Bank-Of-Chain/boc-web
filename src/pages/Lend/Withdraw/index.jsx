@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react'
+import React, { useState } from 'react'
 import * as ethers from 'ethers'
 import BN from 'bignumber.js'
 import { useDispatch } from 'react-redux'
@@ -6,7 +6,6 @@ import { makeStyles } from '@material-ui/core/styles'
 import CircularProgress from '@material-ui/core/CircularProgress'
 import Modal from '@material-ui/core/Modal'
 import Paper from '@material-ui/core/Paper'
-import ErrorOutlineIcon from '@material-ui/icons/ErrorOutline'
 import Step from '@material-ui/core/Step'
 import WarningIcon from '@material-ui/icons/Warning'
 import CustomTextField from '@/components/CustomTextField'
@@ -18,17 +17,15 @@ import GridContainer from '@/components/Grid/GridContainer'
 import GridItem from '@/components/Grid/GridItem'
 import Button from '@/components/CustomButtons/Button'
 import Loading from '@/components/LoadingComponent'
-import SimpleSelect from '@/components/SimpleSelect'
 
 // === Hooks === //
 import { warmDialog } from '@/reducers/meta-reducer'
 import useUserAddress from '@/hooks/useUserAddress'
-import usePool from '@/hooks/usePool'
+import usePoolService from '@/hooks/usePoolService'
 
 // === Utils === //
 import isUndefined from 'lodash/isUndefined'
 import map from 'lodash/map'
-import debounce from 'lodash/debounce'
 import isEmpty from 'lodash/isEmpty'
 import { toFixed, formatBalance } from '@/helpers/number-format'
 import { isAd, isEs, isRp, isMaxLoss, isLossMuch, isExchangeFail, errorTextOutput } from '@/helpers/error-handler'
@@ -44,45 +41,27 @@ const useStyles = makeStyles(styles)
 
 const steps = [{ title: 'Amounts Validation' }, { title: 'Gas Estimates' }, { title: 'Withdraw' }]
 
-export default function Withdraw({
+const Withdraw = ({
   dieselBalance,
   dieselDecimals,
   userProvider,
   onCancel,
   reloadBalance,
   queryDieselBalance,
-  POOL_ADDRESS,
+  POOL_SERVICE_ADDRESS,
   POOL_SERVICE_ABI,
   dieselBalanceLoading
-}) {
+}) => {
   const classes = useStyles()
   const dispatch = useDispatch()
   const [toValue, setToValue] = useState('')
-  const [estimateWithdrawArray, setEstimateWithdrawArray] = useState([])
-  const [isEstimate, setIsEstimate] = useState(false)
   const [isWithdrawLoading, setIsWithdrawLoading] = useState(false)
   const [currentStep, setCurrentStep] = useState(0)
   const [withdrawError, setWithdrawError] = useState({})
 
   const address = useUserAddress(userProvider)
 
-  const { removeLiquidity } = usePool(POOL_ADDRESS, POOL_SERVICE_ABI, userProvider)
-
-  const [pegTokenPrice] = useState(BN_18)
-
-  const estimateWithdraw = useCallback(
-    debounce(async () => {
-      setIsEstimate(true)
-      setTimeout(() => {
-        setIsEstimate(false)
-      }, 500)
-    }, 1500)
-  )
-
-  const handleBurn = async (a, b, c, d, tokens) => {
-    console.log('handleBurn')
-    console.log('tokens', tokens)
-  }
+  const { fromDiesel, removeLiquidity } = usePoolService(POOL_SERVICE_ADDRESS, POOL_SERVICE_ABI, userProvider)
 
   const withdraw = async () => {
     let withdrawTimeStart = Date.now(),
@@ -107,18 +86,8 @@ export default function Withdraw({
     try {
       getSwapInfoFinish = Date.now()
       setCurrentStep(2)
-      let tx = await removeLiquidity(nextValue)
+      await removeLiquidity(nextValue)
       withdrawFinish = Date.now()
-
-      const { events } = await tx.wait()
-      let args = []
-      for (let i = events.length - 1; i >= 0; i--) {
-        if (events[i].event === 'Burn') {
-          args = events[i].args
-          break
-        }
-      }
-      handleBurn(...args)
 
       withdrawTransationFinish = Date.now()
       setCurrentStep(4)
@@ -207,21 +176,6 @@ export default function Withdraw({
     return true
   }
 
-  useEffect(() => {
-    // need open advanced setting
-    // allowLoss, toValue need valid
-    if (isValidToValue()) {
-      estimateWithdraw()
-    }
-    if (isEmpty(toValue)) {
-      setEstimateWithdrawArray([])
-    }
-    return () => {
-      setEstimateWithdrawArray([])
-      return estimateWithdraw.cancel()
-    }
-  }, [toValue])
-
   const handleAmountChange = event => {
     try {
       setToValue(event.target.value)
@@ -233,70 +187,6 @@ export default function Withdraw({
   const handleMaxClick = async () => {
     const nextEthiBalance = await queryDieselBalance()
     setToValue(formatBalance(nextEthiBalance, dieselDecimals, { showAll: true }))
-  }
-
-  const renderEstimate = () => {
-    if (isEstimate) {
-      return (
-        <GridItem xs={12} sm={12} md={12} lg={12}>
-          <div className={classes.estimateItem}>
-            <CircularProgress fontSize="large" color="primary" />
-          </div>
-        </GridItem>
-      )
-    }
-    if (isUndefined(estimateWithdrawArray)) {
-      return (
-        <GridItem xs={12} sm={12} md={12} lg={12}>
-          <div className={classes.estimateItem}>
-            <ErrorOutlineIcon fontSize="large" />
-            <p>Amount estimate failed, please try again!</p>
-          </div>
-        </GridItem>
-      )
-    }
-    if (isEmpty(estimateWithdrawArray) || isEmpty(toValue)) {
-      return (
-        <GridItem xs={12} sm={12} md={12} lg={12}>
-          <div className={classes.estimateItem}>
-            <p style={{ fontSize: 26, textAlign: 'right' }}>0.00</p>
-          </div>
-        </GridItem>
-      )
-    }
-
-    const options = map(estimateWithdrawArray, item => {
-      return {
-        label: item.symbol,
-        value: item.tokenAddress,
-        img: `./images/${item.tokenAddress}.png`
-      }
-    })
-
-    return map(estimateWithdrawArray, item => {
-      return (
-        <GridItem key={item.tokenAddress} xs={12} sm={12} md={12} lg={12} style={{ paddingTop: '0.5rem' }}>
-          <GridContainer justify="center" spacing={1}>
-            <GridItem xs={4} sm={4} md={4} lg={4}>
-              <SimpleSelect disabled value={item.tokenAddress} options={options} />
-            </GridItem>
-            <GridItem xs={8} sm={8} md={8} lg={8}>
-              <CustomTextField
-                classes={{ root: classes.input }}
-                value={toFixed(item.amounts, BigNumber.from(10).pow(item.decimals), 6)}
-                placeholder="withdraw amount"
-                disabled
-              />
-            </GridItem>
-            <GridItem xs={12} sm={12} md={12} lg={12}>
-              <p className={classes.estimateText} title={formatBalance(item.balance, item.decimals, { showAll: true })}>
-                Balance:&nbsp;{formatBalance(item.balance, item.decimals)}
-              </p>
-            </GridItem>
-          </GridContainer>
-        </GridItem>
-      )
-    })
   }
 
   const isValidToValueFlag = isValidToValue()
@@ -338,20 +228,13 @@ export default function Withdraw({
             </GridItem>
             {address && (
               <GridItem xs={6} sm={6} md={6} lg={6}>
-                <p className={classes.estimateText} style={{ justifyContent: 'flex-end' }} title={toFixed(pegTokenPrice, BN_18)}>
-                  <span>1 Diesel Token ≈ {toFixed(pegTokenPrice, BN_18, 6)}ETH</span>
+                <p className={classes.estimateText} style={{ justifyContent: 'flex-end' }} title={toFixed(fromDiesel, BN_18)}>
+                  <span>1 Diesel Token = {toFixed(fromDiesel, BN_18, 2)}WETH</span>
                 </p>
               </GridItem>
             )}
           </GridContainer>
-          <GridContainer className={classes.outputContainer}>
-            <GridItem xs={12} sm={12} md={12} lg={12}>
-              <p className={classes.estimateText}>To</p>
-            </GridItem>
-            <GridItem xs={12} sm={12} md={12} lg={12}>
-              {renderEstimate()}
-            </GridItem>
-          </GridContainer>
+          <GridContainer className={classes.outputContainer}></GridContainer>
           <GridContainer>
             <GridItem xs={12} sm={12} md={12} lg={12}>
               <div className={classes.buttonGroup}>
@@ -428,3 +311,5 @@ export default function Withdraw({
     </GridContainer>
   )
 }
+
+export default Withdraw
