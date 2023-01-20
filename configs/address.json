@@ -18,7 +18,7 @@
   "KEEPER_FOR_ETH_ETHI": "https://pr02-sg-keeper-ethi.bankofchain.io",
   "KEEPER_FOR_ETH_USDI": "https://pr02-sg-keeper-eth.bankofchain.io",
   "KEEPER_FOR_MATIC_USDI": "https://pr02-sg-keeper-polygon.bankofchain.io",
-  "POOL_ADDRESS": "",
-  "CREDIT_POOL_ADDRESS": "",
+  "POOL_SERVICE_ADDRESS": "",
+  "CREDIT_FACADE_ADDRESS": "",
   "DIESEL_ADDRESS":""
 }
