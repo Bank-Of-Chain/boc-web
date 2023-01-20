@@ -177,7 +177,7 @@ const CreditCreate = ({ userProvider, onCancel, CREDIT_FACADE_ADDRESS, CREDIT_FA
             </GridContainer>
             <GridContainer classes={{ root: classes.estimateContainer }}>
               <GridItem xs={12} sm={12} md={12} lg={12}>
-                <p className={classes.estimateText}>Current Lever: {lever}</p>
+                <p className={classes.estimateText}>Current Leverage: {lever}</p>
                 <div className={classes.estimateBalanceTitle}>
                   <Slider
                     defaultValue={1}

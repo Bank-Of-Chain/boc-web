@@ -221,7 +221,7 @@ export default function Deposit({
               <GridItem xs={12} sm={12} md={12} lg={12}>
                 <div className={classes.buttonGroup}>
                   <Button disabled={!isLogin || (isLogin && !isValid)} color="colorful" onClick={deposit} className={classes.blockButton}>
-                    Deposit
+                    Supply
                   </Button>
                   <Button color="danger" onClick={onCancel} className={classes.blockButton}>
                     Cancel

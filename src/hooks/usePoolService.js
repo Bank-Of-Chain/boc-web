@@ -131,7 +131,6 @@ const usePoolService = (POOL_SERVICE_ADDRESS, POOL_SERVICE_ABI, userProvider) =>
    * @returns
    */
   const queryAvailableLiquidity = useCallback(() => {
-    console.log('queryAvailableLiquidity')
     const poolServiceContract = new ethers.Contract(POOL_SERVICE_ADDRESS, POOL_SERVICE_ABI, userProvider)
     return poolServiceContract.availableLiquidity().then(setAvailableLiquidity)
   }, [POOL_SERVICE_ADDRESS, POOL_SERVICE_ABI, userProvider])
@@ -141,7 +140,6 @@ const usePoolService = (POOL_SERVICE_ADDRESS, POOL_SERVICE_ABI, userProvider) =>
    * @returns
    */
   const queryTotalBorrowed = useCallback(() => {
-    console.log('queryTotalBorrowed')
     const poolServiceContract = new ethers.Contract(POOL_SERVICE_ADDRESS, POOL_SERVICE_ABI, userProvider)
     return poolServiceContract.totalBorrowed().then(setTotalBorrowed)
   }, [POOL_SERVICE_ADDRESS, POOL_SERVICE_ABI, userProvider])
