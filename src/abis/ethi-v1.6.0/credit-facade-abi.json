@@ -52,6 +52,11 @@
   },
   {
     "inputs": [],
+    "name": "CantWithdrawException",
+    "type": "error"
+  },
+  {
+    "inputs": [],
     "name": "CloseCreditAccountNotAllowedException",
     "type": "error"
   },
@@ -538,6 +543,25 @@
     "type": "function"
   },
   {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_creditAccount",
+        "type": "address"
+      }
+    ],
+    "name": "checkCloseCreditAccount",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
     "inputs": [],
     "name": "creditManager",
     "outputs": [
@@ -631,6 +655,44 @@
     "name": "enableToken",
     "outputs": [],
     "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_borrower",
+        "type": "address"
+      }
+    ],
+    "name": "getCreditAccount",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "_creditAccount",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_creditAccount",
+        "type": "address"
+      }
+    ],
+    "name": "getCreditAccountPegTokenAmount",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "_pegTokenAmount",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
     "type": "function"
   },
   {
