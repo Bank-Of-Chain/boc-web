@@ -32,6 +32,7 @@ const usePoolService = (POOL_SERVICE_ADDRESS, POOL_SERVICE_ABI, userProvider) =>
    */
   const addLiquidity = useCallback(
     async amount => {
+      if (isEmpty(POOL_SERVICE_ADDRESS) || isEmpty(POOL_SERVICE_ABI) || isEmpty(userProvider)) return
       const signer = userProvider.getSigner()
       const poolContract = new ethers.Contract(POOL_SERVICE_ADDRESS, POOL_SERVICE_ABI, userProvider)
       const poolContractWithUser = poolContract.connect(signer)
@@ -61,6 +62,7 @@ const usePoolService = (POOL_SERVICE_ADDRESS, POOL_SERVICE_ABI, userProvider) =>
    */
   const removeLiquidity = useCallback(
     async amount => {
+      if (isEmpty(POOL_SERVICE_ADDRESS) || isEmpty(POOL_SERVICE_ABI) || isEmpty(userProvider)) return
       const vaultContract = new ethers.Contract(POOL_SERVICE_ADDRESS, POOL_SERVICE_ABI, userProvider)
       const signer = userProvider.getSigner()
       const vaultContractWithSigner = vaultContract.connect(signer)
@@ -105,6 +107,7 @@ const usePoolService = (POOL_SERVICE_ADDRESS, POOL_SERVICE_ABI, userProvider) =>
    * @returns
    */
   const queryBorrowApy = useCallback(() => {
+    if (isEmpty(POOL_SERVICE_ADDRESS) || isEmpty(POOL_SERVICE_ABI) || isEmpty(userProvider)) return
     const poolServiceContract = new ethers.Contract(POOL_SERVICE_ADDRESS, POOL_SERVICE_ABI, userProvider)
     return poolServiceContract.borrowAPY().then(v => {
       const nextValue = Number(toFixed(v, BigNumber.from(10).pow(25), 2))
@@ -118,6 +121,7 @@ const usePoolService = (POOL_SERVICE_ADDRESS, POOL_SERVICE_ABI, userProvider) =>
    * @returns
    */
   const querySupplyApy = useCallback(() => {
+    if (isEmpty(POOL_SERVICE_ADDRESS) || isEmpty(POOL_SERVICE_ABI) || isEmpty(userProvider)) return
     const poolServiceContract = new ethers.Contract(POOL_SERVICE_ADDRESS, POOL_SERVICE_ABI, userProvider)
     return poolServiceContract.supplyAPY().then(v => {
       const nextValue = Number(toFixed(v, BigNumber.from(10).pow(25), 2))
@@ -131,6 +135,7 @@ const usePoolService = (POOL_SERVICE_ADDRESS, POOL_SERVICE_ABI, userProvider) =>
    * @returns
    */
   const queryAvailableLiquidity = useCallback(() => {
+    if (isEmpty(POOL_SERVICE_ADDRESS) || isEmpty(POOL_SERVICE_ABI) || isEmpty(userProvider)) return
     const poolServiceContract = new ethers.Contract(POOL_SERVICE_ADDRESS, POOL_SERVICE_ABI, userProvider)
     return poolServiceContract.availableLiquidity().then(setAvailableLiquidity)
   }, [POOL_SERVICE_ADDRESS, POOL_SERVICE_ABI, userProvider])
@@ -140,6 +145,7 @@ const usePoolService = (POOL_SERVICE_ADDRESS, POOL_SERVICE_ABI, userProvider) =>
    * @returns
    */
   const queryTotalBorrowed = useCallback(() => {
+    if (isEmpty(POOL_SERVICE_ADDRESS) || isEmpty(POOL_SERVICE_ABI) || isEmpty(userProvider)) return
     const poolServiceContract = new ethers.Contract(POOL_SERVICE_ADDRESS, POOL_SERVICE_ABI, userProvider)
     return poolServiceContract.totalBorrowed().then(setTotalBorrowed)
   }, [POOL_SERVICE_ADDRESS, POOL_SERVICE_ABI, userProvider])
@@ -149,6 +155,7 @@ const usePoolService = (POOL_SERVICE_ADDRESS, POOL_SERVICE_ABI, userProvider) =>
    * @returns
    */
   const queryFromDiesel = useCallback(() => {
+    if (isEmpty(POOL_SERVICE_ADDRESS) || isEmpty(POOL_SERVICE_ABI) || isEmpty(userProvider)) return
     const poolServiceContract = new ethers.Contract(POOL_SERVICE_ADDRESS, POOL_SERVICE_ABI, userProvider)
     return poolServiceContract.fromDiesel(BigNumber.from(10).pow(18)).then(setFromDiesel)
   }, [POOL_SERVICE_ADDRESS, POOL_SERVICE_ABI, userProvider])
