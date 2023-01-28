@@ -74,7 +74,9 @@ const useCreditAccount = (creditAddress, CREDIT_ADDRESS_ABI, userProvider) => {
     collateralAmount,
     borrowedAmount,
     waitingForSwap,
-    getWaitingForSwap
+    // actions
+    getWaitingForSwap,
+    getCollateralAmount
   }
 }
 
