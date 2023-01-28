@@ -60,7 +60,8 @@ function Ethi(props) {
     CREDIT_FACADE_ADDRESS,
     CREDIT_FACADE_ABI,
     CREDIT_ADDRESS_ABI,
-    CREDIT_MANAGER_ABI
+    CREDIT_MANAGER_ABI,
+    POOL_SERVICE_ABI
   } = props
 
   const [ethBalance, setEthBalance] = useState(BigNumber.from(0))
@@ -255,6 +256,7 @@ function Ethi(props) {
               CREDIT_FACADE_ABI={CREDIT_FACADE_ABI}
               CREDIT_MANAGER_ABI={CREDIT_MANAGER_ABI}
               CREDIT_ADDRESS_ABI={CREDIT_ADDRESS_ABI}
+              POOL_SERVICE_ABI={POOL_SERVICE_ABI}
               EXCHANGE_ADAPTER_ABI={EXCHANGE_ADAPTER_ABI}
               EXCHANGE_AGGREGATOR_ABI={EXCHANGE_AGGREGATOR_ABI}
               userProvider={userProvider}
@@ -311,7 +313,9 @@ function Ethi(props) {
               <ListItemIcon>
                 <DepositIcon color={current === INVEST_TAB.lever ? '#A68EFE' : '#fff'} />
               </ListItemIcon>
-              {!isLayoutSm && <ListItemText primary={'Credit Account'} className={classNames(current === INVEST_TAB.lever ? classes.check : classes.text)} />}
+              {!isLayoutSm && (
+                <ListItemText primary={'Credit Account'} className={classNames(current === INVEST_TAB.lever ? classes.check : classes.text)} />
+              )}
             </ListItem>
             <ListItem
               style={{ display: 'none' }}
