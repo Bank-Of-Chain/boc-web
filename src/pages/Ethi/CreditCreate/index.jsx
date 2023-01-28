@@ -34,7 +34,7 @@ import styles from './style'
 const { BigNumber } = ethers
 const useStyles = makeStyles(styles)
 
-const CreditCreate = ({ userProvider, onCancel, CREDIT_FACADE_ADDRESS, CREDIT_FACADE_ABI, getCreditAddress }) => {
+const CreditCreate = ({ userProvider, onCancel, CREDIT_FACADE_ADDRESS, CREDIT_FACADE_ABI }) => {
   const classes = useStyles()
   const dispatch = useDispatch()
   const [ethValue, setEthValue] = useState('')
@@ -108,7 +108,6 @@ const CreditCreate = ({ userProvider, onCancel, CREDIT_FACADE_ADDRESS, CREDIT_FA
         isSuccess = true
         onCancel()
       })
-      .then(getCreditAddress)
 
     if (isSuccess) {
       setEthValue('')

@@ -72,7 +72,6 @@ const LeverBoard = props => {
     queryBaseInfo,
     withdrawFromVault,
     creditAddress,
-    getCreditAddress,
     getCreditAccountPegTokenAmount
   } = creditInfo
 
@@ -163,7 +162,6 @@ const LeverBoard = props => {
               CREDIT_FACADE_ADDRESS={CREDIT_FACADE_ADDRESS}
               CREDIT_FACADE_ABI={CREDIT_FACADE_ABI}
               userProvider={userProvider}
-              getCreditAddress={getCreditAddress}
               onCancel={() => setCreditCreateModal(false)}
             />
           </Paper>
@@ -192,13 +190,7 @@ const LeverBoard = props => {
     },
     {
       title: (
-        <span
-          onClick={() =>
-            redeemCollateral([])
-              .then(tx => tx.wait())
-              .then(getCreditAddress)
-          }
-        >
+        <span onClick={() => redeemCollateral([])}>
           Collateral
           <Tooltip
             classes={{
@@ -215,13 +207,7 @@ const LeverBoard = props => {
     },
     {
       title: (
-        <span
-          onClick={() =>
-            decreaseDebt([])
-              .then(tx => tx.wait())
-              .then(getCreditAddress)
-          }
-        >
+        <span onClick={() => decreaseDebt([])}>
           Debts
           <Tooltip
             classes={{
