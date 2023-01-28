@@ -46,7 +46,6 @@ const Withdraw = ({
   dieselDecimals,
   userProvider,
   onCancel,
-  reloadBalance,
   queryDieselBalance,
   POOL_SERVICE_ADDRESS,
   POOL_SERVICE_ABI,
@@ -130,7 +129,6 @@ const Withdraw = ({
       setIsWithdrawLoading(false)
       setWithdrawError({})
       setCurrentStep(0)
-      reloadBalance()
     }, 2000)
     // log withdraw total time
     const totalTime = withdrawTransationFinish - withdrawTimeStart

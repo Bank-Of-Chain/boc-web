@@ -34,7 +34,7 @@ import styles from './style'
 const { BigNumber } = ethers
 const useStyles = makeStyles(styles)
 
-export default function Deposit({ userProvider, onCancel, reloadBalance, POOL_SERVICE_ADDRESS, POOL_SERVICE_ABI, wethBalanceLoading }) {
+export default function Deposit({ userProvider, onCancel, POOL_SERVICE_ADDRESS, POOL_SERVICE_ABI, wethBalanceLoading }) {
   const classes = useStyles()
   const dispatch = useDispatch()
   const [ethValue, setEthValue] = useState('')
@@ -140,7 +140,6 @@ export default function Deposit({ userProvider, onCancel, reloadBalance, POOL_SE
 
     loadingTimer.current = setTimeout(() => {
       setIsLoading(false)
-      reloadBalance()
       if (isSuccess) {
         dispatch(
           warmDialog({

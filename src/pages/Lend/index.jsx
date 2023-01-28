@@ -57,12 +57,7 @@ const Lend = props => {
     [dispatch]
   )
 
-  const {
-    balance: wethBalance,
-    decimals: wethDecimals,
-    loading: wethBalanceLoading,
-    queryBalance: queryWethBalance
-  } = useErc20Token(WETH_ADDRESS, userProvider)
+  const { loading: wethBalanceLoading } = useErc20Token(WETH_ADDRESS, userProvider)
 
   const {
     balance: dieselBalance,
@@ -70,12 +65,6 @@ const Lend = props => {
     loading: dieselBalanceLoading,
     queryBalance: queryDieselBalance
   } = useErc20Token(DIESEL_ADDRESS, userProvider)
-
-  const reloadBalance = () => {
-    setOperateIndex(-1)
-    queryDieselBalance()
-    queryWethBalance()
-  }
 
   useEffect(() => {
     setCurrent(INVEST_TAB.lending)
@@ -132,7 +121,6 @@ const Lend = props => {
             POOL_SERVICE_ADDRESS={POOL_SERVICE_ADDRESS}
             POOL_SERVICE_ABI={POOL_SERVICE_ABI}
             userProvider={userProvider}
-            reloadBalance={reloadBalance}
             queryDieselBalance={queryDieselBalance}
             onCancel={() => setOperateIndex(-1)}
           />
@@ -151,7 +139,6 @@ const Lend = props => {
             POOL_SERVICE_ABI={POOL_SERVICE_ABI}
             isBalanceLoading={wethBalanceLoading}
             userProvider={userProvider}
-            reloadBalance={reloadBalance}
             wethBalanceLoading={wethBalanceLoading}
             onCancel={() => setOperateIndex(-1)}
           />
