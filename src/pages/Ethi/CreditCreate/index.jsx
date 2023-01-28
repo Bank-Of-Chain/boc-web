@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react'
+import React, { useState, useRef, useCallback } from 'react'
 import * as ethers from 'ethers'
 import BN from 'bignumber.js'
 import { useDispatch } from 'react-redux'
@@ -24,6 +24,7 @@ import useErc20Token from '@/hooks/useErc20Token'
 // === Utils === //
 import { warmDialog } from '@/reducers/meta-reducer'
 import { formatBalance } from '@/helpers/number-format'
+import debounce from 'lodash/debounce'
 
 // === Constants === //
 import { WETH_ADDRESS } from '@/constants/tokens'
@@ -130,6 +131,8 @@ const CreditCreate = ({ userProvider, onCancel, CREDIT_FACADE_ADDRESS, CREDIT_FA
   const isLogin = !isEmpty(userProvider)
   const isValid = isValidValue()
 
+  const debounceSetLever = useCallback(debounce(setLever, 25, { maxWait: 50 }), [])
+
   return (
     <>
       <GridContainer spacing={3}>
@@ -182,8 +185,8 @@ const CreditCreate = ({ userProvider, onCancel, CREDIT_FACADE_ADDRESS, CREDIT_FA
                     defaultValue={1}
                     aria-labelledby="discrete-slider"
                     valueLabelDisplay="auto"
-                    step={0.01}
-                    onChange={(e, v) => setLever(v)}
+                    step={0.1}
+                    onChange={(e, v) => debounceSetLever(v)}
                     min={1}
                     max={5}
                     marks={[
