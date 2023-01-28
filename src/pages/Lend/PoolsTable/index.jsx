@@ -40,9 +40,7 @@ const PoolsTable = props => {
 
   const { decimals } = useErc20Token(WETH_ADDRESS, userProvider)
 
-  const { balance, decimals: dieselDecimals } = useErc20Token(DIESEL_TOKEN_ADDRESS, userProvider)
-
-  const { rewardAmounts, getEarned } = useDieselToken(DIESEL_TOKEN_ADDRESS, DIESEL_TOKEN_ABI, userProvider)
+  const { rewardAmounts, getEarned, balance, decimals: dieselDecimals } = useDieselToken(DIESEL_TOKEN_ADDRESS, DIESEL_TOKEN_ABI, userProvider)
 
   const datas = [
     {
