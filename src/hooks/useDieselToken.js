@@ -48,7 +48,7 @@ const useDieselToken = (DIESEL_TOKEN_ADDRESS, DIESEL_TOKEN_ABI, userProvider) =>
         erc20Data.queryBalance()
       }
     },
-    [erc20Data.queryBalance, address]
+    [erc20Data, address]
   )
 
   useEffect(() => {

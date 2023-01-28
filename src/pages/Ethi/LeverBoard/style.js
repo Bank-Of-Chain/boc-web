@@ -39,7 +39,7 @@ const componentsStyle = () => ({
     display: 'block',
     border: '1px solid #A68EFE',
     padding: '1rem',
-    borderRadius: '20px',
+    borderRadius: '10px',
     marginTop: '2rem'
   }
 })
