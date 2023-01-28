@@ -41,6 +41,13 @@ const componentsStyle = () => ({
     padding: '1rem',
     borderRadius: '10px',
     marginTop: '2rem'
+  },
+  title: {
+    lineHeight: '4rem',
+    letterSpacing: '1px'
+  },
+  content: {
+    letterSpacing: '2px'
   }
 })
 
