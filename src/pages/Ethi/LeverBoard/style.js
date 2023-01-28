@@ -31,6 +31,16 @@ const componentsStyle = () => ({
   },
   tooltip: {
     fontSize: '14px'
+  },
+  warning: {
+    color: '#A68EFE',
+    fontSize: '1rem',
+    lineHeight: '1.5rem',
+    display: 'block',
+    border: '1px solid #A68EFE',
+    padding: '1rem',
+    borderRadius: '20px',
+    marginTop: '2rem'
   }
 })
 

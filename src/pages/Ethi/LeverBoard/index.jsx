@@ -348,6 +348,13 @@ const LeverBoard = props => {
                   <span>{i.content}</span>
                 </GridItem>
               ))}
+              <GridItem xs={12} sm={12} md={12}>
+                <span className={classes.warning}>
+                  <p style={{ textAlign: 'center', fontWeight: '800' }}>Warning</p>
+                  The href attribute is required for an anchor to be keyboard accessible. Provide a valid, navigable address as the href value. If you
+                  cannot provide an href, but still need the element to resemble a link, use a button and change it with appropriate styles.
+                </span>
+              </GridItem>
             </GridContainer>
           }
           title="Base Info"
