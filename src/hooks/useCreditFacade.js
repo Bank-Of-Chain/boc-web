@@ -15,6 +15,7 @@ const { BigNumber } = ethers
 const useCreditFacade = (CREDIT_FACADE_ADDRESS, CREDIT_FACADE_ABI, userProvider) => {
   const [creditAddress, setCreditAddress] = useState('')
   const [creditManagerAddress, setCreditManagerAddress] = useState('')
+  const [poolAddress, setPoolAddress] = useState('')
   const [hasOpenedCreditAccount, setHasOpenedCreditAccount] = useState(undefined)
   const [borrowInterest, setBorrowInterest] = useState(0)
   const [vaultApy, setVaultApy] = useState(0)
@@ -180,11 +181,11 @@ const useCreditFacade = (CREDIT_FACADE_ADDRESS, CREDIT_FACADE_ABI, userProvider)
 
   const queryBaseInfo = useCallback(
     creditAddress => {
-      if (isEmpty(CREDIT_FACADE_ADDRESS) || isEmpty(CREDIT_FACADE_ABI) || isEmpty(address) || isEmpty(userProvider) || isEmpty(creditAddress)) return
+      if (isEmpty(CREDIT_FACADE_ADDRESS) || isEmpty(CREDIT_FACADE_ABI) || isEmpty(userProvider) || isEmpty(creditAddress)) return
       const creditFacadeContract = new ethers.Contract(CREDIT_FACADE_ADDRESS, CREDIT_FACADE_ABI, userProvider)
       return creditFacadeContract.calcCreditAccountHealthFactor(creditAddress)
     },
-    [CREDIT_FACADE_ADDRESS, CREDIT_FACADE_ABI, address, userProvider]
+    [CREDIT_FACADE_ADDRESS, CREDIT_FACADE_ABI, userProvider]
   )
 
   /**
@@ -242,6 +243,17 @@ const useCreditFacade = (CREDIT_FACADE_ADDRESS, CREDIT_FACADE_ABI, userProvider)
     return listener()
   }, [address, CREDIT_FACADE_ADDRESS, CREDIT_FACADE_ABI, userProvider, handleOpenCreditAccount])
 
+  /**
+   *
+   */
+  const queryPoolAddress = useCallback(() => {
+    if (isEmpty(CREDIT_FACADE_ADDRESS) || isEmpty(CREDIT_FACADE_ABI) || isEmpty(userProvider)) return
+    const creditFacadeContract = new ethers.Contract(CREDIT_FACADE_ADDRESS, CREDIT_FACADE_ABI, userProvider)
+    creditFacadeContract.getPool().then(setPoolAddress)
+  }, [CREDIT_FACADE_ADDRESS, CREDIT_FACADE_ABI, userProvider])
+
+  useEffect(queryPoolAddress, [queryPoolAddress])
+
   return {
     creditAddress,
     isCreditAddressLoading,
@@ -250,6 +262,7 @@ const useCreditFacade = (CREDIT_FACADE_ADDRESS, CREDIT_FACADE_ABI, userProvider)
     personalApy,
     creditManagerAddress,
     hasOpenedCreditAccount,
+    poolAddress,
     // actions
     openCreditAccount,
     closeCreditAccount,
