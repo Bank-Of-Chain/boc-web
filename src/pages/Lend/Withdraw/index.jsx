@@ -22,6 +22,7 @@ import Loading from '@/components/LoadingComponent'
 import { warmDialog } from '@/reducers/meta-reducer'
 import useUserAddress from '@/hooks/useUserAddress'
 import usePoolService from '@/hooks/usePoolService'
+import useErc20Token from '@/hooks/useErc20Token'
 
 // === Utils === //
 import isUndefined from 'lodash/isUndefined'
@@ -41,16 +42,7 @@ const useStyles = makeStyles(styles)
 
 const steps = [{ title: 'Amounts Validation' }, { title: 'Gas Estimates' }, { title: 'Withdraw' }]
 
-const Withdraw = ({
-  dieselBalance,
-  dieselDecimals,
-  userProvider,
-  onCancel,
-  queryDieselBalance,
-  POOL_SERVICE_ADDRESS,
-  POOL_SERVICE_ABI,
-  dieselBalanceLoading
-}) => {
+const Withdraw = ({ userProvider, onCancel, POOL_SERVICE_ADDRESS, POOL_SERVICE_ABI, DIESEL_TOKEN_ADDRESS }) => {
   const classes = useStyles()
   const dispatch = useDispatch()
   const [toValue, setToValue] = useState('')
@@ -61,6 +53,13 @@ const Withdraw = ({
   const address = useUserAddress(userProvider)
 
   const { fromDiesel, removeLiquidity } = usePoolService(POOL_SERVICE_ADDRESS, POOL_SERVICE_ABI, userProvider)
+
+  const {
+    balance: dieselBalance,
+    decimals: dieselDecimals,
+    loading: dieselBalanceLoading,
+    queryBalance: queryDieselBalance
+  } = useErc20Token(DIESEL_TOKEN_ADDRESS, userProvider)
 
   const withdraw = async () => {
     let withdrawTimeStart = Date.now(),
@@ -129,6 +128,7 @@ const Withdraw = ({
       setIsWithdrawLoading(false)
       setWithdrawError({})
       setCurrentStep(0)
+      onCancel()
     }, 2000)
     // log withdraw total time
     const totalTime = withdrawTransationFinish - withdrawTimeStart

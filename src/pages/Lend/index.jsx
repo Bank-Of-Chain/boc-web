@@ -23,11 +23,7 @@ import Paper from '@material-ui/core/Paper'
 import { setCurrentTab } from '@/reducers/invest-reducer'
 
 // === Constants === //
-import { WETH_ADDRESS } from '@/constants/tokens'
 import { INVEST_TAB } from '@/constants/invest'
-
-// === Hooks === //
-import useErc20Token from '@/hooks/useErc20Token'
 
 // === Utils === //
 import useVersionWapper from '@/hooks/useVersionWapper'
@@ -56,15 +52,6 @@ const Lend = props => {
     },
     [dispatch]
   )
-
-  const { loading: wethBalanceLoading } = useErc20Token(WETH_ADDRESS, userProvider)
-
-  const {
-    balance: dieselBalance,
-    decimals: dieselDecimals,
-    loading: dieselBalanceLoading,
-    queryBalance: queryDieselBalance
-  } = useErc20Token(DIESEL_ADDRESS, userProvider)
 
   useEffect(() => {
     setCurrent(INVEST_TAB.lending)
@@ -115,13 +102,10 @@ const Lend = props => {
       >
         <Paper elevation={3} className={classes.depositModal}>
           <Withdraw
-            dieselBalance={dieselBalance}
-            dieselDecimals={dieselDecimals}
-            dieselBalanceLoading={dieselBalanceLoading}
+            DIESEL_TOKEN_ADDRESS={DIESEL_ADDRESS}
             POOL_SERVICE_ADDRESS={POOL_SERVICE_ADDRESS}
             POOL_SERVICE_ABI={POOL_SERVICE_ABI}
             userProvider={userProvider}
-            queryDieselBalance={queryDieselBalance}
             onCancel={() => setOperateIndex(-1)}
           />
         </Paper>
@@ -134,12 +118,9 @@ const Lend = props => {
       >
         <Paper elevation={3} className={classes.depositModal}>
           <Deposit
-            dieselDecimals={dieselDecimals}
             POOL_SERVICE_ADDRESS={POOL_SERVICE_ADDRESS}
             POOL_SERVICE_ABI={POOL_SERVICE_ABI}
-            isBalanceLoading={wethBalanceLoading}
             userProvider={userProvider}
-            wethBalanceLoading={wethBalanceLoading}
             onCancel={() => setOperateIndex(-1)}
           />
         </Paper>
