@@ -34,23 +34,14 @@ import styles from './style'
 const { BigNumber } = ethers
 const useStyles = makeStyles(styles)
 
-export default function Deposit({
-  wethBalance,
-  wethDecimals,
-  userProvider,
-  onCancel,
-  reloadBalance,
-  POOL_SERVICE_ADDRESS,
-  POOL_SERVICE_ABI,
-  wethBalanceLoading
-}) {
+export default function Deposit({ userProvider, onCancel, reloadBalance, POOL_SERVICE_ADDRESS, POOL_SERVICE_ABI, wethBalanceLoading }) {
   const classes = useStyles()
   const dispatch = useDispatch()
   const [ethValue, setEthValue] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const loadingTimer = useRef()
 
-  const { approve } = useErc20Token(WETH_ADDRESS, userProvider)
+  const { approve, balance: wethBalance, decimals: wethDecimals } = useErc20Token(WETH_ADDRESS, userProvider)
 
   const { addLiquidity } = usePoolService(POOL_SERVICE_ADDRESS, POOL_SERVICE_ABI, userProvider)
 

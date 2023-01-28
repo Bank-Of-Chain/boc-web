@@ -149,9 +149,7 @@ const Lend = props => {
             dieselDecimals={dieselDecimals}
             POOL_SERVICE_ADDRESS={POOL_SERVICE_ADDRESS}
             POOL_SERVICE_ABI={POOL_SERVICE_ABI}
-            wethBalance={wethBalance}
             isBalanceLoading={wethBalanceLoading}
-            wethDecimals={wethDecimals}
             userProvider={userProvider}
             reloadBalance={reloadBalance}
             wethBalanceLoading={wethBalanceLoading}
