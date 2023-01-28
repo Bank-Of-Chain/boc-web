@@ -249,7 +249,14 @@ const useCreditFacade = (CREDIT_FACADE_ADDRESS, CREDIT_FACADE_ABI, userProvider)
   const queryPoolAddress = useCallback(() => {
     if (isEmpty(CREDIT_FACADE_ADDRESS) || isEmpty(CREDIT_FACADE_ABI) || isEmpty(userProvider)) return
     const creditFacadeContract = new ethers.Contract(CREDIT_FACADE_ADDRESS, CREDIT_FACADE_ABI, userProvider)
-    creditFacadeContract.getPool().then(setPoolAddress)
+    try {
+      creditFacadeContract
+        .getPool()
+        .then(setPoolAddress)
+        .catch(() => setPoolAddress(''))
+    } catch (error) {
+      setPoolAddress('')
+    }
   }, [CREDIT_FACADE_ADDRESS, CREDIT_FACADE_ABI, userProvider])
 
   useEffect(queryPoolAddress, [queryPoolAddress])
