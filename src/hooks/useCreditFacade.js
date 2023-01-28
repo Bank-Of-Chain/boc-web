@@ -158,7 +158,15 @@ const useCreditFacade = (CREDIT_FACADE_ADDRESS, CREDIT_FACADE_ABI, userProvider)
     const creditFacadeContract = new ethers.Contract(CREDIT_FACADE_ADDRESS, CREDIT_FACADE_ABI, userProvider)
     creditFacadeContract
       .hasOpenedCreditAccount(address)
-      .then(setHasOpenedCreditAccount)
+      .then(value => {
+        setHasOpenedCreditAccount(value)
+        if (value) {
+          creditFacadeContract
+            .getCreditAccount(address)
+            .then(setCreditAddress)
+            .catch(() => setCreditAddress(''))
+        }
+      })
       .catch(() => setHasOpenedCreditAccount(false))
       .finally(() => {
         setTimeout(() => {
@@ -167,10 +175,6 @@ const useCreditFacade = (CREDIT_FACADE_ADDRESS, CREDIT_FACADE_ABI, userProvider)
       })
 
     creditFacadeContract.creditManager().then(setCreditManagerAddress)
-    creditFacadeContract
-      .getCreditAccount(address)
-      .then(setCreditAddress)
-      .catch(() => setCreditAddress(''))
   }, [CREDIT_FACADE_ADDRESS, CREDIT_FACADE_ABI, address, userProvider])
 
   useEffect(queryCreditAddress, [queryCreditAddress])
