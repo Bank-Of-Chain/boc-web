@@ -220,6 +220,12 @@ export default function Deposit({ userProvider, CREDIT_FACADE_ADDRESS, CREDIT_FA
                   </Tooltip>
                 </p>
               </GridItem>
+              <GridItem xs={12} sm={12} md={12} lg={12}>
+                <p>
+                  1. The newly added funds will be stored in the form of ETHi Ticket and will be converted to ETHi when BoC does hardwork next time
+                </p>
+                <p>2. ETHi is held by the credit account. The newly generated ETHi after BoC dohardwork needs to wait for distribution by keeper</p>
+              </GridItem>
             </GridContainer>
             <GridContainer>
               <GridItem xs={12} sm={12} md={12} lg={12}>

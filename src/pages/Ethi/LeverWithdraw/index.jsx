@@ -22,7 +22,6 @@ import Loading from '@/components/LoadingComponent'
 import { warmDialog } from '@/reducers/meta-reducer'
 import useCreditFacade from '@/hooks/useCreditFacade'
 import useErc20Token from '@/hooks/useErc20Token'
-import useUserAddress from '@/hooks/useUserAddress'
 
 // === Utils === //
 import isUndefined from 'lodash/isUndefined'
@@ -54,8 +53,6 @@ const LeverWithdraw = ({ userProvider, ETHI_ADDRESS, VAULT_BUFFER_ADDRESS, CREDI
 
   const { decimals: ethiDecimals, loading: isEthiBalanceLoading } = useErc20Token(ETHI_ADDRESS, userProvider)
   const { balanceOf: getEthiVaultBufferBalance } = useErc20Token(VAULT_BUFFER_ADDRESS, userProvider)
-
-  const address = useUserAddress(userProvider)
 
   const withdraw = async () => {
     let withdrawTimeStart = Date.now(),
@@ -230,15 +227,15 @@ const LeverWithdraw = ({ userProvider, ETHI_ADDRESS, VAULT_BUFFER_ADDRESS, CREDI
                   <Loading loading={isEthiBalanceLoading}>{formatBalance(ethiBalance, ethiDecimals)}</Loading>
                 </p>
               </GridItem>
-              {address && (
-                <GridItem xs={6} sm={6} md={6} lg={6}>
-                  {/* <p className={classes.estimateText} style={{ justifyContent: 'flex-end' }} title={toFixed(pegTokenPrice, BN_18)}>
-                    <span>1ETHi ≈ {toFixed(pegTokenPrice, BN_18, 6)}ETH</span>
-                  </p> */}
-                </GridItem>
-              )}
             </GridContainer>
-            <GridContainer className={classes.outputContainer}></GridContainer>
+            <GridContainer className={classes.outputContainer}>
+              <GridItem xs={12} sm={12} md={12} lg={12}>
+                <p>
+                  After the withdrawal, the funds are temporarily stored in the credit account and can only be returned to the user after the
+                  clearance of the keeper
+                </p>
+              </GridItem>
+            </GridContainer>
             <GridContainer>
               <GridItem xs={12} sm={12} md={12} lg={12}>
                 <div className={classes.buttonGroup}>
