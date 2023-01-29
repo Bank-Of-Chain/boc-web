@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react'
+import React, { useState, useRef, useEffect } from 'react'
 import * as ethers from 'ethers'
 import BN from 'bignumber.js'
 import { useDispatch } from 'react-redux'
@@ -19,7 +19,7 @@ import Button from '@/components/CustomButtons/Button'
 // === Utils === //
 import { isAd, isEs, isRp, isDistributing, errorTextOutput } from '@/helpers/error-handler'
 import { warmDialog } from '@/reducers/meta-reducer'
-import { formatBalance } from '@/helpers/number-format'
+import { toFixed, formatBalance } from '@/helpers/number-format'
 
 // === Hooks === //
 import usePoolService from '@/hooks/usePoolService'
@@ -39,11 +39,13 @@ export default function Deposit({ userProvider, onCancel, POOL_SERVICE_ADDRESS, 
   const dispatch = useDispatch()
   const [ethValue, setEthValue] = useState('')
   const [isLoading, setIsLoading] = useState(false)
+  const [isEstimate, setIsEstimate] = useState(false)
+  const [estimateValue, setEstimateValue] = useState(BigNumber.from(0))
   const loadingTimer = useRef()
 
   const { approve, balance: wethBalance, decimals: wethDecimals, loading: wethBalanceLoading } = useErc20Token(WETH_ADDRESS, userProvider)
 
-  const { addLiquidity } = usePoolService(POOL_SERVICE_ADDRESS, POOL_SERVICE_ABI, userProvider)
+  const { fromDiesel, addLiquidity } = usePoolService(POOL_SERVICE_ADDRESS, POOL_SERVICE_ABI, userProvider)
 
   /**
    * check if value is valid
@@ -153,6 +155,21 @@ export default function Deposit({ userProvider, onCancel, POOL_SERVICE_ADDRESS, 
     }, 2000)
   }
 
+  useEffect(() => {
+    const isValid = isValidValue()
+    if (!isValid) {
+      setEstimateValue(BigNumber.from(0))
+      return
+    }
+    setIsEstimate(true)
+    const amount = BigNumber.from(BN(ethValue).multipliedBy(BigNumber.from(10).pow(wethDecimals).toString()).toFixed())
+
+    setEstimateValue(amount.mul(BigNumber.from(10).pow(wethDecimals)).div(fromDiesel))
+    setTimeout(() => {
+      setIsEstimate(false)
+    }, 100)
+  }, [ethValue, wethDecimals, fromDiesel])
+
   const isLogin = !isEmpty(userProvider)
   const isValid = isValidValue()
 
@@ -201,12 +218,17 @@ export default function Deposit({ userProvider, onCancel, POOL_SERVICE_ADDRESS, 
               </GridItem>
             </GridContainer>
             <GridContainer classes={{ root: classes.estimateContainer }}>
-              {/* <GridItem xs={12} sm={12} md={12} lg={12}>
-                <p className={classes.estimateText}>
-                  <Checkbox defaultChecked color="primary" inputProps={{ 'aria-label': 'secondary checkbox' }} /> Staking all of your Diesel tokens
-                  into pool
-                </p>
-              </GridItem> */}
+              <GridItem xs={12} sm={12} md={12} lg={12}>
+                <p className={classes.estimateText}>To</p>
+              </GridItem>
+              <GridItem xs={12} sm={12} md={12} lg={12}>
+                <div className={classes.estimateBalanceTitle}>
+                  Diesel Token
+                  <span className={classes.estimateBalanceNum}>
+                    <Loading loading={isEstimate}>{toFixed(estimateValue, fromDiesel, 6)}</Loading>
+                  </span>
+                </div>
+              </GridItem>
             </GridContainer>
             <GridContainer>
               <GridItem xs={12} sm={12} md={12} lg={12}>

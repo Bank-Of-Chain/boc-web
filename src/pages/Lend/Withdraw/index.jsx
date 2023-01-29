@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import * as ethers from 'ethers'
 import BN from 'bignumber.js'
 import { useDispatch } from 'react-redux'
@@ -49,6 +49,8 @@ const Withdraw = ({ userProvider, onCancel, POOL_SERVICE_ADDRESS, POOL_SERVICE_A
   const [isWithdrawLoading, setIsWithdrawLoading] = useState(false)
   const [currentStep, setCurrentStep] = useState(0)
   const [withdrawError, setWithdrawError] = useState({})
+  const [isEstimate, setIsEstimate] = useState(false)
+  const [estimateValue, setEstimateValue] = useState(BigNumber.from(0))
 
   const address = useUserAddress(userProvider)
 
@@ -187,6 +189,21 @@ const Withdraw = ({ userProvider, onCancel, POOL_SERVICE_ADDRESS, POOL_SERVICE_A
     setToValue(formatBalance(nextEthiBalance, dieselDecimals, { showAll: true }))
   }
 
+  useEffect(() => {
+    const isValid = isValidToValue()
+    if (!isValid) {
+      setEstimateValue(BigNumber.from(0))
+      return
+    }
+    setIsEstimate(true)
+    const amount = BigNumber.from(BN(toValue).multipliedBy(BigNumber.from(10).pow(dieselDecimals).toString()).toFixed())
+
+    setEstimateValue(amount.mul(fromDiesel).div(BigNumber.from(10).pow(dieselDecimals)))
+    setTimeout(() => {
+      setIsEstimate(false)
+    }, 100)
+  }, [toValue, dieselDecimals, fromDiesel])
+
   const isValidToValueFlag = isValidToValue()
   const isLogin = !isEmpty(userProvider)
 
@@ -232,7 +249,19 @@ const Withdraw = ({ userProvider, onCancel, POOL_SERVICE_ADDRESS, POOL_SERVICE_A
               </GridItem>
             )}
           </GridContainer>
-          <GridContainer className={classes.outputContainer}></GridContainer>
+          <GridContainer className={classes.outputContainer}>
+            <GridItem xs={12} sm={12} md={12} lg={12}>
+              <p className={classes.estimateText}>To</p>
+            </GridItem>
+            <GridItem xs={12} sm={12} md={12} lg={12}>
+              <div className={classes.estimateBalanceTitle}>
+                WETH
+                <span className={classes.estimateBalanceNum}>
+                  <Loading loading={isEstimate}>{toFixed(estimateValue, fromDiesel, 6)}</Loading>
+                </span>
+              </div>
+            </GridItem>
+          </GridContainer>
           <GridContainer>
             <GridItem xs={12} sm={12} md={12} lg={12}>
               <div className={classes.buttonGroup}>
