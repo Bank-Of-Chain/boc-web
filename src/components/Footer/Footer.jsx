@@ -76,14 +76,14 @@ export default function Footer(props) {
                 <Button
                   color="colorful-text"
                   target="_blank"
-                  href={`${DOCUMENT_URL}/protocol-mechanisms/protocol-algorithm-design`}
+                  href={`${DOCUMENT_URL}/docs/protocol-mechanisms/protocol-algorithm-design`}
                   disableRipple={true}
                 >
                   BoC Protocol
                 </Button>
               </ListItem>
               <ListItem className={classes.inlineBlock}>
-                <Button color="colorful-text" target="_blank" href={`${DOCUMENT_URL}/governance/governance`} disableRipple={true}>
+                <Button color="colorful-text" target="_blank" href={`${DOCUMENT_URL}/docs/governance/governance`} disableRipple={true}>
                   Governance
                 </Button>
               </ListItem>
@@ -93,12 +93,12 @@ export default function Footer(props) {
                 </Button>
               </ListItem>
               <ListItem className={classes.inlineBlock}>
-                <Button color="colorful-text" target="_blank" href={`${DOCUMENT_URL}/protocol-mechanisms/security-risk`} disableRipple={true}>
+                <Button color="colorful-text" target="_blank" href={`${DOCUMENT_URL}/docs/protocol-mechanisms/security-risk`} disableRipple={true}>
                   Security
                 </Button>
               </ListItem>
               <ListItem className={classes.inlineBlock}>
-                <Button color="colorful-text" target="_blank" href={`${DOCUMENT_URL}/more/faqs`} disableRipple={true}>
+                <Button color="colorful-text" target="_blank" href={`${DOCUMENT_URL}/docs/more/faqs`} disableRipple={true}>
                   FAQ
                 </Button>
               </ListItem>
