@@ -40,7 +40,8 @@ const componentsStyle = () => ({
     border: '1px solid #A68EFE',
     padding: '1rem',
     borderRadius: '10px',
-    marginTop: '2rem'
+    marginTop: '2rem',
+    textAlign: 'center'
   },
   title: {
     lineHeight: '4rem',
