@@ -496,7 +496,7 @@
     "outputs": [
       {
         "internalType": "uint256",
-        "name": "hf",
+        "name": "_hf",
         "type": "uint256"
       },
       {
@@ -639,7 +639,7 @@
         "type": "address[]"
       }
     ],
-    "name": "distributePegTokenTick",
+    "name": "distributePegTokenTicket",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -690,6 +690,19 @@
         "internalType": "uint256",
         "name": "_pegTokenAmount",
         "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getLendingPool",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
       }
     ],
     "stateMutability": "view",
@@ -775,6 +788,13 @@
       }
     ],
     "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "lendingPoolRewardDistribute",
+    "outputs": [],
+    "stateMutability": "nonpayable",
     "type": "function"
   },
   {
