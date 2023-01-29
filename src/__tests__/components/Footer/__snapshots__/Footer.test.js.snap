@@ -753,7 +753,7 @@ exports[`Footer Component Render 1`] = `
               <a
                 aria-disabled="false"
                 class="MuiButtonBase-root MuiButton-root MuiButton-text makeStyles-button-22 makeStyles-colorful-text-48"
-                href="https://docs.bankofchain.io/docs/protocol-mechanisms/protocol-algorithm-design"
+                href="https://docs.bankofchain.io/en/protocol-mechanisms/protocol-algorithm-design"
                 tabindex="0"
                 target="_blank"
               >
@@ -770,7 +770,7 @@ exports[`Footer Component Render 1`] = `
               <a
                 aria-disabled="false"
                 class="MuiButtonBase-root MuiButton-root MuiButton-text makeStyles-button-22 makeStyles-colorful-text-48"
-                href="https://docs.bankofchain.io/docs/governance/governance"
+                href="https://docs.bankofchain.io/en/governance/governance"
                 tabindex="0"
                 target="_blank"
               >
@@ -787,7 +787,7 @@ exports[`Footer Component Render 1`] = `
               <a
                 aria-disabled="false"
                 class="MuiButtonBase-root MuiButton-root MuiButton-text makeStyles-button-22 makeStyles-colorful-text-48"
-                href="https://docs.bankofchain.io"
+                href="https://docs.bankofchain.io/en"
                 tabindex="0"
                 target="_blank"
               >
@@ -804,7 +804,7 @@ exports[`Footer Component Render 1`] = `
               <a
                 aria-disabled="false"
                 class="MuiButtonBase-root MuiButton-root MuiButton-text makeStyles-button-22 makeStyles-colorful-text-48"
-                href="https://docs.bankofchain.io/docs/protocol-mechanisms/security-risk"
+                href="https://docs.bankofchain.io/en/protocol-mechanisms/security-risk"
                 tabindex="0"
                 target="_blank"
               >
@@ -821,7 +821,7 @@ exports[`Footer Component Render 1`] = `
               <a
                 aria-disabled="false"
                 class="MuiButtonBase-root MuiButton-root MuiButton-text makeStyles-button-22 makeStyles-colorful-text-48"
-                href="https://docs.bankofchain.io/docs/more/faqs"
+                href="https://docs.bankofchain.io/en/more/faqs"
                 tabindex="0"
                 target="_blank"
               >
