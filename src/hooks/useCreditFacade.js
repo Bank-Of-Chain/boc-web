@@ -34,6 +34,7 @@ const useCreditFacade = (CREDIT_FACADE_ADDRESS, CREDIT_FACADE_ABI, userProvider)
    */
   const openCreditAccount = useCallback(
     (borrowedAmount, leverageFactor) => {
+      if (isEmpty(CREDIT_FACADE_ADDRESS) || isEmpty(CREDIT_FACADE_ABI) || isEmpty(userProvider)) return
       const creditFacadeContract = new ethers.Contract(CREDIT_FACADE_ADDRESS, CREDIT_FACADE_ABI, userProvider)
       const signer = userProvider.getSigner()
       return creditFacadeContract.connect(signer).openCreditAccount(borrowedAmount, leverageFactor)
@@ -46,6 +47,7 @@ const useCreditFacade = (CREDIT_FACADE_ADDRESS, CREDIT_FACADE_ABI, userProvider)
    * @returns
    */
   const closeCreditAccount = useCallback(() => {
+    if (isEmpty(CREDIT_FACADE_ADDRESS) || isEmpty(CREDIT_FACADE_ABI) || isEmpty(userProvider)) return
     const creditFacadeContract = new ethers.Contract(CREDIT_FACADE_ADDRESS, CREDIT_FACADE_ABI, userProvider)
     const signer = userProvider.getSigner()
     return creditFacadeContract.connect(signer).closeCreditAccount()
@@ -57,6 +59,7 @@ const useCreditFacade = (CREDIT_FACADE_ADDRESS, CREDIT_FACADE_ABI, userProvider)
    */
   const increaseDebt = useCallback(
     value => {
+      if (isEmpty(CREDIT_FACADE_ADDRESS) || isEmpty(CREDIT_FACADE_ABI) || isEmpty(userProvider)) return
       const creditFacadeContract = new ethers.Contract(CREDIT_FACADE_ADDRESS, CREDIT_FACADE_ABI, userProvider)
       const signer = userProvider.getSigner()
       return creditFacadeContract.connect(signer).increaseDebt(value)
@@ -70,6 +73,7 @@ const useCreditFacade = (CREDIT_FACADE_ADDRESS, CREDIT_FACADE_ABI, userProvider)
    */
   const decreaseDebt = useCallback(
     value => {
+      if (isEmpty(CREDIT_FACADE_ADDRESS) || isEmpty(CREDIT_FACADE_ABI) || isEmpty(userProvider)) return
       const creditFacadeContract = new ethers.Contract(CREDIT_FACADE_ADDRESS, CREDIT_FACADE_ABI, userProvider)
       const signer = userProvider.getSigner()
       return creditFacadeContract.connect(signer).decreaseDebt(value)
@@ -82,6 +86,7 @@ const useCreditFacade = (CREDIT_FACADE_ADDRESS, CREDIT_FACADE_ABI, userProvider)
    */
   const withdrawFromVault = useCallback(
     value => {
+      if (isEmpty(CREDIT_FACADE_ADDRESS) || isEmpty(CREDIT_FACADE_ABI) || isEmpty(userProvider)) return
       const creditFacadeContract = new ethers.Contract(CREDIT_FACADE_ADDRESS, CREDIT_FACADE_ABI, userProvider)
       const signer = userProvider.getSigner()
       return creditFacadeContract.connect(signer).withdrawFromVault(value)
@@ -94,6 +99,7 @@ const useCreditFacade = (CREDIT_FACADE_ADDRESS, CREDIT_FACADE_ABI, userProvider)
    */
   const addCollateral = useCallback(
     (assets, value, radio) => {
+      if (isEmpty(CREDIT_FACADE_ADDRESS) || isEmpty(CREDIT_FACADE_ABI) || isEmpty(userProvider)) return
       const creditFacadeContract = new ethers.Contract(CREDIT_FACADE_ADDRESS, CREDIT_FACADE_ABI, userProvider)
       const signer = userProvider.getSigner()
       return creditFacadeContract.connect(signer).addCollateral(assets, value, radio)
@@ -106,6 +112,7 @@ const useCreditFacade = (CREDIT_FACADE_ADDRESS, CREDIT_FACADE_ABI, userProvider)
    */
   const redeemCollateral = useCallback(
     paths => {
+      if (isEmpty(CREDIT_FACADE_ADDRESS) || isEmpty(CREDIT_FACADE_ABI) || isEmpty(userProvider)) return
       const creditFacadeContract = new ethers.Contract(CREDIT_FACADE_ADDRESS, CREDIT_FACADE_ABI, userProvider)
       const signer = userProvider.getSigner()
       return creditFacadeContract.connect(signer).redeemCollateral(paths)
@@ -116,11 +123,12 @@ const useCreditFacade = (CREDIT_FACADE_ADDRESS, CREDIT_FACADE_ABI, userProvider)
   /**
    *
    */
-  const distributePegTokenTick = useCallback(
+  const distributePegTokenTicket = useCallback(
     creditAccountAddressArray => {
+      if (isEmpty(CREDIT_FACADE_ADDRESS) || isEmpty(CREDIT_FACADE_ABI) || isEmpty(userProvider)) return
       const creditFacadeContract = new ethers.Contract(CREDIT_FACADE_ADDRESS, CREDIT_FACADE_ABI, userProvider)
       const signer = userProvider.getSigner()
-      return creditFacadeContract.connect(signer).distributePegTokenTick(creditAccountAddressArray)
+      return creditFacadeContract.connect(signer).distributePegTokenTicket(creditAccountAddressArray)
     },
     [CREDIT_FACADE_ADDRESS, CREDIT_FACADE_ABI, userProvider]
   )
@@ -130,6 +138,7 @@ const useCreditFacade = (CREDIT_FACADE_ADDRESS, CREDIT_FACADE_ABI, userProvider)
    */
   const getCreditAccountPegTokenAmount = useCallback(
     creditAccountAddress => {
+      if (isEmpty(CREDIT_FACADE_ADDRESS) || isEmpty(CREDIT_FACADE_ABI) || isEmpty(userProvider)) return
       const creditFacadeContract = new ethers.Contract(CREDIT_FACADE_ADDRESS, CREDIT_FACADE_ABI, userProvider)
       return creditFacadeContract.getCreditAccountPegTokenAmount(creditAccountAddress)
     },
@@ -141,6 +150,7 @@ const useCreditFacade = (CREDIT_FACADE_ADDRESS, CREDIT_FACADE_ABI, userProvider)
    */
   const getCheckCloseCreditAccount = useCallback(
     creditAccountAddress => {
+      if (isEmpty(CREDIT_FACADE_ADDRESS) || isEmpty(CREDIT_FACADE_ABI) || isEmpty(userProvider)) return
       const creditFacadeContract = new ethers.Contract(CREDIT_FACADE_ADDRESS, CREDIT_FACADE_ABI, userProvider)
       return creditFacadeContract.getCheckCloseCreditAccount(creditAccountAddress)
     },
@@ -274,7 +284,7 @@ const useCreditFacade = (CREDIT_FACADE_ADDRESS, CREDIT_FACADE_ABI, userProvider)
     addCollateral,
     withdrawFromVault,
     redeemCollateral,
-    distributePegTokenTick,
+    distributePegTokenTicket,
     queryBaseInfo,
     getCheckCloseCreditAccount,
     getCreditAccountPegTokenAmount
