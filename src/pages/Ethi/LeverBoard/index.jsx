@@ -36,6 +36,7 @@ import debounce from 'lodash/debounce'
 import isFunction from 'lodash/isFunction'
 import { toFixed } from '@/helpers/number-format'
 import { getLastPossibleRebaseTime } from '@/helpers/time-util'
+import { errorTextOutput, isIncreaseDebtForbiddenException, isBorrowAmountOutOfLimitsException } from '@/helpers/error-handler'
 
 // === Constants === //
 import { WETH_ADDRESS } from '@/constants/tokens'
@@ -124,6 +125,15 @@ const LeverBoard = props => {
   const updateLever = useCallback(() => {
     const currentLeverRadio = calcCurrentLeverRadio()
 
+    if (creditAccountEthiBalance.lte(0)) {
+      return dispatch(
+        warmDialog({
+          open: true,
+          type: 'warning',
+          message: 'Sufficient ETHi is required for leverage adjustment!'
+        })
+      )
+    }
     if (currentLeverRadio === lever) {
       return dispatch(
         warmDialog({
@@ -139,7 +149,27 @@ const LeverBoard = props => {
     const leverDecimals = BigNumber.from(10).pow(4)
     const newLever = BigNumber.from(BN(lever).multipliedBy(leverDecimals.toString()).toString())
     const nextValue = balance.mul(leverDecimals).sub(balance.sub(debtAmount).mul(newLever)).div(leverDecimals).abs()
-    callFunc(nextValue)
+    callFunc(nextValue).catch(error => {
+      const errorMsg = errorTextOutput(error)
+      let tip = ''
+      if (isIncreaseDebtForbiddenException(errorMsg)) {
+        tip = 'In case of emergency, do not raise the leverage factor!'
+      } else if (isBorrowAmountOutOfLimitsException(errorMsg)) {
+        tip = 'The amount borrowed must be less than 100 ETH!'
+      } else {
+        tip = errorMsg
+      }
+
+      if (tip) {
+        dispatch(
+          warmDialog({
+            open: true,
+            type: 'error',
+            message: tip
+          })
+        )
+      }
+    })
   }, [lever, increaseDebt, decreaseDebt, calcCurrentLeverRadio, debtAmount, balance])
 
   const leverageRadioValue = calcCurrentLeverRadio()
@@ -545,22 +575,13 @@ const LeverBoard = props => {
                 />
               </GridItem>
               <GridItem xs={12} sm={12} md={12}>
-                <Button
-                  color="colorful-border"
-                  size="sm"
-                  onClick={() => {
-                    if (creditAccountEthiBalance.lte(0)) {
-                      return
-                    }
-                    updateLever()
-                  }}
-                >
+                <Button color="colorful-border" size="sm" onClick={updateLever}>
                   <Tooltip
                     classes={{
                       tooltip: classes.tooltip
                     }}
                     placement="top"
-                    title={'Sufficient ethi is required for leverage adjustment'}
+                    title={'Sufficient ETHi is required for leverage adjustment'}
                   >
                     {icon}
                   </Tooltip>

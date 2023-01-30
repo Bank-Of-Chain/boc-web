@@ -25,7 +25,7 @@ import useErc20Token from '@/hooks/useErc20Token'
 import { warmDialog } from '@/reducers/meta-reducer'
 import { formatBalance } from '@/helpers/number-format'
 import debounce from 'lodash/debounce'
-import { errorTextOutput, isNotAllowedLeverageFactor } from '@/helpers/error-handler'
+import { errorTextOutput, isNotAllowedLeverageFactor, isBorrowAmountOutOfLimitsException } from '@/helpers/error-handler'
 
 // === Constants === //
 import { WETH_ADDRESS } from '@/constants/tokens'
@@ -116,6 +116,10 @@ const CreditCreate = ({ userProvider, onCancel, CREDIT_FACADE_ADDRESS, CREDIT_FA
         console.log('error', error)
         if (isNotAllowedLeverageFactor(errorMsg)) {
           tip = 'Please set the correct leverage value!'
+        } else if (isBorrowAmountOutOfLimitsException(errorMsg)) {
+          tip = 'The amount borrowed must be less than 100 ETH!'
+        } else {
+          tip = errorMsg
         }
         if (tip) {
           dispatch(

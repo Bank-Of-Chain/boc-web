@@ -28,7 +28,7 @@ import isUndefined from 'lodash/isUndefined'
 import map from 'lodash/map'
 import isEmpty from 'lodash/isEmpty'
 import { formatBalance } from '@/helpers/number-format'
-import { isAd, isEs, isRp, isMaxLoss, isLossMuch, isExchangeFail, errorTextOutput } from '@/helpers/error-handler'
+import { isCantWithdrawException, errorTextOutput } from '@/helpers/error-handler'
 
 // === Constants === //
 import WithdrawFromVault from '@/constants/leverage'
@@ -98,18 +98,8 @@ const LeverWithdraw = ({ userProvider, ETHI_ADDRESS, VAULT_BUFFER_ADDRESS, CREDI
       console.log('withdraw original error :', error)
       const errorMsg = errorTextOutput(error)
       let tip = ''
-      if (isEs(errorMsg)) {
-        tip = 'Vault has been shut down, please try again later!'
-      } else if (isAd(errorMsg)) {
-        tip = 'Vault is in adjustment status, please try again later!'
-      } else if (isRp(errorMsg)) {
-        tip = 'Vault is in rebase status, please try again later!'
-      } else if (isMaxLoss(errorMsg)) {
-        tip = 'Failed to withdraw, please increase the Max Loss!'
-      } else if (isLossMuch(errorMsg)) {
-        tip = 'Failed to exchange, please increase the exchange slippage!'
-      } else if (isExchangeFail(errorMsg)) {
-        tip = 'Failed to exchange, Please try again later!'
+      if (isCantWithdrawException(errorMsg)) {
+        tip = 'No withdrawal!'
       } else {
         tip = errorMsg
       }
