@@ -18,6 +18,7 @@ import { DepositIcon, SwitchIcon } from '@/components/SvgIcons'
 import { useSelector, useDispatch } from 'react-redux'
 import Modal from '@material-ui/core/Modal'
 import Paper from '@material-ui/core/Paper'
+import Fade from '@material-ui/core/Fade'
 
 // === Reducers === //
 import { setCurrentTab } from '@/reducers/invest-reducer'
@@ -97,33 +98,39 @@ const Lend = props => {
       <Modal
         className={classes.modal}
         open={operateIndex !== -1 && operateType === false}
+        onClose={() => setOperateIndex(-1)}
         aria-labelledby="simple-modal-title"
         aria-describedby="simple-modal-description"
       >
         <Paper elevation={3} className={classes.depositModal}>
-          <Withdraw
-            DIESEL_TOKEN_ADDRESS={DIESEL_ADDRESS}
-            POOL_SERVICE_ADDRESS={POOL_SERVICE_ADDRESS}
-            POOL_SERVICE_ABI={POOL_SERVICE_ABI}
-            userProvider={userProvider}
-            onCancel={() => setOperateIndex(-1)}
-          />
+          <Fade in={operateIndex !== -1 && operateType === false}>
+            <Withdraw
+              DIESEL_TOKEN_ADDRESS={DIESEL_ADDRESS}
+              POOL_SERVICE_ADDRESS={POOL_SERVICE_ADDRESS}
+              POOL_SERVICE_ABI={POOL_SERVICE_ABI}
+              userProvider={userProvider}
+              onCancel={() => setOperateIndex(-1)}
+            />
+          </Fade>
         </Paper>
       </Modal>
       <Modal
         className={classes.modal}
         open={operateIndex !== -1 && operateType === true}
+        onClose={() => setOperateIndex(-1)}
         aria-labelledby="simple-modal-title"
         aria-describedby="simple-modal-description"
       >
-        <Paper elevation={3} className={classes.depositModal}>
-          <Deposit
-            POOL_SERVICE_ADDRESS={POOL_SERVICE_ADDRESS}
-            POOL_SERVICE_ABI={POOL_SERVICE_ABI}
-            userProvider={userProvider}
-            onCancel={() => setOperateIndex(-1)}
-          />
-        </Paper>
+        <Fade in={operateIndex !== -1 && operateType === true}>
+          <Paper elevation={3} className={classes.depositModal}>
+            <Deposit
+              POOL_SERVICE_ADDRESS={POOL_SERVICE_ADDRESS}
+              POOL_SERVICE_ABI={POOL_SERVICE_ABI}
+              userProvider={userProvider}
+              onCancel={() => setOperateIndex(-1)}
+            />
+          </Paper>
+        </Fade>
       </Modal>
     </div>
   )

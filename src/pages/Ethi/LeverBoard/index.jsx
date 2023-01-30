@@ -16,6 +16,7 @@ import Tooltip from '@material-ui/core/Tooltip'
 import InfoIcon from '@material-ui/icons/Info'
 import Loading from '@/components/LoadingComponent'
 import Slider from '@/components/Slider'
+import Fade from '@material-ui/core/Fade'
 
 // === Hooks === //
 import useErc20Token from '@/hooks/useErc20Token'
@@ -67,7 +68,7 @@ const LeverBoard = props => {
   } = props
 
   const [isDeposit, setIsDeposit] = useState()
-  const [lever, setLever] = useState(1)
+  const [lever, setLever] = useState(2)
   const [ethiBalance, setEthiBalance] = useState(BigNumber.from(0))
   const [creditAccountEthiBalance, setCreditAccountEthiBalance] = useState(BigNumber.from(0))
   const [vaultBufferBalance, setVaultBufferBalance] = useState(BigNumber.from(0))
@@ -314,15 +315,23 @@ const LeverBoard = props => {
             </div>
           </Loading>
         </div>
-        <Modal className={classes.modal} open={creditCreateModal} aria-labelledby="simple-modal-title" aria-describedby="simple-modal-description">
-          <Paper elevation={3} className={classes.depositModal}>
-            <CreditCreate
-              CREDIT_FACADE_ADDRESS={CREDIT_FACADE_ADDRESS}
-              CREDIT_FACADE_ABI={CREDIT_FACADE_ABI}
-              userProvider={userProvider}
-              onCancel={() => setCreditCreateModal(false)}
-            />
-          </Paper>
+        <Modal
+          className={classes.modal}
+          open={creditCreateModal}
+          onClose={() => setCreditCreateModal(false)}
+          aria-labelledby="simple-modal-title"
+          aria-describedby="simple-modal-description"
+        >
+          <Fade in={creditCreateModal}>
+            <Paper elevation={3} className={classes.depositModal}>
+              <CreditCreate
+                CREDIT_FACADE_ADDRESS={CREDIT_FACADE_ADDRESS}
+                CREDIT_FACADE_ABI={CREDIT_FACADE_ABI}
+                userProvider={userProvider}
+                onCancel={() => setCreditCreateModal(false)}
+              />
+            </Paper>
+          </Fade>
         </Modal>
       </GridItem>
     )
@@ -634,33 +643,49 @@ const LeverBoard = props => {
           }
         ></CardV2>
       </GridItem>
-      <Modal className={classes.modal} open={isDeposit === true} aria-labelledby="simple-modal-title" aria-describedby="simple-modal-description">
-        <Paper elevation={3} className={classes.depositModal}>
-          <LeverDeposit
-            CREDIT_FACADE_ADDRESS={CREDIT_FACADE_ADDRESS}
-            CREDIT_FACADE_ABI={CREDIT_FACADE_ABI}
-            leverageRadioValue={leverageRadioValue}
-            userProvider={userProvider}
-            onCancel={() => setIsDeposit()}
-          />
-        </Paper>
+      <Modal
+        className={classes.modal}
+        open={isDeposit === true}
+        onClose={() => setIsDeposit()}
+        aria-labelledby="simple-modal-title"
+        aria-describedby="simple-modal-description"
+      >
+        <Fade in={isDeposit === true}>
+          <Paper elevation={3} className={classes.depositModal}>
+            <LeverDeposit
+              CREDIT_FACADE_ADDRESS={CREDIT_FACADE_ADDRESS}
+              CREDIT_FACADE_ABI={CREDIT_FACADE_ABI}
+              leverageRadioValue={leverageRadioValue}
+              userProvider={userProvider}
+              onCancel={() => setIsDeposit()}
+            />
+          </Paper>
+        </Fade>
       </Modal>
-      <Modal className={classes.modal} open={isDeposit === false} aria-labelledby="simple-modal-title" aria-describedby="simple-modal-description">
-        <Paper elevation={3} className={classes.depositModal}>
-          <LeverWithdraw
-            balance={balance}
-            decimals={decimals}
-            creditManagerAddress={creditManagerAddress}
-            CREDIT_MANAGER_ABI={CREDIT_MANAGER_ABI}
-            ETHI_ADDRESS={ETHI_ADDRESS}
-            CREDIT_ADDRESS_ABI={CREDIT_ADDRESS_ABI}
-            VAULT_BUFFER_ADDRESS={VAULT_BUFFER_ADDRESS}
-            CREDIT_FACADE_ADDRESS={CREDIT_FACADE_ADDRESS}
-            CREDIT_FACADE_ABI={CREDIT_FACADE_ABI}
-            userProvider={userProvider}
-            onCancel={() => setIsDeposit()}
-          />
-        </Paper>
+      <Modal
+        className={classes.modal}
+        open={isDeposit === false}
+        onClose={() => setIsDeposit()}
+        aria-labelledby="simple-modal-title"
+        aria-describedby="simple-modal-description"
+      >
+        <Fade in={isDeposit === false}>
+          <Paper elevation={3} className={classes.depositModal}>
+            <LeverWithdraw
+              balance={balance}
+              decimals={decimals}
+              creditManagerAddress={creditManagerAddress}
+              CREDIT_MANAGER_ABI={CREDIT_MANAGER_ABI}
+              ETHI_ADDRESS={ETHI_ADDRESS}
+              CREDIT_ADDRESS_ABI={CREDIT_ADDRESS_ABI}
+              VAULT_BUFFER_ADDRESS={VAULT_BUFFER_ADDRESS}
+              CREDIT_FACADE_ADDRESS={CREDIT_FACADE_ADDRESS}
+              CREDIT_FACADE_ABI={CREDIT_FACADE_ABI}
+              userProvider={userProvider}
+              onCancel={() => setIsDeposit()}
+            />
+          </Paper>
+        </Fade>
       </Modal>
     </GridContainer>
   )
