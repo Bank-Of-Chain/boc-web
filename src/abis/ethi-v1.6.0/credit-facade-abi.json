@@ -112,6 +112,11 @@
   },
   {
     "inputs": [],
+    "name": "NotAllowedLeverageFactor",
+    "type": "error"
+  },
+  {
+    "inputs": [],
     "name": "NotAllowedWhenNotExpirableException",
     "type": "error"
   },
@@ -475,10 +480,29 @@
         "internalType": "uint256",
         "name": "_amount",
         "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint8",
+        "name": "_method",
+        "type": "uint8"
       }
     ],
     "name": "WithdrawFromVault",
     "type": "event"
+  },
+  {
+    "inputs": [],
+    "name": "accessControlProxy",
+    "outputs": [
+      {
+        "internalType": "contract IAccessControlProxy",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
   },
   {
     "inputs": [
@@ -595,6 +619,11 @@
   },
   {
     "inputs": [
+      {
+        "internalType": "address",
+        "name": "_borrower",
+        "type": "address"
+      },
       {
         "components": [
           {
@@ -829,6 +858,16 @@
         "internalType": "uint128",
         "name": "maxBorrowedAmount",
         "type": "uint128"
+      },
+      {
+        "internalType": "uint16",
+        "name": "minLeverageFactor",
+        "type": "uint16"
+      },
+      {
+        "internalType": "uint16",
+        "name": "maxLeverageFactor",
+        "type": "uint16"
       }
     ],
     "stateMutability": "view",
@@ -902,6 +941,11 @@
   {
     "inputs": [
       {
+        "internalType": "address",
+        "name": "_borrower",
+        "type": "address"
+      },
+      {
         "components": [
           {
             "internalType": "address",
@@ -967,6 +1011,16 @@
         "internalType": "uint128",
         "name": "_maxBorrowedAmount",
         "type": "uint128"
+      },
+      {
+        "internalType": "uint16",
+        "name": "_minLeverageFactor",
+        "type": "uint16"
+      },
+      {
+        "internalType": "uint16",
+        "name": "_maxLeverageFactor",
+        "type": "uint16"
       }
     ],
     "name": "setCreditAccountLimits",
@@ -1045,6 +1099,11 @@
         "internalType": "uint256",
         "name": "_amount",
         "type": "uint256"
+      },
+      {
+        "internalType": "uint8",
+        "name": "_method",
+        "type": "uint8"
       }
     ],
     "name": "withdrawFromVault",

@@ -30,6 +30,9 @@ import isEmpty from 'lodash/isEmpty'
 import { formatBalance } from '@/helpers/number-format'
 import { isAd, isEs, isRp, isMaxLoss, isLossMuch, isExchangeFail, errorTextOutput } from '@/helpers/error-handler'
 
+// === Constants === //
+import WithdrawFromVault from '@/constants/leverage'
+
 // === Styles === //
 import styles from './style'
 
@@ -77,7 +80,7 @@ const LeverWithdraw = ({ userProvider, ETHI_ADDRESS, VAULT_BUFFER_ADDRESS, CREDI
     try {
       getSwapInfoFinish = Date.now()
       setCurrentStep(2)
-      await withdrawFromVault(nextValue)
+      await withdrawFromVault(nextValue, WithdrawFromVault.WITHDRAW)
       withdrawFinish = Date.now()
 
       withdrawTransationFinish = Date.now()

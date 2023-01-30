@@ -39,6 +39,7 @@ import { getLastPossibleRebaseTime } from '@/helpers/time-util'
 
 // === Constants === //
 import { WETH_ADDRESS } from '@/constants/tokens'
+import WithdrawFromVault from '@/constants/leverage'
 
 // === Styles === //
 import styles from './style'
@@ -134,7 +135,7 @@ const LeverBoard = props => {
     }
     // lever 当前设置的杠杆率
     const isIncrease = currentLeverRadio > lever
-    const callFunc = isIncrease ? withdrawFromVault : increaseDebt
+    const callFunc = isIncrease ? v => withdrawFromVault(v, WithdrawFromVault.DECREASE_LEVERAGE) : increaseDebt
     const leverDecimals = BigNumber.from(10).pow(4)
     const newLever = BigNumber.from(BN(lever).multipliedBy(leverDecimals.toString()).toString())
     const nextValue = balance.mul(leverDecimals).sub(balance.sub(debtAmount).mul(newLever)).div(leverDecimals).abs()
