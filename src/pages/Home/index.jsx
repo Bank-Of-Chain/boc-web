@@ -39,7 +39,7 @@ export default function Home() {
 
   return (
     <div className={classes.container}>
-      <GridContainer>
+      <GridContainer style={{ display: 'none' }}>
         <GridItem xs={12} sm={12} md={12} className={isLayoutSm ? classes.gridMobile : classes.grid}>
           <h1 className={isLayoutSm ? classes.titleMobile : classes.title}>The Multichain</h1>
           <h1 className={isLayoutSm ? classes.titleMobile : classes.title}>Yield Optimizer</h1>
@@ -67,8 +67,9 @@ export default function Home() {
           </p>
         </GridItem>
       </GridContainer>
-      <ProductSection />
       <LendingSection />
+      <ProductSection />
+      {/* <LendingSection /> */}
       <YieldSection />
       <AmmSection />
       <SupportMembers />
