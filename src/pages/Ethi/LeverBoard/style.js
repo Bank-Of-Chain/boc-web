@@ -44,8 +44,8 @@ const componentsStyle = () => ({
     textAlign: 'center'
   },
   title: {
-    lineHeight: '4rem',
-    letterSpacing: '1px'
+    letterSpacing: '1px',
+    fontSize: '0.75rem'
   },
   content: {
     letterSpacing: '2px'

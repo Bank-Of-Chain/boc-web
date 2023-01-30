@@ -258,6 +258,58 @@ const LeverBoard = props => {
   const data = [
     {
       title: (
+        <span onClick={() => distributePegTokenTicket([creditAddress])}>
+          Balance
+          <Tooltip
+            classes={{
+              tooltip: classes.tooltip
+            }}
+            placement="top"
+            title={`distributePegTokenTicket([creditAddress])`}
+          >
+            {icon}
+          </Tooltip>
+        </span>
+      ),
+      content: `${toFixed(creditAccountEthiBalance, BigNumber.from(10).pow(ethiDecimals), 6)} ETHi`
+    },
+    {
+      title: (
+        <span>
+          Distribute
+          <Tooltip
+            classes={{
+              tooltip: classes.tooltip
+            }}
+            placement="top"
+            title={`ETHi in CreditAccount waiting for keeper distribute`}
+          >
+            {icon}
+          </Tooltip>
+        </span>
+      ),
+      content: (
+        <>
+          {toFixed(ethiBalance, BigNumber.from(10).pow(ethiDecimals), 6)} ETHi
+          <Tooltip
+            classes={{
+              tooltip: classes.tooltip
+            }}
+            placement="top"
+            title={`${toFixed(
+              vaultBufferBalance,
+              BigNumber.from(10).pow(vaultBufferDecimals),
+              6
+            )} ETHi ticket functions as parallel ETHi that will be converted into ETHi after fund allocations have been successful. Last execution
+                    time was ${moment(nextRebaseTime).format('yyyy-MM-DD HH:mm')}`}
+          >
+            {icon}
+          </Tooltip>
+        </>
+      )
+    },
+    {
+      title: (
         <span onClick={() => redeemCollateral([])}>
           Collateral
           <Tooltip
@@ -421,44 +473,6 @@ const LeverBoard = props => {
           title={<span className={classes.content}>Base Info</span>}
           content={
             <GridContainer>
-              <GridItem xs={12} sm={12} md={12}>
-                <span className={classes.title}>
-                  <span onClick={() => distributePegTokenTicket([creditAddress])}>
-                    Balance
-                    <Tooltip
-                      classes={{
-                        tooltip: classes.tooltip
-                      }}
-                      placement="top"
-                      title={`distributePegTokenTicket([creditAddress])`}
-                    >
-                      {icon}
-                    </Tooltip>
-                  </span>
-                  :&nbsp;&nbsp;
-                </span>
-                <span className={classes.content}>
-                  {`${toFixed(creditAccountEthiBalance, BigNumber.from(10).pow(ethiDecimals), 6)}(${toFixed(
-                    ethiBalance,
-                    BigNumber.from(10).pow(ethiDecimals),
-                    6
-                  )}) ETHi`}
-                  <Tooltip
-                    classes={{
-                      tooltip: classes.tooltip
-                    }}
-                    placement="top"
-                    title={`${toFixed(
-                      vaultBufferBalance,
-                      BigNumber.from(10).pow(vaultBufferDecimals),
-                      6
-                    )} ETHi ticket functions as parallel ETHi that will be converted into ETHi after fund allocations have been successful. Last execution
-                    time was ${moment(nextRebaseTime).format('yyyy-MM-DD HH:mm')}`}
-                  >
-                    {icon}
-                  </Tooltip>
-                </span>
-              </GridItem>
               {map(data, (i, index) => (
                 <GridItem key={index} xs={6} sm={6} md={6}>
                   {i.title && <span className={classes.title}>{i.title}:&nbsp;&nbsp;</span>}
