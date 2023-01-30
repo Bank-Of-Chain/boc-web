@@ -39,7 +39,7 @@ const CreditCreate = ({ userProvider, onCancel, CREDIT_FACADE_ADDRESS, CREDIT_FA
   const classes = useStyles()
   const dispatch = useDispatch()
   const [ethValue, setEthValue] = useState('')
-  const [lever, setLever] = useState(1)
+  const [lever, setLever] = useState(2)
   const [isLoading, setIsLoading] = useState(false)
   const loadingTimer = useRef()
 
@@ -182,7 +182,7 @@ const CreditCreate = ({ userProvider, onCancel, CREDIT_FACADE_ADDRESS, CREDIT_FA
                 <p className={classes.estimateText}>Current Leverage: {lever}</p>
                 <div className={classes.estimateBalanceTitle}>
                   <Slider
-                    defaultValue={1}
+                    defaultValue={2}
                     aria-labelledby="discrete-slider"
                     valueLabelDisplay="auto"
                     step={0.1}
