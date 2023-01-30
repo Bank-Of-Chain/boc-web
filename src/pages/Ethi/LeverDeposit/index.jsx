@@ -125,7 +125,7 @@ export default function Deposit({ userProvider, CREDIT_FACADE_ADDRESS, CREDIT_FA
       }
       setIsLoading(false)
     }
-    await addCollateral(WETH_ADDRESS, amount, isMarginOnly ? 0 : parseInt(100 * (leverageRadioValue - 1)))
+    await addCollateral(WETH_ADDRESS, amount, isMarginOnly ? 0 : parseInt(100 * leverageRadioValue))
       .then(tx => tx.wait())
       .then(() => {
         isSuccess = true

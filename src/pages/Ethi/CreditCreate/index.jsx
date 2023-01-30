@@ -102,7 +102,7 @@ const CreditCreate = ({ userProvider, onCancel, CREDIT_FACADE_ADDRESS, CREDIT_FA
     await approve(creditManagerAddress, amount)
     console.log('approve success')
 
-    const nextLever = 100 * (lever - 1)
+    const nextLever = 100 * lever
     await openCreditAccount(amount, nextLever)
       .then(tx => tx.wait())
       .then(() => {
@@ -187,28 +187,28 @@ const CreditCreate = ({ userProvider, onCancel, CREDIT_FACADE_ADDRESS, CREDIT_FA
                     valueLabelDisplay="auto"
                     step={0.1}
                     onChange={(e, v) => debounceSetLever(v)}
-                    min={1}
-                    max={5}
+                    min={2}
+                    max={4}
                     marks={[
-                      {
-                        value: 1,
-                        label: '1'
-                      },
                       {
                         value: 2,
                         label: '2'
+                      },
+                      {
+                        value: 2.5,
+                        label: '2.5'
                       },
                       {
                         value: 3,
                         label: '3'
                       },
                       {
-                        value: 4,
-                        label: '4'
+                        value: 3.5,
+                        label: '3.5'
                       },
                       {
-                        value: 5,
-                        label: '5'
+                        value: 4,
+                        label: '4'
                       }
                     ]}
                   />
