@@ -1,9 +1,11 @@
 import React from 'react'
-import classNames from 'classnames'
 import { makeStyles } from '@material-ui/core/styles'
 
 // === Components === //
 import Button from '@/components/CustomButtons/Button'
+import OpenInNewIcon from '@material-ui/icons/OpenInNew'
+import Icon from '@material-ui/core/Icon'
+import Card from '@/components/CardDescription/Card'
 
 // === Hooks === //
 import useErc20Token from '@/hooks/useErc20Token'
@@ -59,64 +61,71 @@ const PoolsTable = props => {
       {map(datas, (item, index) => {
         const { asset, address, availableLiquidity, totalBorrowed, supplyApy, BorrowApy, balance } = item
         return (
-          <a className={classes.item} key={index}>
-            <div className={classes.inner}>
-              <div className={classes.header}>
-                <div className={classes.icon}>
-                  <img className={classes.tokenLogo} alt="" src={`./images/${address}.png`} />
-                </div>
-                <div className={classes.text}>{asset}</div>
-              </div>
-              <div className={classes.body}>
-                <div className={classes.bodyInner}>
-                  <div className={classes.bodyItem}>
-                    <div className={classes.bodyItemTitle}>Balances</div>
-                    <div className={classes.content}>{balance}</div>
-                  </div>
-                  <div className={classes.bodyItem}>
-                    <div className={classes.bodyItemTitle}>Liquidity</div>
-                    <div className={classes.content}>{availableLiquidity}</div>
-                  </div>
-                  <div className={classes.bodyItem}>
-                    <div className={classes.bodyItemTitle}>Total Borrowed</div>
-                    <div className={classes.content}>{totalBorrowed}</div>
-                  </div>
-                  <div className={classes.bodyItem}>
-                    <div className={classes.bodyItemTitle}>Supply Apy</div>
-                    <div className={classNames(classes.content, classes.apyText)}>{supplyApy}</div>
-                  </div>
-                  <div className={classes.bodyItem}>
-                    <div className={classes.bodyItemTitle}>Borrow Apy</div>
-                    <div className={classNames(classes.content, classes.apyText)}>{BorrowApy}</div>
-                  </div>
-
-                  <div className={classes.bodyItem}>
-                    <div className={classes.bodyItemTitle}>Rewards</div>
-                    <div className={classes.content}>{`${toFixed(rewardAmounts, BigNumber.from(10).pow(decimals))} ETHi`}</div>
-                  </div>
-                </div>
-              </div>
-              <div className={classes.footer}>
-                <div className={classes.footerInner}>
-                  <div className={classes.bodyItem}>
-                    <Button color="colorful-border" onClick={() => actions(index, true)}>
-                      Supply
-                    </Button>
-                  </div>
-                  <div className={classes.bodyItem}>
-                    <Button color="colorful-border" onClick={() => actions(index, false)}>
-                      Withdraw
-                    </Button>
-                  </div>
-                  <div className={classes.bodyItem}>
-                    <Button color="colorful" onClick={getEarned}>
-                      Claim Reward
-                    </Button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </a>
+          <Card
+            icon={<img className={classes.tokenLogo} alt="" src={`./images/${address}.png`} />}
+            title={
+              <>
+                {asset}
+                <Icon style={{ verticalAlign: 'sub' }} component={OpenInNewIcon} fontSize="small"></Icon>
+              </>
+            }
+            contents={[
+              {
+                title: (
+                  <>
+                    Balances&nbsp;<Icon component={OpenInNewIcon} fontSize="small"></Icon>
+                  </>
+                ),
+                content: balance
+              },
+              {
+                title: 'Liquidity',
+                content: availableLiquidity
+              },
+              {
+                title: 'Total Borrowed',
+                content: totalBorrowed
+              },
+              {
+                title: 'Supply Apy',
+                content: <span className={classes.apyText}>{supplyApy}</span>
+              },
+              {
+                title: 'Borrow Apy',
+                content: <span className={classes.apyText}>{BorrowApy}</span>
+              },
+              {
+                title: 'Rewards',
+                content: `${toFixed(rewardAmounts, BigNumber.from(10).pow(decimals), 6)} ETHi`
+              }
+            ]}
+            footers={[
+              {
+                title: '',
+                content: (
+                  <Button color="colorful-border" onClick={() => actions(index, true)}>
+                    Supply
+                  </Button>
+                )
+              },
+              {
+                title: '',
+                content: (
+                  <Button color="colorful-border" onClick={() => actions(index, false)}>
+                    Withdraw
+                  </Button>
+                )
+              },
+              {
+                title: '',
+                content: (
+                  <Button color="colorful" onClick={getEarned}>
+                    Claim Reward
+                  </Button>
+                )
+              }
+            ]}
+          />
         )
       })}
     </div>

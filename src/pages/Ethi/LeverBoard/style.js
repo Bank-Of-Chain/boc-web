@@ -49,6 +49,9 @@ const componentsStyle = () => ({
   },
   content: {
     letterSpacing: '2px'
+  },
+  apyText: {
+    color: '#DB8332'
   }
 })
 

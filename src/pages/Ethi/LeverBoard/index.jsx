@@ -17,6 +17,8 @@ import InfoIcon from '@material-ui/icons/Info'
 import Loading from '@/components/LoadingComponent'
 import Slider from '@/components/Slider'
 import Fade from '@material-ui/core/Fade'
+import Description from '@/components/CardDescription/Description'
+import DescriptionColume from '@/components/CardDescription/DescriptionColume'
 
 // === Hooks === //
 import useErc20Token from '@/hooks/useErc20Token'
@@ -69,7 +71,7 @@ const LeverBoard = props => {
 
   const [isDeposit, setIsDeposit] = useState()
   const [lever, setLever] = useState(2)
-  const [ethiBalance, setEthiBalance] = useState(BigNumber.from(0))
+  const [, setEthiBalance] = useState(BigNumber.from(0))
   const [creditAccountEthiBalance, setCreditAccountEthiBalance] = useState(BigNumber.from(0))
   const [vaultBufferBalance, setVaultBufferBalance] = useState(BigNumber.from(0))
 
@@ -340,8 +342,8 @@ const LeverBoard = props => {
   const data = [
     {
       title: (
-        <span onClick={() => distributePegTokenTicket([creditAddress])}>
-          Balance
+        <>
+          <span onClick={() => distributePegTokenTicket([creditAddress])}>Balance</span>
           <Tooltip
             classes={{
               tooltip: classes.tooltip
@@ -351,49 +353,32 @@ const LeverBoard = props => {
           >
             {icon}
           </Tooltip>
-        </span>
+        </>
       ),
-      content: `${toFixed(creditAccountEthiBalance, BigNumber.from(10).pow(ethiDecimals), 6)} ETHi`
+      content: `${toFixed(creditAccountEthiBalance, BigNumber.from(10).pow(ethiDecimals), 4)} ETHi`
     },
     {
       title: (
-        <span>
-          Distribute
-          <Tooltip
-            classes={{
-              tooltip: classes.tooltip
-            }}
-            placement="top"
-            title={`ETHi in CreditAccount waiting for keeper distribute`}
-          >
-            {icon}
-          </Tooltip>
-        </span>
-      ),
-      content: (
         <>
-          {toFixed(ethiBalance, BigNumber.from(10).pow(ethiDecimals), 6)} ETHi
+          <span>ETHi Tickets</span>
           <Tooltip
             classes={{
               tooltip: classes.tooltip
             }}
             placement="top"
-            title={`${toFixed(
-              vaultBufferBalance,
-              BigNumber.from(10).pow(vaultBufferDecimals),
-              6
-            )} ETHi ticket functions as parallel ETHi that will be converted into ETHi after fund allocations have been successful. Last execution
-                    time was ${moment(nextRebaseTime).format('yyyy-MM-DD HH:mm')}`}
+            title={`ETHi ticket functions as parallel ETHi that will be converted into ETHi after fund allocations have been successful. Last execution
+            time was ${moment(nextRebaseTime).format('yyyy-MM-DD HH:mm')}`}
           >
             {icon}
           </Tooltip>
         </>
-      )
+      ),
+      content: <span>{toFixed(vaultBufferBalance, BigNumber.from(10).pow(vaultBufferDecimals), 4)} Tickets</span>
     },
     {
       title: (
-        <span onClick={() => redeemCollateral(address, [])}>
-          Collateral
+        <>
+          <span onClick={() => redeemCollateral(address, [])}>Collateral</span>
           <Tooltip
             classes={{
               tooltip: classes.tooltip
@@ -403,14 +388,14 @@ const LeverBoard = props => {
           >
             {icon}
           </Tooltip>
-        </span>
+        </>
       ),
-      content: `${toFixed(collateralAmount, BigNumber.from(10).pow(ethiDecimals), 6)} WETH`
+      content: `${toFixed(collateralAmount, BigNumber.from(10).pow(ethiDecimals), 4)} WETH`
     },
     {
       title: (
-        <span onClick={() => decreaseDebt(address, [])}>
-          Debts
+        <>
+          <span onClick={() => decreaseDebt(address, [])}>Debts</span>
           <Tooltip
             classes={{
               tooltip: classes.tooltip
@@ -420,14 +405,14 @@ const LeverBoard = props => {
           >
             {icon}
           </Tooltip>
-        </span>
+        </>
       ),
-      content: `${toFixed(debtAmount, BigNumber.from(10).pow(ethiDecimals), 6)} WETH`
+      content: `${toFixed(debtAmount, BigNumber.from(10).pow(ethiDecimals), 4)} WETH`
     },
     {
       title: (
-        <span>
-          Health Ratio
+        <>
+          <span>Health Ratio</span>
           <Tooltip
             classes={{
               tooltip: classes.tooltip
@@ -437,14 +422,14 @@ const LeverBoard = props => {
           >
             {icon}
           </Tooltip>
-        </span>
+        </>
       ),
       content: toFixed(healthRatio, 10000)
     },
     {
       title: (
-        <span>
-          Leverage Ratio
+        <>
+          <span>Leverage Ratio</span>
           <Tooltip
             classes={{
               tooltip: classes.tooltip
@@ -454,14 +439,14 @@ const LeverBoard = props => {
           >
             {icon}
           </Tooltip>
-        </span>
+        </>
       ),
       content: leverageRadioValue.toFixed(4)
     },
     {
       title: (
-        <span>
-          Borrow Interest
+        <>
+          <span>Borrow Interest</span>
           <Tooltip
             classes={{
               tooltip: classes.tooltip
@@ -471,9 +456,9 @@ const LeverBoard = props => {
           >
             {icon}
           </Tooltip>
-        </span>
+        </>
       ),
-      content: `${borrowApy}%`
+      content: <span className={classes.apyText}>{borrowApy}%</span>
     },
     {
       title: (
@@ -490,12 +475,12 @@ const LeverBoard = props => {
           </Tooltip>
         </span>
       ),
-      content: `${vaultApy / 100}%`
+      content: <span className={classes.apyText}>{vaultApy / 100}%</span>
     },
     {
       title: (
-        <span>
-          Personal APY
+        <>
+          <span>Personal APY</span>
           <Tooltip
             classes={{
               tooltip: classes.tooltip
@@ -505,9 +490,9 @@ const LeverBoard = props => {
           >
             {icon}
           </Tooltip>
-        </span>
+        </>
       ),
-      content: `${personalApy / 100}%`
+      content: <span className={classes.apyText}>{personalApy / 100}%</span>
     }
   ]
 
@@ -522,7 +507,7 @@ const LeverBoard = props => {
   data.push({
     title: '',
     content: (
-      <Button color="colorful-border" size="sm" onClick={() => setIsDeposit(true)}>
+      <Button color="colorful-border" onClick={() => setIsDeposit(true)}>
         Increase Collateral
       </Button>
     )
@@ -531,7 +516,7 @@ const LeverBoard = props => {
   data.push({
     title: '',
     content: (
-      <Button color="colorful-border" size="sm" onClick={() => setIsDeposit(false)}>
+      <Button color="colorful-border" onClick={() => setIsDeposit(false)}>
         Decrease Collateral
       </Button>
     )
@@ -540,11 +525,11 @@ const LeverBoard = props => {
   const resetData = [
     {
       title: 'The next leverage ratio',
-      content: `${lever.toString()}`
+      content: <span className={classes.apyText}>{lever.toString()}</span>
     },
     {
       title: 'Estimate APY',
-      content: `${(estimateApy / 100).toFixed(4)}%`
+      content: <span className={classes.apyText}>{(estimateApy / 100).toFixed(2)}%</span>
     }
   ]
 
@@ -552,15 +537,13 @@ const LeverBoard = props => {
     <GridContainer spacing={2}>
       <GridItem xs={9} sm={9} md={9}>
         <CardV2
-          title={<span className={classes.content}>Base Info</span>}
           content={
             <GridContainer>
-              {map(data, (i, index) => (
-                <GridItem key={index} xs={6} sm={6} md={6}>
-                  {i.title && <span className={classes.title}>{i.title}:&nbsp;&nbsp;</span>}
-                  <span className={classes.content}>{i.content}</span>
-                </GridItem>
-              ))}
+              <DescriptionColume col={2}>
+                {map(data, i => (
+                  <Description title={i.title} content={i.content}></Description>
+                ))}
+              </DescriptionColume>
               {!isEmpty(waitingForSwap) && (
                 <GridItem xs={12} sm={12} md={12}>
                   <span className={classes.warning}>
@@ -569,30 +552,28 @@ const LeverBoard = props => {
                   </span>
                 </GridItem>
               )}
-              {ethiBalance.gt(0) && (
+              {/* {ethiBalance.gt(0) && (
                 <GridItem xs={12} sm={12} md={12}>
                   <span className={classes.warning}>
                     <p style={{ textAlign: 'center', fontWeight: '800' }}>Warning</p>
                     Waiting for the keeper to allocate the ETHi!
                   </span>
                 </GridItem>
-              )}
+              )} */}
             </GridContainer>
           }
         />
       </GridItem>
       <GridItem xs={9} sm={9} md={9}>
         <CardV2
-          title={<span className={classes.content}>Leverage update</span>}
           content={
             <GridContainer>
-              {map(resetData, (i, index) => (
-                <GridItem key={index} xs={6} sm={6} md={6}>
-                  {i.title && <span className={classes.title}>{i.title}:&nbsp;&nbsp;</span>}
-                  <span className={classes.content}>{i.content}</span>
-                </GridItem>
-              ))}
-              <GridItem xs={12} sm={12} md={12} style={{ marginTop: '1rem' }}>
+              <DescriptionColume col={2}>
+                {map(resetData, i => (
+                  <Description title={i.title} content={i.content} horizontal></Description>
+                ))}
+              </DescriptionColume>
+              <GridItem xs={12} sm={12} md={12} style={{ marginTop: '2rem' }}>
                 <Slider
                   defaultValue={leverageRadioValue}
                   aria-labelledby="discrete-slider"
@@ -626,7 +607,7 @@ const LeverBoard = props => {
                 />
               </GridItem>
               <GridItem xs={12} sm={12} md={12}>
-                <Button color="colorful-border" size="sm" onClick={updateLever}>
+                <Button color="colorful-border" onClick={updateLever}>
                   <Tooltip
                     classes={{
                       tooltip: classes.tooltip
