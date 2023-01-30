@@ -96,7 +96,11 @@ const LeverBoard = props => {
     poolAddress
   } = creditInfo
 
-  const { collateralAmount, getCollateralAmount, waitingForSwap } = useCreditAccount(creditAddress, CREDIT_ADDRESS_ABI, userProvider)
+  const { collateralAmount, getCollateralAmount, waitingForSwap, getWaitingForSwap } = useCreditAccount(
+    creditAddress,
+    CREDIT_ADDRESS_ABI,
+    userProvider
+  )
   const { borrowApy } = usePoolService(poolAddress, POOL_SERVICE_ABI, userProvider)
 
   const [estimateApy, setEstimateApy] = useState(BigNumber.from(0))
@@ -210,24 +214,73 @@ const LeverBoard = props => {
   }, [leverageRadioValue])
 
   /**
-   *
+   * query the ETHi after distributing.
    */
   const queryCreditAccountPegTokenAmount = useCallback(() => {
     if (isEmpty(creditAddress)) return
     if (!isFunction(getCreditAccountPegTokenAmount)) return
-    getCreditAccountPegTokenAmount(creditAddress).then(setEthiBalance)
+    getCreditAccountPegTokenAmount(creditAddress).then(setCreditAccountEthiBalance)
   }, [creditAddress, getCreditAccountPegTokenAmount])
 
+  /**
+   * query the ETHi Ticket in the CreditAccount before BoC dohardwork.
+   */
+  const queryVaultBufferBalanceOfInCreditAddress = useCallback(() => {
+    if (isEmpty(creditAddress)) return
+    vaultBufferBalanceOf(creditAddress).then(setVaultBufferBalance)
+  }, [creditAddress, vaultBufferBalanceOf])
+
+  /**
+   * query the ETHi balance in the CreditAccount before distributing.
+   */
+  const queryEthiBalanceOfInCreditAddress = useCallback(() => {
+    if (isEmpty(creditAddress)) return
+    ethiBalanceOf(creditAddress).then(setEthiBalance)
+  }, [creditAddress, ethiBalanceOf])
+
+  useEffect(queryVaultBufferBalanceOfInCreditAddress, [queryVaultBufferBalanceOfInCreditAddress])
+  useEffect(queryEthiBalanceOfInCreditAddress, [queryEthiBalanceOfInCreditAddress])
   useEffect(queryCreditAccountPegTokenAmount, [queryCreditAccountPegTokenAmount])
 
+  /**
+   * event handler
+   */
   const handleAddCollateral = useCallback(
     sender => {
       if (sender === address) {
         getCollateralAmount()
         queryBaseInfoCall()
+        queryVaultBufferBalanceOfInCreditAddress()
       }
     },
-    [address, getCollateralAmount, queryBaseInfoCall]
+    [address, getCollateralAmount, queryBaseInfoCall, queryVaultBufferBalanceOfInCreditAddress]
+  )
+
+  /**
+   * event handler
+   */
+  const handleWithdrawFromVault = useCallback(
+    sender => {
+      if (sender === address) {
+        getWaitingForSwap()
+        queryCreditAccountPegTokenAmount()
+      }
+    },
+    [address, getWaitingForSwap, queryCreditAccountPegTokenAmount]
+  )
+
+  /**
+   * event handler
+   */
+  const handleRedeemCollateral = useCallback(
+    sender => {
+      if (sender === address) {
+        getCollateralAmount()
+        queryBaseInfoCall()
+        getWaitingForSwap()
+      }
+    },
+    [address, getCollateralAmount, queryBaseInfoCall, getWaitingForSwap]
   )
 
   useEffect(() => {
@@ -235,27 +288,16 @@ const LeverBoard = props => {
       if (isEmpty(CREDIT_FACADE_ADDRESS) || isEmpty(CREDIT_FACADE_ABI) || isEmpty(userProvider) || isEmpty(address)) return
       const vaultContract = new ethers.Contract(CREDIT_FACADE_ADDRESS, CREDIT_FACADE_ABI, userProvider)
       vaultContract.on('AddCollateral', handleAddCollateral)
-      vaultContract.on('RedeemCollateral', handleAddCollateral)
-      vaultContract.on('WithdrawFromVault', handleAddCollateral)
+      vaultContract.on('RedeemCollateral', handleRedeemCollateral)
+      vaultContract.on('WithdrawFromVault', handleWithdrawFromVault)
       return () => {
         vaultContract.off('AddCollateral', handleAddCollateral)
-        vaultContract.off('RedeemCollateral', handleAddCollateral)
-        vaultContract.off('WithdrawFromVault', handleAddCollateral)
+        vaultContract.off('RedeemCollateral', handleRedeemCollateral)
+        vaultContract.off('WithdrawFromVault', handleWithdrawFromVault)
       }
     }
     return listener()
   }, [address, CREDIT_FACADE_ADDRESS, CREDIT_FACADE_ABI, userProvider, handleAddCollateral])
-
-  useEffect(() => {
-    if (isEmpty(address)) return
-    vaultBufferBalanceOf(creditAddress).then(setVaultBufferBalance)
-    ethiBalanceOf(creditAddress).then(setEthiBalance)
-  }, [creditAddress, vaultBufferBalanceOf, ethiBalanceOf])
-
-  useEffect(() => {
-    if (isEmpty(creditAddress)) return
-    getCreditAccountPegTokenAmount(creditAddress).then(setCreditAccountEthiBalance)
-  }, [getCreditAccountPegTokenAmount, creditAddress])
 
   const debounceSetLever = useCallback(debounce(setLever, 25, { maxWait: 50 }), [])
 
@@ -341,7 +383,7 @@ const LeverBoard = props => {
     },
     {
       title: (
-        <span onClick={() => redeemCollateral([])}>
+        <span onClick={() => redeemCollateral(address, [])}>
           Collateral
           <Tooltip
             classes={{
@@ -358,7 +400,7 @@ const LeverBoard = props => {
     },
     {
       title: (
-        <span onClick={() => decreaseDebt([])}>
+        <span onClick={() => decreaseDebt(address, [])}>
           Debts
           <Tooltip
             classes={{
