@@ -205,12 +205,11 @@ const LeverBoard = props => {
       const vaultContract = new ethers.Contract(CREDIT_FACADE_ADDRESS, CREDIT_FACADE_ABI, userProvider)
       vaultContract.on('AddCollateral', handleAddCollateral)
       vaultContract.on('RedeemCollateral', handleAddCollateral)
-
-      //TODO: add event for withdrawFromVault
-
+      vaultContract.on('WithdrawFromVault', handleAddCollateral)
       return () => {
         vaultContract.off('AddCollateral', handleAddCollateral)
         vaultContract.off('RedeemCollateral', handleAddCollateral)
+        vaultContract.off('WithdrawFromVault', handleAddCollateral)
       }
     }
     return listener()
@@ -526,10 +525,6 @@ const LeverBoard = props => {
                     {
                       value: 4,
                       label: '4'
-                    },
-                    {
-                      value: 5,
-                      label: '5'
                     }
                   ]}
                 />
