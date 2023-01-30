@@ -72,11 +72,11 @@ const useCreditFacade = (CREDIT_FACADE_ADDRESS, CREDIT_FACADE_ABI, userProvider)
    * @param {*} value
    */
   const decreaseDebt = useCallback(
-    value => {
+    (borrower, value) => {
       if (isEmpty(CREDIT_FACADE_ADDRESS) || isEmpty(CREDIT_FACADE_ABI) || isEmpty(userProvider)) return
       const creditFacadeContract = new ethers.Contract(CREDIT_FACADE_ADDRESS, CREDIT_FACADE_ABI, userProvider)
       const signer = userProvider.getSigner()
-      return creditFacadeContract.connect(signer).decreaseDebt(value)
+      return creditFacadeContract.connect(signer).decreaseDebt(borrower, value)
     },
     [CREDIT_FACADE_ADDRESS, CREDIT_FACADE_ABI, userProvider]
   )
@@ -111,11 +111,11 @@ const useCreditFacade = (CREDIT_FACADE_ADDRESS, CREDIT_FACADE_ABI, userProvider)
    *
    */
   const redeemCollateral = useCallback(
-    paths => {
+    (borrower, paths) => {
       if (isEmpty(CREDIT_FACADE_ADDRESS) || isEmpty(CREDIT_FACADE_ABI) || isEmpty(userProvider)) return
       const creditFacadeContract = new ethers.Contract(CREDIT_FACADE_ADDRESS, CREDIT_FACADE_ABI, userProvider)
       const signer = userProvider.getSigner()
-      return creditFacadeContract.connect(signer).redeemCollateral(paths)
+      return creditFacadeContract.connect(signer).redeemCollateral(borrower, paths)
     },
     [CREDIT_FACADE_ADDRESS, CREDIT_FACADE_ABI, userProvider]
   )
