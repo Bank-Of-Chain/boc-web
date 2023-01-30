@@ -17,7 +17,7 @@ import CustomTextField from '@/components/CustomTextField'
 import Button from '@/components/CustomButtons/Button'
 
 // === Utils === //
-import { isAd, isEs, isRp, isDistributing, errorTextOutput } from '@/helpers/error-handler'
+import { isPoolMoreThanExpectedLiquidityLimit, errorTextOutput } from '@/helpers/error-handler'
 import { warmDialog } from '@/reducers/meta-reducer'
 import { toFixed, formatBalance } from '@/helpers/number-format'
 
@@ -109,14 +109,8 @@ export default function Deposit({ userProvider, onCancel, POOL_SERVICE_ADDRESS, 
     const errorHandle = error => {
       const errorMsg = errorTextOutput(error)
       let tip = ''
-      if (isEs(errorMsg)) {
-        tip = 'Vault has been shut down, please try again later!'
-      } else if (isAd(errorMsg)) {
-        tip = 'Vault is in adjustment status, please try again later!'
-      } else if (isRp(errorMsg)) {
-        tip = 'Vault is in rebase status, please try again later!'
-      } else if (isDistributing(errorMsg)) {
-        tip = 'Vault is in distributing, please try again later!'
+      if (isPoolMoreThanExpectedLiquidityLimit(errorMsg)) {
+        tip = 'The amount of investment exceeded the maximum amount of investment!'
       }
       if (tip) {
         dispatch(

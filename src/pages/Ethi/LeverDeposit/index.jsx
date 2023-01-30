@@ -24,7 +24,7 @@ import useErc20Token from '@/hooks/useErc20Token'
 import useCreditFacade from '@/hooks/useCreditFacade'
 
 // === Utils === //
-import { isAd, isEs, isRp, isDistributing, errorTextOutput } from '@/helpers/error-handler'
+import { isPoolReserveInsufficient, errorTextOutput } from '@/helpers/error-handler'
 import { warmDialog } from '@/reducers/meta-reducer'
 import { formatBalance } from '@/helpers/number-format'
 
@@ -105,14 +105,8 @@ export default function Deposit({ userProvider, CREDIT_FACADE_ADDRESS, CREDIT_FA
     const errorHandle = error => {
       const errorMsg = errorTextOutput(error)
       let tip = ''
-      if (isEs(errorMsg)) {
-        tip = 'Vault has been shut down, please try again later!'
-      } else if (isAd(errorMsg)) {
-        tip = 'Vault is in adjustment status, please try again later!'
-      } else if (isRp(errorMsg)) {
-        tip = 'Vault is in rebase status, please try again later!'
-      } else if (isDistributing(errorMsg)) {
-        tip = 'Vault is in distributing, please try again later!'
+      if (isPoolReserveInsufficient(errorMsg)) {
+        tip = 'The lending pool is not providing enough assets!'
       }
       if (tip) {
         dispatch(

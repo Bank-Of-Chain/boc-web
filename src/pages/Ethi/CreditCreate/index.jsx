@@ -25,6 +25,7 @@ import useErc20Token from '@/hooks/useErc20Token'
 import { warmDialog } from '@/reducers/meta-reducer'
 import { formatBalance } from '@/helpers/number-format'
 import debounce from 'lodash/debounce'
+import { errorTextOutput, isNotAllowedLeverageFactor } from '@/helpers/error-handler'
 
 // === Constants === //
 import { WETH_ADDRESS } from '@/constants/tokens'
@@ -108,6 +109,23 @@ const CreditCreate = ({ userProvider, onCancel, CREDIT_FACADE_ADDRESS, CREDIT_FA
       .then(() => {
         isSuccess = true
         onCancel()
+      })
+      .catch(error => {
+        const errorMsg = errorTextOutput(error)
+        let tip = ''
+        console.log('error', error)
+        if (isNotAllowedLeverageFactor(errorMsg)) {
+          tip = 'Please set the correct leverage value!'
+        }
+        if (tip) {
+          dispatch(
+            warmDialog({
+              open: true,
+              type: 'error',
+              message: tip
+            })
+          )
+        }
       })
 
     if (isSuccess) {
