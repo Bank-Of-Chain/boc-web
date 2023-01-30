@@ -257,7 +257,7 @@ const Withdraw = ({ userProvider, onCancel, POOL_SERVICE_ADDRESS, POOL_SERVICE_A
               <div className={classes.estimateBalanceTitle}>
                 WETH
                 <span className={classes.estimateBalanceNum}>
-                  <Loading loading={isEstimate}>{toFixed(estimateValue, fromDiesel, 6)}</Loading>
+                  <Loading loading={isEstimate}>{toFixed(estimateValue, BigNumber.from(10).pow(dieselDecimals), 6)}</Loading>
                 </span>
               </div>
             </GridItem>

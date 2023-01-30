@@ -225,7 +225,7 @@ export default function Deposit({ userProvider, onCancel, POOL_SERVICE_ADDRESS, 
                 <div className={classes.estimateBalanceTitle}>
                   Diesel Token
                   <span className={classes.estimateBalanceNum}>
-                    <Loading loading={isEstimate}>{toFixed(estimateValue, fromDiesel, 6)}</Loading>
+                    <Loading loading={isEstimate}>{toFixed(estimateValue, BigNumber.from(10).pow(wethDecimals), 6)}</Loading>
                   </span>
                 </div>
               </GridItem>
