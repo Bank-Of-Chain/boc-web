@@ -18,7 +18,7 @@ const useCreditAccount = (creditAddress, CREDIT_ADDRESS_ABI, userProvider) => {
    *
    */
   const getWaitingForSwap = useCallback(() => {
-    if (isEmpty(creditAddress)) return
+    if (isEmpty(creditAddress) || isEmpty(CREDIT_ADDRESS_ABI) || isEmpty(userProvider)) return
     const creditAddressContract = new ethers.Contract(creditAddress, CREDIT_ADDRESS_ABI, userProvider)
     creditAddressContract.getWaitingForSwap().then(({ _assets, _amounts }) => {
       const nextWaitingForSwap = map(_assets, async (item, index) => {
@@ -50,7 +50,7 @@ const useCreditAccount = (creditAddress, CREDIT_ADDRESS_ABI, userProvider) => {
    *
    */
   const getCollateralAmount = useCallback(() => {
-    if (isEmpty(creditAddress)) return
+    if (isEmpty(creditAddress) || isEmpty(CREDIT_ADDRESS_ABI) || isEmpty(userProvider)) return
     const creditAddressContract = new ethers.Contract(creditAddress, CREDIT_ADDRESS_ABI, userProvider)
     creditAddressContract.collateralAmount().then(setCollateralAmount)
   }, [creditAddress, CREDIT_ADDRESS_ABI, userProvider])
@@ -59,7 +59,7 @@ const useCreditAccount = (creditAddress, CREDIT_ADDRESS_ABI, userProvider) => {
    *
    */
   const getBorrowedAmount = useCallback(() => {
-    if (isEmpty(creditAddress)) return
+    if (isEmpty(creditAddress) || isEmpty(CREDIT_ADDRESS_ABI) || isEmpty(userProvider)) return
     const creditAddressContract = new ethers.Contract(creditAddress, CREDIT_ADDRESS_ABI, userProvider)
     creditAddressContract.borrowedAmount().then(setBorrowedAmount)
   }, [creditAddress, CREDIT_ADDRESS_ABI, userProvider])
