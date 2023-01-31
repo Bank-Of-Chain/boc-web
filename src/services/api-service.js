@@ -148,3 +148,20 @@ export const getSegmentProfit = (address, chainId, tokenType, segmentType) => {
 export const getHomePageData = () => {
   return axios.get(`${BOC_SERVER}/home-page`).then(resp => resp.data)
 }
+
+/**
+ * fetch vault apy list order by dates
+ * @param {*} param
+ * @returns
+ */
+export const getValutAPYList = ({ chainId, tokenType, duration, offset = 0, limit }) => {
+  return axios.get(`${BOC_SERVER}/apy/vault_apy`, {
+    params: {
+      chainId,
+      duration,
+      offset,
+      limit,
+      tokenType
+    }
+  })
+}
