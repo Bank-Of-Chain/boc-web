@@ -14,11 +14,13 @@ import useMediaQuery from '@material-ui/core/useMediaQuery'
 import Deposit from './Deposit'
 import Withdraw from './Withdraw'
 import PoolsTable from './PoolsTable'
-import { DepositIcon, SwitchIcon } from '@/components/SvgIcons'
+import { SwitchIcon } from '@/components/SvgIcons'
 import { useSelector, useDispatch } from 'react-redux'
 import Modal from '@material-ui/core/Modal'
 import Paper from '@material-ui/core/Paper'
 import Fade from '@material-ui/core/Fade'
+import Icon from '@material-ui/core/Icon'
+import ArchiveIcon from '@material-ui/icons/Archive'
 
 // === Reducers === //
 import { setCurrentTab } from '@/reducers/invest-reducer'
@@ -65,7 +67,7 @@ const Lend = props => {
           <List disablePadding={true}>
             <ListItem key="Lending Pools" button className={classNames(classes.item)} onClick={() => setCurrent(INVEST_TAB.lending)}>
               <ListItemIcon>
-                <DepositIcon color={current === INVEST_TAB.lending ? '#A68EFE' : '#fff'} />
+                <Icon component={ArchiveIcon} style={{ color: current === INVEST_TAB.lending ? '#A68EFE' : '#fff' }}></Icon>
               </ListItemIcon>
               {!isLayoutSm && (
                 <ListItemText primary={'Lending Pools'} className={classNames(current === INVEST_TAB.lending ? classes.check : classes.text)} />

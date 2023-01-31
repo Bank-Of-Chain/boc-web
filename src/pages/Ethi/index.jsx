@@ -17,6 +17,8 @@ import MyStatement from '@/components/MyStatement'
 import LeverBoard from './LeverBoard'
 import { MyAccountIcon, SwapIcon, WithdrawIcon, DepositIcon, SwitchIcon } from '@/components/SvgIcons'
 import { useSelector, useDispatch } from 'react-redux'
+import Icon from '@material-ui/core/Icon'
+import RecentActorsIcon from '@material-ui/icons/RecentActors'
 
 // === Reducers === //
 import { warmDialog } from '@/reducers/meta-reducer'
@@ -311,7 +313,7 @@ function Ethi(props) {
               onClick={() => setCurrent(INVEST_TAB.lever)}
             >
               <ListItemIcon>
-                <DepositIcon color={current === INVEST_TAB.lever ? '#A68EFE' : '#fff'} />
+                <Icon component={RecentActorsIcon} style={{ color: current === INVEST_TAB.lever ? '#A68EFE' : '#fff' }}></Icon>
               </ListItemIcon>
               {!isLayoutSm && (
                 <ListItemText primary={'Credit Account'} className={classNames(current === INVEST_TAB.lever ? classes.check : classes.text)} />
