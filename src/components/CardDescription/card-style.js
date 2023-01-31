@@ -37,7 +37,9 @@ const componentsStyle = () => ({
     minWidth: 0,
     lineHeight: '3rem',
     fontWeight: 'bold',
-    letterSpacing: '3px'
+    letterSpacing: '3px',
+    display: 'flex',
+    alignItems: 'center'
   },
   body: {
     display: 'flex',
