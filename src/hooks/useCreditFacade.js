@@ -1,4 +1,3 @@
-/* eslint-disable */
 import { useState } from 'react'
 
 // === Hooks === //
@@ -10,16 +9,11 @@ import { useEffect } from 'react'
 import { isEmpty } from 'lodash'
 import { useCallback } from 'react'
 
-const { BigNumber } = ethers
-
 const useCreditFacade = (CREDIT_FACADE_ADDRESS, CREDIT_FACADE_ABI, userProvider) => {
   const [creditAddress, setCreditAddress] = useState('')
   const [creditManagerAddress, setCreditManagerAddress] = useState('')
   const [poolAddress, setPoolAddress] = useState('')
   const [hasOpenedCreditAccount, setHasOpenedCreditAccount] = useState(undefined)
-  const [borrowInterest, setBorrowInterest] = useState(0)
-  const [vaultApy, setVaultApy] = useState(0)
-  const [personalApy, setPersonalApy] = useState(600)
 
   // search if current user has created CreditAccount address
   const [isCreditAddressLoading, setIsCreditAddressLoading] = useState()
@@ -270,9 +264,6 @@ const useCreditFacade = (CREDIT_FACADE_ADDRESS, CREDIT_FACADE_ABI, userProvider)
   return {
     creditAddress,
     isCreditAddressLoading,
-    borrowInterest,
-    vaultApy,
-    personalApy,
     creditManagerAddress,
     hasOpenedCreditAccount,
     poolAddress,
