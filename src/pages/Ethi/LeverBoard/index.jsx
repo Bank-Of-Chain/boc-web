@@ -21,6 +21,7 @@ import Description from '@/components/CardDescription/Description'
 import DescriptionColume from '@/components/CardDescription/DescriptionColume'
 
 // === Hooks === //
+import { useAsync } from 'react-async-hook'
 import useErc20Token from '@/hooks/useErc20Token'
 import useUserAddress from '@/hooks/useUserAddress'
 import usePoolService from '@/hooks/usePoolService'
@@ -29,11 +30,16 @@ import useCreditFacade from '@/hooks/useCreditFacade'
 // === Reducers === //
 import { warmDialog } from '@/reducers/meta-reducer'
 
+// === Services === //
+import { getAccountApyByAddress, getValutAPYList } from '@/services/api-service'
+
 // === Utils === //
 import moment from 'moment'
+import numeral from 'numeral'
 import BN from 'bignumber.js'
 import * as ethers from 'ethers'
 import map from 'lodash/map'
+import get from 'lodash/get'
 import isEmpty from 'lodash/isEmpty'
 import debounce from 'lodash/debounce'
 import isFunction from 'lodash/isFunction'
@@ -44,6 +50,7 @@ import { errorTextOutput, isIncreaseDebtForbiddenException, isBorrowAmountOutOfL
 // === Constants === //
 import { WETH_ADDRESS } from '@/constants/tokens'
 import WithdrawFromVault from '@/constants/leverage'
+import { APY_DURATION } from '@/constants/apy-duration'
 
 // === Styles === //
 import styles from './style'
@@ -84,8 +91,6 @@ const LeverBoard = props => {
   const {
     decimals,
     isCreditAddressLoading,
-    vaultApy,
-    personalApy,
     increaseDebt,
     decreaseDebt,
     redeemCollateral,
@@ -113,6 +118,31 @@ const LeverBoard = props => {
 
   const nextRebaseTime = getLastPossibleRebaseTime()
   const address = useUserAddress(userProvider)
+
+  /**
+   * personal apy fetching
+   */
+  const personalApyData = useAsync(() => {
+    if (isEmpty(creditAddress)) return
+    const date = moment().subtract(1, 'days').utc(0).format('yyyy-MM-DD')
+    return getAccountApyByAddress(creditAddress, date, {
+      chainId: 1,
+      tokenType: 'ETHi',
+      duration: APY_DURATION.weekly
+    }).then(v => get(v, 'result.apy', '0'))
+  }, [creditAddress])
+
+  /**
+   * vault apy fetching
+   */
+  const vaultApyData = useAsync(() => {
+    return getValutAPYList({
+      chainId: 1,
+      duration: APY_DURATION.weekly,
+      limit: 1,
+      tokenType: 'ETHi'
+    }).then(v => get(v, 'data.content.[0].apy', '0'))
+  }, [])
 
   /**
    *
@@ -185,14 +215,15 @@ const LeverBoard = props => {
    * calculate future apy base on personal apy and leverage radio
    */
   const calcEstimateApy = useCallback(() => {
+    if (personalApyData.loading) return
     const leverRatioValue = calcCurrentLeverRadio()
     if (leverRatioValue === 0) {
       setEstimateApy(0)
       return
     }
-    const nextEstimateApy = (personalApy / leverRatioValue) * lever
+    const nextEstimateApy = (personalApyData.result / leverRatioValue) * lever
     setEstimateApy(nextEstimateApy)
-  }, [lever, personalApy, calcCurrentLeverRadio])
+  }, [lever, personalApyData, calcCurrentLeverRadio])
 
   useEffect(calcEstimateApy, [calcEstimateApy])
 
@@ -475,7 +506,11 @@ const LeverBoard = props => {
           </Tooltip>
         </span>
       ),
-      content: <span className={classes.apyText}>{vaultApy / 100}%</span>
+      content: (
+        <Loading loading={vaultApyData.loading} className={classes.reloadIcon}>
+          <span className={classes.apyText}>{numeral(vaultApyData.result).format('0,0.[00]')}%</span>
+        </Loading>
+      )
     },
     {
       title: (
@@ -492,7 +527,11 @@ const LeverBoard = props => {
           </Tooltip>
         </>
       ),
-      content: <span className={classes.apyText}>{personalApy / 100}%</span>
+      content: (
+        <Loading loading={personalApyData.loading} className={classes.reloadIcon}>
+          <span className={classes.apyText}>{numeral(personalApyData.result).format('0,0.[00]')}%</span>
+        </Loading>
+      )
     }
   ]
 
@@ -540,8 +579,8 @@ const LeverBoard = props => {
           content={
             <GridContainer>
               <DescriptionColume col={2}>
-                {map(data, i => (
-                  <Description title={i.title} content={i.content}></Description>
+                {map(data, (i, index) => (
+                  <Description key={index} title={i.title} content={i.content}></Description>
                 ))}
               </DescriptionColume>
               {!isEmpty(waitingForSwap) && (
@@ -569,8 +608,8 @@ const LeverBoard = props => {
           content={
             <GridContainer>
               <DescriptionColume col={2}>
-                {map(resetData, i => (
-                  <Description title={i.title} content={i.content} horizontal></Description>
+                {map(resetData, (i, index) => (
+                  <Description key={index} title={i.title} content={i.content} horizontal></Description>
                 ))}
               </DescriptionColume>
               <GridItem xs={12} sm={12} md={12} style={{ marginTop: '2rem' }}>
