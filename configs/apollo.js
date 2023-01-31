@@ -139,16 +139,19 @@ const getKeeperForEthEthi = () => {
 
 const getPoolServiceAddress = () => {
   //TODO: need to replaced
+  if (nextEnv === 'qa03-sg') return '0x21f33E1dA335F3EF50CCc5e5016161152eeC5ea4'
   return '0x2b639Cc84e1Ad3aA92D4Ee7d2755A6ABEf300D72'
 }
 
 const getCreditFacadeAddress = () => {
   //TODO: need to replaced
+  if (nextEnv === 'qa03-sg') return '0x28F0e11E31681Ba1Dd214bFc8BaDa49b430C6039'
   return '0xdB012DD3E3345e2f8D23c0F3cbCb2D94f430Be8C'
 }
 
 const getDieselAddress = () => {
   //TODO: need to replaced
+  if (nextEnv === 'qa03-sg') return '0x859aD2B68C536dd10CF285A9387d3E03B6050196'
   return '0x3d6E2F365fA27FdafBB20b9356C0C0922224E8d2'
 }
 
