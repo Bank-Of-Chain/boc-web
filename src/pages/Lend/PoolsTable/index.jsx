@@ -18,6 +18,7 @@ import map from 'lodash/map'
 import { toFixed } from '@/helpers/number-format'
 
 // === Constants === //
+import { CHAIN_BROWSER_URL } from '@/constants'
 import { WETH_ADDRESS } from '@/constants/tokens'
 
 // === Styles === //
@@ -39,8 +40,9 @@ const PoolsTable = props => {
 
   const datas = [
     {
-      address: WETH_ADDRESS,
       asset: 'WETH',
+      address: WETH_ADDRESS,
+      targetAddress: DIESEL_TOKEN_ADDRESS,
       availableLiquidity: `${toFixed(availableLiquidity, BigNumber.from(10).pow(decimals), 4)} WETH`,
       totalBorrowed: `${toFixed(totalBorrowed, BigNumber.from(10).pow(decimals), 4)} WETH`,
       borrowPercent: `${toFixed(totalBorrowed.mul(BigNumber.from(10).pow(6)), availableLiquidity.mul(BigNumber.from(10).pow(4)), 6)} %`,
@@ -59,21 +61,26 @@ const PoolsTable = props => {
       }}
     >
       {map(datas, (item, index) => {
-        const { asset, address, availableLiquidity, totalBorrowed, supplyApy, BorrowApy, balance } = item
+        const { asset, address, targetAddress, availableLiquidity, totalBorrowed, supplyApy, BorrowApy, balance } = item
         return (
           <Card
             icon={<img className={classes.tokenLogo} alt="" src={`./images/${address}.png`} />}
             title={
               <>
-                {asset}
-                <Icon style={{ verticalAlign: 'sub' }} component={OpenInNewIcon} fontSize="small"></Icon>
+                <span>{asset}</span>
+                <Icon onClick={() => window.open(`${CHAIN_BROWSER_URL}/address/${address}`)} component={OpenInNewIcon} fontSize="small"></Icon>
               </>
             }
             contents={[
               {
                 title: (
                   <>
-                    Balances&nbsp;<Icon component={OpenInNewIcon} fontSize="small"></Icon>
+                    Balances&nbsp;
+                    <Icon
+                      onClick={() => window.open(`${CHAIN_BROWSER_URL}/address/${targetAddress}`)}
+                      component={OpenInNewIcon}
+                      fontSize="small"
+                    ></Icon>
                   </>
                 ),
                 content: balance
