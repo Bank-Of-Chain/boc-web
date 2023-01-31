@@ -66,7 +66,10 @@ const start = async () => {
       RPC_FOR_31337: getRpcFor31337(),
       KEEPER_FOR_ETH_ETHI: getKeeperForEthEthi(),
       KEEPER_FOR_ETH_USDI: getKeeperForEthUsdi(),
-      KEEPER_FOR_MATIC_USDI: getKeeperForMaticUsdi()
+      KEEPER_FOR_MATIC_USDI: getKeeperForMaticUsdi(),
+      POOL_SERVICE_ADDRESS: getPoolServiceAddress(),
+      CREDIT_FACADE_ADDRESS: getCreditFacadeAddress(),
+      DIESEL_ADDRESS: getDieselAddress()
     }
 
     fs.writeFileSync(`./configs/address.json`, JSON.stringify(config, undefined, 2))
@@ -132,6 +135,21 @@ const getKeeperForEthEthi = () => {
   if (isDevLocal()) return 'http://localhost:6000'
   if (isPrSg()) return 'https://v1-keeper-ethi.bankofchain.io'
   return `https://${nextEnv}-keeper-ethi.bankofchain.io`
+}
+
+const getPoolServiceAddress = () => {
+  //TODO: need to replaced
+  return '0x2b639Cc84e1Ad3aA92D4Ee7d2755A6ABEf300D72'
+}
+
+const getCreditFacadeAddress = () => {
+  //TODO: need to replaced
+  return '0xdB012DD3E3345e2f8D23c0F3cbCb2D94f430Be8C'
+}
+
+const getDieselAddress = () => {
+  //TODO: need to replaced
+  return '0x3d6E2F365fA27FdafBB20b9356C0C0922224E8d2'
 }
 
 const chooseEnv = () => {
