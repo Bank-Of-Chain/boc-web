@@ -1,28 +1,12 @@
 [
   {
     "inputs": [],
-    "name": "AccountTransferNotAllowedException",
-    "type": "error"
-  },
-  {
-    "inputs": [],
     "name": "ActionProhibitedWithForbiddenTokensException",
     "type": "error"
   },
   {
     "inputs": [],
     "name": "AllowanceFailedException",
-    "type": "error"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "name": "BalanceLessThanMinimumDesiredException",
     "type": "error"
   },
   {
@@ -37,17 +21,7 @@
   },
   {
     "inputs": [],
-    "name": "CantLiquidateNonExpiredException",
-    "type": "error"
-  },
-  {
-    "inputs": [],
     "name": "CantLiquidateWithSuchHealthFactorException",
-    "type": "error"
-  },
-  {
-    "inputs": [],
-    "name": "CantTransferLiquidatableAccountException",
     "type": "error"
   },
   {
@@ -77,27 +51,7 @@
   },
   {
     "inputs": [],
-    "name": "ExpectedBalancesAlreadySetException",
-    "type": "error"
-  },
-  {
-    "inputs": [],
-    "name": "ForbiddenDuringClosureException",
-    "type": "error"
-  },
-  {
-    "inputs": [],
     "name": "HasNoOpenedAccountException",
-    "type": "error"
-  },
-  {
-    "inputs": [],
-    "name": "IncorrectCallDataException",
-    "type": "error"
-  },
-  {
-    "inputs": [],
-    "name": "IncreaseAndDecreaseForbiddenInOneCallException",
     "type": "error"
   },
   {
@@ -107,27 +61,12 @@
   },
   {
     "inputs": [],
-    "name": "NotAllowedInWhitelistedMode",
-    "type": "error"
-  },
-  {
-    "inputs": [],
     "name": "NotAllowedLeverageFactor",
     "type": "error"
   },
   {
     "inputs": [],
-    "name": "NotAllowedWhenNotExpirableException",
-    "type": "error"
-  },
-  {
-    "inputs": [],
     "name": "NotEnoughCollateralException",
-    "type": "error"
-  },
-  {
-    "inputs": [],
-    "name": "OpenAccountNotAllowedAfterExpirationException",
     "type": "error"
   },
   {
@@ -153,11 +92,6 @@
   {
     "inputs": [],
     "name": "TooManyTokensException",
-    "type": "error"
-  },
-  {
-    "inputs": [],
-    "name": "UnknownMethodException",
     "type": "error"
   },
   {
@@ -237,6 +171,25 @@
     "anonymous": false,
     "inputs": [
       {
+        "indexed": false,
+        "internalType": "address[]",
+        "name": "_creditAccounts",
+        "type": "address[]"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256[]",
+        "name": "_pegTokenAmounts",
+        "type": "uint256[]"
+      }
+    ],
+    "name": "DistributePegTokenTicket",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
         "indexed": true,
         "internalType": "address",
         "name": "borrower",
@@ -288,56 +241,6 @@
       }
     ],
     "name": "LiquidateCreditAccount",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "borrower",
-        "type": "address"
-      },
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "liquidator",
-        "type": "address"
-      },
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "to",
-        "type": "address"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "remainingFunds",
-        "type": "uint256"
-      }
-    ],
-    "name": "LiquidateExpiredCreditAccount",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [],
-    "name": "MultiCallFinished",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "borrower",
-        "type": "address"
-      }
-    ],
-    "name": "MultiCallStarted",
     "type": "event"
   },
   {
@@ -420,50 +323,6 @@
       }
     ],
     "name": "TokenEnabled",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "oldOwner",
-        "type": "address"
-      },
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "newOwner",
-        "type": "address"
-      }
-    ],
-    "name": "TransferAccount",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "from",
-        "type": "address"
-      },
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "to",
-        "type": "address"
-      },
-      {
-        "indexed": false,
-        "internalType": "bool",
-        "name": "state",
-        "type": "bool"
-      }
-    ],
-    "name": "TransferAccountAllowed",
     "type": "event"
   },
   {
@@ -884,11 +743,6 @@
         "internalType": "address",
         "name": "_to",
         "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "_skipTokenMask",
-        "type": "uint256"
       }
     ],
     "name": "liquidateCreditAccount",
