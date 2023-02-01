@@ -9,7 +9,6 @@ import map from 'lodash/map'
 import isNumber from 'lodash/isNumber'
 import moment from 'moment'
 import { makeStyles } from '@material-ui/core/styles'
-import numeral from 'numeral'
 
 // === Components === //
 import Step from '@material-ui/core/Step'
@@ -20,10 +19,7 @@ import BocStepConnector from '@/components/Stepper/StepConnector'
 import CircularProgress from '@material-ui/core/CircularProgress'
 import Modal from '@material-ui/core/Modal'
 import Paper from '@material-ui/core/Paper'
-import Tooltip from '@material-ui/core/Tooltip'
-import InfoIcon from '@material-ui/icons/InfoOutlined'
 import Loading from '@/components/LoadingComponent'
-import Card from '@/components/Card'
 import GridContainer from '@/components/Grid/GridContainer'
 import GridItem from '@/components/Grid/GridItem'
 import CustomTextField from '@/components/CustomTextField'
@@ -320,65 +316,12 @@ export default function Deposit({
       .catch(noop)
   }, [userProvider, VAULT_ADDRESS, ethBalance, VAULT_ABI])
 
-  useEffect(() => {
-    getPegTokenDetail('ETHi', VAULT_ADDRESS).then(data => {
-      const { totalAssets } = data?.vault || { totalAssets: '0' }
-      const tvlFormat = toFixed(totalAssets, BN_18, 4)
-      const tvlWithSymbol = numeral(tvlFormat).format('0.0000 a')
-      const [tvl, tvlSymbol] = tvlWithSymbol.split(' ')
-      setTvl(tvl)
-      setFullTvl(tvlFormat)
-      setTvlSymbol(tvlSymbol)
-    })
-    getAPY({ tokenType: 'ETHi' }).then(data => {
-      const apy = isNaN(data) ? '-' : Number(data)
-      setApy(apy.toFixed(2))
-    })
-  }, [])
-
   const isLogin = !isEmpty(userProvider)
   const isValid = isValidValue()
 
   return (
     <>
       <GridContainer spacing={3}>
-        <GridItem xs={12} sm={12} md={6} lg={6}>
-          <Card
-            title="TVL"
-            content={tvl}
-            fullAmount={fullTvl}
-            unit={`${tvlSymbol}${tvlSymbol ? ' ' : ''}ETH`}
-            tip={
-              <Tooltip
-                classes={{
-                  tooltip: classes.tooltip
-                }}
-                placement="right"
-                title="Total Value Locked."
-              >
-                <InfoIcon style={{ fontSize: '1rem', color: '#888888' }} />
-              </Tooltip>
-            }
-          />
-        </GridItem>
-        <GridItem xs={12} sm={12} md={6} lg={6}>
-          <Card
-            title="APY (Last 30 days)"
-            content={apy}
-            unit="%"
-            tip={
-              <Tooltip
-                classes={{
-                  tooltip: classes.tooltip
-                }}
-                placement="right"
-                title="Yield over the past month."
-              >
-                <InfoIcon style={{ fontSize: '1rem', color: '#888888' }} />
-              </Tooltip>
-            }
-          />
-        </GridItem>
         <GridItem xs={12} sm={12} md={12} lg={12}>
           <div className={classes.wrapper}>
             <GridContainer classes={{ root: classes.depositContainer }}>
