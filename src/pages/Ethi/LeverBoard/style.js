@@ -15,7 +15,8 @@ const componentsStyle = () => ({
   modal: {
     display: 'flex',
     alignItems: 'center',
-    justifyContent: 'center'
+    justifyContent: 'center',
+    marginLeft: '55px'
   },
   depositModal: {
     padding: '1.25rem',
@@ -33,15 +34,13 @@ const componentsStyle = () => ({
     fontSize: '14px'
   },
   warning: {
-    color: '#A68EFE',
     fontSize: '1rem',
     lineHeight: '1.5rem',
-    display: 'block',
-    border: '1px solid #A68EFE',
+    display: 'flex',
+    alignItems: 'center',
     padding: '1rem',
     borderRadius: '10px',
-    marginTop: '2rem',
-    textAlign: 'center'
+    justifyContent: 'flex-start'
   },
   title: {
     letterSpacing: '1px',
@@ -52,6 +51,30 @@ const componentsStyle = () => ({
   },
   apyText: {
     color: '#DB8332'
+  },
+  swapBody: {
+    padding: '1rem'
+  },
+  swapItemWrapper: {},
+  olItem: {
+    paddingLeft: 0,
+    margin: 0
+  },
+  liItem: {
+    padding: '1rem',
+    border: '1px solid #A68EFE',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: '1rem'
+  },
+  liTitle: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between'
+  },
+  value: {
+    marginRight: '2rem'
   }
 })
 

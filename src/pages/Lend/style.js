@@ -88,7 +88,8 @@ const componentsStyle = () => ({
   modal: {
     display: 'flex',
     alignItems: 'center',
-    justifyContent: 'center'
+    justifyContent: 'center',
+    marginLeft: '55px'
   },
   modalBody: {
     textAlign: 'center'

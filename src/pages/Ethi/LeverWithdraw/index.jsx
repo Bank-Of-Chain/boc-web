@@ -23,6 +23,9 @@ import { warmDialog } from '@/reducers/meta-reducer'
 import useCreditFacade from '@/hooks/useCreditFacade'
 import useErc20Token from '@/hooks/useErc20Token'
 
+// === Services === //
+import { removeFromVaultSuccess } from '@/services/keeper-service'
+
 // === Utils === //
 import isUndefined from 'lodash/isUndefined'
 import map from 'lodash/map'
@@ -35,6 +38,7 @@ import WithdrawFromVault from '@/constants/leverage'
 
 // === Styles === //
 import styles from './style'
+import { toFixed } from '../../../helpers/number-format'
 
 const { BigNumber } = ethers
 const useStyles = makeStyles(styles)
@@ -80,7 +84,9 @@ const LeverWithdraw = ({ userProvider, ETHI_ADDRESS, VAULT_BUFFER_ADDRESS, CREDI
     try {
       getSwapInfoFinish = Date.now()
       setCurrentStep(2)
-      await withdrawFromVault(nextValue, WithdrawFromVault.WITHDRAW)
+      await withdrawFromVault(nextValue, WithdrawFromVault.WITHDRAW).then(() => {
+        removeFromVaultSuccess(creditAddress, WithdrawFromVault.WITHDRAW)
+      })
       withdrawFinish = Date.now()
 
       withdrawTransationFinish = Date.now()
@@ -99,7 +105,7 @@ const LeverWithdraw = ({ userProvider, ETHI_ADDRESS, VAULT_BUFFER_ADDRESS, CREDI
       const errorMsg = errorTextOutput(error)
       let tip = ''
       if (isCantWithdrawException(errorMsg)) {
-        tip = 'No withdrawal!'
+        tip = 'Withdrawal failed!'
       } else {
         tip = errorMsg
       }
@@ -215,9 +221,9 @@ const LeverWithdraw = ({ userProvider, ETHI_ADDRESS, VAULT_BUFFER_ADDRESS, CREDI
                 </GridContainer>
               </GridItem>
               <GridItem xs={6} sm={6} md={6} lg={6}>
-                <p className={classes.estimateText} title={formatBalance(ethiBalance, ethiDecimals, { showAll: true })}>
+                <p className={classes.estimateText} title={toFixed(ethiBalance, BigNumber.from(10).pow(ethiDecimals))}>
                   Balance:&nbsp;
-                  <Loading loading={isEthiBalanceLoading}>{formatBalance(ethiBalance, ethiDecimals)}</Loading>
+                  <Loading loading={isEthiBalanceLoading}>{toFixed(ethiBalance, BigNumber.from(10).pow(ethiDecimals), 4)}</Loading>
                 </p>
               </GridItem>
             </GridContainer>

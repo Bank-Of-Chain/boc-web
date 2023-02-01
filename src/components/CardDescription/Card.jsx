@@ -25,17 +25,17 @@ const Card = props => {
         </div>
         <div className={classes.body}>
           <DescriptionColume>
-            {map(contents, i => {
+            {map(contents, (i, index) => {
               const { title, content } = i
-              return <Description title={title} content={content}></Description>
+              return <Description key={index} title={title} content={content}></Description>
             })}
           </DescriptionColume>
         </div>
         <div className={classes.footer}>
           <DescriptionColume>
-            {map(footers, i => {
+            {map(footers, (i, index) => {
               const { title, content } = i
-              return <Description title={title} content={content}></Description>
+              return <Description key={index} title={title} content={content}></Description>
             })}
           </DescriptionColume>
         </div>

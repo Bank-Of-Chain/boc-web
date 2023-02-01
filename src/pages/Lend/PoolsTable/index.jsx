@@ -64,6 +64,7 @@ const PoolsTable = props => {
         const { asset, address, targetAddress, availableLiquidity, totalBorrowed, supplyApy, BorrowApy, balance } = item
         return (
           <Card
+            key={item.address}
             icon={<img className={classes.tokenLogo} alt="" src={`./images/${address}.png`} />}
             title={
               <>
