@@ -222,53 +222,6 @@ function Ethi(props) {
             </ListItem>
           </List>
         </GridItem>
-        {/* 
-        // legacy "My Account" page hidden. Using "My Statement" page
-        {current === INVEST_TAB.account && (
-          <GridItem xs={9} sm={9} md={6}>
-            <Card className={classes.balanceCard}>
-              <div className={classes.balanceCardItem}>
-                <div className={classes.balanceCardValue}>
-                  <span
-                    title={formatBalance(ethiBalance, ethiDecimals, {
-                      showAll: true
-                    })}
-                  >
-                    <Loading loading={isBalanceLoading}>{formatBalance(ethiBalance, ethiDecimals)}</Loading>
-                  </span>
-                  <span className={classes.symbol}>ETHi</span>
-                  {userProvider && (
-                    <span title="Add token address to wallet">
-                      <AddCircleOutlineIcon className={classes.addTokenIcon} onClick={handleAddETHi} fontSize="small" />
-                    </span>
-                  )}
-                </div>
-                <div className={classes.balanceCardValue} style={{ fontSize: '1rem' }}>
-                  <span title={formatBalance(vaultBufferBalance, vaultBufferDecimals, { showAll: true })}>
-                    <Loading loading={isBalanceLoading}>{formatBalance(vaultBufferBalance, vaultBufferDecimals)}</Loading>
-                  </span>
-                  <span className={classes.symbol}>ETHi Ticket&nbsp;&nbsp;</span>
-                  <Tooltip
-                    classes={{
-                      tooltip: classes.tooltip
-                    }}
-                    placement="right"
-                    title={
-                      <span>
-                        ETHi Ticket functions as parallel ETHi that will be converted into ETHi after fund allocations have been successful. Last
-                        execution time was&nbsp;
-                        <span style={{ fontWeight: 'bold' }}>{moment(lastRebaseTime).format('yyyy-MM-DD HH:mm')}</span>
-                      </span>
-                    }
-                  >
-                    <InfoIcon style={{ fontSize: '1rem' }} />
-                  </Tooltip>
-                </div>
-                <div className={classes.balanceCardLabel}>AVAILABLE BALANCE</div>
-              </div>
-            </Card>
-          </GridItem>
-        )} */}
         {!userProvider && (
           <GridItem xs={9} sm={9} md={9}>
             <div className={classes.notConnect}>

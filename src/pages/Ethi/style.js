@@ -85,14 +85,6 @@ const componentsStyle = () => ({
   img: {
     width: '25px'
   },
-  modal: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center'
-  },
-  modalBody: {
-    textAlign: 'center'
-  },
   text: {
     color: 'azure',
     '&>span:hover': {
