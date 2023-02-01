@@ -47,6 +47,10 @@ const start = async () => {
     const ETHI_VAULT = data['boc.networks.ethi.vaultAddress'] || ''
     const ETHI_FOR_ETH = data['boc.networks.ethi.pegTokenAddress'] || ''
     const VAULT_BUFFER_FOR_ETHI_ETH = data['boc.networks.ethi.vaultBufferAddress'] || ''
+    const POOL_SERVICE_ADDRESS = data['boc.networks.ethi.poolService'] || ''
+    const CREDIT_FACADE_ADDRESS = data['boc.networks.ethi.creditFacade'] || ''
+    const DIESEL_ADDRESS = data['boc.networks.ethi.dieselAddress'] || ''
+
     let config = {
       env: nextEnv,
       LOCAL_CHAIN_CONFIG: nextChain,
@@ -67,9 +71,9 @@ const start = async () => {
       KEEPER_FOR_ETH_ETHI: getKeeperForEthEthi(),
       KEEPER_FOR_ETH_USDI: getKeeperForEthUsdi(),
       KEEPER_FOR_MATIC_USDI: getKeeperForMaticUsdi(),
-      POOL_SERVICE_ADDRESS: getPoolServiceAddress(),
-      CREDIT_FACADE_ADDRESS: getCreditFacadeAddress(),
-      DIESEL_ADDRESS: getDieselAddress()
+      POOL_SERVICE_ADDRESS,
+      CREDIT_FACADE_ADDRESS,
+      DIESEL_ADDRESS
     }
 
     fs.writeFileSync(`./configs/address.json`, JSON.stringify(config, undefined, 2))
@@ -135,24 +139,6 @@ const getKeeperForEthEthi = () => {
   if (isDevLocal()) return 'http://localhost:6000'
   if (isPrSg()) return 'https://v1-keeper-ethi.bankofchain.io'
   return `https://${nextEnv}-keeper-ethi.bankofchain.io`
-}
-
-const getPoolServiceAddress = () => {
-  //TODO: need to replaced
-  if (nextEnv === 'qa03-sg') return '0x21f33E1dA335F3EF50CCc5e5016161152eeC5ea4'
-  return '0x2b639Cc84e1Ad3aA92D4Ee7d2755A6ABEf300D72'
-}
-
-const getCreditFacadeAddress = () => {
-  //TODO: need to replaced
-  if (nextEnv === 'qa03-sg') return '0x28F0e11E31681Ba1Dd214bFc8BaDa49b430C6039'
-  return '0xdB012DD3E3345e2f8D23c0F3cbCb2D94f430Be8C'
-}
-
-const getDieselAddress = () => {
-  //TODO: need to replaced
-  if (nextEnv === 'qa03-sg') return '0x859aD2B68C536dd10CF285A9387d3E03B6050196'
-  return '0x3d6E2F365fA27FdafBB20b9356C0C0922224E8d2'
 }
 
 const chooseEnv = () => {
