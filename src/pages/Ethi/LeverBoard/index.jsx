@@ -19,6 +19,7 @@ import Slider from '@/components/Slider'
 import Fade from '@material-ui/core/Fade'
 import Description from '@/components/CardDescription/Description'
 import DescriptionColume from '@/components/CardDescription/DescriptionColume'
+import IconArray from '@/components/IconArray'
 
 // === Hooks === //
 import { useAsync } from 'react-async-hook'
@@ -32,6 +33,7 @@ import { warmDialog } from '@/reducers/meta-reducer'
 
 // === Services === //
 import { getAccountApyByAddress, getValutAPYList } from '@/services/api-service'
+import { removeFromVaultSuccess } from '@/services/keeper-service'
 
 // === Utils === //
 import moment from 'moment'
@@ -45,7 +47,12 @@ import debounce from 'lodash/debounce'
 import isFunction from 'lodash/isFunction'
 import { toFixed } from '@/helpers/number-format'
 import { getLastPossibleRebaseTime } from '@/helpers/time-util'
-import { errorTextOutput, isIncreaseDebtForbiddenException, isBorrowAmountOutOfLimitsException } from '@/helpers/error-handler'
+import {
+  errorTextOutput,
+  isIncreaseDebtForbiddenException,
+  isBorrowAmountOutOfLimitsException,
+  isCantWithdrawException
+} from '@/helpers/error-handler'
 
 // === Constants === //
 import { WETH_ADDRESS } from '@/constants/tokens'
@@ -78,7 +85,7 @@ const LeverBoard = props => {
 
   const [isDeposit, setIsDeposit] = useState()
   const [lever, setLever] = useState(2)
-  const [, setEthiBalance] = useState(BigNumber.from(0))
+  const [ethiBalance, setEthiBalance] = useState(BigNumber.from(0))
   const [creditAccountEthiBalance, setCreditAccountEthiBalance] = useState(BigNumber.from(0))
   const [vaultBufferBalance, setVaultBufferBalance] = useState(BigNumber.from(0))
 
@@ -152,9 +159,10 @@ const LeverBoard = props => {
       return 0
     }
     const calcDecimals = BigNumber.from(10).pow(wethDecimals)
-    const currentLeverRadio = toFixed(balance.mul(BigNumber.from(10).pow(wethDecimals)).div(collateralAmount), calcDecimals, 2)
+    const totalValue = creditAccountEthiBalance.add(ethiBalance).add(vaultBufferBalance)
+    const currentLeverRadio = toFixed(totalValue.mul(BigNumber.from(10).pow(wethDecimals)).div(collateralAmount), calcDecimals, 2)
     return 1 * currentLeverRadio
-  }, [collateralAmount.toString(), balance, wethDecimals])
+  }, [collateralAmount, creditAccountEthiBalance, ethiBalance, vaultBufferBalance, wethDecimals])
 
   /**
    *
@@ -185,29 +193,49 @@ const LeverBoard = props => {
     const callFunc = isIncrease ? v => withdrawFromVault(v, WithdrawFromVault.DECREASE_LEVERAGE) : increaseDebt
     const leverDecimals = BigNumber.from(10).pow(4)
     const newLever = BigNumber.from(BN(lever).multipliedBy(leverDecimals.toString()).toString())
-    const nextValue = balance.mul(leverDecimals).sub(balance.sub(debtAmount).mul(newLever)).div(leverDecimals).abs()
-    callFunc(nextValue).catch(error => {
-      const errorMsg = errorTextOutput(error)
-      let tip = ''
-      if (isIncreaseDebtForbiddenException(errorMsg)) {
-        tip = 'In case of emergency, do not raise the leverage factor!'
-      } else if (isBorrowAmountOutOfLimitsException(errorMsg)) {
-        tip = 'The amount borrowed must be less than 100 ETH!'
-      } else {
-        tip = errorMsg
-      }
+    const totalValue = creditAccountEthiBalance.add(ethiBalance).add(vaultBufferBalance)
+    const nextValue = totalValue.mul(leverDecimals).sub(totalValue.sub(debtAmount).mul(newLever)).div(leverDecimals).abs()
+    callFunc(nextValue)
+      .then(() => {
+        if (isIncrease) {
+          removeFromVaultSuccess(creditAddress, WithdrawFromVault.DECREASE_LEVERAGE)
+        }
+      })
+      .catch(error => {
+        const errorMsg = errorTextOutput(error)
+        let tip = ''
+        if (isIncreaseDebtForbiddenException(errorMsg)) {
+          tip = 'In case of emergency, do not raise the leverage factor!'
+        } else if (isBorrowAmountOutOfLimitsException(errorMsg)) {
+          tip = 'The amount borrowed must be less than 100 ETH!'
+        } else if (isCantWithdrawException(errorMsg)) {
+          tip = "You can't change leverage into this value!"
+        } else {
+          tip = errorMsg
+        }
 
-      if (tip) {
-        dispatch(
-          warmDialog({
-            open: true,
-            type: 'error',
-            message: tip
-          })
-        )
-      }
-    })
-  }, [lever, increaseDebt, decreaseDebt, calcCurrentLeverRadio, debtAmount, balance])
+        if (tip) {
+          dispatch(
+            warmDialog({
+              open: true,
+              type: 'error',
+              message: tip
+            })
+          )
+        }
+      })
+  }, [
+    lever,
+    increaseDebt,
+    decreaseDebt,
+    calcCurrentLeverRadio,
+    debtAmount,
+    balance,
+    creditAddress,
+    creditAccountEthiBalance,
+    ethiBalance,
+    vaultBufferBalance
+  ])
 
   const leverageRadioValue = calcCurrentLeverRadio()
 
@@ -244,7 +272,13 @@ const LeverBoard = props => {
   useEffect(queryBaseInfoCall, [queryBaseInfoCall])
 
   useEffect(() => {
-    setLever(leverageRadioValue)
+    if (leverageRadioValue < 2) {
+      setLever(2)
+    } else if (leverageRadioValue > 4) {
+      setLever(4)
+    } else {
+      setLever(leverageRadioValue)
+    }
   }, [leverageRadioValue])
 
   /**
@@ -317,17 +351,39 @@ const LeverBoard = props => {
     [address, getCollateralAmount, queryBaseInfoCall, getWaitingForSwap]
   )
 
+  /**
+   * event handler
+   */
+  const handleIncreaseDebt = useCallback(
+    sender => {
+      if (sender === address) {
+        queryVaultBufferBalanceOfInCreditAddress()
+      }
+    },
+    [address, getCollateralAmount, queryBaseInfoCall, getWaitingForSwap]
+  )
+
   useEffect(() => {
     const listener = () => {
       if (isEmpty(CREDIT_FACADE_ADDRESS) || isEmpty(CREDIT_FACADE_ABI) || isEmpty(userProvider) || isEmpty(address)) return
       const vaultContract = new ethers.Contract(CREDIT_FACADE_ADDRESS, CREDIT_FACADE_ABI, userProvider)
-      vaultContract.on('AddCollateral', handleAddCollateral)
-      vaultContract.on('RedeemCollateral', handleRedeemCollateral)
-      vaultContract.on('WithdrawFromVault', handleWithdrawFromVault)
+      try {
+        vaultContract.on('AddCollateral', handleAddCollateral)
+        vaultContract.on('RedeemCollateral', handleRedeemCollateral)
+        vaultContract.on('WithdrawFromVault', handleWithdrawFromVault)
+        vaultContract.on('IncreaseBorrowedAmount', handleIncreaseDebt)
+      } catch (error) {
+        console.log('error=', error)
+      }
       return () => {
-        vaultContract.off('AddCollateral', handleAddCollateral)
-        vaultContract.off('RedeemCollateral', handleRedeemCollateral)
-        vaultContract.off('WithdrawFromVault', handleWithdrawFromVault)
+        try {
+          vaultContract.off('AddCollateral', handleAddCollateral)
+          vaultContract.off('RedeemCollateral', handleRedeemCollateral)
+          vaultContract.off('WithdrawFromVault', handleWithdrawFromVault)
+          vaultContract.off('IncreaseBorrowedAmount', handleIncreaseDebt)
+        } catch (error) {
+          console.log('error=', error)
+        }
       }
     }
     return listener()
@@ -409,7 +465,7 @@ const LeverBoard = props => {
     {
       title: (
         <>
-          <span onClick={() => redeemCollateral(address, [])}>Collateral</span>
+          <span>Collateral</span>
           <Tooltip
             classes={{
               tooltip: classes.tooltip
@@ -426,7 +482,7 @@ const LeverBoard = props => {
     {
       title: (
         <>
-          <span onClick={() => decreaseDebt(address, [])}>Debts</span>
+          <span>Debts</span>
           <Tooltip
             classes={{
               tooltip: classes.tooltip
@@ -572,6 +628,8 @@ const LeverBoard = props => {
     }
   ]
 
+  console.log('waitingForSwap=', waitingForSwap)
+
   return (
     <GridContainer spacing={2}>
       <GridItem xs={9} sm={9} md={9}>
@@ -583,22 +641,6 @@ const LeverBoard = props => {
                   <Description key={index} title={i.title} content={i.content}></Description>
                 ))}
               </DescriptionColume>
-              {!isEmpty(waitingForSwap) && (
-                <GridItem xs={12} sm={12} md={12}>
-                  <span className={classes.warning}>
-                    <p style={{ textAlign: 'center', fontWeight: '800' }}>Warning</p>
-                    Funds in the CreditAccount are being redeemed...
-                  </span>
-                </GridItem>
-              )}
-              {/* {ethiBalance.gt(0) && (
-                <GridItem xs={12} sm={12} md={12}>
-                  <span className={classes.warning}>
-                    <p style={{ textAlign: 'center', fontWeight: '800' }}>Warning</p>
-                    Waiting for the keeper to allocate the ETHi!
-                  </span>
-                </GridItem>
-              )} */}
             </GridContainer>
           }
         />
@@ -704,6 +746,41 @@ const LeverBoard = props => {
               userProvider={userProvider}
               onCancel={() => setIsDeposit()}
             />
+          </Paper>
+        </Fade>
+      </Modal>
+      <Modal
+        className={classes.modal}
+        open={!isEmpty(waitingForSwap)}
+        aria-labelledby="simple-modal-title"
+        aria-describedby="simple-modal-description"
+      >
+        <Fade in={!isEmpty(waitingForSwap)}>
+          <Paper elevation={3} className={classes.depositModal}>
+            <p
+              onClick={() => redeemCollateral(address, [])}
+              style={{ textAlign: 'center', fontSize: '1.25rem', letterSpacing: '4px', color: '#b955d9' }}
+            >
+              Warning!
+            </p>
+            <span className={classes.warning} onClick={() => decreaseDebt(address, [])}>
+              There are <IconArray array={map(waitingForSwap, 'address')} style={{ display: 'inline-block', margin: '0 0.25rem' }} /> Coins, Waiting
+              for the keeper to swapping&nbsp;&nbsp;<Loading loading></Loading>
+            </span>
+            <div className={classes.swapBody}>
+              <ol className={classes.olItem}>
+                {map(waitingForSwap, (i, index) => (
+                  <li className={classes.liItem} key={index}>
+                    <div className={classes.liTitle}>
+                      <IconArray array={[i.address]} />
+                      &nbsp;&nbsp;
+                      {i.symbol}
+                    </div>
+                    <div className={classes.value}>{toFixed(i.amounts, BigNumber.from(10).pow(i.decimals), 2)}</div>
+                  </li>
+                ))}
+              </ol>
+            </div>
           </Paper>
         </Fade>
       </Modal>
