@@ -24,19 +24,30 @@ import GridContainer from '@/components/Grid/GridContainer'
 import GridItem from '@/components/Grid/GridItem'
 import CustomTextField from '@/components/CustomTextField'
 import Button from '@/components/CustomButtons/Button'
+import Snackbar from '@/components/Snackbar'
+import OpenInNewIcon from '@material-ui/icons/OpenInNew'
+import Icon from '@material-ui/core/Icon'
+import PlaylistAddCheckIcon from '@material-ui/icons/PlaylistAddCheck'
+import CancelIcon from '@material-ui/icons/Cancel'
+
+// === Hooks === //
+import useMetaMask from '@/hooks/useMetaMask'
 
 // === Utils === //
 import noop from 'lodash/noop'
+import compact from 'lodash/compact'
 import { getLastPossibleRebaseTime } from '@/helpers/time-util'
 import { isAd, isEs, isRp, isDistributing, errorTextOutput, isLessThanMinValue } from '@/helpers/error-handler'
 import { BN_18 } from '@/constants/big-number'
 import { MULTIPLE_OF_GAS, MAX_GAS_LIMIT } from '@/constants'
 import { warmDialog } from '@/reducers/meta-reducer'
 import { toFixed, formatBalance } from '@/helpers/number-format'
+import { short } from '@/helpers/string-utils'
 
-import { getPegTokenDetail } from '@/services/subgraph-service'
-import { getAPY } from '@/services/api-service'
+// === Constants === //
+import { CHAIN_BROWSER_URL } from '@/constants'
 
+// === Styles === //
 import styles from './style'
 
 const { BigNumber } = ethers
@@ -65,7 +76,9 @@ export default function Deposit({
   VAULT_ADDRESS,
   ETH_ADDRESS,
   isBalanceLoading,
-  minimumInvestmentAmount
+  minimumInvestmentAmount,
+  vaultBufferBalance,
+  vaultBufferDecimals
 }) {
   const classes = useStyles()
   const dispatch = useDispatch()
@@ -80,11 +93,7 @@ export default function Deposit({
 
   const nextRebaseTime = getLastPossibleRebaseTime()
   const decimal = BigNumber.from(10).pow(ethiDecimals)
-  const [tvl, setTvl] = useState('-')
-  const [fullTvl, setFullTvl] = useState('')
-  const [tvlSymbol, setTvlSymbol] = useState('')
-  const [apy, setApy] = useState('-')
-
+  const { gasPrice, transactions, addListenHash, removeListenHash, queryTransactions } = useMetaMask(userProvider)
   const getGasFee = () => {
     if (!gasPriceCurrent) {
       return BigNumber.from(0)
@@ -204,25 +213,25 @@ export default function Deposit({
       const maxGasLimit = gasLimit < MAX_GAS_LIMIT ? gasLimit : MAX_GAS_LIMIT
       extendObj.gasLimit = maxGasLimit
     }
-    await nVaultWithUser
+    const tx = await nVaultWithUser
       .mint(ETH_ADDRESS, amount, 0, {
         ...extendObj,
         from: address,
         value: amount
       })
-      .then(tx => tx.wait())
-      .then(() => {
-        isSuccess = true
-      })
       .catch(errorHandle)
-
-    if (isSuccess) {
-      setEthValue('')
+    if (!isEmpty(tx)) {
+      addListenHash(tx.hash)
+      await tx.wait()
+      queryTransactions()
+      isSuccess = true
     }
 
     loadingTimer.current = setTimeout(() => {
+      // removeListenHash(transactionHash)
       setIsLoading(false)
       setIsOpenEstimateModal(false)
+      setEthValue('')
       if (isSuccess) {
         dispatch(
           warmDialog({
@@ -382,7 +391,14 @@ export default function Deposit({
                     <Loading loading={isEstimate}>{toFixed(estimateVaultBuffValue, decimal)}</Loading>
                   </span>
                 </div>
-                <p className={classes.estimateText}>Estimated Gas Fee: {toFixed(getGasFee(), BigNumber.from(10).pow(ethDecimals), 6)} ETH</p>
+                <p className={classes.estimateText}>
+                  <div>Balances&nbsp;:</div>
+                  <div>{toFixed(vaultBufferBalance, BigNumber.from(10).pow(vaultBufferDecimals), 4)} ETH</div>
+                </p>
+                <p className={classes.estimateText}>
+                  <div>Estimated Gas Fee&nbsp;:</div>
+                  <div>{toFixed(getGasFee(), BigNumber.from(10).pow(ethDecimals), 6)} ETH</div>
+                </p>
               </GridItem>
               <GridItem xs={12} sm={12} md={12} lg={12}>
                 <div className={classes.tip}>
@@ -462,10 +478,35 @@ export default function Deposit({
         <Paper elevation={3} className={classes.depositModal}>
           <div className={classes.modalBody}>
             <CircularProgress color="inherit" />
-            <p>On Deposit...</p>
+            <p>On Deposit...{toFixed(`${gasPrice}`, BigNumber.from(10).pow(9), 2)}Gwei</p>
           </div>
         </Paper>
       </Modal>
+      {map(compact(transactions), (item, index) => {
+        const { transactionHash, status } = item
+        const isPending = status === '0x0'
+        const isSuccess = status === '0x1'
+        return (
+          <Snackbar key={transactionHash} index={index} close={() => removeListenHash(transactionHash)}>
+            <div style={{ display: 'flex' }}>
+              <Icon
+                style={{ color: '#a68efd' }}
+                onClick={() => window.open(`${CHAIN_BROWSER_URL}/tx/${transactionHash}`)}
+                component={OpenInNewIcon}
+                fontSize="small"
+              ></Icon>
+              <span style={{ color: '#BEBEBE' }}>&nbsp;{short(transactionHash, 8, 6)}&nbsp;</span>
+              <Loading loading={isPending}>
+                {isSuccess ? (
+                  <Icon style={{ color: '#55E752' }} component={PlaylistAddCheckIcon} fontSize="small"></Icon>
+                ) : (
+                  <Icon style={{ color: '#f50057' }} component={CancelIcon} fontSize="small"></Icon>
+                )}
+              </Loading>
+            </div>
+          </Snackbar>
+        )
+      })}
     </>
   )
 }
