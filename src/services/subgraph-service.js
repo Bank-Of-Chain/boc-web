@@ -59,7 +59,7 @@ export const getPegTokenDetail = (type, vaultAddress) => {
     }
   }
 
-  const targetClient = get(client, `${type}${chain_id}`)
+  const targetClient = get(client, `${type}.${chain_id}`)
   if (isNil(chain_id) || isNil(targetClient)) return Promise.resolve()
 
   return targetClient
