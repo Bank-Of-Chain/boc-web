@@ -48,3 +48,5 @@ code {
     background-position: 0 0;
   }
 }
+
+@keyframes scale{ /*动画帧*/ 50%{transform:scale(2)} }

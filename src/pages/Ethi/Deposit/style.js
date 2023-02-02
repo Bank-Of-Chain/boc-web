@@ -10,9 +10,6 @@ const componentsStyle = () => ({
     justifyContent: 'center',
     marginLeft: '90px'
   },
-  modalBody: {
-    textAlign: 'center'
-  },
   depositContainer: {
     border: '1px solid #A68EFD',
     borderTopLeftRadius: '1.25rem',
@@ -85,7 +82,7 @@ const componentsStyle = () => ({
     color: 'rgba(255, 255, 255, 0.87)',
     border: '1px solid #A68EFE',
     backgroundColor: '#1f1d27',
-    borderRadius: '2.5rem',
+    borderRadius: '1.25rem',
     outline: 0,
     '&:active': {
       outline: 'none'

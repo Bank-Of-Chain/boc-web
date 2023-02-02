@@ -16,7 +16,6 @@ import BocStepper from '@/components/Stepper/Stepper'
 import BocStepLabel from '@/components/Stepper/StepLabel'
 import BocStepIcon from '@/components/Stepper/StepIcon'
 import BocStepConnector from '@/components/Stepper/StepConnector'
-import CircularProgress from '@material-ui/core/CircularProgress'
 import Modal from '@material-ui/core/Modal'
 import Paper from '@material-ui/core/Paper'
 import Loading from '@/components/LoadingComponent'
@@ -29,6 +28,7 @@ import OpenInNewIcon from '@material-ui/icons/OpenInNew'
 import Icon from '@material-ui/core/Icon'
 import PlaylistAddCheckIcon from '@material-ui/icons/PlaylistAddCheck'
 import CancelIcon from '@material-ui/icons/Cancel'
+import Result from '@/components/Result'
 
 // === Hooks === //
 import useMetaMask from '@/hooks/useMetaMask'
@@ -66,7 +66,7 @@ const steps = [
   'Get ETHi'
 ]
 
-export default function Deposit({
+const Deposit = ({
   address,
   ethBalance,
   ethDecimals,
@@ -79,7 +79,7 @@ export default function Deposit({
   minimumInvestmentAmount,
   vaultBufferBalance,
   vaultBufferDecimals
-}) {
+}) => {
   const classes = useStyles()
   const dispatch = useDispatch()
   const [ethValue, setEthValue] = useState('')
@@ -93,7 +93,7 @@ export default function Deposit({
 
   const nextRebaseTime = getLastPossibleRebaseTime()
   const decimal = BigNumber.from(10).pow(ethiDecimals)
-  const { gasPrice, transactions, addListenHash, removeListenHash, queryTransactions } = useMetaMask(userProvider)
+  const { transactions, addListenHash, removeListenHash, queryTransactions } = useMetaMask(userProvider)
   const getGasFee = () => {
     if (!gasPriceCurrent) {
       return BigNumber.from(0)
@@ -170,7 +170,7 @@ export default function Deposit({
         })
       )
     }
-    setIsLoading(true)
+
     const amount = BigNumber.from(BN(ethValue).multipliedBy(BigNumber.from(10).pow(ethDecimals).toString()).toFixed())
     console.log('nextTokens=', ETH_ADDRESS, amount)
     const signer = userProvider.getSigner()
@@ -218,6 +218,10 @@ export default function Deposit({
         ...extendObj,
         from: address,
         value: amount
+      })
+      .then(v => {
+        setIsLoading(true)
+        return v
       })
       .catch(errorHandle)
     if (!isEmpty(tx)) {
@@ -392,12 +396,12 @@ export default function Deposit({
                   </span>
                 </div>
                 <p className={classes.estimateText}>
-                  <div>Balances&nbsp;:</div>
-                  <div>{toFixed(vaultBufferBalance, BigNumber.from(10).pow(vaultBufferDecimals), 4)} ETH</div>
+                  <span>Balances&nbsp;:</span>
+                  <span>{toFixed(vaultBufferBalance, BigNumber.from(10).pow(vaultBufferDecimals), 4)} ETH</span>
                 </p>
                 <p className={classes.estimateText}>
-                  <div>Estimated Gas Fee&nbsp;:</div>
-                  <div>{toFixed(getGasFee(), BigNumber.from(10).pow(ethDecimals), 6)} ETH</div>
+                  <span>Estimated Gas Fee&nbsp;:</span>
+                  <span>{toFixed(getGasFee(), BigNumber.from(10).pow(ethDecimals), 6)} ETH</span>
                 </p>
               </GridItem>
               <GridItem xs={12} sm={12} md={12} lg={12}>
@@ -476,10 +480,7 @@ export default function Deposit({
       </Modal>
       <Modal className={classes.modal} open={isLoading} aria-labelledby="simple-modal-title" aria-describedby="simple-modal-description">
         <Paper elevation={3} className={classes.depositModal}>
-          <div className={classes.modalBody}>
-            <CircularProgress color="inherit" />
-            <p>On Deposit...{toFixed(`${gasPrice}`, BigNumber.from(10).pow(9), 2)}Gwei</p>
-          </div>
+          <Result userProvider={userProvider} onClose={() => setIsLoading(false)} />
         </Paper>
       </Modal>
       {map(compact(transactions), (item, index) => {
@@ -510,3 +511,5 @@ export default function Deposit({
     </>
   )
 }
+
+export default Deposit
