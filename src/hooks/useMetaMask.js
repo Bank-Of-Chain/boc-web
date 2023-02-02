@@ -8,6 +8,7 @@ import isEmpty from 'lodash/isEmpty'
 const useMetaMask = userProvider => {
   const storageString = sessionStorage.getItem('listenHash')
   const [gasPrice, setGasPrice] = useState(0)
+  const [gasPriceLoading, setGasPriceLoading] = useState(false)
   const [listenHash, setListenHash] = useState(isEmpty(storageString) ? [] : storageString.split(','))
   const [transactions, setTransactions] = useState([])
 
@@ -44,10 +45,16 @@ const useMetaMask = userProvider => {
     if (!userProvider) {
       return
     }
+    setGasPriceLoading(true)
     userProvider
       .send('eth_gasPrice')
       .then(v => setGasPrice(parseInt(v, 16)))
       .catch(noop)
+      .finally(() => {
+        setTimeout(() => {
+          setGasPriceLoading(false)
+        }, 800)
+      })
   }, [userProvider])
 
   /**
@@ -74,7 +81,7 @@ const useMetaMask = userProvider => {
 
   useEffect(() => {
     queryGasPrice()
-    const timer = setInterval(queryGasPrice, 3000)
+    const timer = setInterval(queryGasPrice, 5000)
     return () => clearInterval(timer)
   }, [queryGasPrice])
 
@@ -86,6 +93,7 @@ const useMetaMask = userProvider => {
 
   return {
     gasPrice,
+    gasPriceLoading,
     transactions,
     // actions,
     queryGasPrice,
