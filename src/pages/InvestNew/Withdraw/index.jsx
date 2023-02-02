@@ -25,6 +25,9 @@ import Button from '@/components/CustomButtons/Button'
 import Loading from '@/components/LoadingComponent'
 import ApproveArray from '@/components/ApproveArray/ApproveArrayV3'
 
+// === Hooks === //
+import useUserAddress from '@/hooks/useUserAddress'
+
 // === Constants === //
 import { warmDialog } from '@/reducers/meta-reducer'
 import { toFixed, formatBalance } from '@/helpers/number-format'
@@ -34,6 +37,7 @@ import { BN_18 } from '@/constants/big-number'
 
 // === Hooks === //
 import useRedeemFeeBps from '@/hooks/useRedeemFeeBps'
+import useErc20Token from '@/hooks/useErc20Token'
 
 // === Utils === //
 import isUndefined from 'lodash/isUndefined'
@@ -55,19 +59,7 @@ const steps = [{ title: 'Shares Validation' }, { title: 'Gas Estimates' }, { tit
 
 const RECEIVE_MIX_VALUE = 'Mix'
 
-export default function Withdraw({
-  address,
-  toBalance,
-  usdiDecimals,
-  userProvider,
-  VAULT_ADDRESS,
-  VAULT_ABI,
-  EXCHANGE_AGGREGATOR_ABI,
-  exchangeManager,
-  EXCHANGE_ADAPTER_ABI,
-  isBalanceLoading,
-  reloadBalance
-}) {
+const Withdraw = ({ userProvider, USDI_ADDRESS, VAULT_ADDRESS, VAULT_ABI, EXCHANGE_AGGREGATOR_ABI, exchangeManager, EXCHANGE_ADAPTER_ABI }) => {
   const classes = useStyles()
   const dispatch = useDispatch()
   const [receiveToken] = useState(RECEIVE_MIX_VALUE)
@@ -101,6 +93,15 @@ export default function Withdraw({
   const [isShowZipModal, setIsShowZipModal] = useState(false)
   const [pegTokenPrice, setPegTokenPrice] = useState(BN_18)
 
+  const address = useUserAddress(userProvider)
+
+  const {
+    balance: usdiBalance,
+    decimals: usdiDecimals,
+    loading: isUsdiLoading,
+    queryBalance: queryUsdiBalance
+  } = useErc20Token(USDI_ADDRESS, userProvider)
+
   const { value: redeemFeeBps } = useRedeemFeeBps({
     userProvider,
     VAULT_ADDRESS,
@@ -114,6 +115,7 @@ export default function Withdraw({
 
   const estimateWithdraw = useCallback(
     debounce(async () => {
+      if (isEmpty(VAULT_ADDRESS) || isEmpty(VAULT_ABI) || isEmpty(userProvider)) return
       setIsEstimate(true)
       const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider)
       const nextValue = BigNumber.from(BN(toValue).multipliedBy(BigNumber.from(10).pow(usdiDecimals).toString()).toFixed())
@@ -183,7 +185,8 @@ export default function Withdraw({
           setIsEstimate(false)
         }, 500)
       }
-    }, 1500)
+    }, 1500),
+    [toValue, usdiDecimals, pegTokenPrice, VAULT_ADDRESS, VAULT_ABI, userProvider]
   )
 
   const handleBurn = (a, b, c, d, tokens, amounts) => {
@@ -350,7 +353,7 @@ export default function Withdraw({
    * check if toValue is valid
    * @returns
    */
-  const isValidToValue = () => {
+  const isValidToValue = useCallback(() => {
     if (toValue === '' || toValue === '-' || isEmpty(toValue.replace(/ /g, ''))) return
     // should be a number
     if (isNaN(Number(toValue))) return false
@@ -362,20 +365,20 @@ export default function Withdraw({
     const nextToValueString = nextValue.multipliedBy(BigNumber.from(10).pow(usdiDecimals).toString())
     if (nextToValueString.toFixed().indexOf('.') !== -1) return false
     // balance less than value
-    if (toBalance.lt(BigNumber.from(nextToValue.toFixed()))) return false
+    if (usdiBalance.lt(BigNumber.from(nextToValue.toFixed()))) return false
     return true
-  }
+  }, [toValue, usdiBalance, usdiDecimals])
 
   /**
    * check if allow loss is valid
    * @returns
    */
-  const isValidAllowLoss = () => {
+  const isValidAllowLoss = useCallback(() => {
     if (allowMaxLoss === '' || isEmpty(allowMaxLoss.replace(/ /g, ''))) return
     if (isNaN(allowMaxLoss)) return false
     if (allowMaxLoss < 0 || allowMaxLoss > 50) return false
     return true
-  }
+  }, [allowMaxLoss])
 
   useEffect(() => {
     // need open advanced setting
@@ -391,7 +394,7 @@ export default function Withdraw({
       setEstimateWithdrawArray([])
       return estimateWithdraw.cancel()
     }
-  }, [toValue, allowMaxLoss, shouldExchange, token])
+  }, [toValue, allowMaxLoss, shouldExchange, token, estimateWithdraw, isValidAllowLoss, isValidToValue])
 
   const handleAmountChange = event => {
     try {
@@ -402,7 +405,7 @@ export default function Withdraw({
   }
 
   const handleMaxClick = async () => {
-    const [nextUsdiBalance] = await reloadBalance()
+    const nextUsdiBalance = await queryUsdiBalance()
     setToValue(formatBalance(nextUsdiBalance, usdiDecimals, { showAll: true }))
   }
 
@@ -463,7 +466,7 @@ export default function Withdraw({
             <GridItem xs={12} sm={12} md={12} lg={12}>
               <p className={classes.estimateText} title={formatBalance(item.balance, item.decimals, { showAll: true })}>
                 Balance:&nbsp;
-                <Loading loading={isBalanceLoading}>{formatBalance(item.balance, item.decimals)}</Loading>
+                {formatBalance(item.balance, item.decimals)}
               </p>
             </GridItem>
           </GridContainer>
@@ -477,21 +480,35 @@ export default function Withdraw({
 
   const isLogin = !isEmpty(userProvider)
 
-  const getPegTokenPrice = () => {
+  const getPegTokenPrice = useCallback(() => {
+    if (isEmpty(VAULT_ADDRESS) || isEmpty(VAULT_ABI) || isEmpty(userProvider)) return
     const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider)
     vaultContract.getPegTokenPrice().then(result => {
       setTimeout(() => {
         setPegTokenPrice(result)
       }, 500)
     })
-    return getPegTokenPrice
-  }
+  }, [VAULT_ADDRESS, VAULT_ABI, userProvider])
+
+  const handleBurnCall = useCallback(() => queryUsdiBalance(), [queryUsdiBalance])
 
   useEffect(() => {
-    if (isEmpty(address) || isEmpty(VAULT_ADDRESS) || isEmpty(VAULT_ABI)) return
-    const timer = setInterval(getPegTokenPrice(), 10000)
+    getPegTokenPrice()
+    const timer = setInterval(getPegTokenPrice, 10000)
     return () => clearInterval(timer)
-  }, [address, VAULT_ADDRESS, VAULT_ABI])
+  }, [getPegTokenPrice])
+
+  useEffect(() => {
+    const listener = () => {
+      if (isEmpty(VAULT_ADDRESS) || isEmpty(VAULT_ABI) || isEmpty(userProvider)) return
+      const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider)
+      vaultContract.on('Burn', handleBurnCall)
+      return () => {
+        vaultContract.off('Burn', handleBurnCall)
+      }
+    }
+    return listener()
+  }, [VAULT_ADDRESS, VAULT_ABI, userProvider, handleBurnCall])
 
   return (
     <>
@@ -520,9 +537,9 @@ export default function Withdraw({
           </GridContainer>
         </GridItem>
         <GridItem xs={6} sm={6} md={6} lg={6}>
-          <p className={classes.estimateText} title={formatBalance(toBalance, usdiDecimals, { showAll: true })}>
+          <p className={classes.estimateText} title={formatBalance(usdiBalance, usdiDecimals, { showAll: true })}>
             Balance:&nbsp;
-            <Loading loading={isBalanceLoading}>{formatBalance(toBalance, usdiDecimals)}</Loading>
+            <Loading loading={isUsdiLoading}>{formatBalance(usdiBalance, usdiDecimals)}</Loading>
           </p>
         </GridItem>
         {address && (
@@ -663,3 +680,5 @@ export default function Withdraw({
     </>
   )
 }
+
+export default Withdraw

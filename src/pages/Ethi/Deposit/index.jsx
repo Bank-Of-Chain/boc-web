@@ -44,8 +44,13 @@ import { warmDialog } from '@/reducers/meta-reducer'
 import { toFixed, formatBalance } from '@/helpers/number-format'
 import { short } from '@/helpers/string-utils'
 
+// === Hooks === //
+import useErc20Token from '@/hooks/useErc20Token'
+import useUserAddress from '@/hooks/useUserAddress'
+
 // === Constants === //
 import { CHAIN_BROWSER_URL } from '@/constants'
+import { ETH_ADDRESS } from '@/constants/tokens'
 
 // === Styles === //
 import styles from './style'
@@ -66,20 +71,7 @@ const steps = [
   'Get ETHi'
 ]
 
-const Deposit = ({
-  address,
-  ethBalance,
-  ethDecimals,
-  ethiDecimals,
-  userProvider,
-  VAULT_ABI,
-  VAULT_ADDRESS,
-  ETH_ADDRESS,
-  isBalanceLoading,
-  minimumInvestmentAmount,
-  vaultBufferBalance,
-  vaultBufferDecimals
-}) => {
+const Deposit = ({ userProvider, VAULT_ABI, VAULT_ADDRESS, minimumInvestmentAmount, VAULT_BUFFER_ADDRESS }) => {
   const classes = useStyles()
   const dispatch = useDispatch()
   const [ethValue, setEthValue] = useState('')
@@ -92,8 +84,20 @@ const Deposit = ({
   const loadingTimer = useRef()
 
   const nextRebaseTime = getLastPossibleRebaseTime()
-  const decimal = BigNumber.from(10).pow(ethiDecimals)
   const { transactions, addListenHash, removeListenHash, queryTransactions } = useMetaMask(userProvider)
+  const address = useUserAddress(userProvider)
+  const {
+    balance: ethBalance,
+    decimals: ethDecimals,
+    loading: isEthLoading,
+    queryBalance: queryEthBalance
+  } = useErc20Token(ETH_ADDRESS, userProvider)
+  const {
+    balance: vaultBufferBalance,
+    decimals: vaultBufferDecimals,
+    queryBalance: queryVaultBufferBalance
+  } = useErc20Token(VAULT_BUFFER_ADDRESS, userProvider)
+
   const getGasFee = () => {
     if (!gasPriceCurrent) {
       return BigNumber.from(0)
@@ -285,7 +289,8 @@ const Deposit = ({
       })
       setEstimateVaultBuffValue(result)
       setIsEstimate(false)
-    }, 1500)
+    }, 1500),
+    [VAULT_ADDRESS, VAULT_ABI, userProvider, ethValue]
   )
 
   /**
@@ -298,7 +303,7 @@ const Deposit = ({
   useEffect(() => {
     estimateMint()
     return () => estimateMint.cancel()
-  }, [ethValue])
+  }, [estimateMint])
 
   // get gasprice per 15s
   useEffect(() => {
@@ -327,7 +332,21 @@ const Deposit = ({
       })
       .then(setMintGasLimit)
       .catch(noop)
-  }, [userProvider, VAULT_ADDRESS, ethBalance, VAULT_ABI])
+  }, [userProvider, VAULT_ADDRESS, ethBalance, VAULT_ABI, ethDecimals, address])
+
+  const handleMint = useCallback(() => {
+    queryEthBalance()
+    queryVaultBufferBalance()
+  }, [queryEthBalance, queryVaultBufferBalance])
+
+  useEffect(() => {
+    if (isEmpty(VAULT_ABI) || isEmpty(userProvider) || isEmpty(VAULT_ABI)) return
+    const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider)
+    vaultContract.on('Mint', handleMint)
+    return () => {
+      vaultContract.off('Mint', handleMint)
+    }
+  }, [VAULT_ADDRESS, VAULT_ABI, userProvider, handleMint])
 
   const isLogin = !isEmpty(userProvider)
   const isValid = isValidValue()
@@ -370,7 +389,7 @@ const Deposit = ({
                       })}
                     >
                       Balance:&nbsp;&nbsp;
-                      <Loading loading={isBalanceLoading}>{formatBalance(ethBalance, ethDecimals)}</Loading>
+                      <Loading loading={isEthLoading}>{formatBalance(ethBalance, ethDecimals)}</Loading>
                     </div>
                   </GridItem>
                 </GridContainer>
@@ -381,18 +400,8 @@ const Deposit = ({
                 <p className={classes.estimateText}>To</p>
                 <div className={classes.estimateBalanceTitle}>
                   ETHi Ticket
-                  {/* <Tooltip
-                    classes={{
-                      tooltip: classes.tooltip
-                    }}
-                    placement="right"
-                    title={`ETHi Ticket functions as parallel ETHi that will be converted into ETHi after fund allocations have been successful. Last
-            execution time was ${moment(nextRebaseTime).format('yyyy-MM-DD HH:mm')}`}
-                  >
-                    <InfoIcon style={{ fontSize: '1.25rem', marginLeft: 8, color: '#888' }} />
-                  </Tooltip> */}
                   <span className={classes.estimateBalanceNum}>
-                    <Loading loading={isEstimate}>{toFixed(estimateVaultBuffValue, decimal)}</Loading>
+                    <Loading loading={isEstimate}>{toFixed(estimateVaultBuffValue, BigNumber.from(10).pow(vaultBufferDecimals))}</Loading>
                   </span>
                 </div>
                 <p className={classes.estimateText}>
@@ -465,7 +474,7 @@ const Deposit = ({
           <div className={classes.itemBottom}>
             <div className={classes.exchangeInfo}>
               Receive:
-              <span className={classes.usdiInfo}>{toFixed(estimateVaultBuffValue, decimal, 2)}</span>ETHi Tickets
+              <span className={classes.usdiInfo}>{toFixed(estimateVaultBuffValue, BigNumber.from(10).pow(vaultBufferDecimals), 2)}</span>ETHi Tickets
             </div>
           </div>
           <div className={classes.buttonGroup}>

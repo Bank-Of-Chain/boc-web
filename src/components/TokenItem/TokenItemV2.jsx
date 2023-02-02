@@ -113,7 +113,7 @@ const TokenItem = (props, ref) => {
     setTimeout(() => {
       onChange()
     })
-  }, [])
+  }, [onChange])
 
   const isApproveEnough = useCallback(() => {
     if (token.address === ETH_ADDRESS || isReciveToken) return true
@@ -244,7 +244,7 @@ const TokenItem = (props, ref) => {
   const isSwapError = !isFetching && !isReciveToken && isOverMaxRetry
 
   // Check if value is gt balance, or lt 1 decimal
-  const isErrorValue = () => {
+  const isErrorValue = useCallback(() => {
     if (!value) {
       return false
     }
@@ -253,19 +253,19 @@ const TokenItem = (props, ref) => {
     }
     const nextFromValueString = new BN(value).multipliedBy(decimals.toString())
     return !isReciveToken && !isEmpty(value) && (nextFromValueString.gt(balance) || nextFromValueString.toFixed().indexOf('.') !== -1)
-  }
+  }, [value, decimals, balance, isReciveToken])
 
   // Check if value is empty
-  const isEmptyValue = () => {
+  const isEmptyValue = useCallback(() => {
     return !isReciveToken && (isEmpty(value) || Number(value) === 0)
-  }
+  }, [isReciveToken, value])
 
   // check the slippage is valid or not
-  const isValidSlippage = () => {
+  const isValidSlippage = useCallback(() => {
     if (isNaN(slippage)) return false
     if (slippage < 0.01 || slippage > 45) return false
     return true
-  }
+  }, [slippage])
 
   const handleInputChange = value => {
     const num = Number(value)
@@ -298,7 +298,7 @@ const TokenItem = (props, ref) => {
     setAllowances(nextAllowance)
     setIsReload(false)
     // console.groupEnd(`reload call:${address}:${sycIndex}`)
-  }, [token, userAddress, exchangeManager])
+  }, [token, userAddress, exchangeManager, userProvider])
 
   const reloadSwap = () => {
     // console.groupCollapsed(`reloadSwap call:${address}:${++sycIndex}`)
@@ -388,7 +388,7 @@ const TokenItem = (props, ref) => {
         receiver: userAddress
       }
     }
-  }, [token, value, decimals, exchangePlatformAdapters, exclude, receiveToken, isReciveToken, slippage])
+  }, [token, value, decimals, exchangePlatformAdapters, exclude, receiveToken, isReciveToken, slippage, isEmptyValue, userAddress, userProvider])
 
   const estimateWithValue = useCallback(
     debounce(async () => {
@@ -429,7 +429,7 @@ const TokenItem = (props, ref) => {
 
   useEffect(() => {
     setValue(toFixed(token.amount, decimals))
-  }, [token, decimals.toString()])
+  }, [token, decimals])
 
   useEffect(() => {
     reload()
@@ -467,7 +467,21 @@ const TokenItem = (props, ref) => {
     // console.groupEnd(`estimateWithValue useEffect call:${address}:${sycIndex}`)
     estimateWithValue()
     return () => estimateWithValue.cancel()
-  }, [isReload, value, swapInfo, estimateWithValue, retryTimes, isSwapInfoFetching])
+  }, [
+    isReload,
+    value,
+    swapInfo,
+    estimateWithValue,
+    retryTimes,
+    isSwapInfoFetching,
+    isGetSwapInfoSuccess,
+    exchangePlatformAdapters,
+    isReciveToken,
+    isOverMaxRetry,
+    isEmptyValue,
+    isErrorValue,
+    isValidSlippage
+  ])
 
   useEffect(() => {
     const isApproveEnoughValue = isApproveEnough()
@@ -495,7 +509,7 @@ const TokenItem = (props, ref) => {
     }
     // console.groupEnd(`staticCall useEffect call:${address}:${sycIndex}`)
     staticCall()
-  }, [done, value, retryTimes, swapInfo, staticCall, isStaticCalling, isApproveEnough])
+  }, [done, value, retryTimes, swapInfo, staticCall, isStaticCalling, isApproveEnough, isEmptyValue, isErrorValue, isOverMaxRetry, isReciveToken])
 
   useImperativeHandle(ref, () => {
     return {

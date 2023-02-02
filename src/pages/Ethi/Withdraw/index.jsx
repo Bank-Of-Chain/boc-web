@@ -27,6 +27,8 @@ import SimpleSelect from '@/components/SimpleSelect'
 import { warmDialog } from '@/reducers/meta-reducer'
 import useRedeemFeeBps from '@/hooks/useRedeemFeeBps'
 import usePriceProvider from '@/hooks/usePriceProvider'
+import useErc20Token from '@/hooks/useErc20Token'
+import useUserAddress from '@/hooks/useUserAddress'
 
 // === Utils === //
 import isUndefined from 'lodash/isUndefined'
@@ -41,7 +43,6 @@ import { isAd, isEs, isRp, isMaxLoss, isLossMuch, isExchangeFail, errorTextOutpu
 
 // === Constants === //
 import { MULTIPLE_OF_GAS, MAX_GAS_LIMIT, IERC20_ABI } from '@/constants'
-import { WETH_ADDRESS } from '@/constants/tokens'
 import { BN_18 } from '@/constants/big-number'
 
 // === Styles === //
@@ -56,18 +57,14 @@ const steps = [{ title: 'Shares Validation' }, { title: 'Gas Estimates' }, { tit
 const WITHDRAW_EXCHANGE_THRESHOLD = BigNumber.from(10).pow(16)
 
 export default function Withdraw({
-  address,
   exchangeManager,
-  ethiBalance,
-  ethiDecimals,
+  ETHI_ADDRESS,
   userProvider,
   ETH_ADDRESS,
   VAULT_ADDRESS,
   VAULT_ABI,
   EXCHANGE_AGGREGATOR_ABI,
   EXCHANGE_ADAPTER_ABI,
-  isBalanceLoading,
-  reloadBalance,
   PRICE_ORCALE_ABI
 }) {
   const classes = useStyles()
@@ -93,10 +90,11 @@ export default function Withdraw({
     //   symbol: 'WETH'
     // }
   ])
-  console.log('WETH_ADDRESS=', WETH_ADDRESS)
   const [isShowZipModal, setIsShowZipModal] = useState(false)
 
   const [pegTokenPrice, setPegTokenPrice] = useState(BN_18)
+
+  const address = useUserAddress(userProvider)
 
   const { value: redeemFeeBps } = useRedeemFeeBps({
     userProvider,
@@ -110,6 +108,13 @@ export default function Withdraw({
     VAULT_ABI,
     PRICE_ORCALE_ABI
   })
+
+  const {
+    balance: ethiBalance,
+    decimals: ethiDecimals,
+    loading: isEthiLoading,
+    queryBalance: queryEthiBalance
+  } = useErc20Token(ETHI_ADDRESS, userProvider)
 
   const redeemFeeBpsPercent = redeemFeeBps.toNumber() / 100
 
@@ -189,7 +194,8 @@ export default function Withdraw({
           setIsEstimate(false)
         }, 500)
       }
-    }, 1500)
+    }, 1500),
+    [toValue, pegTokenPrice, VAULT_ADDRESS, VAULT_ABI, userProvider]
   )
 
   const handleBurn = async (a, b, c, d, tokens, amounts) => {
@@ -372,7 +378,7 @@ export default function Withdraw({
    * check if toValue is valid
    * @returns
    */
-  const isValidToValue = () => {
+  const isValidToValue = useCallback(() => {
     if (toValue === '' || toValue === '-' || isEmpty(toValue.replace(/ /g, ''))) return
     // should be a number
     if (isNaN(Number(toValue))) return false
@@ -386,18 +392,18 @@ export default function Withdraw({
     // balance less than value
     if (ethiBalance.lt(BigNumber.from(nextToValue.toFixed()))) return false
     return true
-  }
+  }, [toValue, ethiDecimals, ethiBalance])
 
   /**
    * check if allow loss is valid
    * @returns
    */
-  const isValidAllowLoss = () => {
+  const isValidAllowLoss = useCallback(() => {
     if (allowMaxLoss === '' || isEmpty(allowMaxLoss.replace(/ /g, ''))) return
     if (isNaN(allowMaxLoss)) return false
     if (allowMaxLoss < 0 || allowMaxLoss > 50) return false
     return true
-  }
+  }, [allowMaxLoss])
 
   useEffect(() => {
     // need open advanced setting
@@ -412,7 +418,7 @@ export default function Withdraw({
       setEstimateWithdrawArray([])
       return estimateWithdraw.cancel()
     }
-  }, [toValue, allowMaxLoss])
+  }, [toValue, allowMaxLoss, estimateWithdraw, isValidAllowLoss, isValidToValue])
 
   const handleAmountChange = event => {
     try {
@@ -423,7 +429,7 @@ export default function Withdraw({
   }
 
   const handleMaxClick = async () => {
-    const [nextEthiBalance] = await reloadBalance()
+    const nextEthiBalance = await queryEthiBalance()
     setToValue(formatBalance(nextEthiBalance, ethiDecimals, { showAll: true }))
   }
 
@@ -482,8 +488,7 @@ export default function Withdraw({
             </GridItem>
             <GridItem xs={12} sm={12} md={12} lg={12}>
               <p className={classes.estimateText} title={formatBalance(item.balance, item.decimals, { showAll: true })}>
-                Balance:&nbsp;
-                <Loading loading={isBalanceLoading}>{formatBalance(item.balance, item.decimals)}</Loading>
+                Balance:&nbsp; {formatBalance(item.balance, item.decimals)}
               </p>
             </GridItem>
           </GridContainer>
@@ -497,21 +502,35 @@ export default function Withdraw({
 
   const isLogin = !isEmpty(userProvider)
 
-  const getPegTokenPrice = () => {
+  const getPegTokenPrice = useCallback(() => {
+    if (isEmpty(VAULT_ADDRESS) || isEmpty(VAULT_ABI) || isEmpty(userProvider)) return
     const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider)
     vaultContract.getPegTokenPrice().then(result => {
       setTimeout(() => {
         setPegTokenPrice(result)
       }, 500)
     })
-    return getPegTokenPrice
-  }
+  }, [VAULT_ADDRESS, VAULT_ABI, userProvider])
 
   useEffect(() => {
-    if (isEmpty(address) || isEmpty(VAULT_ADDRESS) || isEmpty(VAULT_ABI)) return
-    const timer = setInterval(getPegTokenPrice(), 10000)
+    getPegTokenPrice()
+    const timer = setInterval(getPegTokenPrice, 10000)
     return () => clearInterval(timer)
-  }, [address])
+  }, [getPegTokenPrice])
+
+  const handleBurnCall = useCallback(() => queryEthiBalance(), [queryEthiBalance])
+
+  useEffect(() => {
+    const listener = () => {
+      if (isEmpty(VAULT_ADDRESS) || isEmpty(VAULT_ABI) || isEmpty(userProvider)) return
+      const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider)
+      vaultContract.on('Burn', handleBurnCall)
+      return () => {
+        vaultContract.off('Burn', handleBurnCall)
+      }
+    }
+    return listener()
+  }, [VAULT_ADDRESS, VAULT_ABI, userProvider, handleBurnCall])
 
   return (
     <>
@@ -542,7 +561,7 @@ export default function Withdraw({
         <GridItem xs={6} sm={6} md={6} lg={6}>
           <p className={classes.estimateText} title={formatBalance(ethiBalance, ethiDecimals, { showAll: true })}>
             Balance:&nbsp;
-            <Loading loading={isBalanceLoading}>{formatBalance(ethiBalance, ethiDecimals)}</Loading>
+            <Loading loading={isEthiLoading}>{formatBalance(ethiBalance, ethiDecimals)}</Loading>
           </p>
         </GridItem>
         {address && (

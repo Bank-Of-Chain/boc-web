@@ -39,6 +39,10 @@ import AddIcon from '@material-ui/icons/Add'
 import ExpandLessIcon from '@material-ui/icons/ExpandLess'
 import ClearIcon from '@material-ui/icons/Clear'
 
+// === Hooks === //
+import useErc20Token from '@/hooks/useErc20Token'
+import useUserAddress from '@/hooks/useUserAddress'
+
 // === Constants === //
 import { USDT_ADDRESS, USDC_ADDRESS, DAI_ADDRESS, IERC20_ABI, MULTIPLE_OF_GAS, MAX_GAS_LIMIT } from '@/constants'
 import { BN_18 } from '@/constants/big-number'
@@ -67,21 +71,7 @@ const steps = [
   'Get USDi'
 ]
 
-export default function Deposit({
-  address,
-  usdtBalance,
-  usdtDecimals,
-  usdcBalance,
-  usdcDecimals,
-  daiBalance,
-  daiDecimals,
-  usdiDecimals,
-  userProvider,
-  VAULT_ABI,
-  VAULT_ADDRESS,
-  isBalanceLoading,
-  minimumInvestmentAmount
-}) {
+export default function Deposit({ VAULT_BUFFER_ADDRESS, userProvider, VAULT_ABI, VAULT_ADDRESS, minimumInvestmentAmount }) {
   const classes = useStyles()
   const dispatch = useDispatch()
   const [usdtValue, setUsdtValue] = useState('')
@@ -94,8 +84,37 @@ export default function Deposit({
   const loadingTimer = useRef()
 
   const nextRebaseTime = getLastPossibleRebaseTime()
-  const decimal = BigNumber.from(10).pow(usdiDecimals)
+
   const [tokenSelect, setTokenSelect] = useState([USDT_ADDRESS, USDC_ADDRESS, DAI_ADDRESS])
+
+  const address = useUserAddress(userProvider)
+
+  const {
+    balance: usdtBalance,
+    decimals: usdtDecimals,
+    loading: isUsdtLoading,
+    queryBalance: queryUsdtBalance
+  } = useErc20Token(USDT_ADDRESS, userProvider)
+
+  const {
+    balance: usdcBalance,
+    decimals: usdcDecimals,
+    loading: isUsdcLoading,
+    queryBalance: queryUsdcBalance
+  } = useErc20Token(USDC_ADDRESS, userProvider)
+
+  const {
+    balance: daiBalance,
+    decimals: daiDecimals,
+    loading: isDaiLoading,
+    queryBalance: queryDaiBalance
+  } = useErc20Token(DAI_ADDRESS, userProvider)
+
+  const {
+    balance: vaultBufferBalance,
+    decimals: vaultBufferDecimals,
+    queryBalance: queryVaultBufferBalance
+  } = useErc20Token(VAULT_BUFFER_ADDRESS, userProvider)
 
   const tokenBasicState = {
     [TOKEN.USDT]: {
@@ -122,6 +141,7 @@ export default function Deposit({
       image: './images/0x55d398326f99059fF775485246999027B3197955.png',
       setValue: setUsdtValue,
       isValid: isValidValue(TOKEN.USDT),
+      loading: isUsdtLoading,
       ...tokenBasicState[TOKEN.USDT]
     },
     {
@@ -130,6 +150,7 @@ export default function Deposit({
       image: './images/0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d.png',
       setValue: setUsdcValue,
       isValid: isValidValue(TOKEN.USDC),
+      loading: isUsdcLoading,
       ...tokenBasicState[TOKEN.USDC]
     },
     {
@@ -138,6 +159,7 @@ export default function Deposit({
       image: './images/0x1AF3F329e8BE154074D8769D1FFa4eE058B1DBc3.png',
       setValue: setDaiValue,
       isValid: isValidValue(TOKEN.DAI),
+      loading: isDaiLoading,
       ...tokenBasicState[TOKEN.DAI]
     }
   ]
@@ -406,10 +428,26 @@ export default function Deposit({
     }, 1500)
   )
 
+  const handleMint = useCallback(() => {
+    queryUsdtBalance()
+    queryUsdcBalance()
+    queryDaiBalance()
+    queryVaultBufferBalance()
+  }, [queryUsdtBalance, queryUsdcBalance, queryDaiBalance, queryVaultBufferBalance])
+
   useEffect(() => {
     estimateMint()
     return () => estimateMint.cancel()
-  }, [usdcValue, usdtValue, daiValue])
+  }, [usdcValue, usdtValue, daiValue, estimateMint])
+
+  useEffect(() => {
+    if (isEmpty(VAULT_ABI) || isEmpty(userProvider) || isEmpty(VAULT_ABI)) return
+    const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider)
+    vaultContract.on('Mint', handleMint)
+    return () => {
+      vaultContract.off('Mint', handleMint)
+    }
+  }, [VAULT_ADDRESS, VAULT_ABI, userProvider, handleMint])
 
   const isLogin = !isEmpty(userProvider)
 
@@ -490,7 +528,7 @@ export default function Deposit({
                             })}
                           >
                             Balance:&nbsp;&nbsp;
-                            <Loading loading={isBalanceLoading}>{formatBalance(item.balance, item.decimals)}</Loading>
+                            <Loading loading={item.loading}>{formatBalance(item.balance, item.decimals)}</Loading>
                           </div>
                         </GridItem>
                       </GridContainer>
@@ -506,20 +544,14 @@ export default function Deposit({
               <GridItem xs={12} sm={12} md={12} lg={12}>
                 <div className={classes.estimateBalanceTitle}>
                   USDi Ticket
-                  {/* <Tooltip
-                    classes={{
-                      tooltip: classes.tooltip
-                    }}
-                    placement="right"
-                    title={`USDi Ticket functions as parallel USDi that will be converted into USDi after fund allocations have been successful. Last
-            execution time was ${moment(nextRebaseTime).format('yyyy-MM-DD HH:mm')}`}
-                  >
-                    <InfoIcon style={{ fontSize: '1.25rem', marginLeft: 8, color: '#888' }} />
-                  </Tooltip> */}
                   <span className={classes.estimateBalanceNum}>
-                    <Loading loading={isEstimate}>{toFixed(estimateVaultBuffValue, decimal)}</Loading>
+                    <Loading loading={isEstimate}>{toFixed(estimateVaultBuffValue, BigNumber.from(10).pow(vaultBufferDecimals))}</Loading>
                   </span>
                 </div>
+                <p className={classes.estimateText}>
+                  <span>Balances&nbsp;:</span>
+                  <span>{toFixed(vaultBufferBalance, BigNumber.from(10).pow(vaultBufferDecimals), 4)} USDi Ticket</span>
+                </p>
               </GridItem>
               <GridItem xs={12} sm={12} md={12} lg={12}>
                 <div className={classes.tip}>
@@ -589,7 +621,7 @@ export default function Deposit({
           <div className={classes.itemBottom}>
             <div className={classes.exchangeInfo}>
               Receive:
-              <span className={classes.usdiInfo}>{toFixed(estimateVaultBuffValue, decimal, 2)}</span>USDi Tickets
+              <span className={classes.usdiInfo}>{toFixed(estimateVaultBuffValue, BigNumber.from(10).pow(vaultBufferDecimals), 2)}</span>USDi Tickets
             </div>
           </div>
           <div className={classes.buttonGroup}>

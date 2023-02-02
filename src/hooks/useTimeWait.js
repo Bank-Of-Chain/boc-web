@@ -15,7 +15,7 @@ const useTimeWait = (duration = 1000) => {
     forceUpdate()
     const timer = setInterval(forceUpdate, duration)
     return () => clearInterval(timer)
-  }, [forceUpdate])
+  }, [forceUpdate, duration])
 
   return {
     initMoment,

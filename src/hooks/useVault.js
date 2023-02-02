@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 
 // === Utils === //
 import * as ethers from 'ethers'
@@ -21,17 +21,27 @@ const useVault = (VAULT_ADDRESS, VAULT_ABI, userProvider) => {
 
   const address = useUserAddress(userProvider)
 
-  const valid = () => {
+  const valid = useCallback(() => {
     if (isEmpty(VAULT_ADDRESS)) return new Error('VAULT_ADDRESS is need!')
     if (isEmpty(VAULT_ABI)) return new Error('VAULT_ABI is need!')
     if (isEmpty(userProvider)) return new Error('userProvider is need!')
-  }
+  }, [VAULT_ADDRESS, VAULT_ABI, userProvider])
 
+  const fetchUnderlyingUnitsPerShare = useCallback(() => {
+    if (isEmpty(VAULT_ADDRESS) || isEmpty(VAULT_ABI) || isEmpty(userProvider)) return
+    const vaultContract = new Contract(VAULT_ADDRESS, VAULT_ABI, userProvider)
+    setLoading(true)
+    vaultContract
+      .underlyingUnitsPerShare()
+      .catch(setError)
+      .then(setUnderlyingUnitsPerShare)
+      .finally(() => setLoading(false))
+  }, [VAULT_ADDRESS, VAULT_ABI, userProvider])
   /**
    * query vault base info
    * @returns
    */
-  const queryBaseInfo = () => {
+  const queryBaseInfo = useCallback(() => {
     const error = valid()
     if (error) return setError(error)
     setLoading(true)
@@ -59,7 +69,7 @@ const useVault = (VAULT_ADDRESS, VAULT_ABI, userProvider) => {
       })
       .catch(setError)
       .finally(() => setLoading(false))
-  }
+  }, [VAULT_ADDRESS, VAULT_ABI, userProvider, fetchUnderlyingUnitsPerShare, valid])
 
   const updateRebaseThreshold = value => {
     const error = valid()
@@ -87,16 +97,6 @@ const useVault = (VAULT_ADDRESS, VAULT_ABI, userProvider) => {
       .finally(() => setLoading(false))
   }
 
-  const fetchUnderlyingUnitsPerShare = () => {
-    const vaultContract = new Contract(VAULT_ADDRESS, VAULT_ABI, userProvider)
-    setLoading(true)
-    vaultContract
-      .underlyingUnitsPerShare()
-      .catch(setError)
-      .then(setUnderlyingUnitsPerShare)
-      .finally(() => setLoading(false))
-  }
-
   useEffect(() => {
     const error = valid()
     if (error) {
@@ -105,7 +105,7 @@ const useVault = (VAULT_ADDRESS, VAULT_ABI, userProvider) => {
       return
     }
     queryBaseInfo()
-  }, [address, VAULT_ADDRESS, VAULT_ABI, userProvider])
+  }, [address, VAULT_ADDRESS, VAULT_ABI, userProvider, queryBaseInfo, valid])
 
   return {
     loading,
