@@ -247,9 +247,10 @@ const LeverBoard = props => {
       setEstimateApy(0)
       return
     }
-    const nextEstimateApy = (personalApyData.result / leverRatioValue) * lever
+    const personalApy = 1 * personalApyData.result
+    const nextEstimateApy = ((personalApy - borrowApy) / leverRatioValue) * lever + borrowApy
     setEstimateApy(nextEstimateApy)
-  }, [lever, personalApyData, calcCurrentLeverRadio])
+  }, [lever, personalApyData, calcCurrentLeverRadio, borrowApy])
 
   useEffect(calcEstimateApy, [calcEstimateApy])
 
@@ -623,7 +624,7 @@ const LeverBoard = props => {
     },
     {
       title: 'Estimate APY',
-      content: <span className={classes.apyText}>{(estimateApy / 100).toFixed(2)}%</span>
+      content: <span className={classes.apyText}>{estimateApy.toFixed(2)}%</span>
     }
   ]
 
@@ -655,10 +656,10 @@ const LeverBoard = props => {
               </DescriptionColume>
               <GridItem xs={12} sm={12} md={12} style={{ marginTop: '2rem' }}>
                 <Slider
-                  defaultValue={leverageRadioValue}
                   aria-labelledby="discrete-slider"
                   valueLabelDisplay="auto"
                   step={0.1}
+                  value={lever}
                   onChange={(e, v) => debounceSetLever(v)}
                   min={2}
                   max={4}
