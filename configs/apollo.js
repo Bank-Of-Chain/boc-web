@@ -49,7 +49,7 @@ const start = async () => {
     const VAULT_BUFFER_FOR_ETHI_ETH = data['boc.networks.ethi.vaultBufferAddress'] || ''
     const POOL_SERVICE_ADDRESS = data['boc.networks.ethi.poolService'] || ''
     const CREDIT_FACADE_ADDRESS = data['boc.networks.ethi.creditFacade'] || ''
-    const DIESEL_ADDRESS = data['boc.networks.ethi.dieselAddress'] || ''
+    const DIESEL_ADDRESS = data['boc.networks.ethi.dieseToken'] || ''
 
     let config = {
       env: nextEnv,
