@@ -174,7 +174,7 @@ function Ethi(props) {
   }, [address, VAULT_ADDRESS, VAULT_ABI, userProvider])
 
   useEffect(() => {
-    setCurrent(INVEST_TAB.lever)
+    setCurrent(INVEST_TAB.account)
   }, [])
 
   const renderBody = () => {

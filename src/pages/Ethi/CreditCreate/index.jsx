@@ -108,7 +108,6 @@ const CreditCreate = ({ userProvider, onCancel, CREDIT_FACADE_ADDRESS, CREDIT_FA
       .then(tx => tx.wait())
       .then(() => {
         isSuccess = true
-        onCancel()
       })
       .catch(error => {
         const errorMsg = errorTextOutput(error)
@@ -139,6 +138,7 @@ const CreditCreate = ({ userProvider, onCancel, CREDIT_FACADE_ADDRESS, CREDIT_FA
     loadingTimer.current = setTimeout(() => {
       setIsLoading(false)
       if (isSuccess) {
+        onCancel()
         dispatch(
           warmDialog({
             open: true,

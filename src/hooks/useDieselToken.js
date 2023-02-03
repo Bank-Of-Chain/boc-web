@@ -42,9 +42,21 @@ const useDieselToken = (DIESEL_TOKEN_ADDRESS, DIESEL_TOKEN_ABI, userProvider) =>
   /**
    *
    */
-  const handleTransfer = useCallback(
-    (fromAccount, toAccount) => {
-      if (fromAccount === address || toAccount === address) {
+  const handleMint = useCallback(
+    fromAccount => {
+      if (fromAccount === address) {
+        erc20Data.queryBalance()
+      }
+    },
+    [erc20Data, address]
+  )
+
+  /**
+   *
+   */
+  const handleBurn = useCallback(
+    fromAccount => {
+      if (fromAccount === address) {
         erc20Data.queryBalance()
       }
     },
@@ -56,14 +68,16 @@ const useDieselToken = (DIESEL_TOKEN_ADDRESS, DIESEL_TOKEN_ABI, userProvider) =>
       if (isEmpty(DIESEL_TOKEN_ADDRESS) || isEmpty(DIESEL_TOKEN_ABI) || isEmpty(userProvider) || isEmpty(address)) return
       const vaultContract = new ethers.Contract(DIESEL_TOKEN_ADDRESS, DIESEL_TOKEN_ABI, userProvider)
       if (!isEmpty(address)) {
-        vaultContract.on('Transfer', handleTransfer)
+        vaultContract.on('Mint', handleMint)
+        vaultContract.on('Mint', handleBurn)
         return () => {
-          vaultContract.off('Transfer', handleTransfer)
+          vaultContract.off('Mint', handleMint)
+          vaultContract.off('Mint', handleBurn)
         }
       }
     }
     return listener()
-  }, [address, DIESEL_TOKEN_ADDRESS, DIESEL_TOKEN_ABI, userProvider, handleTransfer])
+  }, [address, DIESEL_TOKEN_ADDRESS, DIESEL_TOKEN_ABI, userProvider, handleMint, handleBurn])
 
   useEffect(() => {
     getEarned()

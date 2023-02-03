@@ -22,7 +22,8 @@ const componentsStyle = () => ({
   modal: {
     display: 'flex',
     alignItems: 'center',
-    justifyContent: 'center'
+    justifyContent: 'center',
+    marginLeft: '55px'
   },
   buttonGroup: {
     marginTop: '0.625rem',

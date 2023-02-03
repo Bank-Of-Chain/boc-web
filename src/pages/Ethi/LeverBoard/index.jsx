@@ -100,9 +100,7 @@ const LeverBoard = props => {
     isCreditAddressLoading,
     increaseDebt,
     decreaseDebt,
-    redeemCollateral,
     hasOpenedCreditAccount,
-    distributePegTokenTicket,
     creditManagerAddress,
     queryBaseInfo,
     withdrawFromVault,
@@ -245,7 +243,7 @@ const LeverBoard = props => {
   const calcEstimateApy = useCallback(() => {
     if (personalApyData.loading) return
     const leverRatioValue = calcCurrentLeverRadio()
-    if (leverRatioValue === 0) {
+    if (leverRatioValue === 0 || isEmpty(personalApyData.result)) {
       setEstimateApy(0)
       return
     }
@@ -354,13 +352,14 @@ const LeverBoard = props => {
   /**
    * event handler
    */
-  const handleIncreaseDebt = useCallback(
+  const handleIncreaseBorrowedAmount = useCallback(
     sender => {
       if (sender === address) {
+        queryBaseInfoCall()
         queryVaultBufferBalanceOfInCreditAddress()
       }
     },
-    [address, getCollateralAmount, queryBaseInfoCall, getWaitingForSwap]
+    [address, queryBaseInfoCall, queryVaultBufferBalanceOfInCreditAddress]
   )
 
   useEffect(() => {
@@ -371,7 +370,7 @@ const LeverBoard = props => {
         vaultContract.on('AddCollateral', handleAddCollateral)
         vaultContract.on('RedeemCollateral', handleRedeemCollateral)
         vaultContract.on('WithdrawFromVault', handleWithdrawFromVault)
-        vaultContract.on('IncreaseBorrowedAmount', handleIncreaseDebt)
+        vaultContract.on('IncreaseBorrowedAmount', handleIncreaseBorrowedAmount)
       } catch (error) {
         console.log('error=', error)
       }
@@ -380,7 +379,7 @@ const LeverBoard = props => {
           vaultContract.off('AddCollateral', handleAddCollateral)
           vaultContract.off('RedeemCollateral', handleRedeemCollateral)
           vaultContract.off('WithdrawFromVault', handleWithdrawFromVault)
-          vaultContract.off('IncreaseBorrowedAmount', handleIncreaseDebt)
+          vaultContract.off('IncreaseBorrowedAmount', handleIncreaseBorrowedAmount)
         } catch (error) {
           console.log('error=', error)
         }
@@ -430,13 +429,13 @@ const LeverBoard = props => {
     {
       title: (
         <>
-          <span onClick={() => distributePegTokenTicket([creditAddress])}>Balance</span>
+          <span>Balance</span>
           <Tooltip
             classes={{
               tooltip: classes.tooltip
             }}
             placement="top"
-            title={`distributePegTokenTicket([creditAddress])`}
+            title={`The ETHi balance for the CreditAccount`}
           >
             {icon}
           </Tooltip>
@@ -471,7 +470,7 @@ const LeverBoard = props => {
               tooltip: classes.tooltip
             }}
             placement="top"
-            title={`redeemCollateral([])`}
+            title={`The assets that users deposit in`}
           >
             {icon}
           </Tooltip>
@@ -488,7 +487,7 @@ const LeverBoard = props => {
               tooltip: classes.tooltip
             }}
             placement="top"
-            title={`decreaseDebt([])`}
+            title={`the borrow amounts about the CreditAccount`}
           >
             {icon}
           </Tooltip>
@@ -505,7 +504,7 @@ const LeverBoard = props => {
               tooltip: classes.tooltip
             }}
             placement="top"
-            title={`ETHi in Credit account.`}
+            title={`the Health Ratio about the CreditAccount.`}
           >
             {icon}
           </Tooltip>
@@ -522,7 +521,7 @@ const LeverBoard = props => {
               tooltip: classes.tooltip
             }}
             placement="top"
-            title={`ETHi in Credit account.`}
+            title={`the Leverage Ratio about Collateral and Debts in the CreditAccount`}
           >
             {icon}
           </Tooltip>
@@ -539,7 +538,7 @@ const LeverBoard = props => {
               tooltip: classes.tooltip
             }}
             placement="top"
-            title={`ETHi in Credit account.`}
+            title={`Interest at the time of borrowing`}
           >
             {icon}
           </Tooltip>
@@ -556,7 +555,7 @@ const LeverBoard = props => {
               tooltip: classes.tooltip
             }}
             placement="top"
-            title={`ETHi in Credit account.`}
+            title={`the BoC apy in last 7 days`}
           >
             {icon}
           </Tooltip>
@@ -577,7 +576,7 @@ const LeverBoard = props => {
               tooltip: classes.tooltip
             }}
             placement="top"
-            title={`ETHi in Credit account.`}
+            title={`the personal apy in last 7 days`}
           >
             {icon}
           </Tooltip>
@@ -757,13 +756,8 @@ const LeverBoard = props => {
       >
         <Fade in={!isEmpty(waitingForSwap)}>
           <Paper elevation={3} className={classes.depositModal}>
-            <p
-              onClick={() => redeemCollateral(address, [])}
-              style={{ textAlign: 'center', fontSize: '1.25rem', letterSpacing: '4px', color: '#b955d9' }}
-            >
-              Warning!
-            </p>
-            <span className={classes.warning} onClick={() => decreaseDebt(address, [])}>
+            <p style={{ textAlign: 'center', fontSize: '1.25rem', letterSpacing: '4px', color: '#b955d9' }}>Warning!</p>
+            <span className={classes.warning}>
               There are <IconArray array={map(waitingForSwap, 'address')} style={{ display: 'inline-block', margin: '0 0.25rem' }} /> Coins, Waiting
               for the keeper to swapping&nbsp;&nbsp;<Loading loading></Loading>
             </span>

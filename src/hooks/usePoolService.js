@@ -16,8 +16,6 @@ import { MULTIPLE_OF_GAS, MAX_GAS_LIMIT } from '@/constants'
 const { BigNumber } = ethers
 
 const usePoolService = (POOL_SERVICE_ADDRESS, POOL_SERVICE_ABI, userProvider) => {
-  const [balance, setBalance] = useState(BigNumber.from(0))
-  const [supply, setSupply] = useState(BigNumber.from(0))
   const [totalBorrowed, setTotalBorrowed] = useState(BigNumber.from(0))
   const [availableLiquidity, setAvailableLiquidity] = useState(BigNumber.from(0))
   const [borrowApy, setBorrowApy] = useState(0)
@@ -88,22 +86,6 @@ const usePoolService = (POOL_SERVICE_ADDRESS, POOL_SERVICE_ABI, userProvider) =>
 
   /**
    *
-   */
-  const queryBalance = useCallback(() => {
-    //TODO:
-    setBalance(BigNumber.from(0))
-  }, [])
-
-  /**
-   *
-   */
-  const querySupply = useCallback(() => {
-    //TODO:
-    setSupply(BigNumber.from(0))
-  }, [])
-
-  /**
-   *
    * @returns
    */
   const queryBorrowApy = useCallback(() => {
@@ -160,9 +142,21 @@ const usePoolService = (POOL_SERVICE_ADDRESS, POOL_SERVICE_ABI, userProvider) =>
     return poolServiceContract.fromDiesel(BigNumber.from(10).pow(18)).then(setFromDiesel)
   }, [POOL_SERVICE_ADDRESS, POOL_SERVICE_ABI, userProvider])
 
-  useEffect(queryBalance, [queryBalance])
+  /**
+   *
+   */
+  const handleAddLiquidity = useCallback(() => {
+    queryTotalBorrowed()
+    queryAvailableLiquidity()
+  }, [queryTotalBorrowed, queryAvailableLiquidity])
 
-  useEffect(querySupply, [querySupply])
+  /**
+   *
+   */
+  const handleRemoveLiquidity = useCallback(() => {
+    queryTotalBorrowed()
+    queryAvailableLiquidity()
+  }, [queryTotalBorrowed, queryAvailableLiquidity])
 
   useEffect(() => {
     queryAvailableLiquidity()
@@ -184,43 +178,29 @@ const usePoolService = (POOL_SERVICE_ADDRESS, POOL_SERVICE_ABI, userProvider) =>
     queryFromDiesel()
   }, [queryFromDiesel])
 
-  const handleMint = useCallback(() => {
-    queryTotalBorrowed()
-    queryAvailableLiquidity()
-  }, [queryTotalBorrowed, queryAvailableLiquidity])
-
-  const handleBurn = useCallback(() => {
-    queryTotalBorrowed()
-    queryAvailableLiquidity()
-  }, [queryTotalBorrowed, queryAvailableLiquidity])
-
   useEffect(() => {
     const listener = () => {
       if (isEmpty(POOL_SERVICE_ADDRESS) || isEmpty(POOL_SERVICE_ABI) || isEmpty(userProvider) || isEmpty(address)) return
       const vaultContract = new ethers.Contract(POOL_SERVICE_ADDRESS, POOL_SERVICE_ABI, userProvider)
       if (!isEmpty(address)) {
-        vaultContract.on('AddLiquidity', handleMint)
-        vaultContract.on('RemoveLiquidity', handleBurn)
+        vaultContract.on('AddLiquidity', handleAddLiquidity)
+        vaultContract.on('RemoveLiquidity', handleRemoveLiquidity)
         return () => {
-          vaultContract.off('AddLiquidity', handleMint)
-          vaultContract.off('RemoveLiquidity', handleBurn)
+          vaultContract.off('AddLiquidity', handleAddLiquidity)
+          vaultContract.off('RemoveLiquidity', handleRemoveLiquidity)
         }
       }
     }
     return listener()
-  }, [address, POOL_SERVICE_ADDRESS, POOL_SERVICE_ABI, userProvider, handleMint, handleBurn])
+  }, [address, POOL_SERVICE_ADDRESS, POOL_SERVICE_ABI, userProvider, handleAddLiquidity, handleRemoveLiquidity])
 
   return {
-    balance,
-    supply,
     borrowApy,
     supplyApy,
     availableLiquidity,
     totalBorrowed,
     fromDiesel,
     // actions
-    querySupply,
-    queryBalance,
     addLiquidity,
     removeLiquidity,
     queryTotalBorrowed,
