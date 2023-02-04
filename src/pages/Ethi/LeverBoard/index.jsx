@@ -196,7 +196,7 @@ const LeverBoard = props => {
     callFunc(nextValue)
       .then(() => {
         if (isIncrease) {
-          removeFromVaultSuccess(creditAddress, WithdrawFromVault.DECREASE_LEVERAGE)
+          removeFromVaultSuccess(address, WithdrawFromVault.DECREASE_LEVERAGE)
         }
       })
       .catch(error => {
@@ -363,6 +363,19 @@ const LeverBoard = props => {
     [address, queryBaseInfoCall, queryVaultBufferBalanceOfInCreditAddress]
   )
 
+  /**
+   * event handler
+   */
+  const handleDecreaseBorrowedAmount = useCallback(
+    sender => {
+      if (sender === address) {
+        queryBaseInfoCall()
+        queryVaultBufferBalanceOfInCreditAddress()
+      }
+    },
+    [address, queryBaseInfoCall, queryVaultBufferBalanceOfInCreditAddress]
+  )
+
   useEffect(() => {
     const listener = () => {
       if (isEmpty(CREDIT_FACADE_ADDRESS) || isEmpty(CREDIT_FACADE_ABI) || isEmpty(userProvider) || isEmpty(address)) return
@@ -372,6 +385,7 @@ const LeverBoard = props => {
         vaultContract.on('RedeemCollateral', handleRedeemCollateral)
         vaultContract.on('WithdrawFromVault', handleWithdrawFromVault)
         vaultContract.on('IncreaseBorrowedAmount', handleIncreaseBorrowedAmount)
+        vaultContract.on('DecreaseBorrowedAmount', handleDecreaseBorrowedAmount)
       } catch (error) {
         console.log('error=', error)
       }
@@ -381,6 +395,7 @@ const LeverBoard = props => {
           vaultContract.off('RedeemCollateral', handleRedeemCollateral)
           vaultContract.off('WithdrawFromVault', handleWithdrawFromVault)
           vaultContract.off('IncreaseBorrowedAmount', handleIncreaseBorrowedAmount)
+          vaultContract.off('DecreaseBorrowedAmount', handleDecreaseBorrowedAmount)
         } catch (error) {
           console.log('error=', error)
         }

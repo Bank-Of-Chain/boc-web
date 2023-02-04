@@ -19,6 +19,7 @@ import Button from '@/components/CustomButtons/Button'
 import Loading from '@/components/LoadingComponent'
 
 // === Hooks === //
+import useUserAddress from '@/hooks/useUserAddress'
 import { warmDialog } from '@/reducers/meta-reducer'
 import useCreditFacade from '@/hooks/useCreditFacade'
 import useErc20Token from '@/hooks/useErc20Token'
@@ -48,6 +49,7 @@ const steps = [{ title: 'Shares Validation' }, { title: 'Gas Estimates' }, { tit
 const LeverWithdraw = ({ userProvider, ETHI_ADDRESS, VAULT_BUFFER_ADDRESS, CREDIT_FACADE_ADDRESS, CREDIT_FACADE_ABI, onCancel }) => {
   const classes = useStyles()
   const dispatch = useDispatch()
+  const address = useUserAddress(userProvider)
   const [toValue, setToValue] = useState('')
   const [isWithdrawLoading, setIsWithdrawLoading] = useState(false)
   const [currentStep, setCurrentStep] = useState(0)
@@ -85,7 +87,7 @@ const LeverWithdraw = ({ userProvider, ETHI_ADDRESS, VAULT_BUFFER_ADDRESS, CREDI
       getSwapInfoFinish = Date.now()
       setCurrentStep(2)
       await withdrawFromVault(nextValue, WithdrawFromVault.WITHDRAW).then(() => {
-        removeFromVaultSuccess(creditAddress, WithdrawFromVault.WITHDRAW)
+        removeFromVaultSuccess(address, WithdrawFromVault.WITHDRAW)
       })
       withdrawFinish = Date.now()
 
