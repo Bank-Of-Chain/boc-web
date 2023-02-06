@@ -23,9 +23,10 @@ const useDieselToken = (DIESEL_TOKEN_ADDRESS, DIESEL_TOKEN_ABI, userProvider) =>
     if (isEmpty(DIESEL_TOKEN_ADDRESS)) return
     if (isEmpty(DIESEL_TOKEN_ABI)) return
     if (isEmpty(userProvider)) return
-    const creditManagerContract = new ethers.Contract(DIESEL_TOKEN_ADDRESS, DIESEL_TOKEN_ABI, userProvider)
-    return creditManagerContract.getReward(address)
-  }, [DIESEL_TOKEN_ADDRESS, DIESEL_TOKEN_ABI, address, userProvider])
+    const dieselTokenContract = new ethers.Contract(DIESEL_TOKEN_ADDRESS, DIESEL_TOKEN_ABI, userProvider)
+    const signer = userProvider.getSigner()
+    return dieselTokenContract.connect(signer).getReward()
+  }, [DIESEL_TOKEN_ADDRESS, DIESEL_TOKEN_ABI, userProvider])
 
   /**
    *
@@ -35,8 +36,8 @@ const useDieselToken = (DIESEL_TOKEN_ADDRESS, DIESEL_TOKEN_ABI, userProvider) =>
     if (isEmpty(DIESEL_TOKEN_ABI)) return
     if (isEmpty(userProvider)) return
     if (isEmpty(address)) return
-    const creditManagerContract = new ethers.Contract(DIESEL_TOKEN_ADDRESS, DIESEL_TOKEN_ABI, userProvider)
-    return creditManagerContract.earned(address).then(setRewardAmounts)
+    const dieselTokenContract = new ethers.Contract(DIESEL_TOKEN_ADDRESS, DIESEL_TOKEN_ABI, userProvider)
+    return dieselTokenContract.earned(address).then(setRewardAmounts)
   }, [DIESEL_TOKEN_ADDRESS, DIESEL_TOKEN_ABI, address, userProvider])
 
   /**
@@ -66,18 +67,22 @@ const useDieselToken = (DIESEL_TOKEN_ADDRESS, DIESEL_TOKEN_ABI, userProvider) =>
   useEffect(() => {
     const listener = () => {
       if (isEmpty(DIESEL_TOKEN_ADDRESS) || isEmpty(DIESEL_TOKEN_ABI) || isEmpty(userProvider) || isEmpty(address)) return
-      const vaultContract = new ethers.Contract(DIESEL_TOKEN_ADDRESS, DIESEL_TOKEN_ABI, userProvider)
+      const dieselTokenContract = new ethers.Contract(DIESEL_TOKEN_ADDRESS, DIESEL_TOKEN_ABI, userProvider)
       if (!isEmpty(address)) {
-        vaultContract.on('Mint', handleMint)
-        vaultContract.on('Mint', handleBurn)
+        dieselTokenContract.on('Mint', handleMint)
+        dieselTokenContract.on('Burn', handleBurn)
+        dieselTokenContract.on('GetReward', getEarned)
+        dieselTokenContract.on('NotifyRewardAmount', getEarned)
         return () => {
-          vaultContract.off('Mint', handleMint)
-          vaultContract.off('Mint', handleBurn)
+          dieselTokenContract.off('Mint', handleMint)
+          dieselTokenContract.off('Burn', handleBurn)
+          dieselTokenContract.off('GetReward', getEarned)
+          dieselTokenContract.off('NotifyRewardAmount', getEarned)
         }
       }
     }
     return listener()
-  }, [address, DIESEL_TOKEN_ADDRESS, DIESEL_TOKEN_ABI, userProvider, handleMint, handleBurn])
+  }, [address, DIESEL_TOKEN_ADDRESS, DIESEL_TOKEN_ABI, userProvider, handleMint, handleBurn, getEarned])
 
   useEffect(() => {
     getEarned()
@@ -87,6 +92,7 @@ const useDieselToken = (DIESEL_TOKEN_ADDRESS, DIESEL_TOKEN_ABI, userProvider) =>
     ...erc20Data,
     rewardAmounts,
     // actions
+    getEarned,
     getReward
   }
 }

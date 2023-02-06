@@ -36,7 +36,7 @@ const PoolsTable = props => {
 
   const { decimals } = useErc20Token(WETH_ADDRESS, userProvider)
 
-  const { rewardAmounts, getEarned, balance, decimals: dieselDecimals } = useDieselToken(DIESEL_TOKEN_ADDRESS, DIESEL_TOKEN_ABI, userProvider)
+  const { rewardAmounts, getReward, balance, decimals: dieselDecimals } = useDieselToken(DIESEL_TOKEN_ADDRESS, DIESEL_TOKEN_ABI, userProvider)
 
   const datas = [
     {
@@ -127,7 +127,7 @@ const PoolsTable = props => {
               {
                 title: '',
                 content: (
-                  <Button color="colorful" onClick={getEarned}>
+                  <Button color="colorful" onClick={getReward}>
                     Claim Reward
                   </Button>
                 )
