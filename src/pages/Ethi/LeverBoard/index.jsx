@@ -376,29 +376,31 @@ const LeverBoard = props => {
     [address, queryBaseInfoCall, queryVaultBufferBalanceOfInCreditAddress]
   )
 
+  /**
+   * event handler
+   */
+  const handleDistributePegTokenTicket = useCallback(() => {
+    queryCreditAccountPegTokenAmount()
+    queryVaultBufferBalanceOfInCreditAddress()
+  }, [address, queryCreditAccountPegTokenAmount, queryVaultBufferBalanceOfInCreditAddress])
+
   useEffect(() => {
     const listener = () => {
       if (isEmpty(CREDIT_FACADE_ADDRESS) || isEmpty(CREDIT_FACADE_ABI) || isEmpty(userProvider) || isEmpty(address)) return
       const vaultContract = new ethers.Contract(CREDIT_FACADE_ADDRESS, CREDIT_FACADE_ABI, userProvider)
-      try {
-        vaultContract.on('AddCollateral', handleAddCollateral)
-        vaultContract.on('RedeemCollateral', handleRedeemCollateral)
-        vaultContract.on('WithdrawFromVault', handleWithdrawFromVault)
-        vaultContract.on('IncreaseBorrowedAmount', handleIncreaseBorrowedAmount)
-        vaultContract.on('DecreaseBorrowedAmount', handleDecreaseBorrowedAmount)
-      } catch (error) {
-        console.log('error=', error)
-      }
+      vaultContract.on('AddCollateral', handleAddCollateral)
+      vaultContract.on('RedeemCollateral', handleRedeemCollateral)
+      vaultContract.on('WithdrawFromVault', handleWithdrawFromVault)
+      vaultContract.on('IncreaseBorrowedAmount', handleIncreaseBorrowedAmount)
+      vaultContract.on('DecreaseBorrowedAmount', handleDecreaseBorrowedAmount)
+      vaultContract.on('DistributePegTokenTicket', handleDistributePegTokenTicket)
       return () => {
-        try {
-          vaultContract.off('AddCollateral', handleAddCollateral)
-          vaultContract.off('RedeemCollateral', handleRedeemCollateral)
-          vaultContract.off('WithdrawFromVault', handleWithdrawFromVault)
-          vaultContract.off('IncreaseBorrowedAmount', handleIncreaseBorrowedAmount)
-          vaultContract.off('DecreaseBorrowedAmount', handleDecreaseBorrowedAmount)
-        } catch (error) {
-          console.log('error=', error)
-        }
+        vaultContract.off('AddCollateral', handleAddCollateral)
+        vaultContract.off('RedeemCollateral', handleRedeemCollateral)
+        vaultContract.off('WithdrawFromVault', handleWithdrawFromVault)
+        vaultContract.off('IncreaseBorrowedAmount', handleIncreaseBorrowedAmount)
+        vaultContract.off('DecreaseBorrowedAmount', handleDecreaseBorrowedAmount)
+        vaultContract.off('DistributePegTokenTicket', handleDistributePegTokenTicket)
       }
     }
     return listener()
