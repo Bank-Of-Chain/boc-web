@@ -100,7 +100,27 @@ const CreditCreate = ({ userProvider, onCancel, CREDIT_FACADE_ADDRESS, CREDIT_FA
     setIsLoading(true)
     let isSuccess = false
     const amount = BigNumber.from(BN(ethValue).multipliedBy(BigNumber.from(10).pow(wethDecimals).toString()).toFixed())
-    await approve(creditManagerAddress, amount)
+    const approveResult = await approve(creditManagerAddress, amount)
+      .then(tx => tx?.wait())
+      .catch(error => {
+        if (error.code === 4001) {
+          dispatch(
+            warmDialog({
+              open: true,
+              type: 'error',
+              message: 'The User Cancel!'
+            })
+          )
+          loadingTimer.current = setTimeout(() => {
+            setIsLoading(false)
+            onCancel()
+          }, 2000)
+        }
+        return false
+      })
+
+    if (approveResult === false) return
+
     console.log('approve success')
 
     const nextLever = 100 * lever
@@ -113,7 +133,9 @@ const CreditCreate = ({ userProvider, onCancel, CREDIT_FACADE_ADDRESS, CREDIT_FA
         const errorMsg = errorTextOutput(error)
         let tip = ''
         console.log('error', error)
-        if (isNotAllowedLeverageFactor(errorMsg)) {
+        if (error.code === 4001) {
+          tip = 'The User Cancel!'
+        } else if (isNotAllowedLeverageFactor(errorMsg)) {
           tip = 'Please set the correct leverage value!'
         } else if (isBorrowAmountOutOfLimitsException(errorMsg)) {
           tip = 'The amount borrowed must be less than 100 ETH!'

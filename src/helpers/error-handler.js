@@ -1,3 +1,5 @@
+import isEqual from 'lodash/isEqual'
+
 /**
  * analysis text in error
  * @param {*} error
@@ -6,19 +8,19 @@
 export const errorTextOutput = error => {
   let errorMsg = error.toString()
   if (error?.reason) {
-    errorMsg = error.reason
+    return error.reason
   }
   if (error?.message) {
-    errorMsg = error.message
+    return error.message
   }
   if (error?.data?.message) {
-    errorMsg = error.data.message
+    return error.data.message
   }
   if (error?.error?.data?.originalError?.message) {
-    errorMsg = error.error.data.originalError.message
+    return error.error.data.originalError.message
   }
   if (error?.error?.data?.message) {
-    errorMsg = error.error.data.message
+    return error.error.data.message
   }
   return errorMsg
 }
@@ -349,4 +351,13 @@ export const isPoolIncorrectWithdrawFee = (errorMsg = '') => {
  */
 export const isPoolCantAddCreditManagerTwice = (errorMsg = '') => {
   return errorMsg.endsWith("'LP5'")
+}
+
+/**
+ *
+ * @param {*} errorMsg
+ * @returns
+ */
+export const isNotSupport = (errorMsg = '') => {
+  return isEqual(errorMsg, 'NS') || errorMsg.endsWith("'NS'")
 }

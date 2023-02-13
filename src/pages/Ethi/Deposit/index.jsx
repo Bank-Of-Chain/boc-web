@@ -32,7 +32,7 @@ import Button from '@/components/CustomButtons/Button'
 // === Utils === //
 import noop from 'lodash/noop'
 import { getLastPossibleRebaseTime } from '@/helpers/time-util'
-import { isAd, isEs, isRp, isDistributing, errorTextOutput, isLessThanMinValue } from '@/helpers/error-handler'
+import { isAd, isEs, isRp, isDistributing, errorTextOutput, isLessThanMinValue, isNotSupport } from '@/helpers/error-handler'
 import { BN_18 } from '@/constants/big-number'
 import { MULTIPLE_OF_GAS, MAX_GAS_LIMIT } from '@/constants'
 import { warmDialog } from '@/reducers/meta-reducer'
@@ -186,6 +186,8 @@ export default function Deposit({
         tip = 'Vault is in distributing, please try again later!'
       } else if (isLessThanMinValue(errorMsg)) {
         tip = `Deposit Amount must be greater than ${toFixed(minimumInvestmentAmount, BN_18, 2)}ETH!`
+      } else if (isNotSupport(errorMsg)) {
+        tip = 'not support'
       }
       if (tip) {
         dispatch(
@@ -262,6 +264,8 @@ export default function Deposit({
           tip = 'Vault is in distributing, please try again later!'
         } else if (isLessThanMinValue(errorMsg)) {
           tip = `Deposit Amount must be greater than ${toFixed(minimumInvestmentAmount, BN_18, 2)}ETH!`
+        } else if (isNotSupport(errorMsg)) {
+          tip = 'not support'
         }
         if (tip) {
           dispatch(
@@ -425,16 +429,6 @@ export default function Deposit({
                 <p className={classes.estimateText}>To</p>
                 <div className={classes.estimateBalanceTitle}>
                   ETHi Ticket
-                  {/* <Tooltip
-                    classes={{
-                      tooltip: classes.tooltip
-                    }}
-                    placement="right"
-                    title={`ETHi Ticket functions as parallel ETHi that will be converted into ETHi after fund allocations have been successful. Last
-            execution time was ${moment(nextRebaseTime).format('yyyy-MM-DD HH:mm')}`}
-                  >
-                    <InfoIcon style={{ fontSize: '1.25rem', marginLeft: 8, color: '#888' }} />
-                  </Tooltip> */}
                   <span className={classes.estimateBalanceNum}>
                     <Loading loading={isEstimate}>{toFixed(estimateVaultBuffValue, decimal)}</Loading>
                   </span>

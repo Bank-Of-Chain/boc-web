@@ -158,7 +158,7 @@ const LeverBoard = props => {
     }
     const calcDecimals = BigNumber.from(10).pow(wethDecimals)
     const totalValue = creditAccountEthiBalance.add(ethiBalance).add(vaultBufferBalance)
-    const currentLeverRadio = toFixed(totalValue.mul(BigNumber.from(10).pow(wethDecimals)).div(collateralAmount), calcDecimals, 2)
+    const currentLeverRadio = toFixed(totalValue.mul(BigNumber.from(10).pow(wethDecimals)).div(collateralAmount), calcDecimals, wethDecimals)
     return 1 * currentLeverRadio
   }, [collateralAmount, creditAccountEthiBalance, ethiBalance, vaultBufferBalance, wethDecimals])
 

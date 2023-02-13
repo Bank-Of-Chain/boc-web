@@ -103,12 +103,33 @@ export default function Deposit({ userProvider, onCancel, POOL_SERVICE_ADDRESS, 
     let isSuccess = false
 
     // approve value
-    await approve(POOL_SERVICE_ADDRESS, amount)
+    const approveResult = await approve(POOL_SERVICE_ADDRESS, amount)
+      .then(tx => tx.wait())
+      .catch(error => {
+        if (error.code === 4001) {
+          dispatch(
+            warmDialog({
+              open: true,
+              type: 'error',
+              message: 'The User Cancel!'
+            })
+          )
+        }
+        loadingTimer.current = setTimeout(() => {
+          setIsLoading(false)
+          onCancel()
+        }, 2000)
+        return false
+      })
 
-    console.log('approve success')
+    if (approveResult === false) return
+
     const errorHandle = error => {
       const errorMsg = errorTextOutput(error)
       let tip = ''
+      if (error.code === 4001) {
+        tip = 'The User Cancel!'
+      }
       if (isPoolMoreThanExpectedLiquidityLimit(errorMsg)) {
         tip = 'The amount of investment exceeded the maximum amount of investment!'
       }
@@ -243,7 +264,7 @@ export default function Deposit({ userProvider, onCancel, POOL_SERVICE_ADDRESS, 
         <Paper elevation={3} className={classes.depositModal}>
           <div className={classes.modalBody}>
             <CircularProgress color="inherit" />
-            <p>On Deposit...</p>
+            <p>On Supply...</p>
           </div>
         </Paper>
       </Modal>

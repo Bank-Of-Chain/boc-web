@@ -5,6 +5,7 @@ import useUserAddress from '@/hooks/useUserAddress'
 
 // === Utils === //
 import * as ethers from 'ethers'
+import noop from 'lodash/noop'
 import isEmpty from 'lodash/isEmpty'
 
 // === Constants === //
@@ -17,7 +18,8 @@ const useErc20Token = (tokenAddress, userProvider) => {
   const address = useUserAddress(userProvider)
   const [balance, setBalance] = useState(BigNumber.from(0))
   const [decimals, setDecimals] = useState(1)
-  const [loading, setLoading] = useState(false)
+  const [isBalanceloading, setIsBalanceloading] = useState(true)
+  const [isDecimalsLoading, setIsDecimalsLoading] = useState(true)
 
   const balanceOf = useCallback(
     async address => {
@@ -43,10 +45,11 @@ const useErc20Token = (tokenAddress, userProvider) => {
       setDecimals(1)
       return nextBalance
     }
-    setLoading(true)
+    setIsBalanceloading(true)
 
-    nextBalance = await balanceOf(address).finally(() => setLoading(false))
+    nextBalance = await balanceOf(address)
     setBalance(nextBalance)
+    setIsBalanceloading(false)
     return nextBalance
   }, [tokenAddress, address, balanceOf])
 
@@ -55,12 +58,17 @@ const useErc20Token = (tokenAddress, userProvider) => {
       setDecimals(1)
       return
     }
+    setIsDecimalsLoading(true)
     if (tokenAddress === ETH_ADDRESS) {
       setDecimals(18)
+      setIsDecimalsLoading(false)
       return
     }
     const tokenContract = new ethers.Contract(tokenAddress, IERC20_ABI, userProvider)
-    tokenContract.decimals().then(setDecimals)
+    tokenContract
+      .decimals()
+      .then(setDecimals)
+      .finally(() => setIsDecimalsLoading(false))
   }, [tokenAddress, userProvider])
 
   const approve = async (targetAddress, amount) => {
@@ -80,35 +88,29 @@ const useErc20Token = (tokenAddress, userProvider) => {
       if (allowanceAmount.gt(0) && tokenAddress !== WETH_ADDRESS) {
         console.log('add allowance:', amount.sub(allowanceAmount).toString())
         console.groupEnd('approve')
-        return tokenContractWithUser
-          .increaseAllowance(targetAddress, amount.sub(allowanceAmount))
-          .then(tx => tx.wait())
-          .catch(e => {
-            // cancel by user
-            if (e.code === 4001) {
-              return Promise.reject(e)
-            }
-            // If increase failed, approve 0 and approve nextAmounts
-            return tokenContractWithUser
-              .approve(targetAddress, 0)
-              .then(tx => tx.wait())
-              .then(() => tokenContractWithUser.approve(targetAddress, amount).then(tx => tx.wait()))
-          })
+        return tokenContractWithUser.increaseAllowance(targetAddress, amount.sub(allowanceAmount)).catch(e => {
+          // cancel by user
+          if (e.code === 4001) {
+            return Promise.reject(e)
+          }
+          // If increase failed, approve 0 and approve nextAmounts
+          return tokenContractWithUser
+            .approve(targetAddress, 0)
+            .then(() => tokenContractWithUser.approve(targetAddress, amount).then(tx => tx.wait()))
+        })
       } else {
         console.log('current allowance:', allowanceAmount.toString(), 'next allowance:', amount.toString())
         console.groupEnd('approve')
-        return tokenContractWithUser
-          .approve(targetAddress, amount)
-          .then(tx => tx.wait())
-          .catch(e => {
-            // cancel by user
-            if (e.code === 4001) {
-              return Promise.reject(e)
-            }
-          })
+        return tokenContractWithUser.approve(targetAddress, amount).catch(e => {
+          // cancel by user
+          if (e.code === 4001) {
+            return Promise.reject(e)
+          }
+        })
       }
     }
     console.groupEnd('approve')
+    return { wait: noop }
   }
 
   useEffect(() => {
@@ -122,7 +124,7 @@ const useErc20Token = (tokenAddress, userProvider) => {
   return {
     balance,
     decimals,
-    loading,
+    loading: isBalanceloading && isDecimalsLoading,
     // actions
     approve,
     queryBalance,
