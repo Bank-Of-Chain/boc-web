@@ -17,7 +17,7 @@ const componentsStyle = () => ({
   modal: {
     display: 'flex',
     alignItems: 'center',
-    justifyContent: 'center',
+    justifycontent: 'center',
     marginLeft: '90px'
   },
   modalBody: {
@@ -65,7 +65,7 @@ const componentsStyle = () => ({
   },
   inputLabelWrapper: {
     display: 'flex',
-    justifyContent: 'space-between',
+    justifycontent: 'space-between',
     alignItems: 'center'
   },
   tokenInfo: {
@@ -191,7 +191,7 @@ const componentsStyle = () => ({
   },
   itemTop: {
     display: 'flex',
-    justifyContent: 'center',
+    justifycontent: 'center',
     alignItems: 'center',
     padding: '1.25rem',
     borderRadius: '1.25rem 1.25rem 0 0',

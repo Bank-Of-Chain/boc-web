@@ -31,7 +31,7 @@ const lendingSectionStyle = {
     height: '18.75rem',
     display: 'flex',
     alignItems: 'flex-end',
-    justifyContent: 'center'
+    justifycontent: 'center'
   },
   usdiBar: {
     background: '#7E6DD2',
@@ -86,12 +86,12 @@ const lendingSectionStyle = {
   switchWrapper: {
     display: 'flex',
     alignItems: 'center',
-    justifyContent: 'flex-start'
+    justifycontent: 'flex-start'
   },
   symbolWrapper: {
     display: 'flex',
     alignItems: 'center',
-    justifyContent: 'flex-end'
+    justifycontent: 'flex-end'
   },
   box: {
     height: '1.375rem',

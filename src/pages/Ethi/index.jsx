@@ -268,6 +268,7 @@ function Ethi(props) {
       </>
     )
   }
+  console.log('renderBody=', renderBody)
 
   return (
     <div className={classes.container}>

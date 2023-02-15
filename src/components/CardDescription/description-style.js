@@ -6,7 +6,7 @@ const componentsStyle = () => ({
   bodyItemHorizontal: {
     display: 'flex',
     alignItems: 'center',
-    justifyContent: 'space-between'
+    justifycontent: 'space-between'
   },
   bodyItemTitle: {
     display: 'flex',

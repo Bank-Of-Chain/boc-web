@@ -22,7 +22,7 @@ const componentsStyle = () => ({
   modal: {
     display: 'flex',
     alignItems: 'center',
-    justifyContent: 'center',
+    justifycontent: 'center',
     marginLeft: '55px'
   },
   buttonGroup: {
@@ -66,7 +66,7 @@ const componentsStyle = () => ({
   },
   inputLabelWrapper: {
     display: 'flex',
-    justifyContent: 'space-between',
+    justifycontent: 'space-between',
     alignItems: 'center'
   },
   tokenInfo: {
@@ -154,7 +154,7 @@ const componentsStyle = () => ({
     margin: '0.75rem 0',
     display: 'flex',
     alignItems: 'center',
-    justifyContent: 'space-between'
+    justifycontent: 'space-between'
   },
   estimateContainer: {
     border: '1px solid #A68EFD',
@@ -205,7 +205,7 @@ const componentsStyle = () => ({
   },
   itemTop: {
     display: 'flex',
-    justifyContent: 'center',
+    justifycontent: 'center',
     alignItems: 'center',
     padding: '1.25rem',
     borderRadius: '1.25rem 1.25rem 0 0',

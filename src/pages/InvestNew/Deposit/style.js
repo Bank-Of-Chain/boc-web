@@ -7,7 +7,7 @@ const componentsStyle = () => ({
   modal: {
     display: 'flex',
     alignItems: 'center',
-    justifyContent: 'center'
+    justifycontent: 'center'
   },
   modalBody: {
     textAlign: 'center'
@@ -36,7 +36,7 @@ const componentsStyle = () => ({
     margin: '0.75rem 0',
     display: 'flex',
     alignItems: 'center',
-    justifyContent: 'space-between'
+    justifycontent: 'space-between'
   },
   estimateBalanceNum: {
     flex: 1,
@@ -50,7 +50,7 @@ const componentsStyle = () => ({
   },
   depositComfirmArea: {
     display: 'flex',
-    justifyContent: 'space-between'
+    justifycontent: 'space-between'
   },
   tokenInfo: {
     display: 'flex',
