@@ -15,7 +15,8 @@ export const STRATEGIES = [
   'UniswapV3',
   'YearnV2',
   'Lido',
-  'RocketPool'
+  'RocketPool',
+  'Stargate'
 ]
 
 export const PLATFORM_HOME_URL = {

@@ -25,7 +25,7 @@ const infoStyle = {
   },
   iconWrapper: {
     display: 'flex',
-    justifyContent: 'center'
+    justifycontent: 'center'
   }
 }
 
