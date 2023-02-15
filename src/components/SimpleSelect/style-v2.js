@@ -7,7 +7,7 @@ const style = {
   },
   selectTrigger: {
     display: 'flex',
-    justifycontent: 'space-between',
+    justifyContent: 'space-between',
     alignItems: 'center',
     height: '100%',
     cursor: 'pointer',
@@ -56,7 +56,7 @@ const style = {
     display: 'flex',
     alignItems: 'center',
     cursor: 'pointer',
-    justifycontent: 'space-between',
+    justifyContent: 'space-between',
     border: '1px solid #666666',
     marginBottom: '4px',
     borderRadius: '20px',

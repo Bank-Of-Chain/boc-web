@@ -268,7 +268,6 @@ function Ethi(props) {
       </>
     )
   }
-  console.log('renderBody=', renderBody)
 
   return (
     <div className={classes.container}>
@@ -340,75 +339,7 @@ function Ethi(props) {
             </ListItem>
           </List>
         </GridItem>
-        {!userProvider && (
-          <GridItem xs={9} sm={9} md={9}>
-            <div className={classes.notConnect}>
-              <div>Wallet not connected.</div>
-              <div className={classes.textBottom}>Connect to your Wallet address to operate.</div>
-            </div>
-          </GridItem>
-        )}
-        {userProvider && (
-          <>
-            {current === INVEST_TAB.deposit && (
-              <GridItem xs={9} sm={9} md={7}>
-                <Deposit
-                  address={address}
-                  ethBalance={ethBalance}
-                  ethDecimals={ethDecimals}
-                  ethiBalance={ethiBalance}
-                  ethiDecimals={ethiDecimals}
-                  userProvider={userProvider}
-                  VAULT_ABI={VAULT_ABI}
-                  IERC20_ABI={IERC20_ABI}
-                  VAULT_ADDRESS={VAULT_ADDRESS}
-                  ETH_ADDRESS={ETH_ADDRESS}
-                  vaultBufferBalance={vaultBufferBalance}
-                  vaultBufferDecimals={vaultBufferDecimals}
-                  isBalanceLoading={isBalanceLoading}
-                  reloadBalance={loadCoinsBalance}
-                  minimumInvestmentAmount={minimumInvestmentAmount}
-                />
-              </GridItem>
-            )}
-            {current === INVEST_TAB.withdraw && (
-              <GridItem xs={9} sm={9} md={7}>
-                <div className={classes.wrapper}>
-                  <Withdraw
-                    address={address}
-                    ethiBalance={ethiBalance}
-                    ethiDecimals={ethiDecimals}
-                    userProvider={userProvider}
-                    VAULT_ADDRESS={VAULT_ADDRESS}
-                    ETH_ADDRESS={ETH_ADDRESS}
-                    VAULT_ABI={VAULT_ABI}
-                    IERC20_ABI={IERC20_ABI}
-                    PRICE_ORCALE_ABI={PRICE_ORCALE_ABI}
-                    isBalanceLoading={isBalanceLoading}
-                    reloadBalance={loadCoinsBalance}
-                    exchangeManager={exchangeManager}
-                    EXCHANGE_ADAPTER_ABI={EXCHANGE_ADAPTER_ABI}
-                    EXCHANGE_AGGREGATOR_ABI={EXCHANGE_AGGREGATOR_ABI}
-                  />
-                </div>
-              </GridItem>
-            )}
-            {current === INVEST_TAB.account && (
-              <GridItem xs={9} sm={9} md={9}>
-                <MyStatement
-                  address={address}
-                  chain={`${CHAIN_ID}`}
-                  VAULT_ADDRESS={VAULT_ADDRESS}
-                  type={'ETHi'}
-                  balance={ethiBalance}
-                  vaultBufferBalance={vaultBufferBalance}
-                  tokenAddress={ETHI_ADDRESS}
-                  tokenDecimal={ethiDecimals}
-                />
-              </GridItem>
-            )}
-          </>
-        )}
+        {renderBody()}
       </GridContainer>
     </div>
   )

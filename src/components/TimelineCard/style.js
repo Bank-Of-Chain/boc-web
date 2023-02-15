@@ -23,7 +23,7 @@ const style = {
     height: '100%',
     margin: 0,
     padding: '24px 36px',
-    justifycontent: 'center',
+    justifyContent: 'center',
     alignItems: 'center',
     textAlign: 'center',
     backgroundColor: '#313036',
