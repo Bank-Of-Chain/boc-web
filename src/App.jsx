@@ -34,6 +34,7 @@ const Home = lazy(() => import('./pages/Home/index'))
 const InvestNew = lazy(() => import('./pages/InvestNew/index'))
 const Ethi = lazy(() => import('./pages/Ethi/index'))
 const Team = lazy(() => import('./pages/Team/index'))
+const Lend = lazy(() => import('./pages/Lend/index'))
 
 const useStyles = makeStyles(theme => ({
   backdrop: {
@@ -302,6 +303,19 @@ function App() {
             >
               <Frame {...nextProps}>
                 <Team {...nextProps} />
+              </Frame>
+            </Suspense>
+          </Route>
+          <Route exact path="/lend">
+            <Suspense
+              fallback={
+                <Backdrop className={classes.backdrop} open>
+                  <CircularProgress color="inherit" />
+                </Backdrop>
+              }
+            >
+              <Frame {...nextProps}>
+                <Lend {...nextProps} />
               </Frame>
             </Suspense>
           </Route>

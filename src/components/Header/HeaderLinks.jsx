@@ -25,7 +25,7 @@ import get from 'lodash/get'
 import find from 'lodash/find'
 import { isInMobileWalletApp, isInMobileH5 } from '@/helpers/plugin-util'
 import { isMarketingHost } from '@/helpers/location'
-import { useLocation } from 'react-router-dom'
+import { useLocation, useHistory } from 'react-router-dom'
 
 // === Constants === //
 import { NET_WORKS, DASHBOARD_URL, DOCUMENT_URL, CHAIN_ID, LEGACYS, POLYGON_HIDDEN } from '@/constants'
@@ -39,6 +39,7 @@ export default function HeaderLinks(props) {
   const [walletModalVisible, setWalletModalVisible] = useState(false)
   const classes = useStyles()
   const dispatch = useDispatch()
+  const history = useHistory()
   const connectTimer = useRef(null)
   const { pathname } = useLocation()
 
@@ -118,6 +119,26 @@ export default function HeaderLinks(props) {
           <Button color="colorful-text" target="_blank" href={dashboardUrlRender()} disableRipple={true}>
             Dashboard
           </Button>
+        </ListItem>
+        <ListItem className={classes.listItem}>
+          <CustomDropdown
+            buttonText="Products"
+            buttonProps={{
+              className: classes.navLink,
+              color: 'transparent'
+            }}
+            dropdownList={[
+              <a key="usdi" target="_blank" className={classes.dropdownLink} rel="noreferrer" onClick={() => history.push('/usdi')}>
+                USDi
+              </a>,
+              <a key="ethi" target="_blank" className={classes.dropdownLink} rel="noreferrer" onClick={() => history.push('/ethi')}>
+                ETHi
+              </a>,
+              <a key="lend" target="_blank" className={classes.dropdownLink} rel="noreferrer" onClick={() => history.push('/lend')}>
+                Lending Pools
+              </a>
+            ]}
+          />
         </ListItem>
         <ListItem className={classes.listItem}>
           <Button color="colorful-text" target="_blank" href={DOCUMENT_URL} disableRipple={true}>

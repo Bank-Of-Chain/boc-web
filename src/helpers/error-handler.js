@@ -1,3 +1,5 @@
+import isEqual from 'lodash/isEqual'
+
 /**
  * analysis text in error
  * @param {*} error
@@ -6,19 +8,19 @@
 export const errorTextOutput = error => {
   let errorMsg = error.toString()
   if (error?.reason) {
-    errorMsg = error.reason
+    return error.reason
   }
   if (error?.message) {
-    errorMsg = error.message
+    return error.message
   }
   if (error?.data?.message) {
-    errorMsg = error.data.message
+    return error.data.message
   }
   if (error?.error?.data?.originalError?.message) {
-    errorMsg = error.error.data.originalError.message
+    return error.error.data.originalError.message
   }
   if (error?.error?.data?.message) {
-    errorMsg = error.error.data.message
+    return error.error.data.message
   }
   return errorMsg
 }
@@ -115,4 +117,247 @@ export const isLessThanMinValue = (errorMsg = '') => {
  */
 export const isTransferNotEnough = (errorMsg = '') => {
   return errorMsg.endsWith("'ERC20: transfer amount exceeds allowance'")
+}
+
+/**
+ *
+ * @param {*} errorMsg
+ * @returns
+ */
+export const isNotAllowedLeverageFactor = (errorMsg = '') => {
+  return errorMsg.endsWith("'NotAllowedLeverageFactor()'")
+}
+
+/**
+ *
+ * @param {*} errorMsg
+ * @returns
+ */
+export const isNotAllowedWhenNotExpirableException = (errorMsg = '') => {
+  return errorMsg.endsWith("'NotAllowedWhenNotExpirableException()'")
+}
+
+/**
+ *
+ * @param {*} errorMsg
+ * @returns
+ */
+export const isNotAllowedInWhitelistedMode = (errorMsg = '') => {
+  return errorMsg.endsWith("'NotAllowedInWhitelistedMode()'")
+}
+
+/**
+ *
+ * @param {*} errorMsg
+ * @returns
+ */
+export const isAccountTransferNotAllowedException = (errorMsg = '') => {
+  return errorMsg.endsWith("'AccountTransferNotAllowedException()'")
+}
+
+/**
+ *
+ * @param {*} errorMsg
+ * @returns
+ */
+export const isCantLiquidateWithSuchHealthFactorException = (errorMsg = '') => {
+  return errorMsg.endsWith("'CantLiquidateWithSuchHealthFactorException()'")
+}
+
+/**
+ *
+ * @param {*} errorMsg
+ * @returns
+ */
+export const isCantLiquidateNonExpiredException = (errorMsg = '') => {
+  return errorMsg.endsWith("'CantLiquidateNonExpiredException()'")
+}
+
+/**
+ *
+ * @param {*} errorMsg
+ * @returns
+ */
+export const isIncorrectCallDataException = (errorMsg = '') => {
+  return errorMsg.endsWith("'IncorrectCallDataException()'")
+}
+
+/**
+ *
+ * @param {*} errorMsg
+ * @returns
+ */
+export const isForbiddenDuringClosureException = (errorMsg = '') => {
+  return errorMsg.endsWith("'ForbiddenDuringClosureException()'")
+}
+
+/**
+ *
+ * @param {*} errorMsg
+ * @returns
+ */
+export const isIncreaseAndDecreaseForbiddenInOneCallException = (errorMsg = '') => {
+  return errorMsg.endsWith("'IncreaseAndDecreaseForbiddenInOneCallException()'")
+}
+
+/**
+ *
+ * @param {*} errorMsg
+ * @returns
+ */
+export const isUnknownMethodException = (errorMsg = '') => {
+  return errorMsg.endsWith("'UnknownMethodException()'")
+}
+
+/**
+ *
+ * @param {*} errorMsg
+ * @returns
+ */
+export const isIncreaseDebtForbiddenException = (errorMsg = '') => {
+  return errorMsg.endsWith("'IncreaseDebtForbiddenException()'")
+}
+
+/**
+ *
+ * @param {*} errorMsg
+ * @returns
+ */
+export const isCantTransferLiquidatableAccountException = (errorMsg = '') => {
+  return errorMsg.endsWith("'CantTransferLiquidatableAccountException()'")
+}
+
+/**
+ *
+ * @param {*} errorMsg
+ * @returns
+ */
+export const isBorrowedBlockLimitException = (errorMsg = '') => {
+  return errorMsg.endsWith("'BorrowedBlockLimitException()'")
+}
+
+/**
+ *
+ * @param {*} errorMsg
+ * @returns
+ */
+export const isBorrowAmountOutOfLimitsException = (errorMsg = '') => {
+  return errorMsg.endsWith("'BorrowAmountOutOfLimitsException()'")
+}
+
+/**
+ *
+ * @param {*} errorMsg
+ * @returns
+ */
+export const isBalanceLessThanMinimumDesiredException = (errorMsg = '') => {
+  return errorMsg.endsWith("'BalanceLessThanMinimumDesiredException()'")
+}
+
+/**
+ *
+ * @param {*} errorMsg
+ * @returns
+ */
+export const isOpenAccountNotAllowedAfterExpirationException = (errorMsg = '') => {
+  return errorMsg.endsWith("'OpenAccountNotAllowedAfterExpirationException()'")
+}
+
+/**
+ *
+ * @param {*} errorMsg
+ * @returns
+ */
+export const isExpectedBalancesAlreadySetException = (errorMsg = '') => {
+  return errorMsg.endsWith("'ExpectedBalancesAlreadySetException()'")
+}
+
+/**
+ *
+ * @param {*} errorMsg
+ * @returns
+ */
+export const isActionProhibitedWithForbiddenTokensException = (errorMsg = '') => {
+  return errorMsg.endsWith("'ActionProhibitedWithForbiddenTokensException()'")
+}
+
+/**
+ *
+ * @param {*} errorMsg
+ * @returns
+ */
+export const isCantWithdrawException = (errorMsg = '') => {
+  return errorMsg.endsWith("'CantWithdrawException()'")
+}
+
+/**
+ *
+ * @param {*} errorMsg
+ * @returns
+ */
+export const isBorrowNotEnough = (errorMsg = '') => {
+  return errorMsg.endsWith("'5'")
+}
+
+/**
+ *
+ * @param {*} errorMsg
+ * @returns
+ */
+export const isPoolConnectedCreditManagersOnly = (errorMsg = '') => {
+  return errorMsg.endsWith("'LP0'")
+}
+
+/**
+ *
+ * @param {*} errorMsg
+ * @returns
+ */
+export const isPoolIncompatibleCreditAccountManager = (errorMsg = '') => {
+  return errorMsg.endsWith("'LP1'")
+}
+
+/**
+ *
+ * @param {*} errorMsg
+ * @returns
+ */
+export const isPoolMoreThanExpectedLiquidityLimit = (errorMsg = '') => {
+  return errorMsg.endsWith("'LP2'")
+}
+
+/**
+ *
+ * @param {*} errorMsg
+ * @returns
+ */
+export const isPoolReserveInsufficient = (errorMsg = '') => {
+  return errorMsg.endsWith("'LP3'")
+}
+
+/**
+ *
+ * @param {*} errorMsg
+ * @returns
+ */
+export const isPoolIncorrectWithdrawFee = (errorMsg = '') => {
+  return errorMsg.endsWith("'LP4'")
+}
+
+/**
+ *
+ * @param {*} errorMsg
+ * @returns
+ */
+export const isPoolCantAddCreditManagerTwice = (errorMsg = '') => {
+  return errorMsg.endsWith("'LP5'")
+}
+
+/**
+ *
+ * @param {*} errorMsg
+ * @returns
+ */
+export const isNotSupport = (errorMsg = '') => {
+  return isEqual(errorMsg, 'NS') || errorMsg.endsWith("'NS'")
 }

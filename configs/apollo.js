@@ -47,6 +47,10 @@ const start = async () => {
     const ETHI_VAULT = data['boc.networks.ethi.vaultAddress'] || ''
     const ETHI_FOR_ETH = data['boc.networks.ethi.pegTokenAddress'] || ''
     const VAULT_BUFFER_FOR_ETHI_ETH = data['boc.networks.ethi.vaultBufferAddress'] || ''
+    const POOL_SERVICE_ADDRESS = data['boc.networks.ethi.poolService'] || ''
+    const CREDIT_FACADE_ADDRESS = data['boc.networks.ethi.creditFacade'] || ''
+    const DIESEL_ADDRESS = data['boc.networks.ethi.dieselToken'] || ''
+
     let config = {
       env: nextEnv,
       LOCAL_CHAIN_CONFIG: nextChain,
@@ -66,7 +70,10 @@ const start = async () => {
       RPC_FOR_31337: getRpcFor31337(),
       KEEPER_FOR_ETH_ETHI: getKeeperForEthEthi(),
       KEEPER_FOR_ETH_USDI: getKeeperForEthUsdi(),
-      KEEPER_FOR_MATIC_USDI: getKeeperForMaticUsdi()
+      KEEPER_FOR_MATIC_USDI: getKeeperForMaticUsdi(),
+      POOL_SERVICE_ADDRESS,
+      CREDIT_FACADE_ADDRESS,
+      DIESEL_ADDRESS
     }
 
     fs.writeFileSync(`./configs/address.json`, JSON.stringify(config, undefined, 2))
