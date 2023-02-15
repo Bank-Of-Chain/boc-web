@@ -45,7 +45,7 @@ const useStyles = makeStyles(theme => ({
   modal: {
     display: 'flex',
     alignItems: 'center',
-    justifyContent: 'center',
+    justifycontent: 'center',
     '& .MuiPaper-root': {
       minWidth: 430,
       minHeight: 120,

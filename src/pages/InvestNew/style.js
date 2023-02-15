@@ -29,7 +29,7 @@ const componentsStyle = () => ({
     display: 'flex',
     marginTop: '0.5rem',
     alignItems: 'center',
-    justifyContent: 'flex-start',
+    justifycontent: 'flex-start',
     textAlign: 'left',
     padding: '2.8125rem 2.4375rem',
     background: 'linear-gradient(111.68deg, rgba(87, 97, 125, 0.2) 7.59%, rgba(255, 255, 255, 0.078) 102.04%)',
@@ -48,7 +48,7 @@ const componentsStyle = () => ({
   balanceCardValue: {
     display: 'flex',
     alignItems: 'center',
-    justifyContent: 'flex-start',
+    justifycontent: 'flex-start',
     height: 30,
     lineHeight: '30px',
     fontSize: 26,
@@ -83,7 +83,7 @@ const componentsStyle = () => ({
   modal: {
     display: 'flex',
     alignItems: 'center',
-    justifyContent: 'center'
+    justifycontent: 'center'
   },
   modalBody: {
     textAlign: 'center'
@@ -99,7 +99,7 @@ const componentsStyle = () => ({
     display: 'flex',
     flexDirection: 'column',
     height: '20rem',
-    justifyContent: 'center',
+    justifycontent: 'center',
     alignItems: 'center',
     borderRadius: '1.25rem',
     background: 'linear-gradient(111.68deg, rgba(87, 97, 125, 0.2) 7.59%, rgba(255, 255, 255, 0.078) 102.04%)',

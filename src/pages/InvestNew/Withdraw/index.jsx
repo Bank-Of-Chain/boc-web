@@ -527,7 +527,7 @@ export default function Withdraw({
         </GridItem>
         {address && (
           <GridItem xs={6} sm={6} md={6} lg={6}>
-            <p className={classes.estimateText} style={{ justifyContent: 'flex-end' }} title={toFixed(pegTokenPrice, BN_18)}>
+            <p className={classes.estimateText} style={{ justifycontent: 'flex-end' }} title={toFixed(pegTokenPrice, BN_18)}>
               <span>1 USDi ≈ {toFixed(pegTokenPrice, BN_18, 6)} USD</span>
             </p>
           </GridItem>

@@ -22,7 +22,7 @@ const headerStyle = {
     transition: 'all 150ms ease 0s',
     alignItems: 'center',
     flexFlow: 'row nowrap',
-    justifyContent: 'flex-start',
+    justifycontent: 'flex-start',
     position: 'relative',
     zIndex: 'unset'
   },
@@ -38,7 +38,7 @@ const headerStyle = {
     minHeight: '50px',
     flex: '1',
     alignItems: 'center',
-    justifyContent: 'space-between',
+    justifycontent: 'space-between',
     display: 'flex',
     flexWrap: 'nowrap',
     width: '100%',

@@ -3,7 +3,7 @@ const componentsStyle = () => ({
     display: 'flex',
     flexDirection: 'column',
     height: '20rem',
-    justifyContent: 'center',
+    justifycontent: 'center',
     alignItems: 'center',
     borderRadius: '1.25rem',
     background: 'linear-gradient(111.68deg, rgba(87, 97, 125, 0.2) 7.59%, rgba(255, 255, 255, 0.078) 102.04%)',
@@ -15,7 +15,7 @@ const componentsStyle = () => ({
   modal: {
     display: 'flex',
     alignItems: 'center',
-    justifyContent: 'center',
+    justifycontent: 'center',
     marginLeft: '55px'
   },
   depositModal: {
@@ -40,7 +40,7 @@ const componentsStyle = () => ({
     alignItems: 'center',
     padding: '1rem',
     borderRadius: '10px',
-    justifyContent: 'flex-start'
+    justifycontent: 'flex-start'
   },
   title: {
     letterSpacing: '1px',
@@ -65,13 +65,13 @@ const componentsStyle = () => ({
     border: '1px solid #A68EFE',
     display: 'flex',
     alignItems: 'center',
-    justifyContent: 'space-between',
+    justifycontent: 'space-between',
     marginBottom: '1rem'
   },
   liTitle: {
     display: 'flex',
     alignItems: 'center',
-    justifyContent: 'space-between'
+    justifycontent: 'space-between'
   },
   value: {
     marginRight: '2rem'

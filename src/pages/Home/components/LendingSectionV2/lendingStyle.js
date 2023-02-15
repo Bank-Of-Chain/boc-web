@@ -1,7 +1,7 @@
 const lendingSectionStyle = {
   section: {
     margin: '0 auto',
-    padding: '11.5625rem 0',
+    padding: '3rem 0 11.5625rem 0',
     maxWidth: '68.75rem'
   },
   text: {
@@ -31,7 +31,7 @@ const lendingSectionStyle = {
     height: '18.75rem',
     display: 'flex',
     alignItems: 'flex-end',
-    justifyContent: 'center'
+    justifycontent: 'center'
   },
   usdiBar: {
     background: '#7E6DD2',
@@ -86,12 +86,12 @@ const lendingSectionStyle = {
   switchWrapper: {
     display: 'flex',
     alignItems: 'center',
-    justifyContent: 'flex-start'
+    justifycontent: 'flex-start'
   },
   symbolWrapper: {
     display: 'flex',
     alignItems: 'center',
-    justifyContent: 'flex-end'
+    justifycontent: 'flex-end'
   },
   box: {
     height: '1.375rem',

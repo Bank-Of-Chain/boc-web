@@ -62,7 +62,7 @@ const headerLinksStyle = theme => ({
       marginTop: '8px',
       textAlign: 'left',
       '& > span:first-child': {
-        justifyContent: 'flex-start'
+        justifycontent: 'flex-start'
       }
     }
   },
