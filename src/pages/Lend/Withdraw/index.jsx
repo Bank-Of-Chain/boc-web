@@ -243,7 +243,7 @@ const Withdraw = ({ userProvider, onCancel, POOL_SERVICE_ADDRESS, POOL_SERVICE_A
             </GridItem>
             {address && (
               <GridItem xs={6} sm={6} md={6} lg={6}>
-                <p className={classes.estimateText} style={{ justifycontent: 'flex-end' }} title={toFixed(fromDiesel, BN_18)}>
+                <p className={classes.estimateText} style={{ justifyContent: 'flex-end' }} title={toFixed(fromDiesel, BN_18)}>
                   <span>1 Diesel Token = {toFixed(fromDiesel, BN_18, 2)}WETH</span>
                 </p>
               </GridItem>

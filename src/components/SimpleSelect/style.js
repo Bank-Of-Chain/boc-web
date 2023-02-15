@@ -6,7 +6,7 @@ const style = {
   },
   selectTrigger: {
     display: 'flex',
-    justifycontent: 'space-between',
+    justifyContent: 'space-between',
     alignItems: 'center',
     height: '100%',
     cursor: 'pointer',
@@ -56,7 +56,7 @@ const style = {
     alignItems: 'center',
     padding: '0 24px',
     cursor: 'pointer',
-    justifycontent: 'space-between',
+    justifyContent: 'space-between',
 
     '&:hover': {
       background: '#323438'

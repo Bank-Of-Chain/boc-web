@@ -40,7 +40,7 @@ const style = {
     padding: '14px 24px',
     marginBottom: 24,
     borderRadius: 5,
-    justifycontent: 'flex-start',
+    justifyContent: 'flex-start',
     textTransform: 'none',
     fontSize: '16px',
     background: 'transparent',

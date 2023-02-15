@@ -7,7 +7,7 @@ const loaddingCom = (
     style={{
       display: 'flex',
       alignItems: 'center',
-      justifycontent: 'center',
+      justifyContent: 'center',
       minHeight: 20,
       fontSize: 14
     }}
