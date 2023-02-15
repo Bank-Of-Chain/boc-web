@@ -32,14 +32,14 @@ export default function Home() {
   useEffect(() => {
     getHomePageData().then(data => {
       const { totalValueLocked, holders } = data
-      setTvl(numeral(toFixed(totalValueLocked, BN_18)).format('0,0 a'))
+      setTvl(numeral(toFixed(totalValueLocked, BN_18)).format('0.0 a'))
       setHolders(numeral(holders).format('0,0'))
     })
   }, [])
 
   return (
     <div className={classes.container}>
-      <GridContainer style={{ display: 'none' }}>
+      <GridContainer>
         <GridItem xs={12} sm={12} md={12} className={isLayoutSm ? classes.gridMobile : classes.grid}>
           <h1 className={isLayoutSm ? classes.titleMobile : classes.title}>The Multichain</h1>
           <h1 className={isLayoutSm ? classes.titleMobile : classes.title}>Yield Optimizer</h1>
@@ -67,9 +67,8 @@ export default function Home() {
           </p>
         </GridItem>
       </GridContainer>
-      <LendingSection />
       <ProductSection />
-      {/* <LendingSection /> */}
+      <LendingSection />
       <YieldSection />
       <AmmSection />
       <SupportMembers />

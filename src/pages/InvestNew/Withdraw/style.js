@@ -17,7 +17,7 @@ const componentsStyle = () => ({
   modal: {
     display: 'flex',
     alignItems: 'center',
-    justifycontent: 'center'
+    justifyContent: 'center'
   },
   modalBody: {
     textAlign: 'center'
@@ -64,18 +64,18 @@ const componentsStyle = () => ({
   },
   inputLabelWrapper: {
     display: 'flex',
-    justifycontent: 'space-between',
+    justifyContent: 'space-between',
     alignItems: 'center'
   },
   selectorlWrapper: {
     display: 'flex',
-    justifycontent: 'space-between',
+    justifyContent: 'space-between',
     alignItems: 'center',
     padding: '1rem 0'
   },
   depositComfirmArea: {
     display: 'flex',
-    justifycontent: 'space-between'
+    justifyContent: 'space-between'
   },
   tokenInfo: {
     display: 'flex',
@@ -185,7 +185,7 @@ const componentsStyle = () => ({
   },
   itemTop: {
     display: 'flex',
-    justifycontent: 'center',
+    justifyContent: 'center',
     alignItems: 'center',
     padding: '1.25rem',
     borderRadius: '1.25rem 1.25rem 0 0',
