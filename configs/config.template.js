@@ -15,6 +15,10 @@ const VAULT_BUFFER_FOR_ETHI_ETH = '{{VAULT_BUFFER_FOR_ETHI_ETH}}'
 const VAULT_BUFFER_FOR_USDI_ETH = '{{VAULT_BUFFER_FOR_USDI_ETH}}'
 const VAULT_BUFFER_FOR_USDI_MATIC = '{{VAULT_BUFFER_FOR_USDI_MATIC}}'
 
+const POOL_SERVICE_ADDRESS = '{{POOL_SERVICE_ADDRESS}}'
+const DIESEL_ADDRESS = '{{DIESEL_ADDRESS}}'
+const CREDIT_FACADE_ADDRESS = '{{CREDIT_FACADE_ADDRESS}}'
+
 const configBase = {
   env: '{{env}}',
   usdt_address: '0xdAC17F958D2ee523a2206206994597C13D831ec7',
@@ -127,7 +131,16 @@ const config1 = {
       abi_version: 'ethi-v1.6.9',
       VAULT_ADDRESS: ETHI_VAULT,
       ETHI_ADDRESS: ETHI_FOR_ETH,
-      VAULT_BUFFER_ADDRESS: VAULT_BUFFER_FOR_ETHI_ETH
+      VAULT_BUFFER_ADDRESS: VAULT_BUFFER_FOR_ETHI_ETH,
+      CREDIT_FACADE_ADDRESS: CREDIT_FACADE_ADDRESS
+    },
+    {
+      id: 'lend',
+      name: 'lending pool',
+      path: '#/lend',
+      abi_version: 'ethi-v1.6.0',
+      POOL_SERVICE_ADDRESS: POOL_SERVICE_ADDRESS,
+      DIESEL_ADDRESS: DIESEL_ADDRESS
     }
   ]
 }

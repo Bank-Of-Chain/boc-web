@@ -15,6 +15,9 @@ const VAULT_BUFFER_FOR_ETHI_ETH = '0xC8915157b36ed6D0F36827a1Bb5E9b0cDd1e87Cd'
 const VAULT_BUFFER_FOR_USDI_ETH = '0x0b8D3634a05cc6b50E4D026c0eaFa8469cA98480'
 const VAULT_BUFFER_FOR_USDI_MATIC = ''
 
+const POOL_ADDRESS = ''
+const CREDIT_POOL_ADDRESS = ''
+
 const configBase = {
   env: 'pr02-sg',
   usdt_address: '0xdAC17F958D2ee523a2206206994597C13D831ec7',
@@ -128,6 +131,20 @@ const config1 = {
       VAULT_ADDRESS: ETHI_VAULT,
       ETHI_ADDRESS: ETHI_FOR_ETH,
       VAULT_BUFFER_ADDRESS: VAULT_BUFFER_FOR_ETHI_ETH
+    },
+    {
+      id: 'lend',
+      name: 'lending pool',
+      path: '#/lend',
+      abi_version: 'usdi-v1.6.0',
+      POOL_ADDRESS: POOL_ADDRESS
+    },
+    {
+      id: 'lever',
+      name: 'risk-on lever',
+      path: '#/risk-on',
+      abi_version: 'usdi-v1.6.0',
+      CREDIT_POOL_ADDRESS: CREDIT_POOL_ADDRESS
     }
   ]
 }

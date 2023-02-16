@@ -206,6 +206,10 @@ function Invest(props) {
     return listener()
   }, [address, VAULT_ADDRESS, VAULT_ABI, userProvider])
 
+  useEffect(() => {
+    setCurrent(INVEST_TAB.account)
+  }, [])
+
   const loadTotalAssets = () => {
     const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider)
     return vaultContract.totalAssetsIncludeVaultBuffer()
