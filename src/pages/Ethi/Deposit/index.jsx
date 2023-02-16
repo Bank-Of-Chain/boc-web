@@ -32,7 +32,7 @@ import Button from '@/components/CustomButtons/Button'
 // === Utils === //
 import noop from 'lodash/noop'
 import { getLastPossibleRebaseTime } from '@/helpers/time-util'
-import { isAd, isEs, isRp, isDistributing, errorTextOutput, isLessThanMinValue, isNotSupport } from '@/helpers/error-handler'
+import { isAd, isEs, isRp, isDistributing, errorTextOutput, isLessThanMinValue, isAi, isRLTM, isNotSupport } from '@/helpers/error-handler'
 import { BN_18 } from '@/constants/big-number'
 import { MULTIPLE_OF_GAS, MAX_GAS_LIMIT } from '@/constants'
 import { warmDialog } from '@/reducers/meta-reducer'
@@ -84,10 +84,10 @@ export default function Deposit({
 
   const nextRebaseTime = getLastPossibleRebaseTime()
   const decimal = BigNumber.from(10).pow(ethiDecimals)
-  const [tvl, setTvl] = useState('-')
+  const [tvl, setTvl] = useState('0')
   const [fullTvl, setFullTvl] = useState('')
   const [tvlSymbol, setTvlSymbol] = useState('')
-  const [apy, setApy] = useState('-')
+  const [apy, setApy] = useState('0')
 
   const getGasFee = () => {
     if (!gasPriceCurrent) {
@@ -184,7 +184,7 @@ export default function Deposit({
         tip = 'Vault is in rebase status, please try again later!'
       } else if (isDistributing(errorMsg)) {
         tip = 'Vault is in distributing, please try again later!'
-      } else if (isLessThanMinValue(errorMsg)) {
+      } else if (isLessThanMinValue(errorMsg) || isAi(errorMsg) || isRLTM(errorMsg)) {
         tip = `Deposit Amount must be greater than ${toFixed(minimumInvestmentAmount, BN_18, 2)}ETH!`
       } else if (isNotSupport(errorMsg)) {
         tip = 'not support'
@@ -262,7 +262,7 @@ export default function Deposit({
           tip = 'Vault is in rebase status, please try again later!'
         } else if (isDistributing(errorMsg)) {
           tip = 'Vault is in distributing, please try again later!'
-        } else if (isLessThanMinValue(errorMsg)) {
+        } else if (isLessThanMinValue(errorMsg) || isAi(errorMsg) || isRLTM(errorMsg)) {
           tip = `Deposit Amount must be greater than ${toFixed(minimumInvestmentAmount, BN_18, 2)}ETH!`
         } else if (isNotSupport(errorMsg)) {
           tip = 'not support'

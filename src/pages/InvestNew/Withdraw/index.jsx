@@ -33,7 +33,7 @@ import { USDC_ADDRESS, DAI_ADDRESS } from '@/constants/tokens'
 import { BN_18 } from '@/constants/big-number'
 
 // === Hooks === //
-import useRedeemFeeBps from '@/hooks/useRedeemFeeBps'
+import useVault from '@/hooks/useVault'
 
 // === Utils === //
 import isUndefined from 'lodash/isUndefined'
@@ -43,7 +43,7 @@ import debounce from 'lodash/debounce'
 import compact from 'lodash/compact'
 import isEmpty from 'lodash/isEmpty'
 import isNumber from 'lodash/isNumber'
-import { isAd, isEs, isRp, isMaxLoss, isLossMuch, isExchangeFail, errorTextOutput } from '@/helpers/error-handler'
+import { isAd, isEs, isRp, isMaxLoss, isLossMuch, isExchangeFail, errorTextOutput, isRi } from '@/helpers/error-handler'
 
 // === Styles === //
 import styles from './style'
@@ -101,11 +101,7 @@ export default function Withdraw({
   const [isShowZipModal, setIsShowZipModal] = useState(false)
   const [pegTokenPrice, setPegTokenPrice] = useState(BN_18)
 
-  const { value: redeemFeeBps } = useRedeemFeeBps({
-    userProvider,
-    VAULT_ADDRESS,
-    VAULT_ABI
-  })
+  const { redeemFeeBps, trusteeFeeBps } = useVault(VAULT_ADDRESS, VAULT_ABI, userProvider)
 
   const redeemFeeBpsPercent = redeemFeeBps.toNumber() / 100
 
@@ -125,7 +121,7 @@ export default function Withdraw({
       const vaultContractWithSigner = vaultContract.connect(signer)
 
       try {
-        let [tokens, amounts] = await vaultContractWithSigner.callStatic.burn(nextValue, allowMaxLossValue)
+        let [tokens, amounts] = await vaultContractWithSigner.callStatic.burn(nextValue, allowMaxLossValue, redeemFeeBps, trusteeFeeBps)
         console.log(
           'tokens, amounts=',
           tokens,
@@ -167,6 +163,8 @@ export default function Withdraw({
           tip = 'Failed to exchange, please increase the exchange slippage or choose mixed token!'
         } else if (isExchangeFail(errorMsg)) {
           tip = 'Failed to exchange, Please try again later or choose mixed token!'
+        } else if (isRi(errorMsg)) {
+          tip = 'RedeemFeeBps data invalid!'
         } else {
           tip = errorMsg
         }
@@ -257,17 +255,17 @@ export default function Withdraw({
       let tx
       // if gasLimit times not 1, need estimateGas
       if (isNumber(MULTIPLE_OF_GAS) && MULTIPLE_OF_GAS !== 1) {
-        const gas = await vaultContractWithSigner.estimateGas.burn(nextValue, allowMaxLossValue)
+        const gas = await vaultContractWithSigner.estimateGas.burn(nextValue, allowMaxLossValue, redeemFeeBps, trusteeFeeBps)
         setCurrentStep(3)
         estimateGasFinish = Date.now()
         const gasLimit = Math.ceil(gas * MULTIPLE_OF_GAS)
         // gasLimit not exceed maximum
         const maxGasLimit = gasLimit < MAX_GAS_LIMIT ? gasLimit : MAX_GAS_LIMIT
-        tx = await vaultContractWithSigner.burn(nextValue, allowMaxLossValue, {
+        tx = await vaultContractWithSigner.burn(nextValue, allowMaxLossValue, redeemFeeBps, trusteeFeeBps, {
           gasLimit: maxGasLimit
         })
       } else {
-        tx = await vaultContractWithSigner.burn(nextValue, allowMaxLossValue)
+        tx = await vaultContractWithSigner.burn(nextValue, allowMaxLossValue, redeemFeeBps, trusteeFeeBps)
       }
       withdrawFinish = Date.now()
 
@@ -307,6 +305,8 @@ export default function Withdraw({
         tip = 'Failed to exchange, please increase the exchange slippage or choose mixed token!'
       } else if (isExchangeFail(errorMsg)) {
         tip = 'Failed to exchange, Please try again later or choose mixed token!'
+      } else if (isRi(errorMsg)) {
+        tip = 'RedeemFeeBps data invalid!'
       } else {
         tip = errorMsg
       }
