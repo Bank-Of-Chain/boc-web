@@ -25,7 +25,7 @@ import SimpleSelect from '@/components/SimpleSelect'
 
 // === Hooks === //
 import { warmDialog } from '@/reducers/meta-reducer'
-// import useRedeemFeeBps from '@/hooks/useRedeemFeeBps'
+import useVault from '@/hooks/useVault'
 import usePriceProvider from '@/hooks/usePriceProvider'
 
 // === Utils === //
@@ -69,8 +69,6 @@ export default function Withdraw({
   isBalanceLoading,
   reloadBalance,
   PRICE_ORCALE_ABI,
-  redeemFeeBps,
-  trusteeFeeBps
 }) {
   const classes = useStyles()
   const dispatch = useDispatch()
@@ -100,11 +98,7 @@ export default function Withdraw({
 
   const [pegTokenPrice, setPegTokenPrice] = useState(BN_18)
 
-  // const { value: redeemFeeBps } = useRedeemFeeBps({
-  //   userProvider,
-  //   VAULT_ADDRESS,
-  //   VAULT_ABI
-  // })
+  const { redeemFeeBps, trusteeFeeBps } = useVault(VAULT_ADDRESS, VAULT_ABI, userProvider)
 
   const { getPriceProvider } = usePriceProvider({
     userProvider,

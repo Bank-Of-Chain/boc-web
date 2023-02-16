@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 
 // === Utils === //
 import * as ethers from 'ethers'
@@ -18,17 +18,16 @@ const useVault = (VAULT_ADDRESS, VAULT_ABI, userProvider) => {
   const [rebaseThreshold, setRebaseThreshold] = useState(ethers.BigNumber.from(0))
   const [underlyingUnitsPerShare, setUnderlyingUnitsPerShare] = useState(ethers.BigNumber.from(0))
   const [minimumInvestmentAmount, setMinimumInvestmentAmount] = useState(ethers.BigNumber.from(0))
-
   const [redeemFeeBps, setRedeemFeeBps] = useState(ethers.BigNumber.from(0))
   const [trusteeFeeBps, setTrusteeFeeBps] = useState(ethers.BigNumber.from(0))
 
   const address = useUserAddress(userProvider)
 
-  const valid = () => {
+  const valid = useCallback(() => {
     if (isEmpty(VAULT_ADDRESS)) return new Error('VAULT_ADDRESS is need!')
     if (isEmpty(VAULT_ABI)) return new Error('VAULT_ABI is need!')
     if (isEmpty(userProvider)) return new Error('userProvider is need!')
-  }
+  }, [VAULT_ADDRESS, VAULT_ABI, userProvider])
 
   /**
    * query vault base info
@@ -104,6 +103,26 @@ const useVault = (VAULT_ADDRESS, VAULT_ABI, userProvider) => {
       .finally(() => setLoading(false))
   }
 
+  /**
+   *
+   */
+  const queryRedeemFeeBps = useCallback(() => {
+    const error = valid()
+    if (error) return setError(error)
+    const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider)
+    vaultContract.redeemFeeBps().then(setRedeemFeeBps)
+  }, [valid])
+
+  /**
+   *
+   */
+  const queryTrusteeFeeBps = useCallback(() => {
+    const error = valid()
+    if (error) return setError(error)
+    const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider)
+    vaultContract.trusteeFeeBps().then(setTrusteeFeeBps)
+  }, [valid])
+
   useEffect(() => {
     const error = valid()
     if (error) {
@@ -113,6 +132,9 @@ const useVault = (VAULT_ADDRESS, VAULT_ABI, userProvider) => {
     }
     queryBaseInfo()
   }, [address, VAULT_ADDRESS, VAULT_ABI, userProvider])
+
+  useEffect(queryRedeemFeeBps, [queryRedeemFeeBps])
+  useEffect(queryTrusteeFeeBps, [queryTrusteeFeeBps])
 
   return {
     loading,
@@ -127,6 +149,8 @@ const useVault = (VAULT_ADDRESS, VAULT_ABI, userProvider) => {
     updateRebaseThreshold,
     updateMinimumInvestmentAmount,
     underlyingUnitsPerShare,
+
+    // datas
     redeemFeeBps,
     trusteeFeeBps
   }
