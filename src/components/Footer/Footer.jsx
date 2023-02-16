@@ -136,11 +136,11 @@ export default function Footer(props) {
               <p>
                 Bank of Chain (“BoC”) is a decentralized yield generation protocol designed for the community to invest in the DeFi investment
                 ecosystem. BoC is a non-audited, open-source protocol, which includes a set of smart contracts that are deployed on the Ethereum
-                Blockchain. Your use of the BoC protocol involves various risks, including, but not limited to, losses due to the fluctuation of
-                prices of tokens in a vault, trading pair, liquidity pool, lending contracts, or any other smart contracts (“Risks”). Your use of BoC
-                shall be at your own risk. Please remember to not invest more than what you can afford to lose. Before using BoC, you are expected to
-                review the relevant documentation, ensuring that you fully understand how the BoC protocol works. BoC or its affiliates shall not be
-                liable for any losses you may suffer arising from the use of BoC or due to the Risks.
+                Blockchain and Polygon networks respectively. Your use of the BoC protocol involves various risks, including, but not limited to,
+                losses due to the fluctuation of prices of tokens in a vault, trading pair, liquidity pool, lending contracts, or any other smart
+                contracts (“Risks”). Your use of BoC shall be at your own risk. Please remember to not invest more than what you can afford to lose.
+                Before using BoC, you are expected to review the relevant documentation, ensuring that you fully understand how the BoC protocol
+                works. BoC or its affiliates shall not be liable for any losses you may suffer arising from the use of BoC or due to the Risks.
               </p>
               <p>
                 BOC OR ITS AFFILIATES, MAKE NO REPRESENTATIONS OR WARRANTIES CONCERNING ANY SERVICES, OR FACILITIES PROVIDED UNDER THE BOC PROTOCOL.

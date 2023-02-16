@@ -213,7 +213,7 @@ const useCreditFacade = (CREDIT_FACADE_ADDRESS, CREDIT_FACADE_ABI, userProvider)
         //TODO: add logics
       }
     },
-    [queryCreditAddress, address]
+    [address]
   )
 
   /**
@@ -225,7 +225,7 @@ const useCreditFacade = (CREDIT_FACADE_ADDRESS, CREDIT_FACADE_ABI, userProvider)
         //TODO: add logics
       }
     },
-    [queryCreditAddress, address]
+    [address]
   )
 
   useEffect(() => {
@@ -245,7 +245,7 @@ const useCreditFacade = (CREDIT_FACADE_ADDRESS, CREDIT_FACADE_ABI, userProvider)
       }
     }
     return listener()
-  }, [address, CREDIT_FACADE_ADDRESS, CREDIT_FACADE_ABI, userProvider, handleOpenCreditAccount])
+  }, [address, CREDIT_FACADE_ADDRESS, CREDIT_FACADE_ABI, userProvider, handleOpenCreditAccount, handleAddCollateral, handleRedeemCollateral])
 
   /**
    *

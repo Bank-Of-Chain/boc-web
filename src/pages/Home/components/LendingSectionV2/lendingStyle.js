@@ -1,7 +1,7 @@
 const lendingSectionStyle = {
   section: {
     margin: '0 auto',
-    padding: '3rem 0 11.5625rem 0',
+    padding: '11.5625rem 0',
     maxWidth: '68.75rem'
   },
   text: {

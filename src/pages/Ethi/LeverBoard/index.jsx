@@ -85,21 +85,19 @@ const LeverBoard = props => {
 
   const [isDeposit, setIsDeposit] = useState()
   const [lever, setLever] = useState(2)
-  const [ethiBalance, setEthiBalance] = useState(BigNumber.from(0))
   const [creditAccountEthiBalance, setCreditAccountEthiBalance] = useState(BigNumber.from(0))
   const [vaultBufferBalance, setVaultBufferBalance] = useState(BigNumber.from(0))
 
   const [creditCreateModal, setCreditCreateModal] = useState(false)
   const creditInfo = useCreditFacade(CREDIT_FACADE_ADDRESS, CREDIT_FACADE_ABI, userProvider)
   const { decimals: vaultBufferDecimals, balanceOf: vaultBufferBalanceOf } = useErc20Token(VAULT_BUFFER_ADDRESS, userProvider)
-  const { decimals: ethiDecimals, balanceOf: ethiBalanceOf } = useErc20Token(ETHI_ADDRESS, userProvider)
+  const { decimals: ethiDecimals } = useErc20Token(ETHI_ADDRESS, userProvider)
   const { decimals: wethDecimals } = useErc20Token(WETH_ADDRESS, userProvider)
 
   const {
     decimals,
     isCreditAddressLoading,
     increaseDebt,
-    decreaseDebt,
     hasOpenedCreditAccount,
     creditManagerAddress,
     queryBaseInfo,
@@ -157,10 +155,9 @@ const LeverBoard = props => {
       return 0
     }
     const calcDecimals = BigNumber.from(10).pow(wethDecimals)
-    const totalValue = creditAccountEthiBalance.add(ethiBalance).add(vaultBufferBalance)
-    const currentLeverRadio = toFixed(totalValue.mul(BigNumber.from(10).pow(wethDecimals)).div(collateralAmount), calcDecimals, wethDecimals)
+    const currentLeverRadio = toFixed(balance.mul(BigNumber.from(10).pow(wethDecimals)).div(balance.sub(debtAmount)), calcDecimals, wethDecimals)
     return 1 * currentLeverRadio
-  }, [collateralAmount, creditAccountEthiBalance, ethiBalance, vaultBufferBalance, wethDecimals])
+  }, [collateralAmount, wethDecimals, debtAmount, balance])
 
   /**
    *
@@ -189,11 +186,11 @@ const LeverBoard = props => {
     // lever 当前设置的杠杆率
     const isIncrease = currentLeverRadio > lever
     const callFunc = isIncrease ? v => withdrawFromVault(v, WithdrawFromVault.DECREASE_LEVERAGE) : increaseDebt
-    const leverDecimals = BigNumber.from(10).pow(4)
+    const leverDecimals = BigNumber.from(10).pow(18)
     const newLever = BigNumber.from(BN(lever).multipliedBy(leverDecimals.toString()).toString())
-    const totalValue = creditAccountEthiBalance.add(ethiBalance).add(vaultBufferBalance)
-    const nextValue = totalValue.mul(leverDecimals).sub(totalValue.sub(debtAmount).mul(newLever)).div(leverDecimals).abs()
+    const nextValue = balance.mul(leverDecimals).sub(balance.sub(debtAmount).mul(newLever)).div(leverDecimals).abs()
     callFunc(nextValue)
+      .then(tx => tx.wait())
       .then(() => {
         if (isIncrease) {
           removeFromVaultSuccess(address, WithdrawFromVault.DECREASE_LEVERAGE)
@@ -222,18 +219,7 @@ const LeverBoard = props => {
           )
         }
       })
-  }, [
-    lever,
-    increaseDebt,
-    decreaseDebt,
-    calcCurrentLeverRadio,
-    debtAmount,
-    balance,
-    creditAddress,
-    creditAccountEthiBalance,
-    ethiBalance,
-    vaultBufferBalance
-  ])
+  }, [lever, increaseDebt, calcCurrentLeverRadio, debtAmount, balance, creditAccountEthiBalance, withdrawFromVault, dispatch, address])
 
   const leverageRadioValue = calcCurrentLeverRadio()
 
@@ -297,16 +283,7 @@ const LeverBoard = props => {
     vaultBufferBalanceOf(creditAddress).then(setVaultBufferBalance)
   }, [creditAddress, vaultBufferBalanceOf])
 
-  /**
-   * query the ETHi balance in the CreditAccount before distributing.
-   */
-  const queryEthiBalanceOfInCreditAddress = useCallback(() => {
-    if (isEmpty(creditAddress)) return
-    ethiBalanceOf(creditAddress).then(setEthiBalance)
-  }, [creditAddress, ethiBalanceOf])
-
   useEffect(queryVaultBufferBalanceOfInCreditAddress, [queryVaultBufferBalanceOfInCreditAddress])
-  useEffect(queryEthiBalanceOfInCreditAddress, [queryEthiBalanceOfInCreditAddress])
   useEffect(queryCreditAccountPegTokenAmount, [queryCreditAccountPegTokenAmount])
 
   /**
@@ -382,7 +359,7 @@ const LeverBoard = props => {
   const handleDistributePegTokenTicket = useCallback(() => {
     queryCreditAccountPegTokenAmount()
     queryVaultBufferBalanceOfInCreditAddress()
-  }, [address, queryCreditAccountPegTokenAmount, queryVaultBufferBalanceOfInCreditAddress])
+  }, [queryCreditAccountPegTokenAmount, queryVaultBufferBalanceOfInCreditAddress])
 
   useEffect(() => {
     const listener = () => {
@@ -404,7 +381,18 @@ const LeverBoard = props => {
       }
     }
     return listener()
-  }, [address, CREDIT_FACADE_ADDRESS, CREDIT_FACADE_ABI, userProvider, handleAddCollateral])
+  }, [
+    address,
+    CREDIT_FACADE_ADDRESS,
+    CREDIT_FACADE_ABI,
+    userProvider,
+    handleAddCollateral,
+    handleRedeemCollateral,
+    handleWithdrawFromVault,
+    handleIncreaseBorrowedAmount,
+    handleDistributePegTokenTicket,
+    handleDecreaseBorrowedAmount
+  ])
 
   const debounceSetLever = useCallback(debounce(setLever, 25, { maxWait: 50 }), [])
 
@@ -637,7 +625,7 @@ const LeverBoard = props => {
   const resetData = [
     {
       title: 'The next leverage ratio',
-      content: <span className={classes.apyText}>{lever.toString()}</span>
+      content: <span className={classes.apyText}>{lever.toFixed(4)}</span>
     },
     {
       title: 'Estimate APY',
