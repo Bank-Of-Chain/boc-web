@@ -33,7 +33,7 @@ import { USDC_ADDRESS, DAI_ADDRESS } from '@/constants/tokens'
 import { BN_18 } from '@/constants/big-number'
 
 // === Hooks === //
-// import useRedeemFeeBps from '@/hooks/useRedeemFeeBps'
+import useVault from '@/hooks/useVault'
 
 // === Utils === //
 import isUndefined from 'lodash/isUndefined'
@@ -66,9 +66,7 @@ export default function Withdraw({
   exchangeManager,
   EXCHANGE_ADAPTER_ABI,
   isBalanceLoading,
-  reloadBalance,
-  trusteeFeeBps,
-  redeemFeeBps
+  reloadBalance
 }) {
   const classes = useStyles()
   const dispatch = useDispatch()
@@ -103,11 +101,7 @@ export default function Withdraw({
   const [isShowZipModal, setIsShowZipModal] = useState(false)
   const [pegTokenPrice, setPegTokenPrice] = useState(BN_18)
 
-  // const { value: redeemFeeBps } = useRedeemFeeBps({
-  //   userProvider,
-  //   VAULT_ADDRESS,
-  //   VAULT_ABI
-  // })
+  const { redeemFeeBps, trusteeFeeBps } = useVault(VAULT_ADDRESS, VAULT_ABI, userProvider)
 
   const redeemFeeBpsPercent = redeemFeeBps.toNumber() / 100
 
