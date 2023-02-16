@@ -18,7 +18,7 @@ const style = {
   },
   members: {
     display: 'flex',
-    justifycontent: 'space-between',
+    justifyContent: 'space-between',
     alignItems: 'center',
     paddingBottom: '4.375rem',
     borderBottom: '1px solid #888888',

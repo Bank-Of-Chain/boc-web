@@ -39,7 +39,7 @@ const componentsStyle = () => ({
     alignItems: 'center',
     flexShrink: 0,
     flexDirection: 'row',
-    justifycontent: 'center'
+    justifyContent: 'center'
   },
   text: {
     minWidth: 0,
@@ -52,7 +52,7 @@ const componentsStyle = () => ({
     flexGrow: 0,
     flexShrink: 0,
     flexDirection: 'column',
-    justifycontent: 'center'
+    justifyContent: 'center'
   },
   bodyInner: {
     width: '100%',
@@ -84,7 +84,7 @@ const componentsStyle = () => ({
     flexGrow: 0,
     flexShrink: 0,
     flexDirection: 'column',
-    justifycontent: 'center'
+    justifyContent: 'center'
   },
   footerInner: {
     width: '100%',

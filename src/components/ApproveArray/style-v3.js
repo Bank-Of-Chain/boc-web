@@ -111,7 +111,7 @@ const componentsStyle = () => ({
   estimateBalance: {
     display: 'flex',
     flexDirection: 'column',
-    justifycontent: 'center',
+    justifyContent: 'center',
     alignItems: 'flex-end'
   },
   tokenList: {
@@ -122,7 +122,7 @@ const componentsStyle = () => ({
   },
   arrow: {
     display: 'flex',
-    justifycontent: 'center',
+    justifyContent: 'center',
     alignItems: 'center'
   },
   buttonGroup: {
