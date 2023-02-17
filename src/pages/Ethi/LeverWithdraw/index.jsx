@@ -86,7 +86,7 @@ const LeverWithdraw = ({ userProvider, ETHI_ADDRESS, VAULT_BUFFER_ADDRESS, CREDI
     try {
       getSwapInfoFinish = Date.now()
       setCurrentStep(2)
-      await withdrawFromVault(nextValue, WithdrawFromVault.WITHDRAW).then(() => {
+      await withdrawFromVault(nextValue, ethiBalance, WithdrawFromVault.WITHDRAW).then(() => {
         removeFromVaultSuccess(address, WithdrawFromVault.WITHDRAW)
       })
       withdrawFinish = Date.now()

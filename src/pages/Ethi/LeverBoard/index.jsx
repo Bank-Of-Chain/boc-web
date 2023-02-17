@@ -185,7 +185,7 @@ const LeverBoard = props => {
     }
     // lever 当前设置的杠杆率
     const isIncrease = currentLeverRadio > lever
-    const callFunc = isIncrease ? v => withdrawFromVault(v, WithdrawFromVault.DECREASE_LEVERAGE) : increaseDebt
+    const callFunc = isIncrease ? v => withdrawFromVault(v, creditAccountEthiBalance, WithdrawFromVault.DECREASE_LEVERAGE) : increaseDebt
     const leverDecimals = BigNumber.from(10).pow(18)
     const newLever = BigNumber.from(BN(lever).multipliedBy(leverDecimals.toString()).toString())
     const nextValue = balance.mul(leverDecimals).sub(balance.sub(debtAmount).mul(newLever)).div(leverDecimals).abs()

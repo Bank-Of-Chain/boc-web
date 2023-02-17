@@ -61,6 +61,11 @@
   },
   {
     "inputs": [],
+    "name": "LiquidateCreditAccountNotEnoughException",
+    "type": "error"
+  },
+  {
+    "inputs": [],
     "name": "NotAllowedLeverageFactor",
     "type": "error"
   },
@@ -337,7 +342,13 @@
       {
         "indexed": false,
         "internalType": "uint256",
-        "name": "_amount",
+        "name": "_withdrawAmount",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "_totalAmount",
         "type": "uint256"
       },
       {
@@ -497,39 +508,22 @@
           },
           {
             "internalType": "bytes",
-            "name": "data",
+            "name": "encodeExchangeArgs",
             "type": "bytes"
           },
           {
-            "components": [
-              {
-                "internalType": "uint256",
-                "name": "amount",
-                "type": "uint256"
-              },
-              {
-                "internalType": "address",
-                "name": "srcToken",
-                "type": "address"
-              },
-              {
-                "internalType": "address",
-                "name": "dstToken",
-                "type": "address"
-              },
-              {
-                "internalType": "address",
-                "name": "receiver",
-                "type": "address"
-              }
-            ],
-            "internalType": "struct IExchangeAdapter.SwapDescription",
-            "name": "swapDescription",
-            "type": "tuple"
+            "internalType": "uint256",
+            "name": "slippage",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "oracleAdditionalSlippage",
+            "type": "uint256"
           }
         ],
-        "internalType": "struct IExchangeAggregator.SwapParam[]",
-        "name": "_swapParams",
+        "internalType": "struct IExchangeAggregator.ExchangeParam[]",
+        "name": "_exchangeParams",
         "type": "tuple[]"
       }
     ],
@@ -610,6 +604,19 @@
         "internalType": "address",
         "name": "",
         "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getPendingDistributes",
+    "outputs": [
+      {
+        "internalType": "address[]",
+        "name": "",
+        "type": "address[]"
       }
     ],
     "stateMutability": "view",
@@ -700,7 +707,13 @@
   {
     "inputs": [],
     "name": "lendingPoolRewardDistribute",
-    "outputs": [],
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "_lendingPoolRewardsAmount",
+        "type": "uint256"
+      }
+    ],
     "stateMutability": "nonpayable",
     "type": "function"
   },
@@ -813,39 +826,22 @@
           },
           {
             "internalType": "bytes",
-            "name": "data",
+            "name": "encodeExchangeArgs",
             "type": "bytes"
           },
           {
-            "components": [
-              {
-                "internalType": "uint256",
-                "name": "amount",
-                "type": "uint256"
-              },
-              {
-                "internalType": "address",
-                "name": "srcToken",
-                "type": "address"
-              },
-              {
-                "internalType": "address",
-                "name": "dstToken",
-                "type": "address"
-              },
-              {
-                "internalType": "address",
-                "name": "receiver",
-                "type": "address"
-              }
-            ],
-            "internalType": "struct IExchangeAdapter.SwapDescription",
-            "name": "swapDescription",
-            "type": "tuple"
+            "internalType": "uint256",
+            "name": "slippage",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "oracleAdditionalSlippage",
+            "type": "uint256"
           }
         ],
-        "internalType": "struct IExchangeAggregator.SwapParam[]",
-        "name": "_swapParams",
+        "internalType": "struct IExchangeAggregator.ExchangeParam[]",
+        "name": "_exchangeParams",
         "type": "tuple[]"
       }
     ],
@@ -951,7 +947,12 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "_amount",
+        "name": "_withdrawAmount",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_totalAmount",
         "type": "uint256"
       },
       {

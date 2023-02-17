@@ -79,11 +79,11 @@ const useCreditFacade = (CREDIT_FACADE_ADDRESS, CREDIT_FACADE_ABI, userProvider)
    *
    */
   const withdrawFromVault = useCallback(
-    (value, method) => {
+    (value, total, method) => {
       if (isEmpty(CREDIT_FACADE_ADDRESS) || isEmpty(CREDIT_FACADE_ABI) || isEmpty(userProvider)) return
       const creditFacadeContract = new ethers.Contract(CREDIT_FACADE_ADDRESS, CREDIT_FACADE_ABI, userProvider)
       const signer = userProvider.getSigner()
-      return creditFacadeContract.connect(signer).withdrawFromVault(value, method)
+      return creditFacadeContract.connect(signer).withdrawFromVault(value, total, method)
     },
     [CREDIT_FACADE_ADDRESS, CREDIT_FACADE_ABI, userProvider]
   )
