@@ -225,7 +225,7 @@ const LeverWithdraw = ({ userProvider, ETHI_ADDRESS, VAULT_BUFFER_ADDRESS, CREDI
               <GridItem xs={6} sm={6} md={6} lg={6}>
                 <p className={classes.estimateText} title={toFixed(ethiBalance, BigNumber.from(10).pow(ethiDecimals))}>
                   Balance:&nbsp;
-                  <Loading loading={isEthiBalanceLoading}>{toFixed(ethiBalance, BigNumber.from(10).pow(ethiDecimals), 4)}</Loading>
+                  <Loading loading={isEthiBalanceLoading}>{toFixed(ethiBalance, BigNumber.from(10).pow(ethiDecimals), 4, 1)}</Loading>
                 </p>
               </GridItem>
             </GridContainer>
