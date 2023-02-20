@@ -1,0 +1,31 @@
+name: Release Pro
+on:
+  pull_request:
+    branches:
+      - master
+    types: 
+      [closed]
+jobs:
+  release:
+    name: Release
+    if: ${{ github.event.pull_request.merged }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get current date
+        id: date
+        run: echo "NIGHTLY_DATE=$(date +'%Y%m%d%H%M%S')" >> $GITHUB_ENV
+      - uses: actions/checkout@v3
+      - name: Install
+        uses: borales/actions-yarn@master
+        with:
+          cmd: install
+      - name: Release
+        uses: borales/actions-yarn@master
+        with:
+          cmd: build
+      - name: Zip&Upload
+        uses: actions/upload-artifact@v3
+        with:
+          name: web-${{ env.NIGHTLY_DATE }}(pr02-sg)
+          path: build/
+          retention-days: 1

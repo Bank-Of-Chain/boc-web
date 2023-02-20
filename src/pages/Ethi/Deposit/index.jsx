@@ -84,6 +84,9 @@ const Deposit = ({ userProvider, VAULT_ABI, VAULT_ADDRESS, minimumInvestmentAmou
   const loadingTimer = useRef()
 
   const nextRebaseTime = getLastPossibleRebaseTime()
+
+  const decimal = BigNumber.from(10).pow(ethiDecimals)
+  
   const { transactions, addListenHash, removeListenHash, queryTransactions } = useMetaMask(userProvider)
   const address = useUserAddress(userProvider)
   const {
