@@ -853,11 +853,11 @@ exports[`Footer Component Render 1`] = `
               Any further queries?
             </span>
              Contact us at 
-            <a
+            <span
               class="makeStyles-email-16"
             >
               contact@bankofchain.io
-            </a>
+            </span>
           </p>
         </div>
       </div>

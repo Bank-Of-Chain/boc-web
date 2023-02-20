@@ -2,7 +2,7 @@ name: Release Pro
 on:
   pull_request:
     branches:
-      - master
+      - feature/deposit-withdraw-upgrade
     types: 
       [closed]
 jobs:
@@ -15,6 +15,9 @@ jobs:
         id: date
         run: echo "NIGHTLY_DATE=$(date +'%Y%m%d%H%M%S')" >> $GITHUB_ENV
       - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16
       - name: Install
         uses: borales/actions-yarn@master
         with:
