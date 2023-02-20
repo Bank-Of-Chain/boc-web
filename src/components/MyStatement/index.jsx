@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import { makeStyles } from '@material-ui/core/styles'
 import classnames from 'classnames'
 
@@ -19,6 +19,8 @@ import { getSegmentProfit } from '@/services/api-service'
 
 // === Hooks === //
 import usePersonalData from '@/hooks/usePersonalData'
+import useErc20Token from '@/hooks/useErc20Token'
+import useUserAddress from '@/hooks/useUserAddress'
 
 // === Utils === //
 import moment from 'moment'
@@ -35,7 +37,6 @@ import { addToken } from '@/helpers/wallet'
 import { SEGMENT_TYPES, DAY, WEEK, MONTH } from '@/constants/date'
 import { ETHI_BN_DECIMALS, ETHI_DISPLAY_DECIMALS, ETHI_PROFITS_DISPLAY_DECIMALS } from '@/constants/ethi'
 import { TOKEN_DISPLAY_DECIMALS } from '@/constants/vault'
-import { USDI_DECIMALS } from '@/constants/usdi'
 
 // === Styles === //
 import styles from './style'
@@ -47,12 +48,13 @@ const getMarker = color => {
 }
 
 const MyStatement = props => {
-  const { address, type, chain, balance, vaultBufferBalance, tokenAddress, tokenDecimal } = props
+  const { type, chain, VAULT_BUFFER_ADDRESS, userProvider, PEG_TOKEN_ADDRESS } = props
 
   const isUSDi = type === 'USDi'
   const token = isUSDi ? 'USDi' : 'ETHi'
   const lastRebaseTime = getLastPossibleRebaseTime()
   const classes = useStyles()
+  const address = useUserAddress(userProvider)
 
   const [data, setData] = useState([])
   const [loading, setLoading] = useState(false)
@@ -61,27 +63,33 @@ const MyStatement = props => {
   const [optionForBarChart, setOptionForBarChart] = useState({})
   const { dataSource, loading: chartLoading } = usePersonalData(chain, type, address, type)
 
-  const titleRender = (title = '') => {
-    const isWeek = segmentType === WEEK
-    if (isWeek) {
-      const [, index] = title.split('-')
-      return `No.${index}`
-    }
-    const isMonth = segmentType === MONTH
-    if (isMonth) {
-      return `${moment(title).format('MMM')}.`
-    }
+  const { balance: vaultBufferBalance, decimals: vaultBufferDecimals } = useErc20Token(VAULT_BUFFER_ADDRESS, userProvider)
+  const { balance: pegTokenBalance, decimals: pegTokenDecimals } = useErc20Token(PEG_TOKEN_ADDRESS, userProvider)
 
-    const isDay = segmentType === DAY
-    if (isDay) {
-      const [, m, d] = title.split('-')
-      return `${m}-${d}`
-    }
-    return title
-  }
+  const titleRender = useCallback(
+    (title = '') => {
+      const isWeek = segmentType === WEEK
+      if (isWeek) {
+        const [, index] = title.split('-')
+        return `No.${index}`
+      }
+      const isMonth = segmentType === MONTH
+      if (isMonth) {
+        return `${moment(title).format('MMM')}.`
+      }
+
+      const isDay = segmentType === DAY
+      if (isDay) {
+        const [, m, d] = title.split('-')
+        return `${m}-${d}`
+      }
+      return title
+    },
+    [segmentType]
+  )
 
   const handleAddToken = () => {
-    addToken(tokenAddress, type, tokenDecimal)
+    addToken(PEG_TOKEN_ADDRESS, type, pegTokenDecimals)
   }
 
   useEffect(() => {
@@ -104,7 +112,7 @@ const MyStatement = props => {
           setLoading(false)
         }, 500)
       )
-  }, [chain, address, type, segmentType])
+  }, [chain, address, type, segmentType, titleRender])
 
   useEffect(() => {
     const { tvls = [] } = dataSource
@@ -203,14 +211,10 @@ const MyStatement = props => {
       ]
     }
     setOptionForBarChart(option)
-  }, [data, address])
+  }, [data, address, isUSDi, segmentType])
 
-  const {
-    day7Apy, day30Apy,
-    profit,
-    latestProfit = { profit: '0', tokenType: '' }
-  } = dataSource
-  const fullBalance = formatBalance(balance, USDI_DECIMALS)
+  const { day7Apy, day30Apy, profit, latestProfit = { profit: '0', tokenType: '' } } = dataSource
+  const fullBalance = formatBalance(pegTokenBalance, pegTokenDecimals)
   const balanceFormat = numeral(fullBalance).format(isUSDi ? '0,0.[00] a' : '0,0.[0000] a')
   const [balanceText, balanceSymbol] = balanceFormat.split(' ')
   const cardProps = [
@@ -231,7 +235,7 @@ const MyStatement = props => {
       fullAmount: fullBalance,
       footer: (
         <>
-          <span>{numeral(formatBalance(vaultBufferBalance, USDI_DECIMALS)).format(isUSDi ? '0,0.[00]' : '0,0.[000000]')}</span>
+          <span>{numeral(formatBalance(vaultBufferBalance, vaultBufferDecimals)).format(isUSDi ? '0,0.[00]' : '0,0.[000000]')}</span>
           <span className={classes.unit}>{token} Ticket</span>
           <Tooltip
             classes={{

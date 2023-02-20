@@ -16,7 +16,6 @@ import BocStepper from '@/components/Stepper/Stepper'
 import BocStepLabel from '@/components/Stepper/StepLabel'
 import BocStepIcon from '@/components/Stepper/StepIcon'
 import BocStepConnector from '@/components/Stepper/StepConnector'
-import CircularProgress from '@material-ui/core/CircularProgress'
 import Modal from '@material-ui/core/Modal'
 import Paper from '@material-ui/core/Paper'
 import Loading from '@/components/LoadingComponent'
@@ -24,15 +23,34 @@ import GridContainer from '@/components/Grid/GridContainer'
 import GridItem from '@/components/Grid/GridItem'
 import CustomTextField from '@/components/CustomTextField'
 import Button from '@/components/CustomButtons/Button'
+import Snackbar from '@/components/Snackbar'
+import OpenInNewIcon from '@material-ui/icons/OpenInNew'
+import Icon from '@material-ui/core/Icon'
+import PlaylistAddCheckIcon from '@material-ui/icons/PlaylistAddCheck'
+import CancelIcon from '@material-ui/icons/Cancel'
+import Result from '@/components/Result'
+
+// === Hooks === //
+import useMetaMask from '@/hooks/useMetaMask'
 
 // === Utils === //
 import noop from 'lodash/noop'
+import compact from 'lodash/compact'
 import { getLastPossibleRebaseTime } from '@/helpers/time-util'
 import { isAd, isEs, isRp, isDistributing, errorTextOutput, isLessThanMinValue } from '@/helpers/error-handler'
 import { BN_18 } from '@/constants/big-number'
 import { MULTIPLE_OF_GAS, MAX_GAS_LIMIT } from '@/constants'
 import { warmDialog } from '@/reducers/meta-reducer'
 import { toFixed, formatBalance } from '@/helpers/number-format'
+import { short } from '@/helpers/string-utils'
+
+// === Hooks === //
+import useErc20Token from '@/hooks/useErc20Token'
+import useUserAddress from '@/hooks/useUserAddress'
+
+// === Constants === //
+import { CHAIN_BROWSER_URL } from '@/constants'
+import { ETH_ADDRESS } from '@/constants/tokens'
 
 // === Styles === //
 import styles from './style'
@@ -53,18 +71,7 @@ const steps = [
   'Get ETHi'
 ]
 
-export default function Deposit({
-  address,
-  ethBalance,
-  ethDecimals,
-  ethiDecimals,
-  userProvider,
-  VAULT_ABI,
-  VAULT_ADDRESS,
-  ETH_ADDRESS,
-  isBalanceLoading,
-  minimumInvestmentAmount
-}) {
+const Deposit = ({ userProvider, VAULT_ABI, VAULT_ADDRESS, minimumInvestmentAmount, VAULT_BUFFER_ADDRESS }) => {
   const classes = useStyles()
   const dispatch = useDispatch()
   const [ethValue, setEthValue] = useState('')
@@ -77,7 +84,22 @@ export default function Deposit({
   const loadingTimer = useRef()
 
   const nextRebaseTime = getLastPossibleRebaseTime()
+
   const decimal = BigNumber.from(10).pow(ethiDecimals)
+  
+  const { transactions, addListenHash, removeListenHash, queryTransactions } = useMetaMask(userProvider)
+  const address = useUserAddress(userProvider)
+  const {
+    balance: ethBalance,
+    decimals: ethDecimals,
+    loading: isEthLoading,
+    queryBalance: queryEthBalance
+  } = useErc20Token(ETH_ADDRESS, userProvider)
+  const {
+    balance: vaultBufferBalance,
+    decimals: vaultBufferDecimals,
+    queryBalance: queryVaultBufferBalance
+  } = useErc20Token(VAULT_BUFFER_ADDRESS, userProvider)
 
   const getGasFee = () => {
     if (!gasPriceCurrent) {
@@ -155,7 +177,7 @@ export default function Deposit({
         })
       )
     }
-    setIsLoading(true)
+
     const amount = BigNumber.from(BN(ethValue).multipliedBy(BigNumber.from(10).pow(ethDecimals).toString()).toFixed())
     console.log('nextTokens=', ETH_ADDRESS, amount)
     const signer = userProvider.getSigner()
@@ -198,25 +220,29 @@ export default function Deposit({
       const maxGasLimit = gasLimit < MAX_GAS_LIMIT ? gasLimit : MAX_GAS_LIMIT
       extendObj.gasLimit = maxGasLimit
     }
-    await nVaultWithUser
+    const tx = await nVaultWithUser
       .mint(ETH_ADDRESS, amount, 0, {
         ...extendObj,
         from: address,
         value: amount
       })
-      .then(tx => tx.wait())
-      .then(() => {
-        isSuccess = true
+      .then(v => {
+        setIsLoading(true)
+        return v
       })
       .catch(errorHandle)
-
-    if (isSuccess) {
-      setEthValue('')
+    if (!isEmpty(tx)) {
+      addListenHash(tx.hash)
+      await tx.wait()
+      queryTransactions()
+      isSuccess = true
     }
 
     loadingTimer.current = setTimeout(() => {
+      // removeListenHash(transactionHash)
       setIsLoading(false)
       setIsOpenEstimateModal(false)
+      setEthValue('')
       if (isSuccess) {
         dispatch(
           warmDialog({
@@ -266,7 +292,8 @@ export default function Deposit({
       })
       setEstimateVaultBuffValue(result)
       setIsEstimate(false)
-    }, 1500)
+    }, 1500),
+    [VAULT_ADDRESS, VAULT_ABI, userProvider, ethValue]
   )
 
   /**
@@ -279,7 +306,7 @@ export default function Deposit({
   useEffect(() => {
     estimateMint()
     return () => estimateMint.cancel()
-  }, [ethValue])
+  }, [estimateMint])
 
   // get gasprice per 15s
   useEffect(() => {
@@ -308,7 +335,21 @@ export default function Deposit({
       })
       .then(setMintGasLimit)
       .catch(noop)
-  }, [userProvider, VAULT_ADDRESS, ethBalance, VAULT_ABI])
+  }, [userProvider, VAULT_ADDRESS, ethBalance, VAULT_ABI, ethDecimals, address])
+
+  const handleMint = useCallback(() => {
+    queryEthBalance()
+    queryVaultBufferBalance()
+  }, [queryEthBalance, queryVaultBufferBalance])
+
+  useEffect(() => {
+    if (isEmpty(VAULT_ABI) || isEmpty(userProvider) || isEmpty(VAULT_ABI)) return
+    const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider)
+    vaultContract.on('Mint', handleMint)
+    return () => {
+      vaultContract.off('Mint', handleMint)
+    }
+  }, [VAULT_ADDRESS, VAULT_ABI, userProvider, handleMint])
 
   const isLogin = !isEmpty(userProvider)
   const isValid = isValidValue()
@@ -351,7 +392,7 @@ export default function Deposit({
                       })}
                     >
                       Balance:&nbsp;&nbsp;
-                      <Loading loading={isBalanceLoading}>{formatBalance(ethBalance, ethDecimals)}</Loading>
+                      <Loading loading={isEthLoading}>{formatBalance(ethBalance, ethDecimals)}</Loading>
                     </div>
                   </GridItem>
                 </GridContainer>
@@ -362,21 +403,18 @@ export default function Deposit({
                 <p className={classes.estimateText}>To</p>
                 <div className={classes.estimateBalanceTitle}>
                   ETHi Ticket
-                  {/* <Tooltip
-                    classes={{
-                      tooltip: classes.tooltip
-                    }}
-                    placement="right"
-                    title={`ETHi Ticket functions as parallel ETHi that will be converted into ETHi after fund allocations have been successful. Last
-            execution time was ${moment(nextRebaseTime).format('yyyy-MM-DD HH:mm')}`}
-                  >
-                    <InfoIcon style={{ fontSize: '1.25rem', marginLeft: 8, color: '#888' }} />
-                  </Tooltip> */}
                   <span className={classes.estimateBalanceNum}>
-                    <Loading loading={isEstimate}>{toFixed(estimateVaultBuffValue, decimal)}</Loading>
+                    <Loading loading={isEstimate}>{toFixed(estimateVaultBuffValue, BigNumber.from(10).pow(vaultBufferDecimals))}</Loading>
                   </span>
                 </div>
-                <p className={classes.estimateText}>Estimated Gas Fee: {toFixed(getGasFee(), BigNumber.from(10).pow(ethDecimals), 6)} ETH</p>
+                <p className={classes.estimateText}>
+                  <span>Balances&nbsp;:</span>
+                  <span>{toFixed(vaultBufferBalance, BigNumber.from(10).pow(vaultBufferDecimals), 4)} ETH</span>
+                </p>
+                <p className={classes.estimateText}>
+                  <span>Estimated Gas Fee&nbsp;:</span>
+                  <span>{toFixed(getGasFee(), BigNumber.from(10).pow(ethDecimals), 6)} ETH</span>
+                </p>
               </GridItem>
               <GridItem xs={12} sm={12} md={12} lg={12}>
                 <div className={classes.tip}>
@@ -439,7 +477,7 @@ export default function Deposit({
           <div className={classes.itemBottom}>
             <div className={classes.exchangeInfo}>
               Receive:
-              <span className={classes.usdiInfo}>{toFixed(estimateVaultBuffValue, decimal, 2)}</span>ETHi Tickets
+              <span className={classes.usdiInfo}>{toFixed(estimateVaultBuffValue, BigNumber.from(10).pow(vaultBufferDecimals), 2)}</span>ETHi Tickets
             </div>
           </div>
           <div className={classes.buttonGroup}>
@@ -454,12 +492,36 @@ export default function Deposit({
       </Modal>
       <Modal className={classes.modal} open={isLoading} aria-labelledby="simple-modal-title" aria-describedby="simple-modal-description">
         <Paper elevation={3} className={classes.depositModal}>
-          <div className={classes.modalBody}>
-            <CircularProgress color="inherit" />
-            <p>On Deposit...</p>
-          </div>
+          <Result userProvider={userProvider} onClose={() => setIsLoading(false)} />
         </Paper>
       </Modal>
+      {map(compact(transactions), (item, index) => {
+        const { transactionHash, status } = item
+        const isPending = status === '0x0'
+        const isSuccess = status === '0x1'
+        return (
+          <Snackbar key={transactionHash} index={index} close={() => removeListenHash(transactionHash)}>
+            <div style={{ display: 'flex' }}>
+              <Icon
+                style={{ color: '#a68efd' }}
+                onClick={() => window.open(`${CHAIN_BROWSER_URL}/tx/${transactionHash}`)}
+                component={OpenInNewIcon}
+                fontSize="small"
+              ></Icon>
+              <span style={{ color: '#BEBEBE' }}>&nbsp;{short(transactionHash, 8, 6)}&nbsp;</span>
+              <Loading loading={isPending}>
+                {isSuccess ? (
+                  <Icon style={{ color: '#55E752' }} component={PlaylistAddCheckIcon} fontSize="small"></Icon>
+                ) : (
+                  <Icon style={{ color: '#f50057' }} component={CancelIcon} fontSize="small"></Icon>
+                )}
+              </Loading>
+            </div>
+          </Snackbar>
+        )
+      })}
     </>
   )
 }
+
+export default Deposit

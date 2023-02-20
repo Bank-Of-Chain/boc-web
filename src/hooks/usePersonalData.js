@@ -93,7 +93,7 @@ export default function usePersonalData(chain, vault, address, tokenType) {
     dataMerge(address?.toLowerCase(), chain, vault, tokenType)
       .then(setData)
       .finally(() => setLoading(false))
-  }, [address, chain, vault])
+  }, [address, chain, vault, tokenType])
 
   return {
     dataSource: data,

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 
 // === Utils === //
 import * as ethers from 'ethers'
@@ -12,24 +12,23 @@ const useRedeemFeeBps = props => {
   const [error, setError] = useState()
   const [loading, setLoading] = useState(false)
 
-  const reload = () => {
+  const reload = useCallback(() => {
+    if (isEmpty(VAULT_ADDRESS) || isEmpty(VAULT_ABI) || isEmpty(userProvider)) {
+      setLoading(false)
+      setError()
+      return
+    }
     setLoading(true)
+
     const vaultContract = new Contract(VAULT_ADDRESS, VAULT_ABI, userProvider)
     vaultContract
       .redeemFeeBps()
       .then(setValue)
       .catch(setError)
       .finally(() => setLoading(false))
-  }
+  }, [VAULT_ADDRESS, VAULT_ABI, userProvider])
 
-  useEffect(() => {
-    if (isEmpty(userProvider) || isEmpty(VAULT_ADDRESS)) {
-      setLoading(false)
-      setError()
-      return
-    }
-    reload()
-  }, [userProvider, VAULT_ADDRESS])
+  useEffect(reload, [reload])
 
   return {
     value,
