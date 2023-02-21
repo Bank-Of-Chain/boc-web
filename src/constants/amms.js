@@ -3,20 +3,17 @@ export const STRATEGIES = [
   'Balancer',
   'Dodo',
   'Convex',
-  'DForce',
   'Curve',
   'Aave',
-  // 'Quickswap',
-  // 'Sushi',
-  // 'Synapse',
-  // 'Stargate',
   'Aura',
   'UniswapV2',
   'UniswapV3',
   'YearnV2',
   'Lido',
   'RocketPool',
-  'Stargate'
+  'Stargate',
+  'Euler',
+  'StakeWise'
 ]
 
 export const PLATFORM_HOME_URL = {
