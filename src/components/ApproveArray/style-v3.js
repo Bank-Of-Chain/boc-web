@@ -6,7 +6,7 @@ const componentsStyle = () => ({
     padding: '1.875rem',
     color: '#fff',
     background: 'linear-gradient(111.68deg, #2C2F36 7.59%, #333437 102.04%)',
-    borderRadius: '2.5rem'
+    borderRadius: '1.25rem'
   },
   title: {
     marginBottom: '0.625rem'

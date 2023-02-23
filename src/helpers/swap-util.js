@@ -21,6 +21,7 @@ export const getProtocolsFromBestRouter = (bestSwapInfo = {}) => {
       case PARASWAP:
         func = getProtocolsFromBestRouterForParaswap
         break
+      default:
     }
     return func(bestRoute)
   }

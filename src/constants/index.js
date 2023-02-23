@@ -6,7 +6,7 @@ import get from 'lodash/get'
 // EXTERNAL CONTRACTS
 export const ENV_NETWORK_TYPE = get(process, 'env.REACT_APP_NETWORK_TYPE', localStorage.REACT_APP_NETWORK_TYPE)
 const config = genConfig[ENV_NETWORK_TYPE] || genConfig[undefined]
-console.log('env config=', ENV_NETWORK_TYPE, config)
+// console.log('env config=', ENV_NETWORK_TYPE, config)
 
 if (!config) {
   throw new Error('load config error')
