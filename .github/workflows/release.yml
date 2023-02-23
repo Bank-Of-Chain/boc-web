@@ -2,7 +2,7 @@ name: Release Pro
 on:
   pull_request:
     branches:
-      - feature/deposit-withdraw-upgrade
+      - master
     types: 
       [closed]
 jobs:
