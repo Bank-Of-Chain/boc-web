@@ -18,7 +18,6 @@ exports[`LendingSection Component Render 1`] = `
       >
         <div
           class="MuiGrid-root makeStyles-grid-21  MuiGrid-container"
-          justifyContent="center"
           style="margin: 0px auto; padding: 10rem;"
         >
           <div
