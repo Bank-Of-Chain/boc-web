@@ -1,6 +1,6 @@
-export const usdiArray = ['Compound', 'Aave', 'Coinbase', 'YearnFinance', 'Gemini', 'Bitfinex']
+export const usdiArray = ['Compound', 'Aave', 'Coinbase', 'YearnFinance', 'Bitfinex']
 
-export const ethiArray = ['Compound', 'Aave', 'YearnFinance', 'Gemini', 'Bitfinex', 'Staking']
+export const ethiArray = ['Compound', 'Aave', 'YearnFinance', 'Bitfinex', 'Staking']
 
 export const BOC_TITLE = 'BoC'
 

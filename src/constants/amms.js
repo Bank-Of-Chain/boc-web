@@ -3,20 +3,17 @@ export const STRATEGIES = [
   'Balancer',
   'Dodo',
   'Convex',
-  'DForce',
   'Curve',
   'Aave',
-  // 'Quickswap',
-  // 'Sushi',
-  // 'Synapse',
-  // 'Stargate',
   'Aura',
   'UniswapV2',
   'UniswapV3',
   'YearnV2',
   'Lido',
   'RocketPool',
-  'Stargate'
+  'Stargate',
+  'Euler',
+  'StakeWise'
 ]
 
 export const PLATFORM_HOME_URL = {
@@ -40,7 +37,9 @@ export const PLATFORM_HOME_URL = {
   UniswapV3: 'https://uniswap.org/',
   YearnV2: 'https://yearn.finance/',
   Lido: 'https://lido.fi/',
-  RocketPool: 'https://rocketpool.net/'
+  RocketPool: 'https://rocketpool.net/',
+  Euler: 'https://www.euler.finance/',
+  StakeWise: 'https://stakewise.io/'
 }
 
 export default STRATEGIES
