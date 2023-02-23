@@ -1,11 +1,11 @@
 import { usdiArray, ethiArray, apyType } from '@/constants/apy'
 
-test(`usdiArray has 6 array item`, () => {
-  expect(usdiArray.length).toBe(6)
+test(`usdiArray has 5 array item`, () => {
+  expect(usdiArray.length).toBe(5)
 })
 
-test(`ethiArray has 6 array item`, () => {
-  expect(ethiArray.length).toBe(6)
+test(`ethiArray has 5 array item`, () => {
+  expect(ethiArray.length).toBe(5)
 })
 
 test(`every item must have apy type`, () => {
