@@ -114,7 +114,7 @@ const LeverBoard = props => {
   )
   const { borrowApy } = usePoolService(poolAddress, POOL_SERVICE_ABI, userProvider)
 
-  const [estimateApy, setEstimateApy] = useState(BigNumber.from(0))
+  const [estimateApy, setEstimateApy] = useState(0)
   const [balance, setBalance] = useState(BigNumber.from(0))
   const [debtAmount, setDebtAmount] = useState(BigNumber.from(0))
   const [healthRatio, setHealthRatio] = useState(0)
@@ -132,7 +132,7 @@ const LeverBoard = props => {
       chainId: 1,
       tokenType: 'ETHi',
       duration: APY_DURATION.weekly
-    }).then(v => get(v, 'result.apy', '0'))
+    }).then(v => get(v, 'apy', '0'))
   }, [creditAddress])
 
   /**
@@ -629,7 +629,7 @@ const LeverBoard = props => {
     },
     {
       title: 'Estimate APY',
-      content: <span className={classes.apyText}>{estimateApy.toFixed(2)}%</span>
+      content: <span className={classes.apyText}>{numeral(estimateApy).format('0,0.[00]')}%</span>
     }
   ]
 
