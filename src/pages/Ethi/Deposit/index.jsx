@@ -28,29 +28,28 @@ import OpenInNewIcon from '@material-ui/icons/OpenInNew'
 import Icon from '@material-ui/core/Icon'
 import PlaylistAddCheckIcon from '@material-ui/icons/PlaylistAddCheck'
 import CancelIcon from '@material-ui/icons/Cancel'
-import Result from '@/components/Result'
 
 // === Hooks === //
 import useMetaMask from '@/hooks/useMetaMask'
 
 // === Utils === //
-import noop from 'lodash/noop'
 import compact from 'lodash/compact'
 import { getLastPossibleRebaseTime } from '@/helpers/time-util'
 import { isAd, isEs, isRp, isDistributing, errorTextOutput, isLessThanMinValue } from '@/helpers/error-handler'
-import { BN_18 } from '@/constants/big-number'
-import { MULTIPLE_OF_GAS, MAX_GAS_LIMIT } from '@/constants'
 import { warmDialog } from '@/reducers/meta-reducer'
 import { toFixed, formatBalance } from '@/helpers/number-format'
 import { short } from '@/helpers/string-utils'
+import { isValid as isValidNumber } from '@/helpers/number'
 
 // === Hooks === //
+import { useAsync } from 'react-async-hook'
 import useErc20Token from '@/hooks/useErc20Token'
 import useUserAddress from '@/hooks/useUserAddress'
 
 // === Constants === //
-import { CHAIN_BROWSER_URL } from '@/constants'
+import { CHAIN_BROWSER_URL, MULTIPLE_OF_GAS, MAX_GAS_LIMIT } from '@/constants'
 import { ETH_ADDRESS } from '@/constants/tokens'
+import { BN_18 } from '@/constants/big-number'
 
 // === Styles === //
 import styles from './style'
@@ -75,17 +74,16 @@ const Deposit = ({ userProvider, VAULT_ABI, VAULT_ADDRESS, minimumInvestmentAmou
   const classes = useStyles()
   const dispatch = useDispatch()
   const [ethValue, setEthValue] = useState('')
-  const [mintGasLimit, setMintGasLimit] = useState(BigNumber.from('174107'))
-  const [gasPriceCurrent, setGasPriceCurrent] = useState()
-  const [isLoading, setIsLoading] = useState(false)
+  const [, setIsLoading] = useState(false)
   const [isEstimate, setIsEstimate] = useState(false)
-  const [isOpenEstimateModal, setIsOpenEstimateModal] = useState(false)
+  const [isOpenEstimateModal, setIsOpenEstimateModal] = useState(true)
   const [estimateVaultBuffValue, setEstimateVaultBuffValue] = useState(BigNumber.from(0))
   const loadingTimer = useRef()
 
   const nextRebaseTime = getLastPossibleRebaseTime()
 
-  const { transactions, addListenHash, removeListenHash, queryTransactions } = useMetaMask(userProvider)
+  const { gasPrice, gasPriceLoading, transactions, addListenHash, removeListenHash, queryTransactions } = useMetaMask(userProvider)
+
   const address = useUserAddress(userProvider)
   const {
     balance: ethBalance,
@@ -99,48 +97,45 @@ const Deposit = ({ userProvider, VAULT_ABI, VAULT_ADDRESS, minimumInvestmentAmou
     queryBalance: queryVaultBufferBalance
   } = useErc20Token(VAULT_BUFFER_ADDRESS, userProvider)
 
-  const getGasFee = () => {
-    if (!gasPriceCurrent) {
+  const isValid = isValidNumber(ethValue, ethDecimals, ethBalance)
+
+  const { loading: gasLimitLoading, result: mintGasLimit = BigNumber.from(0) } = useAsync(() => {
+    if (isEmpty(userProvider) || isEmpty(VAULT_ADDRESS) || isEmpty(VAULT_ABI)) {
       return BigNumber.from(0)
     }
-    const gasPrice = BigNumber.from(parseInt(gasPriceCurrent, 16).toString())
+    const amount = isValid
+      ? BigNumber.from(BN(ethValue).multipliedBy(BigNumber.from(10).pow(ethDecimals).toString()).toFixed())
+      : BigNumber.from(10).pow(ethDecimals)
+    const signer = userProvider.getSigner()
+    const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider)
+    const nVaultWithUser = vaultContract.connect(signer)
+    return nVaultWithUser.estimateGas.mint(ETH_ADDRESS, amount, 0, {
+      from: address,
+      value: amount
+    })
+  }, [userProvider, VAULT_ADDRESS, VAULT_ABI, ethBalance, ethDecimals, address, ethValue, isValid])
+
+  console.log('gasPrice=', gasPrice, gasLimitLoading, mintGasLimit)
+
+  const getGasFee = useCallback(() => {
+    if (gasPriceLoading || gasLimitLoading) {
+      return BigNumber.from(0)
+    }
     // metamask gaslimit great than contract gaslimit, so add extra limit
     const metamaskExtraLimit = 114
-    return mintGasLimit.add(metamaskExtraLimit).mul(gasPrice)
-  }
-
-  /**
-   * check if value is valid
-   * @returns
-   */
-  function isValidValue() {
-    const balance = ethBalance
-    const decimals = ethDecimals
-    const value = ethValue
-    if (value === '' || value === '-' || value === '0' || isEmpty(value.replace(/ /g, ''))) return
-    // not a number
-    if (isNaN(Number(value))) return false
-    const nextValue = BN(value)
-    const nextFromValue = nextValue.multipliedBy(BigNumber.from(10).pow(decimals).toString())
-    // less than 0
-    if (nextFromValue.lte(0)) return false
-    // value should be integer
-    const nextFromValueString = nextValue.multipliedBy(BigNumber.from(10).pow(decimals).toString())
-    if (nextFromValueString.toFixed().indexOf('.') !== -1) return false
-    // balance less than value
-    if (balance.lt(BigNumber.from(nextFromValue.toFixed()))) return false
-
-    if (balance.sub(BigNumber.from(nextFromValue.toFixed())).lt(getGasFee())) return false
-
-    return true
-  }
+    return mintGasLimit.add(metamaskExtraLimit).mul(BigNumber.from(gasPrice.toString()))
+  }, [gasPrice, gasPriceLoading, mintGasLimit, gasLimitLoading])
 
   const handleInputChange = event => {
     setIsEstimate(true)
     setEthValue(event.target.value)
   }
 
-  const handleMaxClick = () => {
+  /**
+   *
+   * @returns
+   */
+  const handleMaxClick = useCallback(() => {
     const v = getGasFee()
     if (v.lte(0)) {
       dispatch(
@@ -161,11 +156,13 @@ const Deposit = ({ userProvider, VAULT_ABI, VAULT_ADDRESS, minimumInvestmentAmou
     }
     setIsEstimate(true)
     setEthValue(maxBalance)
-  }
+  }, [getGasFee, ethBalance, dispatch, ethDecimals, ethValue])
 
-  const deposit = async () => {
+  /**
+   *
+   */
+  const deposit = useCallback(async () => {
     clearTimeout(loadingTimer.current)
-    const isValid = isValidValue()
     if (!isValid) {
       return dispatch(
         warmDialog({
@@ -251,11 +248,22 @@ const Deposit = ({ userProvider, VAULT_ABI, VAULT_ADDRESS, minimumInvestmentAmou
         )
       }
     }, 2000)
-  }
+  }, [
+    ethValue,
+    ethDecimals,
+    VAULT_ADDRESS,
+    VAULT_ABI,
+    userProvider,
+    isValid,
+    addListenHash,
+    address,
+    dispatch,
+    minimumInvestmentAmount,
+    queryTransactions
+  ])
 
   const estimateMint = useCallback(
     debounce(async () => {
-      const isValid = isValidValue()
       if (!isValid) {
         setIsEstimate(false)
         setEstimateVaultBuffValue(BigNumber.from(0))
@@ -291,7 +299,7 @@ const Deposit = ({ userProvider, VAULT_ABI, VAULT_ADDRESS, minimumInvestmentAmou
       setEstimateVaultBuffValue(result)
       setIsEstimate(false)
     }, 1500),
-    [VAULT_ADDRESS, VAULT_ABI, userProvider, ethValue]
+    [VAULT_ADDRESS, VAULT_ABI, userProvider, ethValue, isValid]
   )
 
   /**
@@ -301,44 +309,15 @@ const Deposit = ({ userProvider, VAULT_ABI, VAULT_ADDRESS, minimumInvestmentAmou
     setIsOpenEstimateModal(true)
   }
 
-  useEffect(() => {
-    estimateMint()
-    return () => estimateMint.cancel()
-  }, [estimateMint])
-
-  // get gasprice per 15s
-  useEffect(() => {
-    if (!userProvider) {
-      return
-    }
-    userProvider.send('eth_gasPrice').then(setGasPriceCurrent).catch(noop)
-    const timer = setInterval(() => {
-      userProvider.send('eth_gasPrice').then(setGasPriceCurrent).catch(noop)
-    }, 15000)
-    return () => clearInterval(timer)
-  }, [userProvider])
-
-  useEffect(() => {
-    const estimatedUsedValue = BigNumber.from(10).pow(ethDecimals)
-    if (isEmpty(userProvider) || isEmpty(VAULT_ADDRESS) || isEmpty(VAULT_ABI) || ethBalance.lt(estimatedUsedValue)) {
-      return
-    }
-    const signer = userProvider.getSigner()
-    const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider)
-    const nVaultWithUser = vaultContract.connect(signer)
-    nVaultWithUser.estimateGas
-      .mint(ETH_ADDRESS, estimatedUsedValue, {
-        from: address,
-        value: estimatedUsedValue
-      })
-      .then(setMintGasLimit)
-      .catch(noop)
-  }, [userProvider, VAULT_ADDRESS, ethBalance, VAULT_ABI, ethDecimals, address])
-
   const handleMint = useCallback(() => {
     queryEthBalance()
     queryVaultBufferBalance()
   }, [queryEthBalance, queryVaultBufferBalance])
+
+  useEffect(() => {
+    estimateMint()
+    return () => estimateMint.cancel()
+  }, [estimateMint])
 
   useEffect(() => {
     if (isEmpty(VAULT_ABI) || isEmpty(userProvider) || isEmpty(VAULT_ABI)) return
@@ -350,7 +329,6 @@ const Deposit = ({ userProvider, VAULT_ABI, VAULT_ADDRESS, minimumInvestmentAmou
   }, [VAULT_ADDRESS, VAULT_ABI, userProvider, handleMint])
 
   const isLogin = !isEmpty(userProvider)
-  const isValid = isValidValue()
 
   return (
     <>
@@ -411,7 +389,9 @@ const Deposit = ({ userProvider, VAULT_ABI, VAULT_ADDRESS, minimumInvestmentAmou
                 </p>
                 <p className={classes.estimateText}>
                   <span>Estimated Gas Fee&nbsp;:</span>
-                  <span>{toFixed(getGasFee(), BigNumber.from(10).pow(ethDecimals), 6)} ETH</span>
+                  <Loading loading={gasPriceLoading}>
+                    <span>{toFixed(getGasFee(), BigNumber.from(10).pow(ethDecimals), 6)} ETH</span>
+                  </Loading>
                 </p>
               </GridItem>
               <GridItem xs={12} sm={12} md={12} lg={12}>
@@ -483,14 +463,9 @@ const Deposit = ({ userProvider, VAULT_ABI, VAULT_ADDRESS, minimumInvestmentAmou
               Cancel
             </Button>
             <Button className={classes.okButton} color="colorful" onClick={deposit}>
-              Continue
+              Continue ({toFixed(mintGasLimit.mul(gasPrice.toString()), BigNumber.from(10).pow(ethDecimals), 6)} ETH)
             </Button>
           </div>
-        </Paper>
-      </Modal>
-      <Modal className={classes.modal} open={isLoading} aria-labelledby="simple-modal-title" aria-describedby="simple-modal-description">
-        <Paper elevation={3} className={classes.depositModal}>
-          <Result userProvider={userProvider} onClose={() => setIsLoading(false)} />
         </Paper>
       </Modal>
       {map(compact(transactions), (item, index) => {
