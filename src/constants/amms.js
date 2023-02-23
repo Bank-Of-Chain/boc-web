@@ -8,7 +8,6 @@ export const STRATEGIES = [
   'Aura',
   'UniswapV2',
   'UniswapV3',
-  'YearnV2',
   'Lido',
   'RocketPool',
   'Stargate',
