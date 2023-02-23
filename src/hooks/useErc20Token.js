@@ -39,7 +39,6 @@ const useErc20Token = (tokenAddress, userProvider) => {
 
   const queryBalance = useCallback(async () => {
     let nextBalance = BigNumber.from(0)
-    console.log('queryBalance', tokenAddress, address)
     if (isEmpty(tokenAddress) || isEmpty(address)) {
       setBalance(nextBalance)
       setDecimals(1)
@@ -71,53 +70,56 @@ const useErc20Token = (tokenAddress, userProvider) => {
       .finally(() => setIsDecimalsLoading(false))
   }, [tokenAddress, userProvider])
 
-  const approve = async (targetAddress, amount) => {
-    const tokenContract = new ethers.Contract(tokenAddress, IERC20_ABI, userProvider)
-    const signer = userProvider.getSigner()
+  const approve = useCallback(
+    async (targetAddress, amount) => {
+      const tokenContract = new ethers.Contract(tokenAddress, IERC20_ABI, userProvider)
+      const signer = userProvider.getSigner()
 
-    const tokenContractWithUser = tokenContract.connect(signer)
+      const tokenContractWithUser = tokenContract.connect(signer)
 
-    const allowanceAmount = await tokenContractWithUser.allowance(address, targetAddress)
-    console.groupCollapsed('approve')
-    console.log('targetAddress=', targetAddress)
-    console.log('allowanceAmount=', allowanceAmount.toString())
-    // If deposit amount greater than allow amount, reset amount
-    if (amount.gt(allowanceAmount)) {
-      // If allowance equal 0, approve nextAmount, otherwise approve 0 and approve nextAmount
-      // WETH used increaseAllowance with no effect
-      if (allowanceAmount.gt(0) && tokenAddress !== WETH_ADDRESS) {
-        console.log('add allowance:', amount.sub(allowanceAmount).toString())
-        console.groupEnd('approve')
-        return tokenContractWithUser
-          .increaseAllowance(targetAddress, amount.sub(allowanceAmount))
-          .then(tx => tx.wait())
-          .catch(e => {
-            // cancel by user
-            if (e.code === 4001) {
-              return Promise.reject(e)
-            }
-            // If increase failed, approve 0 and approve nextAmounts
-            return tokenContractWithUser
-              .approve(targetAddress, 0)
-              .then(tx => tx.wait())
-              .then(() => tokenContractWithUser.approve(targetAddress, amount).then(tx => tx.wait()))
-          })
-      } else {
-        console.log('current allowance:', allowanceAmount.toString(), 'next allowance:', amount.toString())
-        console.groupEnd('approve')
-        return tokenContractWithUser
-          .approve(targetAddress, amount)
-          .then(tx => tx.wait())
-          .catch(e => {
-            // cancel by user
-            if (e.code === 4001) {
-              return Promise.reject(e)
-            }
-          })
+      const allowanceAmount = await tokenContractWithUser.allowance(address, targetAddress)
+      console.groupCollapsed('approve')
+      console.log('targetAddress:', targetAddress)
+      console.log('current allowance:', allowanceAmount.toString())
+      // If deposit amount greater than allow amount, reset amount
+      if (amount.gt(allowanceAmount)) {
+        // If allowance equal 0, approve nextAmount, otherwise approve 0 and approve nextAmount
+        // WETH used increaseAllowance with no effect
+        if (allowanceAmount.gt(0) && tokenAddress !== WETH_ADDRESS) {
+          console.log('add allowance:', amount.sub(allowanceAmount).toString())
+          console.groupEnd('approve')
+          return tokenContractWithUser
+            .increaseAllowance(targetAddress, amount.sub(allowanceAmount))
+            .then(tx => tx.wait())
+            .catch(e => {
+              // cancel by user
+              if (e.code === 4001) {
+                return Promise.reject(e)
+              }
+              // If increase failed, approve 0 and approve nextAmounts
+              return tokenContractWithUser
+                .approve(targetAddress, 0)
+                .then(tx => tx.wait())
+                .then(() => tokenContractWithUser.approve(targetAddress, amount).then(tx => tx.wait()))
+            })
+        } else {
+          console.log('next allowance:', amount.toString())
+          console.groupEnd('approve')
+          return tokenContractWithUser
+            .approve(targetAddress, amount)
+            .then(tx => tx.wait())
+            .catch(e => {
+              // cancel by user
+              if (e.code === 4001) {
+                return Promise.reject(e)
+              }
+            })
+        }
       }
-    }
-    console.groupEnd('approve')
-  }
+      console.groupEnd('approve')
+    },
+    [tokenAddress, userProvider, address]
+  )
 
   useEffect(() => {
     queryBalance()

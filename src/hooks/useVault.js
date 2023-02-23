@@ -9,10 +9,18 @@ import useUserAddress from './useUserAddress'
 
 const { Contract } = ethers
 
+/**
+ *
+ * @param {*} VAULT_ADDRESS
+ * @param {*} VAULT_ABI
+ * @param {*} userProvider
+ * @returns
+ */
 const useVault = (VAULT_ADDRESS, VAULT_ABI, userProvider) => {
   const [error, setError] = useState()
   const [loading, setLoading] = useState(false)
   const [exchangeManager, setExchangeManager] = useState('')
+  const [pegTokenPrice, setPegTokenPrice] = useState(ethers.BigNumber.from(1))
   const [decimals, setDecimals] = useState(ethers.BigNumber.from(0))
   const [totalAsset, setTotalAsset] = useState(ethers.BigNumber.from(0))
   const [rebaseThreshold, setRebaseThreshold] = useState(ethers.BigNumber.from(0))
@@ -21,12 +29,18 @@ const useVault = (VAULT_ADDRESS, VAULT_ABI, userProvider) => {
 
   const address = useUserAddress(userProvider)
 
+  /**
+   *
+   */
   const valid = useCallback(() => {
     if (isEmpty(VAULT_ADDRESS)) return new Error('VAULT_ADDRESS is need!')
     if (isEmpty(VAULT_ABI)) return new Error('VAULT_ABI is need!')
     if (isEmpty(userProvider)) return new Error('userProvider is need!')
   }, [VAULT_ADDRESS, VAULT_ABI, userProvider])
 
+  /**
+   *
+   */
   const fetchUnderlyingUnitsPerShare = useCallback(() => {
     if (isEmpty(VAULT_ADDRESS) || isEmpty(VAULT_ABI) || isEmpty(userProvider)) return
     const vaultContract = new Contract(VAULT_ADDRESS, VAULT_ABI, userProvider)
@@ -37,6 +51,7 @@ const useVault = (VAULT_ADDRESS, VAULT_ABI, userProvider) => {
       .then(setUnderlyingUnitsPerShare)
       .finally(() => setLoading(false))
   }, [VAULT_ADDRESS, VAULT_ABI, userProvider])
+
   /**
    * query vault base info
    * @returns
@@ -71,6 +86,11 @@ const useVault = (VAULT_ADDRESS, VAULT_ABI, userProvider) => {
       .finally(() => setLoading(false))
   }, [VAULT_ADDRESS, VAULT_ABI, userProvider, fetchUnderlyingUnitsPerShare, valid])
 
+  /**
+   *
+   * @param {*} value
+   * @returns
+   */
   const updateRebaseThreshold = value => {
     const error = valid()
     if (error) return setError(error)
@@ -84,6 +104,11 @@ const useVault = (VAULT_ADDRESS, VAULT_ABI, userProvider) => {
       .finally(() => setLoading(false))
   }
 
+  /**
+   *
+   * @param {*} value
+   * @returns
+   */
   const updateMinimumInvestmentAmount = value => {
     const error = valid()
     if (error) return setError(error)
@@ -96,6 +121,18 @@ const useVault = (VAULT_ADDRESS, VAULT_ABI, userProvider) => {
       .then(tx => tx.wait())
       .finally(() => setLoading(false))
   }
+
+  /**
+   *
+   */
+  const getPegTokenPrice = useCallback(() => {
+    const error = valid()
+    if (error) return setError(error)
+    const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider)
+    vaultContract.getPegTokenPrice().then(setPegTokenPrice)
+  }, [valid, VAULT_ADDRESS, VAULT_ABI, userProvider])
+
+  useEffect(getPegTokenPrice, [getPegTokenPrice])
 
   useEffect(() => {
     const error = valid()
@@ -113,6 +150,8 @@ const useVault = (VAULT_ADDRESS, VAULT_ABI, userProvider) => {
     totalAsset,
     decimals,
     exchangeManager,
+    pegTokenPrice,
+    getPegTokenPrice,
     minimumInvestmentAmount,
     fetchUnderlyingUnitsPerShare,
     rebaseThreshold,
