@@ -76,7 +76,7 @@ const Deposit = ({ userProvider, VAULT_ABI, VAULT_ADDRESS, minimumInvestmentAmou
   const [ethValue, setEthValue] = useState('')
   const [, setIsLoading] = useState(false)
   const [isEstimate, setIsEstimate] = useState(false)
-  const [isOpenEstimateModal, setIsOpenEstimateModal] = useState(true)
+  const [isOpenEstimateModal, setIsOpenEstimateModal] = useState(false)
   const [estimateVaultBuffValue, setEstimateVaultBuffValue] = useState(BigNumber.from(0))
   const loadingTimer = useRef()
 
@@ -463,7 +463,7 @@ const Deposit = ({ userProvider, VAULT_ABI, VAULT_ADDRESS, minimumInvestmentAmou
               Cancel
             </Button>
             <Button className={classes.okButton} color="colorful" onClick={deposit}>
-              Continue ({toFixed(mintGasLimit.mul(gasPrice.toString()), BigNumber.from(10).pow(ethDecimals), 6)} ETH)
+              Continue ({toFixed(getGasFee(), BigNumber.from(10).pow(ethDecimals), 6)} ETH)
             </Button>
           </div>
         </Paper>

@@ -10,6 +10,9 @@ const componentsStyle = () => ({
     justifyContent: 'center',
     marginLeft: '90px'
   },
+  modalBody: {
+    textAlign: 'center'
+  },
   depositContainer: {
     border: '1px solid #A68EFD',
     borderTopLeftRadius: '1.25rem',
