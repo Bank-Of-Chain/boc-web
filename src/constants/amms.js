@@ -12,7 +12,8 @@ export const STRATEGIES = [
   'RocketPool',
   'Stargate',
   'Euler',
-  'StakeWise'
+  'StakeWise',
+  'Frax'
 ]
 
 export const PLATFORM_HOME_URL = {
@@ -38,7 +39,8 @@ export const PLATFORM_HOME_URL = {
   Lido: 'https://lido.fi/',
   RocketPool: 'https://rocketpool.net/',
   Euler: 'https://www.euler.finance/',
-  StakeWise: 'https://stakewise.io/'
+  StakeWise: 'https://stakewise.io/',
+  Frax: 'https://frax.finance/'
 }
 
 export default STRATEGIES
