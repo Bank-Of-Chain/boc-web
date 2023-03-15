@@ -10,11 +10,7 @@ const headerLinksStyle = theme => ({
     padding: '0',
     listStyle: 'none',
     color: 'inherit',
-    display: 'flex',
-    alignItems: 'center',
-    '& > li + li': {
-      marginLeft: '1.25rem'
-    }
+    alignItems: 'center'
   },
   listItem: {
     float: 'left',
@@ -146,6 +142,9 @@ const headerLinksStyle = theme => ({
   ...tooltip,
   marginRight5: {
     marginRight: '5px'
+  },
+  m4: {
+    margin: '1rem'
   }
 })
 
