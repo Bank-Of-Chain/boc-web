@@ -1,15 +1,24 @@
 const style = {
   container: {
+    minWidth: '30rem',
     maxWidth: '68.75rem',
+    width: '100%',
     margin: '6rem auto 0',
-    color: '#FFFFFF'
+    color: '#FFFFFF',
+    padding: '3rem',
+    boxSizing: 'border-box'
   },
   title: {
     height: '8.125rem',
     lineHeight: '8.125rem',
     paddingTop: '3.125rem',
     margin: 0,
-    fontSize: '6.25rem'
+    fontSize: '6.25rem',
+    '@media (max-width: 768px)': {
+      fontSize: '3.12rem',
+      lineHeight: '4rem',
+      height: '4rem'
+    }
   },
   description: {
     margin: '2.5rem 0 3.75rem',
@@ -28,10 +37,7 @@ const style = {
     boxSizing: 'border-box',
     display: 'inline-block',
     width: '13.4375rem',
-    margin: '0 5rem 3.125rem 0',
-    '&:nth-child(4n)': {
-      margin: '0 0 3.125rem 0'
-    }
+    margin: '0 2rem 3.125rem 0'
   },
   avatar: {
     padding: '0 1.75rem',
@@ -43,7 +49,7 @@ const style = {
     '& img': {
       width: '100%',
       border: '5px solid #FFFFFF',
-      borderRadius: '50%',
+      borderRadius: '50%'
     }
   },
   label: {
