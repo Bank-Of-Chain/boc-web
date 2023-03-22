@@ -123,7 +123,7 @@ export default function LendingSectionV2() {
           <GridContainer>
             <GridItem>
               <GridContainer className={classes.headerWrapper} justifyContent="center" alignItems="center">
-                <GridItem md={6} className={classes.switchWrapper}>
+                <GridItem md={6} xs={6} sm={6} className={classes.switchWrapper}>
                   <span>ETH</span>
                   <IOSSwitch
                     checked={isEthiEnable}
@@ -148,12 +148,12 @@ export default function LendingSectionV2() {
                     name="checkedB"
                   />
                 </GridItem>
-                <GridItem md={6} className={classes.symbolWrapper}>
-                  <div>Current Rate</div>
-                  <div className={classNames(classes.box, classes.box3)}></div>
-                  <div className={classNames(classes.box, classes.box1)}></div>
-                  <div className={classes.label}>Fixed Rate</div>
-                  <div className={classNames(classes.box, classes.box4)}></div>
+                <GridItem md={6} xs={6} sm={6} className={classes.symbolWrapper}>
+                  <div>Current Rate</div>&nbsp;
+                  <div className={classNames(classes.box, classes.box3)}></div>&nbsp;
+                  <div className={classNames(classes.box, classes.box1)}></div>&nbsp;
+                  <div className={classes.label}>Fixed Rate</div>&nbsp;
+                  <div className={classNames(classes.box, classes.box4)}></div>&nbsp;
                   <div className={classNames(classes.box, classes.box2)}></div>
                 </GridItem>
               </GridContainer>
