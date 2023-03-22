@@ -81,10 +81,7 @@ const lendingSectionStyle = {
     }
   },
   label: {
-    marginLeft: '1.875rem',
-    '@media (max-width: 768px)': {
-      marginLeft: '0.875rem'
-    }
+    marginLeft: '1.875rem'
   },
   switchWrapper: {
     display: 'flex',
@@ -100,10 +97,7 @@ const lendingSectionStyle = {
     height: '1.375rem',
     width: '1.375rem',
     borderRadius: '50%',
-    '@media (max-width: 768px)': {
-      height: '1rem',
-      width: '1rem'
-    }
+    margin: '0 0.625rem'
   },
   box1: {
     // for usdi current rate

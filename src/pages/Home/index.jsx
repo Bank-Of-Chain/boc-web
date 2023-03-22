@@ -17,7 +17,6 @@ import SupportMembers from './components/SupportMembers'
 import GridContainer from '@/components/Grid/GridContainer'
 import GridItem from '@/components/Grid/GridItem'
 import Button from '@/components/CustomButtons/Button'
-import SecurityAudits from './components/SecurityAudits'
 
 // === Styles === //
 import styles from './landingPage'
@@ -76,7 +75,6 @@ export default function Home() {
       <SupportMembers />
       <RoadMapSectionV2 />
       <AuditedSection />
-      <SecurityAudits />
     </div>
   )
 }

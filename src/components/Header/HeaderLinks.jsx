@@ -115,12 +115,12 @@ export default function HeaderLinks(props) {
     <>
       <List className={classes.list}>
         <ListItem className={classes.listItem}>
-          <Button color="colorful-text" className={classes.m4} target="_blank" href={dashboardUrlRender()} disableRipple={true}>
+          <Button color="colorful-text" target="_blank" href={dashboardUrlRender()} disableRipple={true}>
             Dashboard
           </Button>
         </ListItem>
         <ListItem className={classes.listItem}>
-          <Button color="colorful-text" className={classes.m4} target="_blank" href={DOCUMENT_URL} disableRipple={true}>
+          <Button color="colorful-text" target="_blank" href={DOCUMENT_URL} disableRipple={true}>
             Docs
           </Button>
         </ListItem>
@@ -173,7 +173,7 @@ export default function HeaderLinks(props) {
         )}
         {pathname === '/' ? (
           <ListItem className={classes.listItem}>
-            <Button color="colorful-border" href="/#/usdi" className={classes.m4}>
+            <Button color="colorful-border" href="/#/usdi">
               Launch App
             </Button>
           </ListItem>
@@ -184,11 +184,11 @@ export default function HeaderLinks(props) {
             })}
           >
             {isEmpty(userProvider) ? (
-              <Button color="colorful-border" className={classes.m4} target="_blank" onClick={handleClickConnect}>
+              <Button color="colorful-border" target="_blank" onClick={handleClickConnect}>
                 Connect Wallet
               </Button>
             ) : isInMobileWalletApp() ? (
-              <Button color="colorful-border" className={classes.m4} target="_blank" onClick={disconnect}>
+              <Button color="colorful-border" target="_blank" onClick={disconnect}>
                 <Address size="short" address={address} />
               </Button>
             ) : (
@@ -197,7 +197,7 @@ export default function HeaderLinks(props) {
                 buttonText={() => <Address size="short" address={address} />}
                 buttonProps={{
                   color: 'colorful-border',
-                  className: classNames(classes.accountLink, classes.m4)
+                  className: classes.accountLink
                 }}
                 dropdownList={[
                   <div key="My Account" className={classes.dropdownLink} onClick={handleGoToAccount}>
