@@ -126,7 +126,8 @@ export default function Footer(props) {
           >
             {!mailHidden && (
               <p>
-                <span className={classes.query}>Any further queries?</span> Contact us at <a className={classes.email}>contact@bankofchain.io</a>
+                <span className={classes.query}>Any further queries?</span> Contact us at{' '}
+                <span className={classes.email}>contact@bankofchain.io</span>
               </p>
             )}
           </GridItem>

@@ -7,7 +7,8 @@ const componentsStyle = () => ({
   modal: {
     display: 'flex',
     alignItems: 'center',
-    justifyContent: 'center'
+    justifyContent: 'center',
+    marginLeft: '90px'
   },
   modalBody: {
     textAlign: 'center'
@@ -28,8 +29,9 @@ const componentsStyle = () => ({
     background: '#1E1E1F'
   },
   estimateText: {
-    margin: 0,
-    display: 'flex'
+    margin: '0.25rem 0',
+    display: 'flex',
+    justifyContent: 'space-between'
   },
   estimateBalanceTitle: {
     fontSize: '1.625rem',
@@ -83,7 +85,7 @@ const componentsStyle = () => ({
     color: 'rgba(255, 255, 255, 0.87)',
     border: '1px solid #A68EFE',
     backgroundColor: '#1f1d27',
-    borderRadius: '2.5rem',
+    borderRadius: '1.25rem',
     outline: 0,
     '&:active': {
       outline: 'none'

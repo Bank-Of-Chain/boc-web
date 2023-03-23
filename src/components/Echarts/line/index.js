@@ -23,7 +23,8 @@ function Line({ theme = 'light', style = {}, option = {} }) {
     if (echartRef) {
       echartRef.getEchartsInstance().setOption(option)
     }
-  }, [option])
+  }, [option, echartRef])
+
   return (
     <ReactEChartsCore
       key="echart"
