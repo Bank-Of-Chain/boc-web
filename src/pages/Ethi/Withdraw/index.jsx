@@ -44,7 +44,7 @@ import { toFixed, formatBalance } from '@/helpers/number-format'
 import { isAd, isEs, isRp, isMaxLoss, isLossMuch, isExchangeFail, errorTextOutput } from '@/helpers/error-handler'
 
 // === Constants === //
-import { ETH_ADDRESS } from '@/constants/tokens'
+import { ETH_ADDRESS, WETH_ADDRESS } from '@/constants/tokens'
 import { MULTIPLE_OF_GAS, MAX_GAS_LIMIT, IERC20_ABI } from '@/constants'
 import { TRANSACTION_REPLACED } from '@/constants/metamask'
 import { BN_18 } from '@/constants/big-number'
@@ -87,6 +87,7 @@ const Withdraw = props => {
     //   symbol: 'WETH'
     // }
   ])
+  console.log('WETH_ADDRESS=', WETH_ADDRESS, JSON.stringify(burnTokens))
   const [isShowZipModal, setIsShowZipModal] = useState(false)
 
   const address = useUserAddress(userProvider)
@@ -178,7 +179,7 @@ const Withdraw = props => {
         console.log('estimate withdraw error', error)
         console.log('withdraw original error :', error)
         const errorMsg = errorTextOutput(error)
-        let tip = ''
+        let tip = errorMsg
         if (isEs(errorMsg)) {
           tip = 'Vault has been shut down, please try again later!'
         } else if (isAd(errorMsg)) {
@@ -191,8 +192,6 @@ const Withdraw = props => {
           tip = 'Failed to exchange, please increase the exchange slippage!'
         } else if (isExchangeFail(errorMsg)) {
           tip = 'Failed to exchange, Please try again later!'
-        } else {
-          tip = errorMsg
         }
         dispatch(
           warmDialog({
@@ -353,6 +352,11 @@ const Withdraw = props => {
             message: 'Cancel Success!'
           })
         )
+        setTimeout(() => {
+          setIsWithdrawLoading(false)
+          setWithdrawError({})
+          setCurrentStep(0)
+        }, 2000)
         return
       }
       handleBurn(...resp)

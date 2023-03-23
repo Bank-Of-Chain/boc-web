@@ -299,7 +299,7 @@ export default function Deposit({ VAULT_BUFFER_ADDRESS, userProvider, VAULT_ABI,
 
     const errorHandle = error => {
       const errorMsg = errorTextOutput(error)
-      let tip = ''
+      let tip = errorMsg
       if (isEs(errorMsg)) {
         tip = 'Vault has been shut down, please try again later!'
       } else if (isAd(errorMsg)) {
@@ -321,6 +321,7 @@ export default function Deposit({ VAULT_BUFFER_ADDRESS, userProvider, VAULT_ABI,
         )
       }
       setIsLoading(false)
+      return false
     }
     const extendObj = {}
     // if gasLimit times not 1, need estimateGas

@@ -89,7 +89,7 @@ const Withdraw = ({ userProvider, USDI_ADDRESS, VAULT_ADDRESS, VAULT_ABI, EXCHAN
     //   symbol: 'DAI'
     // }
   ])
-  console.log('USDC_ADDRESS=', USDC_ADDRESS, 'DAI_ADDRESS=', DAI_ADDRESS)
+  console.log('USDC_ADDRESS=', USDC_ADDRESS, 'DAI_ADDRESS=', DAI_ADDRESS, JSON.stringify(burnTokens))
   const [isShowZipModal, setIsShowZipModal] = useState(false)
 
   const address = useUserAddress(userProvider)
@@ -305,6 +305,11 @@ const Withdraw = ({ userProvider, USDI_ADDRESS, VAULT_ADDRESS, VAULT_ABI, EXCHAN
             message: 'Cancel Success!'
           })
         )
+        setTimeout(() => {
+          setIsWithdrawLoading(false)
+          setWithdrawError({})
+          setCurrentStep(0)
+        }, 2000)
         return
       }
 
@@ -325,7 +330,7 @@ const Withdraw = ({ userProvider, USDI_ADDRESS, VAULT_ADDRESS, VAULT_ABI, EXCHAN
     } catch (error) {
       console.log('withdraw original error :', error)
       const errorMsg = errorTextOutput(error)
-      let tip = ''
+      let tip = errorMsg
       if (isEs(errorMsg)) {
         tip = 'Vault has been shut down, please try again later!'
       } else if (isAd(errorMsg)) {
@@ -338,8 +343,6 @@ const Withdraw = ({ userProvider, USDI_ADDRESS, VAULT_ADDRESS, VAULT_ABI, EXCHAN
         tip = 'Failed to exchange, please increase the exchange slippage or choose mixed token!'
       } else if (isExchangeFail(errorMsg)) {
         tip = 'Failed to exchange, Please try again later or choose mixed token!'
-      } else {
-        tip = errorMsg
       }
       dispatch(
         warmDialog({

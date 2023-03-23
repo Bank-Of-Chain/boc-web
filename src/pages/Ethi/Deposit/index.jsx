@@ -172,7 +172,7 @@ const Deposit = ({ userProvider, VAULT_ABI, VAULT_ADDRESS, minimumInvestmentAmou
 
     const errorHandle = error => {
       const errorMsg = errorTextOutput(error)
-      let tip = ''
+      let tip = errorMsg
       if (isEs(errorMsg)) {
         tip = 'Vault has been shut down, please try again later!'
       } else if (isAd(errorMsg)) {
@@ -194,6 +194,7 @@ const Deposit = ({ userProvider, VAULT_ABI, VAULT_ADDRESS, minimumInvestmentAmou
         )
       }
       setIsLoading(false)
+      return false
     }
     const extendObj = {}
     // if gasLimit times not 1, need estimateGas

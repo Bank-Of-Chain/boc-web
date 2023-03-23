@@ -269,6 +269,7 @@ const ApproveArrayV3 = props => {
             message: 'Cancel Success!'
           })
         )
+        setIsSwapping(false)
         return
       }
 
