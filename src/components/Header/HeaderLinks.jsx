@@ -139,7 +139,7 @@ export default function HeaderLinks(props) {
                   target="_blank"
                   href="https://wallet.polygon.technology/bridge"
                   className={classes.dropdownLink}
-                  rel="noreferrer"
+                  rel="noopener noreferrer"
                 >
                   Polygon Bridge
                 </a>
@@ -157,9 +157,9 @@ export default function HeaderLinks(props) {
                 disableRipple: true
               }}
               dropdownList={map(NET_WORKS, i => (
-                <a onClick={() => props.changeNetwork(i)} className={classes.dropdownLink}>
+                <span onClick={() => props.changeNetwork(i)} className={classes.dropdownLink}>
                   {i.name}
-                </a>
+                </span>
               ))}
             />
           </ListItem>
@@ -202,19 +202,19 @@ export default function HeaderLinks(props) {
                 dropdownList={[
                   <div key="My Account" className={classes.dropdownLink} onClick={handleGoToAccount}>
                     <AccountIcon />
-                    <a className={classes.dropdownLinkText}>My Account</a>
+                    <span className={classes.dropdownLinkText}>My Account</span>
                   </div>,
                   <div key="Copy Addres" onClick={handleCopyAddress} className={classes.dropdownLink}>
                     <CopyIcon />
-                    <a className={classes.dropdownLinkText}>Copy Address</a>
+                    <span className={classes.dropdownLinkText}>Copy Address</span>
                   </div>,
                   <div key="Change Wallet" onClick={handleClickConnect} className={classes.dropdownLink}>
                     <ChangeWalletIcon />
-                    <a className={classes.dropdownLinkText}>Change Wallet</a>
+                    <span className={classes.dropdownLinkText}>Change Wallet</span>
                   </div>,
                   <div key="Disconnect" onClick={disconnect} className={classes.dropdownLink}>
                     <ExitIcon />
-                    <a className={classes.dropdownLinkText}>Disconnect</a>
+                    <span className={classes.dropdownLinkText}>Disconnect</span>
                   </div>
                 ]}
               />

@@ -26,13 +26,23 @@ import CustomTextField from '@/components/CustomTextField'
 import Button from '@/components/CustomButtons/Button'
 
 // === Utils === //
-import noop from 'lodash/noop'
 import { getLastPossibleRebaseTime } from '@/helpers/time-util'
 import { isAd, isEs, isRp, isDistributing, errorTextOutput, isLessThanMinValue } from '@/helpers/error-handler'
-import { BN_18 } from '@/constants/big-number'
-import { MULTIPLE_OF_GAS, MAX_GAS_LIMIT } from '@/constants'
 import { warmDialog } from '@/reducers/meta-reducer'
 import { toFixed, formatBalance } from '@/helpers/number-format'
+import { isValid as isValidNumber } from '@/helpers/number'
+
+// === Hooks === //
+import { useAsync } from 'react-async-hook'
+import useMetaMask from '@/hooks/useMetaMask'
+import useErc20Token from '@/hooks/useErc20Token'
+import useUserAddress from '@/hooks/useUserAddress'
+
+// === Constants === //
+import { ETH_ADDRESS } from '@/constants/tokens'
+import { BN_18 } from '@/constants/big-number'
+import { MULTIPLE_OF_GAS, MAX_GAS_LIMIT } from '@/constants'
+import { TRANSACTION_REPLACED } from '@/constants/metamask'
 
 // === Styles === //
 import styles from './style'
@@ -53,23 +63,10 @@ const steps = [
   'Get ETHi'
 ]
 
-export default function Deposit({
-  address,
-  ethBalance,
-  ethDecimals,
-  ethiDecimals,
-  userProvider,
-  VAULT_ABI,
-  VAULT_ADDRESS,
-  ETH_ADDRESS,
-  isBalanceLoading,
-  minimumInvestmentAmount
-}) {
+const Deposit = ({ userProvider, VAULT_ABI, VAULT_ADDRESS, minimumInvestmentAmount, VAULT_BUFFER_ADDRESS }) => {
   const classes = useStyles()
   const dispatch = useDispatch()
   const [ethValue, setEthValue] = useState('')
-  const [mintGasLimit, setMintGasLimit] = useState(BigNumber.from('174107'))
-  const [gasPriceCurrent, setGasPriceCurrent] = useState()
   const [isLoading, setIsLoading] = useState(false)
   const [isEstimate, setIsEstimate] = useState(false)
   const [isOpenEstimateModal, setIsOpenEstimateModal] = useState(false)
@@ -77,50 +74,59 @@ export default function Deposit({
   const loadingTimer = useRef()
 
   const nextRebaseTime = getLastPossibleRebaseTime()
-  const decimal = BigNumber.from(10).pow(ethiDecimals)
 
-  const getGasFee = () => {
-    if (!gasPriceCurrent) {
+  const { gasPrice, gasPriceLoading } = useMetaMask(userProvider)
+
+  const address = useUserAddress(userProvider)
+  const {
+    balance: ethBalance,
+    decimals: ethDecimals,
+    loading: isEthLoading,
+    queryBalance: queryEthBalance
+  } = useErc20Token(ETH_ADDRESS, userProvider)
+  const {
+    // balance: vaultBufferBalance,
+    decimals: vaultBufferDecimals,
+    queryBalance: queryVaultBufferBalance
+  } = useErc20Token(VAULT_BUFFER_ADDRESS, userProvider)
+
+  const isValid = isValidNumber(ethValue, ethDecimals, ethBalance)
+
+  const { loading: gasLimitLoading, result: mintGasLimit = BigNumber.from(0) } = useAsync(() => {
+    if (isEmpty(userProvider) || isEmpty(VAULT_ADDRESS) || isEmpty(VAULT_ABI)) {
       return BigNumber.from(0)
     }
-    const gasPrice = BigNumber.from(parseInt(gasPriceCurrent, 16).toString())
+    const amount = isValid
+      ? BigNumber.from(BN(ethValue).multipliedBy(BigNumber.from(10).pow(ethDecimals).toString()).toFixed())
+      : BigNumber.from(10).pow(ethDecimals)
+    const signer = userProvider.getSigner()
+    const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider)
+    const nVaultWithUser = vaultContract.connect(signer)
+    return nVaultWithUser.estimateGas.mint(ETH_ADDRESS, amount, 0, {
+      from: address,
+      value: amount
+    })
+  }, [userProvider, VAULT_ADDRESS, VAULT_ABI, ethBalance, ethDecimals, address, ethValue, isValid])
+
+  const getGasFee = useCallback(() => {
+    if (gasPriceLoading || gasLimitLoading) {
+      return BigNumber.from(0)
+    }
     // metamask gaslimit great than contract gaslimit, so add extra limit
     const metamaskExtraLimit = 114
-    return mintGasLimit.add(metamaskExtraLimit).mul(gasPrice)
-  }
-
-  /**
-   * check if value is valid
-   * @returns
-   */
-  function isValidValue() {
-    const balance = ethBalance
-    const decimals = ethDecimals
-    const value = ethValue
-    if (value === '' || value === '-' || value === '0' || isEmpty(value.replace(/ /g, ''))) return
-    // not a number
-    if (isNaN(Number(value))) return false
-    const nextValue = BN(value)
-    const nextFromValue = nextValue.multipliedBy(BigNumber.from(10).pow(decimals).toString())
-    // less than 0
-    if (nextFromValue.lte(0)) return false
-    // value should be integer
-    const nextFromValueString = nextValue.multipliedBy(BigNumber.from(10).pow(decimals).toString())
-    if (nextFromValueString.toFixed().indexOf('.') !== -1) return false
-    // balance less than value
-    if (balance.lt(BigNumber.from(nextFromValue.toFixed()))) return false
-
-    if (balance.sub(BigNumber.from(nextFromValue.toFixed())).lt(getGasFee())) return false
-
-    return true
-  }
+    return mintGasLimit.add(metamaskExtraLimit).mul(BigNumber.from(gasPrice.toString()))
+  }, [gasPrice, gasPriceLoading, mintGasLimit, gasLimitLoading])
 
   const handleInputChange = event => {
     setIsEstimate(true)
     setEthValue(event.target.value)
   }
 
-  const handleMaxClick = () => {
+  /**
+   *
+   * @returns
+   */
+  const handleMaxClick = useCallback(() => {
     const v = getGasFee()
     if (v.lte(0)) {
       dispatch(
@@ -141,11 +147,13 @@ export default function Deposit({
     }
     setIsEstimate(true)
     setEthValue(maxBalance)
-  }
+  }, [getGasFee, ethBalance, dispatch, ethDecimals, ethValue])
 
-  const deposit = async () => {
+  /**
+   *
+   */
+  const deposit = useCallback(async () => {
     clearTimeout(loadingTimer.current)
-    const isValid = isValidValue()
     if (!isValid) {
       return dispatch(
         warmDialog({
@@ -161,11 +169,10 @@ export default function Deposit({
     const signer = userProvider.getSigner()
     const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider)
     const nVaultWithUser = vaultContract.connect(signer)
-    let isSuccess = false
 
     const errorHandle = error => {
       const errorMsg = errorTextOutput(error)
-      let tip = ''
+      let tip = errorMsg
       if (isEs(errorMsg)) {
         tip = 'Vault has been shut down, please try again later!'
       } else if (isAd(errorMsg)) {
@@ -187,6 +194,7 @@ export default function Deposit({
         )
       }
       setIsLoading(false)
+      return false
     }
     const extendObj = {}
     // if gasLimit times not 1, need estimateGas
@@ -198,26 +206,57 @@ export default function Deposit({
       const maxGasLimit = gasLimit < MAX_GAS_LIMIT ? gasLimit : MAX_GAS_LIMIT
       extendObj.gasLimit = maxGasLimit
     }
-    await nVaultWithUser
+    const isSuccess = await nVaultWithUser
       .mint(ETH_ADDRESS, amount, 0, {
         ...extendObj,
         from: address,
         value: amount
       })
-      .then(tx => tx.wait())
-      .then(() => {
-        isSuccess = true
+      .then(tx => {
+        // if user add gas in metamask, next code runs error, and return a new transaction.
+        return tx
+          .wait()
+          .then(() => {
+            return true
+          })
+          .catch(error => {
+            console.log('TRANSACTION_REPLACED=', error, Object.keys(error))
+            const { code, replacement, cancelled, reason, receipt } = error
+            console.log('code=', code)
+            console.log('replacement=', replacement)
+            console.log('cancelled=', cancelled)
+            console.log('reason=', reason)
+            console.log('receipt=', receipt)
+            // if error due to 'TRANSACTION_REPLACED'
+            // we should wait the replacement transaction commit before we close the modal
+            if (code === TRANSACTION_REPLACED) {
+              // if user add gas for tx canceled, return undefined
+              if (cancelled) {
+                return
+              }
+              const replaceTransaction = replacement
+              return replaceTransaction.wait()
+            }
+          })
       })
       .catch(errorHandle)
 
-    if (isSuccess) {
-      setEthValue('')
-    }
-
+    console.log('isSuccess=', isSuccess)
     loadingTimer.current = setTimeout(() => {
       setIsLoading(false)
       setIsOpenEstimateModal(false)
+      if (isUndefined(isSuccess)) {
+        dispatch(
+          warmDialog({
+            open: true,
+            type: 'warning',
+            message: 'Cancel Success!'
+          })
+        )
+        return
+      }
       if (isSuccess) {
+        setEthValue('')
         dispatch(
           warmDialog({
             open: true,
@@ -227,11 +266,10 @@ export default function Deposit({
         )
       }
     }, 2000)
-  }
+  }, [ethValue, ethDecimals, VAULT_ADDRESS, VAULT_ABI, userProvider, isValid, address, dispatch, minimumInvestmentAmount])
 
   const estimateMint = useCallback(
     debounce(async () => {
-      const isValid = isValidValue()
       if (!isValid) {
         setIsEstimate(false)
         setEstimateVaultBuffValue(BigNumber.from(0))
@@ -266,7 +304,8 @@ export default function Deposit({
       })
       setEstimateVaultBuffValue(result)
       setIsEstimate(false)
-    }, 1500)
+    }, 1500),
+    [VAULT_ADDRESS, VAULT_ABI, userProvider, ethValue, isValid]
   )
 
   /**
@@ -276,42 +315,26 @@ export default function Deposit({
     setIsOpenEstimateModal(true)
   }
 
+  const handleMint = useCallback(() => {
+    queryEthBalance()
+    queryVaultBufferBalance()
+  }, [queryEthBalance, queryVaultBufferBalance])
+
   useEffect(() => {
     estimateMint()
     return () => estimateMint.cancel()
-  }, [ethValue])
-
-  // get gasprice per 15s
-  useEffect(() => {
-    if (!userProvider) {
-      return
-    }
-    userProvider.send('eth_gasPrice').then(setGasPriceCurrent).catch(noop)
-    const timer = setInterval(() => {
-      userProvider.send('eth_gasPrice').then(setGasPriceCurrent).catch(noop)
-    }, 15000)
-    return () => clearInterval(timer)
-  }, [userProvider])
+  }, [estimateMint])
 
   useEffect(() => {
-    const estimatedUsedValue = BigNumber.from(10).pow(ethDecimals)
-    if (isEmpty(userProvider) || isEmpty(VAULT_ADDRESS) || isEmpty(VAULT_ABI) || ethBalance.lt(estimatedUsedValue)) {
-      return
-    }
-    const signer = userProvider.getSigner()
+    if (isEmpty(VAULT_ABI) || isEmpty(userProvider) || isEmpty(VAULT_ABI)) return
     const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider)
-    const nVaultWithUser = vaultContract.connect(signer)
-    nVaultWithUser.estimateGas
-      .mint(ETH_ADDRESS, estimatedUsedValue, {
-        from: address,
-        value: estimatedUsedValue
-      })
-      .then(setMintGasLimit)
-      .catch(noop)
-  }, [userProvider, VAULT_ADDRESS, ethBalance, VAULT_ABI])
+    vaultContract.on('Mint', handleMint)
+    return () => {
+      vaultContract.off('Mint', handleMint)
+    }
+  }, [VAULT_ADDRESS, VAULT_ABI, userProvider, handleMint])
 
   const isLogin = !isEmpty(userProvider)
-  const isValid = isValidValue()
 
   return (
     <>
@@ -351,7 +374,7 @@ export default function Deposit({
                       })}
                     >
                       Balance:&nbsp;&nbsp;
-                      <Loading loading={isBalanceLoading}>{formatBalance(ethBalance, ethDecimals)}</Loading>
+                      <Loading loading={isEthLoading}>{formatBalance(ethBalance, ethDecimals)}</Loading>
                     </div>
                   </GridItem>
                 </GridContainer>
@@ -362,21 +385,20 @@ export default function Deposit({
                 <p className={classes.estimateText}>To</p>
                 <div className={classes.estimateBalanceTitle}>
                   ETHi Ticket
-                  {/* <Tooltip
-                    classes={{
-                      tooltip: classes.tooltip
-                    }}
-                    placement="right"
-                    title={`ETHi Ticket functions as parallel ETHi that will be converted into ETHi after fund allocations have been successful. Last
-            execution time was ${moment(nextRebaseTime).format('yyyy-MM-DD HH:mm')}`}
-                  >
-                    <InfoIcon style={{ fontSize: '1.25rem', marginLeft: 8, color: '#888' }} />
-                  </Tooltip> */}
                   <span className={classes.estimateBalanceNum}>
-                    <Loading loading={isEstimate}>{toFixed(estimateVaultBuffValue, decimal)}</Loading>
+                    <Loading loading={isEstimate}>{toFixed(estimateVaultBuffValue, BigNumber.from(10).pow(vaultBufferDecimals))}</Loading>
                   </span>
                 </div>
-                <p className={classes.estimateText}>Estimated Gas Fee: {toFixed(getGasFee(), BigNumber.from(10).pow(ethDecimals), 6)} ETH</p>
+                {/* <p className={classes.estimateText}>
+                  <span>Balances&nbsp;:</span>
+                  <span>{toFixed(vaultBufferBalance, BigNumber.from(10).pow(vaultBufferDecimals), 4)} ETH</span>
+                </p> */}
+                <p className={classes.estimateText}>
+                  <span>Estimated Gas Fee&nbsp;:</span>
+                  <Loading loading={gasPriceLoading}>
+                    <span>{toFixed(getGasFee(), BigNumber.from(10).pow(ethDecimals), 6)} ETH</span>
+                  </Loading>
+                </p>
               </GridItem>
               <GridItem xs={12} sm={12} md={12} lg={12}>
                 <div className={classes.tip}>
@@ -439,7 +461,7 @@ export default function Deposit({
           <div className={classes.itemBottom}>
             <div className={classes.exchangeInfo}>
               Receive:
-              <span className={classes.usdiInfo}>{toFixed(estimateVaultBuffValue, decimal, 2)}</span>ETHi Tickets
+              <span className={classes.usdiInfo}>{toFixed(estimateVaultBuffValue, BigNumber.from(10).pow(vaultBufferDecimals), 2)}</span>ETHi Tickets
             </div>
           </div>
           <div className={classes.buttonGroup}>
@@ -463,3 +485,5 @@ export default function Deposit({
     </>
   )
 }
+
+export default Deposit

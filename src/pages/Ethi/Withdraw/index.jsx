@@ -24,9 +24,12 @@ import ApproveArrayV3 from '@/components/ApproveArray/ApproveArrayV3'
 import SimpleSelect from '@/components/SimpleSelect'
 
 // === Hooks === //
+import useVault from '@/hooks/useVault'
 import { warmDialog } from '@/reducers/meta-reducer'
 import useRedeemFeeBps from '@/hooks/useRedeemFeeBps'
 import usePriceProvider from '@/hooks/usePriceProvider'
+import useErc20Token from '@/hooks/useErc20Token'
+import useUserAddress from '@/hooks/useUserAddress'
 
 // === Utils === //
 import isUndefined from 'lodash/isUndefined'
@@ -36,12 +39,14 @@ import debounce from 'lodash/debounce'
 import compact from 'lodash/compact'
 import isEmpty from 'lodash/isEmpty'
 import isNumber from 'lodash/isNumber'
+import { isValid } from '@/helpers/number'
 import { toFixed, formatBalance } from '@/helpers/number-format'
 import { isAd, isEs, isRp, isMaxLoss, isLossMuch, isExchangeFail, errorTextOutput } from '@/helpers/error-handler'
 
 // === Constants === //
+import { ETH_ADDRESS, WETH_ADDRESS } from '@/constants/tokens'
 import { MULTIPLE_OF_GAS, MAX_GAS_LIMIT, IERC20_ABI } from '@/constants'
-import { WETH_ADDRESS } from '@/constants/tokens'
+import { TRANSACTION_REPLACED } from '@/constants/metamask'
 import { BN_18 } from '@/constants/big-number'
 
 // === Styles === //
@@ -55,21 +60,10 @@ const steps = [{ title: 'Shares Validation' }, { title: 'Gas Estimates' }, { tit
 
 const WITHDRAW_EXCHANGE_THRESHOLD = BigNumber.from(10).pow(16)
 
-export default function Withdraw({
-  address,
-  exchangeManager,
-  ethiBalance,
-  ethiDecimals,
-  userProvider,
-  ETH_ADDRESS,
-  VAULT_ADDRESS,
-  VAULT_ABI,
-  EXCHANGE_AGGREGATOR_ABI,
-  EXCHANGE_ADAPTER_ABI,
-  isBalanceLoading,
-  reloadBalance,
-  PRICE_ORCALE_ABI
-}) {
+const Withdraw = props => {
+  const { exchangeManager, ETHI_ADDRESS, userProvider, VAULT_ADDRESS, VAULT_ABI, EXCHANGE_AGGREGATOR_ABI, EXCHANGE_ADAPTER_ABI, PRICE_ORCALE_ABI } =
+    props
+
   const classes = useStyles()
   const dispatch = useDispatch()
   const [toValue, setToValue] = useState('')
@@ -93,10 +87,10 @@ export default function Withdraw({
     //   symbol: 'WETH'
     // }
   ])
-  console.log('WETH_ADDRESS=', WETH_ADDRESS)
+  console.log('WETH_ADDRESS=', WETH_ADDRESS, JSON.stringify(burnTokens))
   const [isShowZipModal, setIsShowZipModal] = useState(false)
 
-  const [pegTokenPrice, setPegTokenPrice] = useState(BN_18)
+  const address = useUserAddress(userProvider)
 
   const { value: redeemFeeBps } = useRedeemFeeBps({
     userProvider,
@@ -111,8 +105,33 @@ export default function Withdraw({
     PRICE_ORCALE_ABI
   })
 
+  const {
+    balance: ethiBalance,
+    decimals: ethiDecimals,
+    loading: isEthiLoading,
+    queryBalance: queryEthiBalance
+  } = useErc20Token(ETHI_ADDRESS, userProvider)
+
+  const { pegTokenPrice, getPegTokenPrice } = useVault(VAULT_ADDRESS, VAULT_ABI, userProvider)
+
+  const isValidToValueFlag = isValid(toValue, ethiDecimals, ethiBalance)
+
   const redeemFeeBpsPercent = redeemFeeBps.toNumber() / 100
 
+  /**
+   * check if allow loss is valid
+   * @returns
+   */
+  const isValidAllowLoss = useCallback(() => {
+    if (allowMaxLoss === '' || isEmpty(allowMaxLoss.replace(/ /g, ''))) return
+    if (isNaN(allowMaxLoss)) return false
+    if (allowMaxLoss < 0 || allowMaxLoss > 50) return false
+    return true
+  }, [allowMaxLoss])
+
+  /**
+   *
+   */
   const estimateWithdraw = useCallback(
     debounce(async () => {
       setIsEstimate(true)
@@ -160,7 +179,7 @@ export default function Withdraw({
         console.log('estimate withdraw error', error)
         console.log('withdraw original error :', error)
         const errorMsg = errorTextOutput(error)
-        let tip = ''
+        let tip = errorMsg
         if (isEs(errorMsg)) {
           tip = 'Vault has been shut down, please try again later!'
         } else if (isAd(errorMsg)) {
@@ -173,8 +192,6 @@ export default function Withdraw({
           tip = 'Failed to exchange, please increase the exchange slippage!'
         } else if (isExchangeFail(errorMsg)) {
           tip = 'Failed to exchange, Please try again later!'
-        } else {
-          tip = errorMsg
         }
         dispatch(
           warmDialog({
@@ -189,55 +206,65 @@ export default function Withdraw({
           setIsEstimate(false)
         }, 500)
       }
-    }, 1500)
+    }, 1500),
+    [toValue, pegTokenPrice, VAULT_ADDRESS, VAULT_ABI, userProvider]
   )
 
-  const handleBurn = async (a, b, c, d, tokens, amounts) => {
-    console.log('handleBurn')
-    console.log('tokens', tokens)
-    console.log(
-      'amounts',
-      amounts.map(el => el.toString())
-    )
-    const priceProvider = await getPriceProvider()
-    return Promise.all(
-      map(tokens, async (token, i) => {
-        const amount = toFixed(amounts[i], 1)
-        const amountsInEth = await priceProvider.valueInEth(token, amount)
-        if (WITHDRAW_EXCHANGE_THRESHOLD.gt(amountsInEth)) {
-          return
-        }
+  /**
+   *
+   */
+  const handleBurn = useCallback(
+    async (tokens, amounts) => {
+      console.log('handleBurn')
+      console.log('tokens', tokens)
+      console.log(
+        'amounts',
+        amounts.map(el => el.toString())
+      )
+      const priceProvider = await getPriceProvider()
+      return Promise.all(
+        map(tokens, async (token, i) => {
+          const amount = toFixed(amounts[i], 1)
+          const amountsInEth = await priceProvider.valueInEth(token, amount)
+          if (WITHDRAW_EXCHANGE_THRESHOLD.gt(amountsInEth)) {
+            return
+          }
 
-        let balance = BigNumber.from(0)
-        let tokenSymbol = 'ETH'
-        if (token === ETH_ADDRESS) {
-          balance = await userProvider.getBalance(address)
-        } else {
-          const contract = new ethers.Contract(token, IERC20_ABI, userProvider)
-          balance = await contract.balanceOf(address)
-          tokenSymbol = await contract.symbol()
-        }
+          let balance = BigNumber.from(0)
+          let tokenSymbol = 'ETH'
+          if (token === ETH_ADDRESS) {
+            balance = await userProvider.getBalance(address)
+          } else {
+            const contract = new ethers.Contract(token, IERC20_ABI, userProvider)
+            balance = await contract.balanceOf(address)
+            tokenSymbol = await contract.symbol()
+          }
 
-        return {
-          address: token,
-          amount: balance.gt(amounts[i]) ? amount : balance.toString(),
-          symbol: tokenSymbol
+          return {
+            address: token,
+            amount: balance.gt(amounts[i]) ? amount : balance.toString(),
+            symbol: tokenSymbol
+          }
+        })
+      ).then(array => {
+        const nextBurnTokens = compact(array)
+        if (
+          some(nextBurnTokens, i => {
+            return i.address !== ETH_ADDRESS && i.amount !== '0'
+          })
+        ) {
+          setBurnTokens(nextBurnTokens)
+          setIsShowZipModal(true)
         }
       })
-    ).then(array => {
-      const nextBurnTokens = compact(array)
-      if (
-        some(nextBurnTokens, i => {
-          return i.address !== ETH_ADDRESS && i.amount !== '0'
-        })
-      ) {
-        setBurnTokens(nextBurnTokens)
-        setIsShowZipModal(true)
-      }
-    })
-  }
+    },
+    [userProvider, address, getPriceProvider]
+  )
 
-  const withdraw = async () => {
+  /**
+   *
+   */
+  const withdraw = useCallback(async () => {
     let withdrawTimeStart = Date.now(),
       withdrawValidFinish = 0,
       preWithdrawGetCoins = 0,
@@ -247,7 +274,7 @@ export default function Withdraw({
       withdrawTransationFinish = 0
     setIsWithdrawLoading(true)
     console.log('----------start withdraw----------')
-    if (!isValidToValue()) {
+    if (!isValidToValueFlag) {
       return setWithdrawError({
         type: 'warning',
         message: 'Please enter the correct value.'
@@ -275,7 +302,7 @@ export default function Withdraw({
 
       getSwapInfoFinish = Date.now()
       setCurrentStep(2)
-      let tx
+      let tx, resp
       // if gasLimit times not 1, need estimateGas
       if (isNumber(MULTIPLE_OF_GAS) && MULTIPLE_OF_GAS !== 1) {
         const gas = await vaultContractWithSigner.estimateGas.burn(nextValue, allowMaxLossValue)
@@ -284,23 +311,55 @@ export default function Withdraw({
         const gasLimit = Math.ceil(gas * MULTIPLE_OF_GAS)
         // gasLimit not exceed maximum
         const maxGasLimit = gasLimit < MAX_GAS_LIMIT ? gasLimit : MAX_GAS_LIMIT
+        resp = await vaultContractWithSigner.callStatic.burn(nextValue, allowMaxLossValue, {
+          gasLimit: maxGasLimit
+        })
         tx = await vaultContractWithSigner.burn(nextValue, allowMaxLossValue, {
           gasLimit: maxGasLimit
         })
       } else {
+        resp = await vaultContractWithSigner.callStatic.burn(nextValue, allowMaxLossValue)
         tx = await vaultContractWithSigner.burn(nextValue, allowMaxLossValue)
       }
       withdrawFinish = Date.now()
 
-      const { events } = await tx.wait()
-      let args = []
-      for (let i = events.length - 1; i >= 0; i--) {
-        if (events[i].event === 'Burn') {
-          args = events[i].args
-          break
+      console.log('tx=', tx, 'tx.hash=', tx.hash, 'resp=', resp)
+      // if user add gas in metamask, next code runs error, and return a new transaction.
+      const isSuccess = await tx.wait().catch(error => {
+        const { code, replacement, cancelled, reason, receipt } = error
+        console.log('code=', code)
+        console.log('replacement=', replacement)
+        console.log('cancelled=', cancelled)
+        console.log('reason=', reason)
+        console.log('receipt=', receipt)
+
+        // if error due to 'TRANSACTION_REPLACED'
+        // we should wait the replacement transaction commit before we close the modal
+        if (code === TRANSACTION_REPLACED) {
+          if (cancelled) {
+            return
+          }
+          const replaceTransaction = replacement
+          console.log('replaceTx=', replaceTransaction, replaceTransaction.hash)
+          return replaceTransaction.wait()
         }
+      })
+      if (isUndefined(isSuccess)) {
+        dispatch(
+          warmDialog({
+            open: true,
+            type: 'warning',
+            message: 'Cancel Success!'
+          })
+        )
+        setTimeout(() => {
+          setIsWithdrawLoading(false)
+          setWithdrawError({})
+          setCurrentStep(0)
+        }, 2000)
+        return
       }
-      handleBurn(...args)
+      handleBurn(...resp)
 
       withdrawTransationFinish = Date.now()
       setCurrentStep(4)
@@ -366,67 +425,55 @@ export default function Withdraw({
       withdraw: `${qk}(${qkPercents}%)`,
       transaction: `${swc}(${swcPercents}%)`
     })
-  }
-
-  /**
-   * check if toValue is valid
-   * @returns
-   */
-  const isValidToValue = () => {
-    if (toValue === '' || toValue === '-' || isEmpty(toValue.replace(/ /g, ''))) return
-    // should be a number
-    if (isNaN(Number(toValue))) return false
-    const nextValue = BN(toValue)
-    const nextToValue = nextValue.multipliedBy(BigNumber.from(10).pow(ethiDecimals).toString())
-    // should be positive
-    if (nextToValue.lte(0)) return false
-    // should be integer
-    const nextToValueString = nextValue.multipliedBy(BigNumber.from(10).pow(ethiDecimals).toString())
-    if (nextToValueString.toFixed().indexOf('.') !== -1) return false
-    // balance less than value
-    if (ethiBalance.lt(BigNumber.from(nextToValue.toFixed()))) return false
-    return true
-  }
-
-  /**
-   * check if allow loss is valid
-   * @returns
-   */
-  const isValidAllowLoss = () => {
-    if (allowMaxLoss === '' || isEmpty(allowMaxLoss.replace(/ /g, ''))) return
-    if (isNaN(allowMaxLoss)) return false
-    if (allowMaxLoss < 0 || allowMaxLoss > 50) return false
-    return true
-  }
+  }, [
+    toValue,
+    ethiDecimals,
+    VAULT_ADDRESS,
+    VAULT_ABI,
+    userProvider,
+    allowMaxLoss,
+    dispatch,
+    handleBurn,
+    isValidAllowLoss,
+    isValidToValueFlag,
+    pegTokenPrice,
+    redeemFeeBpsPercent
+  ])
 
   useEffect(() => {
+    if (isEmpty(toValue) || !isValidToValueFlag || !isValidAllowLoss()) {
+      setEstimateWithdrawArray([])
+      return
+    }
     // need open advanced setting
     // allowLoss, toValue need valid
-    if (isValidAllowLoss() && isValidToValue()) {
-      estimateWithdraw()
-    }
-    if (isEmpty(toValue)) {
-      setEstimateWithdrawArray([])
-    }
+    estimateWithdraw()
     return () => {
       setEstimateWithdrawArray([])
       return estimateWithdraw.cancel()
     }
-  }, [toValue, allowMaxLoss])
+  }, [toValue, allowMaxLoss, estimateWithdraw, isValidAllowLoss, isValidToValueFlag])
 
-  const handleAmountChange = event => {
+  const handleAmountChange = useCallback(event => {
     try {
       setToValue(event.target.value)
     } catch (error) {
       setToValue('')
     }
-  }
+  }, [])
 
-  const handleMaxClick = async () => {
-    const [nextEthiBalance] = await reloadBalance()
+  /**
+   *
+   */
+  const handleMaxClick = useCallback(async () => {
+    const nextEthiBalance = await queryEthiBalance()
     setToValue(formatBalance(nextEthiBalance, ethiDecimals, { showAll: true }))
-  }
+  }, [queryEthiBalance, ethiDecimals])
 
+  /**
+   *
+   * @returns
+   */
   const renderEstimate = () => {
     if (isEstimate) {
       return (
@@ -482,8 +529,7 @@ export default function Withdraw({
             </GridItem>
             <GridItem xs={12} sm={12} md={12} lg={12}>
               <p className={classes.estimateText} title={formatBalance(item.balance, item.decimals, { showAll: true })}>
-                Balance:&nbsp;
-                <Loading loading={isBalanceLoading}>{formatBalance(item.balance, item.decimals)}</Loading>
+                Balance:&nbsp; {formatBalance(item.balance, item.decimals)}
               </p>
             </GridItem>
           </GridContainer>
@@ -492,26 +538,29 @@ export default function Withdraw({
     })
   }
 
-  const isValidToValueFlag = isValidToValue()
   const isValidAllowLossFlag = isValidAllowLoss()
 
   const isLogin = !isEmpty(userProvider)
 
-  const getPegTokenPrice = () => {
-    const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider)
-    vaultContract.getPegTokenPrice().then(result => {
-      setTimeout(() => {
-        setPegTokenPrice(result)
-      }, 500)
-    })
-    return getPegTokenPrice
-  }
+  useEffect(() => {
+    getPegTokenPrice()
+    const timer = setInterval(getPegTokenPrice, 10000)
+    return () => clearInterval(timer)
+  }, [getPegTokenPrice])
+
+  const handleBurnCall = useCallback(() => queryEthiBalance(), [queryEthiBalance])
 
   useEffect(() => {
-    if (isEmpty(address) || isEmpty(VAULT_ADDRESS) || isEmpty(VAULT_ABI)) return
-    const timer = setInterval(getPegTokenPrice(), 10000)
-    return () => clearInterval(timer)
-  }, [address])
+    const listener = () => {
+      if (isEmpty(VAULT_ADDRESS) || isEmpty(VAULT_ABI) || isEmpty(userProvider)) return
+      const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider)
+      vaultContract.on('Burn', handleBurnCall)
+      return () => {
+        vaultContract.off('Burn', handleBurnCall)
+      }
+    }
+    return listener()
+  }, [VAULT_ADDRESS, VAULT_ABI, userProvider, handleBurnCall])
 
   return (
     <>
@@ -542,7 +591,7 @@ export default function Withdraw({
         <GridItem xs={6} sm={6} md={6} lg={6}>
           <p className={classes.estimateText} title={formatBalance(ethiBalance, ethiDecimals, { showAll: true })}>
             Balance:&nbsp;
-            <Loading loading={isBalanceLoading}>{formatBalance(ethiBalance, ethiDecimals)}</Loading>
+            <Loading loading={isEthiLoading}>{formatBalance(ethiBalance, ethiDecimals)}</Loading>
           </p>
         </GridItem>
         {address && (
@@ -689,3 +738,5 @@ export default function Withdraw({
     </>
   )
 }
+
+export default Withdraw

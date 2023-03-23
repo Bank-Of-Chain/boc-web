@@ -9,11 +9,13 @@ echarts.use([GraphicComponent, TooltipComponent, GridComponent, BarChart, Canvas
 
 function Line({ theme = 'light', style = {}, option = {} }) {
   const [echartRef, setRef] = useState(null)
+
   useEffect(() => {
     if (echartRef) {
       echartRef.getEchartsInstance().setOption(option)
     }
-  }, [option])
+  }, [echartRef, option])
+
   return (
     <ReactEChartsCore
       key="echart"
