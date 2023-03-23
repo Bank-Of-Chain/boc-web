@@ -26,6 +26,7 @@ import Loading from '@/components/LoadingComponent'
 import ApproveArray from '@/components/ApproveArray/ApproveArrayV3'
 
 // === Hooks === //
+import useVault from '@/hooks/useVault'
 import useUserAddress from '@/hooks/useUserAddress'
 import useRedeemFeeBps from '@/hooks/useRedeemFeeBps'
 import useErc20Token from '@/hooks/useErc20Token'
@@ -90,9 +91,9 @@ const Withdraw = ({ userProvider, USDI_ADDRESS, VAULT_ADDRESS, VAULT_ABI, EXCHAN
   ])
   console.log('USDC_ADDRESS=', USDC_ADDRESS, 'DAI_ADDRESS=', DAI_ADDRESS)
   const [isShowZipModal, setIsShowZipModal] = useState(false)
-  const [pegTokenPrice, setPegTokenPrice] = useState(BN_18)
 
   const address = useUserAddress(userProvider)
+  const { pegTokenPrice, getPegTokenPrice } = useVault(VAULT_ADDRESS, VAULT_ABI, userProvider)
 
   const {
     balance: usdiBalance,
@@ -185,9 +186,8 @@ const Withdraw = ({ userProvider, USDI_ADDRESS, VAULT_ADDRESS, VAULT_ABI, EXCHAN
         }, 500)
       }
     }, 1500),
-    [toValue, usdiDecimals, pegTokenPrice, VAULT_ADDRESS, VAULT_ABI, userProvider]
+    [toValue, usdiDecimals, VAULT_ADDRESS, VAULT_ABI, userProvider]
   )
-
   const handleBurn = (tokens, amounts) => {
     console.log('handleBurn')
     console.log('tokens', tokens)
@@ -505,16 +505,6 @@ const Withdraw = ({ userProvider, USDI_ADDRESS, VAULT_ADDRESS, VAULT_ABI, EXCHAN
   const isValidAllowLossFlag = isValidAllowLoss()
 
   const isLogin = !isEmpty(userProvider)
-
-  const getPegTokenPrice = useCallback(() => {
-    if (isEmpty(VAULT_ADDRESS) || isEmpty(VAULT_ABI) || isEmpty(userProvider)) return
-    const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider)
-    vaultContract.getPegTokenPrice().then(result => {
-      setTimeout(() => {
-        setPegTokenPrice(result)
-      }, 500)
-    })
-  }, [VAULT_ADDRESS, VAULT_ABI, userProvider])
 
   const handleBurnCall = useCallback(() => queryUsdiBalance(), [queryUsdiBalance])
 
