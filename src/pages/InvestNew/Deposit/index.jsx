@@ -234,7 +234,10 @@ export default function Deposit({ VAULT_BUFFER_ADDRESS, userProvider, VAULT_ABI,
     return [nextTokens, nextAmounts]
   }, [isValidValue, usdtValue, usdtDecimals, usdcValue, usdcDecimals, daiValue, daiDecimals, tokenSelect])
 
-  const deposit = async () => {
+  /**
+   *
+   */
+  const deposit = useCallback(async () => {
     clearTimeout(loadingTimer.current)
     // step1: valid three tokens
     const isValidUsdtValue = isValidValue(TOKEN.USDT)
@@ -419,7 +422,7 @@ export default function Deposit({ VAULT_BUFFER_ADDRESS, userProvider, VAULT_ABI,
         )
       }
     }, 2000)
-  }
+  }, [dispatch, VAULT_ADDRESS, VAULT_ABI, userProvider, address, getTokenAndAmonut, isValidValue, minimumInvestmentAmount, tokenSelect])
 
   /**
    *
