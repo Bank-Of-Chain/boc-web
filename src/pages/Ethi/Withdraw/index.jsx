@@ -349,7 +349,7 @@ const Withdraw = props => {
           warmDialog({
             open: true,
             type: 'warning',
-            message: 'Cancel Success!'
+            message: 'Cancelled!'
           })
         )
         setTimeout(() => {

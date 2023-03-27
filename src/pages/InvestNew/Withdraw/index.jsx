@@ -303,7 +303,7 @@ const Withdraw = ({ userProvider, USDI_ADDRESS, VAULT_ADDRESS, VAULT_ABI, EXCHAN
           warmDialog({
             open: true,
             type: 'warning',
-            message: 'Cancel Success!'
+            message: 'Cancelled!'
           })
         )
         setTimeout(() => {

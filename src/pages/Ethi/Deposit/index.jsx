@@ -199,7 +199,10 @@ const Deposit = ({ userProvider, VAULT_ABI, VAULT_ADDRESS, minimumInvestmentAmou
     const extendObj = {}
     // if gasLimit times not 1, need estimateGas
     if (isNumber(MULTIPLE_OF_GAS) && MULTIPLE_OF_GAS !== 1) {
-      const gas = await nVaultWithUser.estimateGas.mint(ETH_ADDRESS, amount, 0, { from: address, value: amount }).catch(errorHandle)
+      const gas = await nVaultWithUser.estimateGas.mint(ETH_ADDRESS, amount, 0, { from: address, value: amount }).catch(e => {
+        errorHandle(e)
+        return
+      })
       if (isUndefined(gas)) return
       const gasLimit = Math.ceil(gas * MULTIPLE_OF_GAS)
       // gasLimit not exceed maximum
@@ -250,7 +253,7 @@ const Deposit = ({ userProvider, VAULT_ABI, VAULT_ADDRESS, minimumInvestmentAmou
           warmDialog({
             open: true,
             type: 'warning',
-            message: 'Cancel Success!'
+            message: 'Cancelled!'
           })
         )
         return

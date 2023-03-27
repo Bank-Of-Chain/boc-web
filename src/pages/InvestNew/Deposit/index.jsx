@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react'
+import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react'
 import { makeStyles } from '@material-ui/core/styles'
 
 // === Utils === //
@@ -117,23 +117,49 @@ export default function Deposit({ VAULT_BUFFER_ADDRESS, userProvider, VAULT_ABI,
     queryBalance: queryVaultBufferBalance
   } = useErc20Token(VAULT_BUFFER_ADDRESS, userProvider)
 
-  const tokenBasicState = {
-    [TOKEN.USDT]: {
-      value: usdtValue,
-      balance: usdtBalance,
-      decimals: usdtDecimals
-    },
-    [TOKEN.USDC]: {
-      value: usdcValue,
-      balance: usdcBalance,
-      decimals: usdcDecimals
-    },
-    [TOKEN.DAI]: {
-      value: daiValue,
-      balance: daiBalance,
-      decimals: daiDecimals
+  const tokenBasicState = useMemo(() => {
+    return {
+      [TOKEN.USDT]: {
+        value: usdtValue,
+        balance: usdtBalance,
+        decimals: usdtDecimals
+      },
+      [TOKEN.USDC]: {
+        value: usdcValue,
+        balance: usdcBalance,
+        decimals: usdcDecimals
+      },
+      [TOKEN.DAI]: {
+        value: daiValue,
+        balance: daiBalance,
+        decimals: daiDecimals
+      }
     }
-  }
+  }, [usdtValue, usdtBalance, usdtDecimals, usdcValue, usdcBalance, usdcDecimals, daiValue, daiBalance, daiDecimals])
+
+  /**
+   * check if value is valid
+   * @returns
+   */
+  const isValidValue = useCallback(
+    token => {
+      const { value, balance, decimals } = tokenBasicState[token]
+      if (value === '' || value === '-' || value === '0' || isEmpty(value.replace(/ /g, ''))) return
+      // not a number
+      if (isNaN(Number(value))) return false
+      const nextValue = BN(value)
+      const nextFromValue = nextValue.multipliedBy(BigNumber.from(10).pow(decimals).toString())
+      // should be positive
+      if (nextFromValue.lte(0)) return false
+      // should be integer
+      const nextFromValueString = nextValue.multipliedBy(BigNumber.from(10).pow(decimals).toString())
+      if (nextFromValueString.toFixed().indexOf('.') !== -1) return false
+      // balance less than value
+      if (balance.lt(BigNumber.from(nextFromValue.toFixed()))) return false
+      return true
+    },
+    [tokenBasicState]
+  )
 
   const formConfig = [
     {
@@ -165,27 +191,6 @@ export default function Deposit({ VAULT_BUFFER_ADDRESS, userProvider, VAULT_ABI,
     }
   ]
 
-  /**
-   * check if value is valid
-   * @returns
-   */
-  function isValidValue(token) {
-    const { value, balance, decimals } = tokenBasicState[token]
-    if (value === '' || value === '-' || value === '0' || isEmpty(value.replace(/ /g, ''))) return
-    // not a number
-    if (isNaN(Number(value))) return false
-    const nextValue = BN(value)
-    const nextFromValue = nextValue.multipliedBy(BigNumber.from(10).pow(decimals).toString())
-    // should be positive
-    if (nextFromValue.lte(0)) return false
-    // should be integer
-    const nextFromValueString = nextValue.multipliedBy(BigNumber.from(10).pow(decimals).toString())
-    if (nextFromValueString.toFixed().indexOf('.') !== -1) return false
-    // balance less than value
-    if (balance.lt(BigNumber.from(nextFromValue.toFixed()))) return false
-    return true
-  }
-
   const handleInputChange = (event, item) => {
     try {
       setIsEstimate(true)
@@ -205,7 +210,7 @@ export default function Deposit({ VAULT_BUFFER_ADDRESS, userProvider, VAULT_ABI,
     item.setValue(maxValue)
   }
 
-  const getTokenAndAmonut = () => {
+  const getTokenAndAmonut = useCallback(() => {
     const isValidUsdtValue = isValidValue(TOKEN.USDT)
     const isValidUsdcValue = isValidValue(TOKEN.USDC)
     const isValidDaiValue = isValidValue(TOKEN.DAI)
@@ -227,7 +232,7 @@ export default function Deposit({ VAULT_BUFFER_ADDRESS, userProvider, VAULT_ABI,
       nextTokens.push(DAI_ADDRESS)
     }
     return [nextTokens, nextAmounts]
-  }
+  }, [isValidValue, usdtValue, usdtDecimals, usdcValue, usdcDecimals, daiValue, daiDecimals, tokenSelect])
 
   const deposit = async () => {
     clearTimeout(loadingTimer.current)
@@ -326,7 +331,10 @@ export default function Deposit({ VAULT_BUFFER_ADDRESS, userProvider, VAULT_ABI,
     const extendObj = {}
     // if gasLimit times not 1, need estimateGas
     if (isNumber(MULTIPLE_OF_GAS) && MULTIPLE_OF_GAS !== 1) {
-      const gas = await nVaultWithUser.estimateGas.mint(nextTokens, nextAmounts, 0).catch(errorHandle)
+      const gas = await nVaultWithUser.estimateGas.mint(nextTokens, nextAmounts, 0).catch(e => {
+        errorHandle(e)
+        return
+      })
       if (isUndefined(gas)) return
       const gasLimit = Math.ceil(gas * MULTIPLE_OF_GAS)
       // gasLimit not exceed maximum
@@ -372,7 +380,7 @@ export default function Deposit({ VAULT_BUFFER_ADDRESS, userProvider, VAULT_ABI,
           warmDialog({
             open: true,
             type: 'warning',
-            message: 'Cancel Success!'
+            message: 'Cancelled!'
           })
         )
         return
@@ -453,7 +461,8 @@ export default function Deposit({ VAULT_BUFFER_ADDRESS, userProvider, VAULT_ABI,
       })
       setEstimateVaultBuffValue(result)
       setIsEstimate(false)
-    }, 1500)
+    }, 1500),
+    [isValidValue, VAULT_ABI, VAULT_ADDRESS, dispatch, getTokenAndAmonut, minimumInvestmentAmount, tokenSelect, userProvider]
   )
 
   const handleMint = useCallback(() => {
