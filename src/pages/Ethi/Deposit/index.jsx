@@ -109,13 +109,13 @@ const Deposit = ({ userProvider, VAULT_ABI, VAULT_ADDRESS, minimumInvestmentAmou
   }, [userProvider, VAULT_ADDRESS, VAULT_ABI, ethBalance, ethDecimals, address, ethValue, isValid])
 
   const getGasFee = useCallback(() => {
-    if (gasPriceLoading || gasLimitLoading) {
+    if (gasPriceLoading || gasLimitLoading || !isValid) {
       return BigNumber.from(0)
     }
     // metamask gaslimit great than contract gaslimit, so add extra limit
     const metamaskExtraLimit = 114
     return mintGasLimit.add(metamaskExtraLimit).mul(BigNumber.from(gasPrice.toString()))
-  }, [gasPrice, gasPriceLoading, mintGasLimit, gasLimitLoading])
+  }, [gasPrice, gasPriceLoading, mintGasLimit, gasLimitLoading, isValid])
 
   const handleInputChange = event => {
     setIsEstimate(true)

@@ -17,18 +17,21 @@ const useMetaMask = userProvider => {
     setGasPriceLoading(true)
     userProvider
       .send('eth_gasPrice')
-      .then(v => setGasPrice(parseInt(v, 16)))
+      .then(v => {
+        const gasPriceValue = parseInt(v, 16)
+        if (gasPriceValue !== gasPrice) {
+          setGasPrice(gasPriceValue)
+        }
+      })
       .catch(noop)
       .finally(() => {
-        setTimeout(() => {
-          setGasPriceLoading(false)
-        }, 800)
+        setGasPriceLoading(false)
       })
-  }, [userProvider])
+  }, [userProvider, gasPrice])
 
   useEffect(() => {
     queryGasPrice()
-    const timer = setInterval(queryGasPrice, 5000)
+    const timer = setInterval(queryGasPrice, 30000)
     return () => clearInterval(timer)
   }, [queryGasPrice])
 
