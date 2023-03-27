@@ -298,6 +298,30 @@ export default function Deposit({ VAULT_BUFFER_ADDRESS, userProvider, VAULT_ABI,
         }
       }
     }
+
+    // check approve values if not enough, must return
+    const allowanceCheckers = await Promise.all(
+      map(nextTokens, async (item, index) => {
+        // console.log('nextTokens[item]=', nextTokens, item, nextTokens[item])
+        const contract = new ethers.Contract(nextTokens[index], IERC20_ABI, userProvider)
+        const contractWithUser = contract.connect(signer)
+        // get allow amount
+        const allowanceAmount = await contractWithUser.allowance(address, VAULT_ADDRESS)
+        return allowanceAmount.gte(nextAmounts[index])
+      })
+    )
+    if (some(allowanceCheckers, i => i === false)) {
+      dispatch(
+        warmDialog({
+          open: true,
+          type: 'warning',
+          message: 'Insufficient Approved amounts!'
+        })
+      )
+      setIsLoading(false)
+      return
+    }
+
     // step3: deposit
     const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider)
     const nVaultWithUser = vaultContract.connect(signer)
