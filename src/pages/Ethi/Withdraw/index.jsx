@@ -177,7 +177,6 @@ const Withdraw = props => {
         setEstimateWithdrawArray(nextEstimateWithdrawArray)
       } catch (error) {
         console.log('estimate withdraw error', error)
-        console.log('withdraw original error :', error)
         const errorMsg = errorTextOutput(error)
         let tip = errorMsg
         if (isEs(errorMsg)) {

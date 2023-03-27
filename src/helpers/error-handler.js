@@ -6,19 +6,19 @@
 export const errorTextOutput = error => {
   let errorMsg = error.toString()
   if (error?.reason) {
-    errorMsg = error.reason
+    return error.reason
   }
   if (error?.message) {
-    errorMsg = error.message
+    return error.message
   }
   if (error?.data?.message) {
-    errorMsg = error.data.message
+    return error.data.message
   }
   if (error?.error?.data?.originalError?.message) {
-    errorMsg = error.error.data.originalError.message
+    return error.error.data.originalError.message
   }
   if (error?.error?.data?.message) {
-    errorMsg = error.error.data.message
+    return error.error.data.message
   }
   return errorMsg
 }
@@ -29,7 +29,7 @@ export const errorTextOutput = error => {
  * @returns
  */
 export const isAd = (errorMsg = '') => {
-  return errorMsg.endsWith("'AD'")
+  return errorMsg.endsWith("'AD'") || errorMsg === 'AD'
 }
 
 /**
@@ -38,7 +38,7 @@ export const isAd = (errorMsg = '') => {
  * @returns
  */
 export const isEs = (errorMsg = '') => {
-  return errorMsg.endsWith("'ES or AD'") || errorMsg.endsWith("'ES'")
+  return errorMsg.endsWith("'ES or AD'") || errorMsg.endsWith("'ES'") || errorMsg === 'ES'
 }
 
 /**
@@ -47,7 +47,7 @@ export const isEs = (errorMsg = '') => {
  * @returns
  */
 export const isRp = (errorMsg = '') => {
-  return errorMsg.endsWith("'RP'")
+  return errorMsg.endsWith("'RP'") || errorMsg === 'RP'
 }
 
 /**
