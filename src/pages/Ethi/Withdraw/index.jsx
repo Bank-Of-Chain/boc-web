@@ -207,7 +207,7 @@ const Withdraw = props => {
         }, 500)
       }
     }, 1500),
-    [toValue, pegTokenPrice, VAULT_ADDRESS, VAULT_ABI, userProvider]
+    [toValue, pegTokenPrice, VAULT_ADDRESS, VAULT_ABI, userProvider, allowMaxLoss, address, dispatch, ethiDecimals, redeemFeeBpsPercent]
   )
 
   /**

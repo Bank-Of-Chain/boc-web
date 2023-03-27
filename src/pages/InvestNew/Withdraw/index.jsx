@@ -186,8 +186,9 @@ const Withdraw = ({ userProvider, USDI_ADDRESS, VAULT_ADDRESS, VAULT_ABI, EXCHAN
         }, 500)
       }
     }, 1500),
-    [toValue, usdiDecimals, VAULT_ADDRESS, VAULT_ABI, userProvider]
+    [toValue, usdiDecimals, VAULT_ADDRESS, VAULT_ABI, userProvider, address, allowMaxLoss, dispatch, pegTokenPrice, redeemFeeBpsPercent]
   )
+
   const handleBurn = (tokens, amounts) => {
     console.log('handleBurn')
     console.log('tokens', tokens)
