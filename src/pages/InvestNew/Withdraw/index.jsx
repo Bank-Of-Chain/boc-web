@@ -37,7 +37,7 @@ import { toFixed, formatBalance } from '@/helpers/number-format'
 import { USDT_ADDRESS, IERC20_ABI, MULTIPLE_OF_GAS, MAX_GAS_LIMIT } from '@/constants'
 import { USDC_ADDRESS, DAI_ADDRESS } from '@/constants/tokens'
 import { BN_18 } from '@/constants/big-number'
-import { TRANSACTION_REPLACED } from '@/constants/metamask'
+import { TRANSACTION_REPLACED, CALL_EXCEPTION } from '@/constants/metamask'
 
 // === Utils === //
 import isUndefined from 'lodash/isUndefined'
@@ -295,6 +295,15 @@ const Withdraw = ({ userProvider, USDI_ADDRESS, VAULT_ADDRESS, VAULT_ABI, EXCHAN
           }
           const replaceTransaction = replacement
           return replaceTransaction.wait()
+        } else if (code === CALL_EXCEPTION) {
+          dispatch(
+            warmDialog({
+              open: true,
+              type: 'error',
+              message: reason
+            })
+          )
+          return false
         }
       })
 
@@ -306,6 +315,14 @@ const Withdraw = ({ userProvider, USDI_ADDRESS, VAULT_ADDRESS, VAULT_ABI, EXCHAN
             message: 'Cancelled!'
           })
         )
+        setTimeout(() => {
+          setIsWithdrawLoading(false)
+          setWithdrawError({})
+          setCurrentStep(0)
+        }, 2000)
+        return
+      }
+      if (isSuccess === false) {
         setTimeout(() => {
           setIsWithdrawLoading(false)
           setWithdrawError({})
