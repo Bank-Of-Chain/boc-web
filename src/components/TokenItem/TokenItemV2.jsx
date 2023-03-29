@@ -177,7 +177,7 @@ const TokenItem = (props, ref) => {
           onChange()
         })
     }, 500),
-    [userProvider, swapInfo, onChange, exclude, retryTimes, onStaticCallFinish]
+    [userProvider, swapInfo, onChange, exclude, retryTimes, onStaticCallFinish, EXCHANGE_AGGREGATOR_ABI, address, exchangeManager]
   )
 
   const approve = async () => {
@@ -422,7 +422,7 @@ const TokenItem = (props, ref) => {
           onChange()
         })
     }, 500),
-    [exchangeManager, token, decimals, retryTimes, queryBestSwapInfo, onChange]
+    [retryTimes, queryBestSwapInfo, onChange, isApproveEnough, isEmptyValue]
   )
 
   useEffect(resetState, [receiveToken, slippage])

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react'
+import React, { useState, useEffect, useCallback, useRef } from 'react'
 import * as ethers from 'ethers'
 import BN from 'bignumber.js'
 import { useDispatch } from 'react-redux'
@@ -74,6 +74,7 @@ const Withdraw = props => {
   const [isWithdrawLoading, setIsWithdrawLoading] = useState(false)
   const [currentStep, setCurrentStep] = useState(0)
   const [withdrawError, setWithdrawError] = useState({})
+  const loadingTimer = useRef()
 
   const [burnTokens, setBurnTokens] = useState([
     // {
@@ -177,7 +178,6 @@ const Withdraw = props => {
         setEstimateWithdrawArray(nextEstimateWithdrawArray)
       } catch (error) {
         console.log('estimate withdraw error', error)
-        console.log('withdraw original error :', error)
         const errorMsg = errorTextOutput(error)
         let tip = errorMsg
         if (isEs(errorMsg)) {
@@ -207,7 +207,7 @@ const Withdraw = props => {
         }, 500)
       }
     }, 1500),
-    [toValue, pegTokenPrice, VAULT_ADDRESS, VAULT_ABI, userProvider]
+    [toValue, pegTokenPrice, VAULT_ADDRESS, VAULT_ABI, userProvider, allowMaxLoss, address, dispatch, ethiDecimals, redeemFeeBpsPercent]
   )
 
   /**
@@ -265,6 +265,7 @@ const Withdraw = props => {
    *
    */
   const withdraw = useCallback(async () => {
+    clearTimeout(loadingTimer.current)
     let withdrawTimeStart = Date.now(),
       withdrawValidFinish = 0,
       preWithdrawGetCoins = 0,
@@ -349,10 +350,10 @@ const Withdraw = props => {
           warmDialog({
             open: true,
             type: 'warning',
-            message: 'Cancel Success!'
+            message: 'Cancelled!'
           })
         )
-        setTimeout(() => {
+        loadingTimer.current = setTimeout(() => {
           setIsWithdrawLoading(false)
           setWithdrawError({})
           setCurrentStep(0)
@@ -398,7 +399,7 @@ const Withdraw = props => {
         })
       )
     }
-    setTimeout(() => {
+    loadingTimer.current = setTimeout(() => {
       setIsWithdrawLoading(false)
       setWithdrawError({})
       setCurrentStep(0)
