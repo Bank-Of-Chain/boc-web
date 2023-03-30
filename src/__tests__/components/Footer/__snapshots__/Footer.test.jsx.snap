@@ -1,6 +1,6 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`Footer Component Render 1`] = `
+exports[`Accordion test > should show title all the time 1`] = `
 <DocumentFragment>
   <footer
     class="makeStyles-footer-7"
