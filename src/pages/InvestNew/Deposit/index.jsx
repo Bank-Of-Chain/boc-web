@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react'
+import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react'
 import { makeStyles } from '@material-ui/core/styles'
 
 // === Utils === //
@@ -39,9 +39,14 @@ import AddIcon from '@material-ui/icons/Add'
 import ExpandLessIcon from '@material-ui/icons/ExpandLess'
 import ClearIcon from '@material-ui/icons/Clear'
 
+// === Hooks === //
+import useErc20Token from '@/hooks/useErc20Token'
+import useUserAddress from '@/hooks/useUserAddress'
+
 // === Constants === //
 import { USDT_ADDRESS, USDC_ADDRESS, DAI_ADDRESS, IERC20_ABI, MULTIPLE_OF_GAS, MAX_GAS_LIMIT } from '@/constants'
 import { BN_18 } from '@/constants/big-number'
+import { TRANSACTION_REPLACED, CALL_EXCEPTION } from '@/constants/metamask'
 
 // === Styles === //
 import styles from './style'
@@ -67,21 +72,7 @@ const steps = [
   'Get USDi'
 ]
 
-export default function Deposit({
-  address,
-  usdtBalance,
-  usdtDecimals,
-  usdcBalance,
-  usdcDecimals,
-  daiBalance,
-  daiDecimals,
-  usdiDecimals,
-  userProvider,
-  VAULT_ABI,
-  VAULT_ADDRESS,
-  isBalanceLoading,
-  minimumInvestmentAmount
-}) {
+export default function Deposit({ VAULT_BUFFER_ADDRESS, userProvider, VAULT_ABI, VAULT_ADDRESS, minimumInvestmentAmount }) {
   const classes = useStyles()
   const dispatch = useDispatch()
   const [usdtValue, setUsdtValue] = useState('')
@@ -94,26 +85,81 @@ export default function Deposit({
   const loadingTimer = useRef()
 
   const nextRebaseTime = getLastPossibleRebaseTime()
-  const decimal = BigNumber.from(10).pow(usdiDecimals)
+
   const [tokenSelect, setTokenSelect] = useState([USDT_ADDRESS, USDC_ADDRESS, DAI_ADDRESS])
 
-  const tokenBasicState = {
-    [TOKEN.USDT]: {
-      value: usdtValue,
-      balance: usdtBalance,
-      decimals: usdtDecimals
-    },
-    [TOKEN.USDC]: {
-      value: usdcValue,
-      balance: usdcBalance,
-      decimals: usdcDecimals
-    },
-    [TOKEN.DAI]: {
-      value: daiValue,
-      balance: daiBalance,
-      decimals: daiDecimals
+  const address = useUserAddress(userProvider)
+
+  const {
+    balance: usdtBalance,
+    decimals: usdtDecimals,
+    loading: isUsdtLoading,
+    queryBalance: queryUsdtBalance
+  } = useErc20Token(USDT_ADDRESS, userProvider)
+
+  const {
+    balance: usdcBalance,
+    decimals: usdcDecimals,
+    loading: isUsdcLoading,
+    queryBalance: queryUsdcBalance
+  } = useErc20Token(USDC_ADDRESS, userProvider)
+
+  const {
+    balance: daiBalance,
+    decimals: daiDecimals,
+    loading: isDaiLoading,
+    queryBalance: queryDaiBalance
+  } = useErc20Token(DAI_ADDRESS, userProvider)
+
+  const {
+    // balance: vaultBufferBalance,
+    decimals: vaultBufferDecimals,
+    queryBalance: queryVaultBufferBalance
+  } = useErc20Token(VAULT_BUFFER_ADDRESS, userProvider)
+
+  const tokenBasicState = useMemo(() => {
+    return {
+      [TOKEN.USDT]: {
+        value: usdtValue,
+        balance: usdtBalance,
+        decimals: usdtDecimals
+      },
+      [TOKEN.USDC]: {
+        value: usdcValue,
+        balance: usdcBalance,
+        decimals: usdcDecimals
+      },
+      [TOKEN.DAI]: {
+        value: daiValue,
+        balance: daiBalance,
+        decimals: daiDecimals
+      }
     }
-  }
+  }, [usdtValue, usdtBalance, usdtDecimals, usdcValue, usdcBalance, usdcDecimals, daiValue, daiBalance, daiDecimals])
+
+  /**
+   * check if value is valid
+   * @returns
+   */
+  const isValidValue = useCallback(
+    token => {
+      const { value, balance, decimals } = tokenBasicState[token]
+      if (value === '' || value === '-' || value === '0' || isEmpty(value.replace(/ /g, ''))) return
+      // not a number
+      if (isNaN(Number(value))) return false
+      const nextValue = BN(value)
+      const nextFromValue = nextValue.multipliedBy(BigNumber.from(10).pow(decimals).toString())
+      // should be positive
+      if (nextFromValue.lte(0)) return false
+      // should be integer
+      const nextFromValueString = nextValue.multipliedBy(BigNumber.from(10).pow(decimals).toString())
+      if (nextFromValueString.toFixed().indexOf('.') !== -1) return false
+      // balance less than value
+      if (balance.lt(BigNumber.from(nextFromValue.toFixed()))) return false
+      return true
+    },
+    [tokenBasicState]
+  )
 
   const formConfig = [
     {
@@ -122,6 +168,7 @@ export default function Deposit({
       image: './images/0x55d398326f99059fF775485246999027B3197955.png',
       setValue: setUsdtValue,
       isValid: isValidValue(TOKEN.USDT),
+      loading: isUsdtLoading,
       ...tokenBasicState[TOKEN.USDT]
     },
     {
@@ -130,6 +177,7 @@ export default function Deposit({
       image: './images/0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d.png',
       setValue: setUsdcValue,
       isValid: isValidValue(TOKEN.USDC),
+      loading: isUsdcLoading,
       ...tokenBasicState[TOKEN.USDC]
     },
     {
@@ -138,30 +186,10 @@ export default function Deposit({
       image: './images/0x1AF3F329e8BE154074D8769D1FFa4eE058B1DBc3.png',
       setValue: setDaiValue,
       isValid: isValidValue(TOKEN.DAI),
+      loading: isDaiLoading,
       ...tokenBasicState[TOKEN.DAI]
     }
   ]
-
-  /**
-   * check if value is valid
-   * @returns
-   */
-  function isValidValue(token) {
-    const { value, balance, decimals } = tokenBasicState[token]
-    if (value === '' || value === '-' || value === '0' || isEmpty(value.replace(/ /g, ''))) return
-    // not a number
-    if (isNaN(Number(value))) return false
-    const nextValue = BN(value)
-    const nextFromValue = nextValue.multipliedBy(BigNumber.from(10).pow(decimals).toString())
-    // should be positive
-    if (nextFromValue.lte(0)) return false
-    // should be integer
-    const nextFromValueString = nextValue.multipliedBy(BigNumber.from(10).pow(decimals).toString())
-    if (nextFromValueString.toFixed().indexOf('.') !== -1) return false
-    // balance less than value
-    if (balance.lt(BigNumber.from(nextFromValue.toFixed()))) return false
-    return true
-  }
 
   const handleInputChange = (event, item) => {
     try {
@@ -182,7 +210,7 @@ export default function Deposit({
     item.setValue(maxValue)
   }
 
-  const getTokenAndAmonut = () => {
+  const getTokenAndAmonut = useCallback(() => {
     const isValidUsdtValue = isValidValue(TOKEN.USDT)
     const isValidUsdcValue = isValidValue(TOKEN.USDC)
     const isValidDaiValue = isValidValue(TOKEN.DAI)
@@ -204,9 +232,12 @@ export default function Deposit({
       nextTokens.push(DAI_ADDRESS)
     }
     return [nextTokens, nextAmounts]
-  }
+  }, [isValidValue, usdtValue, usdtDecimals, usdcValue, usdcDecimals, daiValue, daiDecimals, tokenSelect])
 
-  const deposit = async () => {
+  /**
+   *
+   */
+  const deposit = useCallback(async () => {
     clearTimeout(loadingTimer.current)
     // step1: valid three tokens
     const isValidUsdtValue = isValidValue(TOKEN.USDT)
@@ -270,14 +301,37 @@ export default function Deposit({
         }
       }
     }
+
+    // check approve values if not enough, must return
+    const allowanceCheckers = await Promise.all(
+      map(nextTokens, async (item, index) => {
+        // console.log('nextTokens[item]=', nextTokens, item, nextTokens[item])
+        const contract = new ethers.Contract(nextTokens[index], IERC20_ABI, userProvider)
+        const contractWithUser = contract.connect(signer)
+        // get allow amount
+        const allowanceAmount = await contractWithUser.allowance(address, VAULT_ADDRESS)
+        return allowanceAmount.gte(nextAmounts[index])
+      })
+    )
+    if (some(allowanceCheckers, i => i === false)) {
+      dispatch(
+        warmDialog({
+          open: true,
+          type: 'warning',
+          message: 'Insufficient approved amounts!'
+        })
+      )
+      setIsLoading(false)
+      return
+    }
+
     // step3: deposit
     const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider)
     const nVaultWithUser = vaultContract.connect(signer)
-    let isSuccess = false
 
     const errorHandle = error => {
       const errorMsg = errorTextOutput(error)
-      let tip = ''
+      let tip = errorMsg
       if (isEs(errorMsg)) {
         tip = 'Vault has been shut down, please try again later!'
       } else if (isAd(errorMsg)) {
@@ -299,22 +353,51 @@ export default function Deposit({
         )
       }
       setIsLoading(false)
+      return false
     }
     const extendObj = {}
     // if gasLimit times not 1, need estimateGas
     if (isNumber(MULTIPLE_OF_GAS) && MULTIPLE_OF_GAS !== 1) {
-      const gas = await nVaultWithUser.estimateGas.mint(nextTokens, nextAmounts, 0).catch(errorHandle)
+      const gas = await nVaultWithUser.estimateGas.mint(nextTokens, nextAmounts, 0).catch(e => {
+        errorHandle(e)
+        return
+      })
       if (isUndefined(gas)) return
       const gasLimit = Math.ceil(gas * MULTIPLE_OF_GAS)
       // gasLimit not exceed maximum
       const maxGasLimit = gasLimit < MAX_GAS_LIMIT ? gasLimit : MAX_GAS_LIMIT
       extendObj.gasLimit = maxGasLimit
     }
-    await nVaultWithUser
+    const isSuccess = await nVaultWithUser
       .mint(nextTokens, nextAmounts, 0, extendObj)
-      .then(tx => tx.wait())
-      .then(() => {
-        isSuccess = true
+      .then(tx => {
+        // if user add gas in metamask, next code runs error, and return a new transaction.
+        return tx
+          .wait()
+          .then(() => {
+            return true
+          })
+          .catch(error => {
+            const { code, replacement, cancelled, reason } = error
+            // if error due to 'TRANSACTION_REPLACED'
+            // we should wait the replacement transaction commit before we close the modal
+            if (code === TRANSACTION_REPLACED) {
+              if (cancelled) {
+                return
+              }
+              const replaceTransaction = replacement
+              return replaceTransaction.wait()
+            } else if (code === CALL_EXCEPTION) {
+              dispatch(
+                warmDialog({
+                  open: true,
+                  type: 'error',
+                  message: reason
+                })
+              )
+              return false
+            }
+          })
       })
       .catch(errorHandle)
 
@@ -327,6 +410,16 @@ export default function Deposit({
     loadingTimer.current = setTimeout(() => {
       setIsLoading(false)
       setIsOpenEstimateModal(false)
+      if (isUndefined(isSuccess)) {
+        dispatch(
+          warmDialog({
+            open: true,
+            type: 'warning',
+            message: 'Cancelled!'
+          })
+        )
+        return
+      }
       if (isSuccess) {
         dispatch(
           warmDialog({
@@ -337,7 +430,7 @@ export default function Deposit({
         )
       }
     }, 2000)
-  }
+  }, [dispatch, VAULT_ADDRESS, VAULT_ABI, userProvider, address, getTokenAndAmonut, isValidValue, minimumInvestmentAmount, tokenSelect])
 
   /**
    *
@@ -403,13 +496,30 @@ export default function Deposit({
       })
       setEstimateVaultBuffValue(result)
       setIsEstimate(false)
-    }, 1500)
+    }, 1500),
+    [isValidValue, VAULT_ABI, VAULT_ADDRESS, dispatch, getTokenAndAmonut, minimumInvestmentAmount, tokenSelect, userProvider]
   )
+
+  const handleMint = useCallback(() => {
+    queryUsdtBalance()
+    queryUsdcBalance()
+    queryDaiBalance()
+    queryVaultBufferBalance()
+  }, [queryUsdtBalance, queryUsdcBalance, queryDaiBalance, queryVaultBufferBalance])
 
   useEffect(() => {
     estimateMint()
     return () => estimateMint.cancel()
-  }, [usdcValue, usdtValue, daiValue])
+  }, [usdcValue, usdtValue, daiValue, estimateMint])
+
+  useEffect(() => {
+    if (isEmpty(VAULT_ABI) || isEmpty(userProvider) || isEmpty(VAULT_ABI)) return
+    const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider)
+    vaultContract.on('Mint', handleMint)
+    return () => {
+      vaultContract.off('Mint', handleMint)
+    }
+  }, [VAULT_ADDRESS, VAULT_ABI, userProvider, handleMint])
 
   const isLogin = !isEmpty(userProvider)
 
@@ -490,7 +600,7 @@ export default function Deposit({
                             })}
                           >
                             Balance:&nbsp;&nbsp;
-                            <Loading loading={isBalanceLoading}>{formatBalance(item.balance, item.decimals)}</Loading>
+                            <Loading loading={item.loading}>{formatBalance(item.balance, item.decimals)}</Loading>
                           </div>
                         </GridItem>
                       </GridContainer>
@@ -506,20 +616,14 @@ export default function Deposit({
               <GridItem xs={12} sm={12} md={12} lg={12}>
                 <div className={classes.estimateBalanceTitle}>
                   USDi Ticket
-                  {/* <Tooltip
-                    classes={{
-                      tooltip: classes.tooltip
-                    }}
-                    placement="right"
-                    title={`USDi Ticket functions as parallel USDi that will be converted into USDi after fund allocations have been successful. Last
-            execution time was ${moment(nextRebaseTime).format('yyyy-MM-DD HH:mm')}`}
-                  >
-                    <InfoIcon style={{ fontSize: '1.25rem', marginLeft: 8, color: '#888' }} />
-                  </Tooltip> */}
                   <span className={classes.estimateBalanceNum}>
-                    <Loading loading={isEstimate}>{toFixed(estimateVaultBuffValue, decimal)}</Loading>
+                    <Loading loading={isEstimate}>{toFixed(estimateVaultBuffValue, BigNumber.from(10).pow(vaultBufferDecimals))}</Loading>
                   </span>
                 </div>
+                {/* <p className={classes.estimateText}>
+                  <span>Balances&nbsp;:</span>
+                  <span>{toFixed(vaultBufferBalance, BigNumber.from(10).pow(vaultBufferDecimals), 4)} USDi Ticket</span>
+                </p> */}
               </GridItem>
               <GridItem xs={12} sm={12} md={12} lg={12}>
                 <div className={classes.tip}>
@@ -589,7 +693,7 @@ export default function Deposit({
           <div className={classes.itemBottom}>
             <div className={classes.exchangeInfo}>
               Receive:
-              <span className={classes.usdiInfo}>{toFixed(estimateVaultBuffValue, decimal, 2)}</span>USDi Tickets
+              <span className={classes.usdiInfo}>{toFixed(estimateVaultBuffValue, BigNumber.from(10).pow(vaultBufferDecimals), 2)}</span>USDi Tickets
             </div>
           </div>
           <div className={classes.buttonGroup}>

@@ -122,7 +122,7 @@ export default function LendingSectionV2() {
         <div className={classes.chartInner}>
           <GridContainer>
             <GridItem>
-              <GridContainer className={classes.headerWrapper} justifyContent="center" alignItems="center">
+              <GridContainer className={classes.headerWrapper} alignItems="center">
                 <GridItem md={6} xs={6} sm={6} className={classes.switchWrapper}>
                   <span>ETH</span>
                   <IOSSwitch

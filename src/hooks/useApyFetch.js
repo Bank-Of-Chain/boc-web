@@ -79,7 +79,7 @@ export default function useApyFetch(chain = '1') {
           setLoading(false)
         }, 1000)
       })
-  }, [])
+  }, [chain])
 
   return {
     loading,

@@ -2,7 +2,6 @@
 import React, { useEffect, useState, useCallback, useRef } from 'react'
 import { makeStyles } from '@material-ui/core/styles'
 import PropTypes from 'prop-types'
-import classNames from 'classnames'
 
 // === Components === //
 import GridContainer from '@/components/Grid/GridContainer'
@@ -11,8 +10,6 @@ import SimpleSelect from '@/components/SimpleSelect'
 import Button from '@/components/CustomButtons/Button'
 import CustomTextField from '@/components/CustomTextField'
 import Loading from '@/components/LoadingComponent'
-import AddIcon from '@material-ui/icons/Add'
-import RefreshIcon from '@material-ui/icons/Refresh'
 import CachedIcon from '@material-ui/icons/Cached'
 import TokenItem from '@/components/TokenItem/TokenItemV2'
 
@@ -31,14 +28,16 @@ import debounce from 'lodash/debounce'
 import compact from 'lodash/compact'
 import find from 'lodash/find'
 import isNumber from 'lodash/isNumber'
+import isUndefined from 'lodash/isUndefined'
 import { toFixed } from '@/helpers/number-format'
 import { warmDialog } from '@/reducers/meta-reducer'
 import { errorTextOutput, isLossMuch } from '@/helpers/error-handler'
 
 // === Constants === //
 import { USDT_ADDRESS, USDC_ADDRESS, DAI_ADDRESS, MULTIPLE_OF_GAS, MAX_GAS_LIMIT } from '@/constants'
-import { ETH_ADDRESS, WETH_ADDRESS } from '@/constants/tokens'
+import { ETH_ADDRESS } from '@/constants/tokens'
 import { BN_6, BN_18 } from '@/constants/big-number'
+import { TRANSACTION_REPLACED, CALL_EXCEPTION } from '@/constants/metamask'
 
 // === Styles === //
 import styles from './style-v3'
@@ -239,15 +238,58 @@ const ApproveArrayV3 = props => {
       } else {
         tx = await contractWithSigner.batchSwap(nextSwapArray)
       }
-      await tx.wait()
-      dispatch(
-        warmDialog({
-          open: true,
-          type: 'success',
-          message: 'Swap Success!'
-        })
-      )
-      handleClose()
+      const isSuccess = await tx.wait().catch(error => {
+        console.log('TRANSACTION_REPLACED=', error, Object.keys(error))
+        const { code, replacement, cancelled, reason, receipt } = error
+        console.log('code=', code)
+        console.log('replacement=', replacement)
+        console.log('cancelled=', cancelled)
+        console.log('reason=', reason)
+        console.log('receipt=', receipt)
+        // if error due to 'TRANSACTION_REPLACED'
+        // we should wait the replacement transaction commit before we close the modal
+        if (code === TRANSACTION_REPLACED) {
+          // if user add gas for tx canceled, return undefined
+          if (cancelled) {
+            return
+          }
+          const replaceTransaction = replacement
+          return replaceTransaction.wait()
+        } else if (code === CALL_EXCEPTION) {
+          dispatch(
+            warmDialog({
+              open: true,
+              type: 'error',
+              message: reason
+            })
+          )
+          setIsSwapping(false)
+          return false
+        }
+      })
+
+      if (isUndefined(isSuccess)) {
+        dispatch(
+          warmDialog({
+            open: true,
+            type: 'warning',
+            message: 'Cancelled!'
+          })
+        )
+        setIsSwapping(false)
+        return
+      }
+
+      if (isSuccess) {
+        dispatch(
+          warmDialog({
+            open: true,
+            type: 'success',
+            message: 'Swap Success!'
+          })
+        )
+        handleClose()
+      }
     } catch (error) {
       console.log('batchSwap error:', error)
       const errorMsg = errorTextOutput(error)

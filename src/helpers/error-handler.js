@@ -29,7 +29,7 @@ export const errorTextOutput = error => {
  * @returns
  */
 export const isAd = (errorMsg = '') => {
-  return errorMsg.endsWith("'AD'")
+  return errorMsg.includes("'AD'") || errorMsg.includes('"AD"') || errorMsg === 'AD'
 }
 
 /**
@@ -38,7 +38,7 @@ export const isAd = (errorMsg = '') => {
  * @returns
  */
 export const isEs = (errorMsg = '') => {
-  return errorMsg.endsWith("'ES or AD'") || errorMsg.endsWith("'ES'")
+  return errorMsg.includes("'ES or AD'") || errorMsg.includes("'ES'") || errorMsg.includes('"ES"') || errorMsg === 'ES'
 }
 
 /**
@@ -47,7 +47,7 @@ export const isEs = (errorMsg = '') => {
  * @returns
  */
 export const isRp = (errorMsg = '') => {
-  return errorMsg.endsWith("'RP'")
+  return errorMsg.includes("'RP'") || errorMsg.includes('"RP"') || errorMsg === 'RP'
 }
 
 /**
@@ -78,7 +78,7 @@ export const isLossMuch = (errorMsg = '') => {
  * @returns
  */
 export const isMaxLoss = (errorMsg = '') => {
-  return errorMsg.indexOf('loss much') !== -1 || errorMsg.indexOf('amount lower than minimum') !== -1
+  return errorMsg.includes('loss much') || errorMsg.includes('amount lower than minimum') !== -1
 }
 
 /**
@@ -96,7 +96,7 @@ export const isExchangeFail = (errorMsg = '') => {
  * @returns
  */
 export const isDistributing = (errorMsg = '') => {
-  return errorMsg.endsWith("'is distributing'")
+  return errorMsg.includes("'is distributing'") || errorMsg.includes('"is distributing"')
 }
 
 /**
@@ -105,7 +105,7 @@ export const isDistributing = (errorMsg = '') => {
  * @returns
  */
 export const isLessThanMinValue = (errorMsg = '') => {
-  return errorMsg.endsWith("'Amount must be gt minimum Investment Amount'")
+  return errorMsg.includes("'Amount must be gt minimum Investment Amount'") || errorMsg.includes('"Amount must be gt minimum Investment Amount"')
 }
 
 /**
@@ -114,5 +114,5 @@ export const isLessThanMinValue = (errorMsg = '') => {
  * @returns
  */
 export const isTransferNotEnough = (errorMsg = '') => {
-  return errorMsg.endsWith("'ERC20: transfer amount exceeds allowance'")
+  return errorMsg.includes("'ERC20: transfer amount exceeds allowance'") || errorMsg.includes('"ERC20: transfer amount exceeds allowance"')
 }
