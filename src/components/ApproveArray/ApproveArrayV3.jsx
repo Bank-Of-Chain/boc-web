@@ -37,7 +37,7 @@ import { errorTextOutput, isLossMuch } from '@/helpers/error-handler'
 import { USDT_ADDRESS, USDC_ADDRESS, DAI_ADDRESS, MULTIPLE_OF_GAS, MAX_GAS_LIMIT } from '@/constants'
 import { ETH_ADDRESS } from '@/constants/tokens'
 import { BN_6, BN_18 } from '@/constants/big-number'
-import { TRANSACTION_REPLACED } from '@/constants/metamask'
+import { TRANSACTION_REPLACED, CALL_EXCEPTION } from '@/constants/metamask'
 
 // === Styles === //
 import styles from './style-v3'
@@ -255,6 +255,16 @@ const ApproveArrayV3 = props => {
           }
           const replaceTransaction = replacement
           return replaceTransaction.wait()
+        } else if (code === CALL_EXCEPTION) {
+          dispatch(
+            warmDialog({
+              open: true,
+              type: 'error',
+              message: reason
+            })
+          )
+          setIsSwapping(false)
+          return false
         }
       })
 
