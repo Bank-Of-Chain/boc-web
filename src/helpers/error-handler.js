@@ -78,7 +78,7 @@ export const isLossMuch = (errorMsg = '') => {
  * @returns
  */
 export const isMaxLoss = (errorMsg = '') => {
-  return errorMsg.includes('loss much') || errorMsg.includes('amount lower than minimum') !== -1
+  return errorMsg.includes('loss much') || errorMsg.includes('amount lower than minimum')
 }
 
 /**
