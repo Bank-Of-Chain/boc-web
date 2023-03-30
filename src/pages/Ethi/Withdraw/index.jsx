@@ -46,7 +46,7 @@ import { isAd, isEs, isRp, isMaxLoss, isLossMuch, isExchangeFail, errorTextOutpu
 // === Constants === //
 import { ETH_ADDRESS, WETH_ADDRESS } from '@/constants/tokens'
 import { MULTIPLE_OF_GAS, MAX_GAS_LIMIT, IERC20_ABI } from '@/constants'
-import { TRANSACTION_REPLACED } from '@/constants/metamask'
+import { TRANSACTION_REPLACED, CALL_EXCEPTION } from '@/constants/metamask'
 import { BN_18 } from '@/constants/big-number'
 
 // === Styles === //
@@ -343,6 +343,15 @@ const Withdraw = props => {
           const replaceTransaction = replacement
           console.log('replaceTx=', replaceTransaction, replaceTransaction.hash)
           return replaceTransaction.wait()
+        } else if (code === CALL_EXCEPTION) {
+          dispatch(
+            warmDialog({
+              open: true,
+              type: 'error',
+              message: reason
+            })
+          )
+          return false
         }
       })
       if (isUndefined(isSuccess)) {
@@ -353,6 +362,14 @@ const Withdraw = props => {
             message: 'Cancelled!'
           })
         )
+        loadingTimer.current = setTimeout(() => {
+          setIsWithdrawLoading(false)
+          setWithdrawError({})
+          setCurrentStep(0)
+        }, 2000)
+        return
+      }
+      if (isSuccess === false) {
         loadingTimer.current = setTimeout(() => {
           setIsWithdrawLoading(false)
           setWithdrawError({})

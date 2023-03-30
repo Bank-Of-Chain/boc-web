@@ -42,7 +42,7 @@ import useUserAddress from '@/hooks/useUserAddress'
 import { ETH_ADDRESS } from '@/constants/tokens'
 import { BN_18 } from '@/constants/big-number'
 import { MULTIPLE_OF_GAS, MAX_GAS_LIMIT } from '@/constants'
-import { TRANSACTION_REPLACED } from '@/constants/metamask'
+import { TRANSACTION_REPLACED, CALL_EXCEPTION } from '@/constants/metamask'
 
 // === Styles === //
 import styles from './style'
@@ -239,6 +239,15 @@ const Deposit = ({ userProvider, VAULT_ABI, VAULT_ADDRESS, minimumInvestmentAmou
               }
               const replaceTransaction = replacement
               return replaceTransaction.wait()
+            } else if (code === CALL_EXCEPTION) {
+              dispatch(
+                warmDialog({
+                  open: true,
+                  type: 'error',
+                  message: reason
+                })
+              )
+              return false
             }
           })
       })

@@ -46,7 +46,7 @@ import useUserAddress from '@/hooks/useUserAddress'
 // === Constants === //
 import { USDT_ADDRESS, USDC_ADDRESS, DAI_ADDRESS, IERC20_ABI, MULTIPLE_OF_GAS, MAX_GAS_LIMIT } from '@/constants'
 import { BN_18 } from '@/constants/big-number'
-import { TRANSACTION_REPLACED } from '@/constants/metamask'
+import { TRANSACTION_REPLACED, CALL_EXCEPTION } from '@/constants/metamask'
 
 // === Styles === //
 import styles from './style'
@@ -318,7 +318,7 @@ export default function Deposit({ VAULT_BUFFER_ADDRESS, userProvider, VAULT_ABI,
         warmDialog({
           open: true,
           type: 'warning',
-          message: 'Insufficient Approved amounts!'
+          message: 'Insufficient approved amounts!'
         })
       )
       setIsLoading(false)
@@ -378,8 +378,7 @@ export default function Deposit({ VAULT_BUFFER_ADDRESS, userProvider, VAULT_ABI,
             return true
           })
           .catch(error => {
-            console.log('TRANSACTION_REPLACED=', error)
-            const { code, replacement, cancelled } = error
+            const { code, replacement, cancelled, reason } = error
             // if error due to 'TRANSACTION_REPLACED'
             // we should wait the replacement transaction commit before we close the modal
             if (code === TRANSACTION_REPLACED) {
@@ -388,6 +387,15 @@ export default function Deposit({ VAULT_BUFFER_ADDRESS, userProvider, VAULT_ABI,
               }
               const replaceTransaction = replacement
               return replaceTransaction.wait()
+            } else if (code === CALL_EXCEPTION) {
+              dispatch(
+                warmDialog({
+                  open: true,
+                  type: 'error',
+                  message: reason
+                })
+              )
+              return false
             }
           })
       })
