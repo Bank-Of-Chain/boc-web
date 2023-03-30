@@ -8,6 +8,7 @@ import App from './App'
 
 // === Styles === //
 import './index.css'
+import 'uno.css'
 
 ReactDOM.render(
   <Provider store={store}>

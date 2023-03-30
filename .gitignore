@@ -4,3 +4,5 @@ zip/
 coverage/
 .env
 .eslintcache
+
+stats.html

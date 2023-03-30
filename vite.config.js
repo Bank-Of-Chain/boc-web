@@ -1,5 +1,7 @@
 import path from 'path'
+import UnoCSS from 'unocss/vite'
 import { defineConfig } from 'vite'
+import Analyze from 'rollup-plugin-visualizer'
 import reactRefresh from '@vitejs/plugin-react-refresh'
 import { NodeGlobalsPolyfillPlugin } from '@esbuild-plugins/node-globals-polyfill'
 
@@ -9,6 +11,9 @@ export default defineConfig({
     'process.env': {}
   },
   server: {
+    port: 3001
+  },
+  preview: {
     port: 3001
   },
   // This changes the out put dir from dist to build
@@ -21,7 +26,7 @@ export default defineConfig({
       '@': path.resolve(__dirname, './src')
     }
   },
-  plugins: [reactRefresh()],
+  plugins: [UnoCSS(), reactRefresh(), Analyze()],
   optimizeDeps: {
     esbuildOptions: {
       // Node.js global to browser globalThis
