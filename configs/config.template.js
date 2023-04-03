@@ -114,7 +114,7 @@ const config1 = {
       id: 'mutilCoins',
       name: 'Vault for USDi',
       path: '#/usdi',
-      abi_version: 'usdi-v1.6.0',
+      abi_version: 'v2.0',
       VAULT_ADDRESS: USDI_VAULT_FOR_ETH,
       USDI_ADDRESS: USDI_FOR_ETH,
       VAULT_BUFFER_ADDRESS: VAULT_BUFFER_FOR_USDI_ETH
@@ -124,7 +124,7 @@ const config1 = {
       name: 'Vault for ETHi',
       description: 'Vault for ETHi',
       path: '#/ethi',
-      abi_version: 'ethi-v1.6.0',
+      abi_version: 'v2.0',
       VAULT_ADDRESS: ETHI_VAULT,
       ETHI_ADDRESS: ETHI_FOR_ETH,
       VAULT_BUFFER_ADDRESS: VAULT_BUFFER_FOR_ETHI_ETH

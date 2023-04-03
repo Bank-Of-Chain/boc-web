@@ -2,7 +2,6 @@
 import React, { useEffect, useState, useCallback, useRef } from 'react'
 import { makeStyles } from '@material-ui/core/styles'
 import PropTypes from 'prop-types'
-import classNames from 'classnames'
 
 // === Components === //
 import GridContainer from '@/components/Grid/GridContainer'
@@ -11,8 +10,6 @@ import SimpleSelect from '@/components/SimpleSelect'
 import Button from '@/components/CustomButtons/Button'
 import CustomTextField from '@/components/CustomTextField'
 import Loading from '@/components/LoadingComponent'
-import AddIcon from '@material-ui/icons/Add'
-import RefreshIcon from '@material-ui/icons/Refresh'
 import CachedIcon from '@material-ui/icons/Cached'
 import TokenItem from '@/components/TokenItem/TokenItemV2'
 
@@ -40,7 +37,7 @@ import { errorTextOutput, isLossMuch } from '@/helpers/error-handler'
 import { USDT_ADDRESS, USDC_ADDRESS, DAI_ADDRESS, MULTIPLE_OF_GAS, MAX_GAS_LIMIT } from '@/constants'
 import { ETH_ADDRESS } from '@/constants/tokens'
 import { BN_6, BN_18 } from '@/constants/big-number'
-import { TRANSACTION_REPLACED } from '@/constants/metamask'
+import { TRANSACTION_REPLACED, CALL_EXCEPTION } from '@/constants/metamask'
 
 // === Styles === //
 import styles from './style-v3'
@@ -258,6 +255,16 @@ const ApproveArrayV3 = props => {
           }
           const replaceTransaction = replacement
           return replaceTransaction.wait()
+        } else if (code === CALL_EXCEPTION) {
+          dispatch(
+            warmDialog({
+              open: true,
+              type: 'error',
+              message: reason
+            })
+          )
+          setIsSwapping(false)
+          return false
         }
       })
 
@@ -266,7 +273,7 @@ const ApproveArrayV3 = props => {
           warmDialog({
             open: true,
             type: 'warning',
-            message: 'Cancel Success!'
+            message: 'Cancelled!'
           })
         )
         setIsSwapping(false)

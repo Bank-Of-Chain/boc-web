@@ -42,7 +42,7 @@ import useUserAddress from '@/hooks/useUserAddress'
 import { ETH_ADDRESS } from '@/constants/tokens'
 import { BN_18 } from '@/constants/big-number'
 import { MULTIPLE_OF_GAS, MAX_GAS_LIMIT } from '@/constants'
-import { TRANSACTION_REPLACED } from '@/constants/metamask'
+import { TRANSACTION_REPLACED, CALL_EXCEPTION } from '@/constants/metamask'
 
 // === Styles === //
 import styles from './style'
@@ -102,20 +102,20 @@ const Deposit = ({ userProvider, VAULT_ABI, VAULT_ADDRESS, minimumInvestmentAmou
     const signer = userProvider.getSigner()
     const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider)
     const nVaultWithUser = vaultContract.connect(signer)
-    return nVaultWithUser.estimateGas.mint(ETH_ADDRESS, amount, 0, {
+    return nVaultWithUser.estimateGas.mint([ETH_ADDRESS], [amount], 0, {
       from: address,
       value: amount
     })
   }, [userProvider, VAULT_ADDRESS, VAULT_ABI, ethBalance, ethDecimals, address, ethValue, isValid])
 
   const getGasFee = useCallback(() => {
-    if (gasPriceLoading || gasLimitLoading) {
+    if (gasPriceLoading || gasLimitLoading || !isValid) {
       return BigNumber.from(0)
     }
     // metamask gaslimit great than contract gaslimit, so add extra limit
     const metamaskExtraLimit = 114
     return mintGasLimit.add(metamaskExtraLimit).mul(BigNumber.from(gasPrice.toString()))
-  }, [gasPrice, gasPriceLoading, mintGasLimit, gasLimitLoading])
+  }, [gasPrice, gasPriceLoading, mintGasLimit, gasLimitLoading, isValid])
 
   const handleInputChange = event => {
     setIsEstimate(true)
@@ -183,6 +183,8 @@ const Deposit = ({ userProvider, VAULT_ABI, VAULT_ADDRESS, minimumInvestmentAmou
         tip = 'Vault is in distributing, please try again later!'
       } else if (isLessThanMinValue(errorMsg)) {
         tip = `Deposit Amount must be greater than ${toFixed(minimumInvestmentAmount, BN_18, 2)}ETH!`
+      } else {
+        tip = errorMsg
       }
       if (tip) {
         dispatch(
@@ -199,7 +201,10 @@ const Deposit = ({ userProvider, VAULT_ABI, VAULT_ADDRESS, minimumInvestmentAmou
     const extendObj = {}
     // if gasLimit times not 1, need estimateGas
     if (isNumber(MULTIPLE_OF_GAS) && MULTIPLE_OF_GAS !== 1) {
-      const gas = await nVaultWithUser.estimateGas.mint(ETH_ADDRESS, amount, 0, { from: address, value: amount }).catch(errorHandle)
+      const gas = await nVaultWithUser.estimateGas.mint([ETH_ADDRESS], [amount], 0, { from: address, value: amount }).catch(e => {
+        errorHandle(e)
+        return
+      })
       if (isUndefined(gas)) return
       const gasLimit = Math.ceil(gas * MULTIPLE_OF_GAS)
       // gasLimit not exceed maximum
@@ -207,7 +212,7 @@ const Deposit = ({ userProvider, VAULT_ABI, VAULT_ADDRESS, minimumInvestmentAmou
       extendObj.gasLimit = maxGasLimit
     }
     const isSuccess = await nVaultWithUser
-      .mint(ETH_ADDRESS, amount, 0, {
+      .mint([ETH_ADDRESS], [amount], 0, {
         ...extendObj,
         from: address,
         value: amount
@@ -236,6 +241,15 @@ const Deposit = ({ userProvider, VAULT_ABI, VAULT_ADDRESS, minimumInvestmentAmou
               }
               const replaceTransaction = replacement
               return replaceTransaction.wait()
+            } else if (code === CALL_EXCEPTION) {
+              dispatch(
+                warmDialog({
+                  open: true,
+                  type: 'error',
+                  message: reason
+                })
+              )
+              return false
             }
           })
       })
@@ -250,7 +264,7 @@ const Deposit = ({ userProvider, VAULT_ABI, VAULT_ADDRESS, minimumInvestmentAmou
           warmDialog({
             open: true,
             type: 'warning',
-            message: 'Cancel Success!'
+            message: 'Cancelled!'
           })
         )
         return
@@ -277,7 +291,7 @@ const Deposit = ({ userProvider, VAULT_ABI, VAULT_ADDRESS, minimumInvestmentAmou
       }
       const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider)
       const amount = BigNumber.from(BN(ethValue).multipliedBy(BigNumber.from(10).pow(ethDecimals).toString()).toFixed())
-      const result = await vaultContract.estimateMint(ETH_ADDRESS, amount).catch(error => {
+      const result = await vaultContract.estimateMint([ETH_ADDRESS], [amount]).catch(error => {
         const errorMsg = errorTextOutput(error)
         let tip = ''
         if (isEs(errorMsg)) {
@@ -290,6 +304,8 @@ const Deposit = ({ userProvider, VAULT_ABI, VAULT_ADDRESS, minimumInvestmentAmou
           tip = 'Vault is in distributing, please try again later!'
         } else if (isLessThanMinValue(errorMsg)) {
           tip = `Deposit Amount must be greater than ${toFixed(minimumInvestmentAmount, BN_18, 2)}ETH!`
+        } else {
+          tip = errorMsg
         }
         if (tip) {
           dispatch(

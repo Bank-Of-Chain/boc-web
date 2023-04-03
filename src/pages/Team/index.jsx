@@ -51,40 +51,40 @@ const TeamMembers = [
     name: 'Ferris Lee',
     github: 'https://github.com/jerrylib'
   },
-  {
-    avatar: './images/avatar/PabloGaspa.png',
-    label: 'Head of Design',
-    name: 'Pablo Gaspa',
-    twitter: 'https://twitter.com/Gasparini_Pablo'
-  },
-  {
-    avatar: './images/avatar/FranciscoRua.png',
-    label: 'Head of Operations',
-    name: 'Francisco Rua',
-    github: 'https://github.com/Francisco-Rua',
-    linked: 'https://www.linkedin.com/in/ruafrancisco/'
-  },
-  {
-    avatar: './images/avatar/JiahuaXu.png',
-    label: 'Head of Research',
-    name: 'Jiahua Xu',
-    twitter: 'https://twitter.com/JiahuaJavaXu',
-    linked: 'https://www.linkedin.com/in/jiahuaxu/'
-  },
-  {
-    avatar: './images/avatar/TaniaGeuna.png',
-    label: 'Head of Public Relations ',
-    name: 'Tania Geuna',
-    twitter: 'https://twitter.com/TaniaGeuna',
-    linked: 'https://www.linkedin.com/in/tania-geuna/'
-  },
-  {
-    avatar: './images/avatar/SuFarn.png',
-    label: 'Head of Community',
-    name: 'Su Farn Fong',
-    twitter: 'https://twitter.com/boc_Intern',
-    linked: 'https://www.linkedin.com/in/su-farn-fong-a29489173/'
-  }
+  // {
+  //   avatar: './images/avatar/PabloGaspa.png',
+  //   label: 'Head of Design',
+  //   name: 'Pablo Gaspa',
+  //   twitter: 'https://twitter.com/Gasparini_Pablo'
+  // },
+  // {
+  //   avatar: './images/avatar/FranciscoRua.png',
+  //   label: 'Head of Operations',
+  //   name: 'Francisco Rua',
+  //   github: 'https://github.com/Francisco-Rua',
+  //   linked: 'https://www.linkedin.com/in/ruafrancisco/'
+  // },
+  // {
+  //   avatar: './images/avatar/JiahuaXu.png',
+  //   label: 'Head of Research',
+  //   name: 'Jiahua Xu',
+  //   twitter: 'https://twitter.com/JiahuaJavaXu',
+  //   linked: 'https://www.linkedin.com/in/jiahuaxu/'
+  // },
+  // {
+  //   avatar: './images/avatar/TaniaGeuna.png',
+  //   label: 'Head of Public Relations ',
+  //   name: 'Tania Geuna',
+  //   twitter: 'https://twitter.com/TaniaGeuna',
+  //   linked: 'https://www.linkedin.com/in/tania-geuna/'
+  // },
+  // {
+  //   avatar: './images/avatar/SuFarn.png',
+  //   label: 'Head of Community',
+  //   name: 'Su Farn Fong',
+  //   twitter: 'https://twitter.com/boc_Intern',
+  //   linked: 'https://www.linkedin.com/in/su-farn-fong-a29489173/'
+  // }
 ]
 
 export default function Home() {
