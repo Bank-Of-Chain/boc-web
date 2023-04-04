@@ -57,7 +57,8 @@ function Ethi(props) {
   const setCurrent = tab => {
     dispatch(setCurrentTab(tab))
   }
-  const { minimumInvestmentAmount, exchangeManager } = useVault(VAULT_ADDRESS, VAULT_ABI, userProvider)
+
+  const { minimumInvestmentAmount, exchangeManager, redeemFeeBps, trusteeFeeBps } = useVault(VAULT_ADDRESS, VAULT_ABI, userProvider)
 
   return (
     <div className={classes.container}>
@@ -147,6 +148,8 @@ function Ethi(props) {
                     VAULT_ADDRESS={VAULT_ADDRESS}
                     ETH_ADDRESS={ETH_ADDRESS}
                     VAULT_ABI={VAULT_ABI}
+                    redeemFeeBps={redeemFeeBps}
+                    trusteeFeeBps={trusteeFeeBps}
                     PRICE_ORCALE_ABI={PRICE_ORCALE_ABI}
                     exchangeManager={exchangeManager}
                     EXCHANGE_ADAPTER_ABI={EXCHANGE_ADAPTER_ABI}
