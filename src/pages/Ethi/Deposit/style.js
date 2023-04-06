@@ -1,32 +1,11 @@
 const componentsStyle = () => ({
-  wrapper: {
-    padding: '1.875rem',
-    borderRadius: '1.25rem',
-    background: 'linear-gradient(111.68deg, rgba(87, 97, 125, 0.2) 7.59%, rgba(255, 255, 255, 0.078) 102.04%);'
-  },
   modal: {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    marginLeft: '90px'
   },
   modalBody: {
     textAlign: 'center'
-  },
-  depositContainer: {
-    border: '1px solid #A68EFD',
-    borderTopLeftRadius: '1.25rem',
-    borderTopRightRadius: '1.25rem',
-    padding: '1.25rem',
-    background: '#1E1E1F'
-  },
-  estimateContainer: {
-    border: '1px solid #A68EFD',
-    marginTop: '0.625rem',
-    borderBottomLeftRadius: '1.25rem',
-    borderBottomRightRadius: '1.25rem',
-    padding: '1.25rem',
-    background: '#1E1E1F'
   },
   estimateText: {
     margin: '0.25rem 0',

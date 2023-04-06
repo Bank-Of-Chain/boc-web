@@ -17,8 +17,7 @@ const componentsStyle = () => ({
   modal: {
     display: 'flex',
     alignItems: 'center',
-    justifyContent: 'center',
-    marginLeft: '90px'
+    justifyContent: 'center'
   },
   modalBody: {
     textAlign: 'center'
@@ -29,24 +28,18 @@ const componentsStyle = () => ({
   },
   withdrawContainer: {
     padding: '1.25rem',
-    border: '1px solid #A68EFD',
     borderTopLeftRadius: '1.25rem',
-    borderTopRightRadius: '1.25rem',
-    background: '#1E1E1F'
+    borderTopRightRadius: '1.25rem'
   },
   outputContainer: {
     padding: '1.25rem',
-    border: '1px solid #A68EFD',
-    marginTop: '0.625rem',
-    background: '#1E1E1F'
+    marginTop: '0.625rem'
   },
   maxlossContainer: {
     padding: '1.25rem',
-    border: '1px solid #A68EFD',
     marginTop: '0.625rem',
     borderBottomLeftRadius: '1.25rem',
-    borderBottomRightRadius: '1.25rem',
-    background: '#1E1E1F'
+    borderBottomRightRadius: '1.25rem'
   },
   slippageTitle: {
     display: 'flex',
@@ -59,9 +52,6 @@ const componentsStyle = () => ({
     display: 'flex',
     marginTop: '0.5rem',
     alignItems: 'center'
-  },
-  footerContainer: {
-    marginTop: '0.625rem'
   },
   inputLabelWrapper: {
     display: 'flex',

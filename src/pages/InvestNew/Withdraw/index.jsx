@@ -27,6 +27,7 @@ import ApproveArray from '@/components/ApproveArray/ApproveArrayV3'
 
 // === Hooks === //
 import useVault from '@/hooks/useVault'
+import useWallet from '@/hooks/useWallet'
 import useUserAddress from '@/hooks/useUserAddress'
 import useRedeemFeeBps from '@/hooks/useRedeemFeeBps'
 import useErc20Token from '@/hooks/useErc20Token'
@@ -38,6 +39,8 @@ import { USDT_ADDRESS, IERC20_ABI, MULTIPLE_OF_GAS, MAX_GAS_LIMIT } from '@/cons
 import { USDC_ADDRESS, DAI_ADDRESS } from '@/constants/tokens'
 import { BN_18 } from '@/constants/big-number'
 import { TRANSACTION_REPLACED, CALL_EXCEPTION } from '@/constants/metamask'
+import { USDI_FOR_ETH as USDI_ADDRESS, USDI_VAULT_FOR_ETH as VAULT_ADDRESS } from '@/config/config'
+import { VAULT_ABI_V2_0 as VAULT_ABI } from '@/constants/abi'
 
 // === Utils === //
 import isUndefined from 'lodash/isUndefined'
@@ -59,7 +62,10 @@ const steps = [{ title: 'Shares Validation' }, { title: 'Gas Estimates' }, { tit
 
 const RECEIVE_MIX_VALUE = 'Mix'
 
-const Withdraw = ({ userProvider, USDI_ADDRESS, VAULT_ADDRESS, VAULT_ABI, EXCHANGE_AGGREGATOR_ABI, exchangeManager, EXCHANGE_ADAPTER_ABI }) => {
+const Withdraw = () => {
+  // {  EXCHANGE_AGGREGATOR_ABI, EXCHANGE_ADAPTER_ABI }
+  const EXCHANGE_ADAPTER_ABI = [],
+    EXCHANGE_AGGREGATOR_ABI = []
   const classes = useStyles()
   const dispatch = useDispatch()
   const [receiveToken] = useState(RECEIVE_MIX_VALUE)
@@ -92,8 +98,10 @@ const Withdraw = ({ userProvider, USDI_ADDRESS, VAULT_ADDRESS, VAULT_ABI, EXCHAN
   console.log('USDC_ADDRESS=', USDC_ADDRESS, 'DAI_ADDRESS=', DAI_ADDRESS, JSON.stringify(burnTokens))
   const [isShowZipModal, setIsShowZipModal] = useState(false)
 
+  const { userProvider } = useWallet()
+
   const address = useUserAddress(userProvider)
-  const { pegTokenPrice, getPegTokenPrice } = useVault(VAULT_ADDRESS, VAULT_ABI, userProvider)
+  const { pegTokenPrice, getPegTokenPrice, exchangeManager } = useVault(VAULT_ADDRESS, VAULT_ABI, userProvider)
 
   const {
     balance: usdiBalance,
@@ -548,81 +556,70 @@ const Withdraw = ({ userProvider, USDI_ADDRESS, VAULT_ADDRESS, VAULT_ABI, EXCHAN
   }, [VAULT_ADDRESS, VAULT_ABI, userProvider, handleBurnCall])
 
   return (
-    <>
-      <GridContainer className={classes.withdrawContainer}>
-        <GridItem xs={12} sm={12} md={12} lg={12}>
-          <p className={classes.estimateText}>From</p>
-        </GridItem>
-        <GridItem xs={12} sm={12} md={12} lg={12}>
-          <GridContainer justify="center" spacing={2}>
-            <GridItem xs={4} sm={4} md={4} lg={4}>
-              <div className={classes.tokenInfo}>
-                <span className={classes.tokenName}>USDi</span>
-              </div>
-            </GridItem>
-            <GridItem xs={8} sm={8} md={8} lg={8}>
-              <CustomTextField
-                classes={{ root: classes.input }}
-                value={toValue}
-                placeholder="withdraw amount"
-                maxEndAdornment
-                onMaxClick={() => handleMaxClick()}
-                onChange={handleAmountChange}
-                error={!isUndefined(isValidToValueFlag) && !isValidToValueFlag && toValue !== '0'}
-              />
-            </GridItem>
-          </GridContainer>
-        </GridItem>
-        <GridItem xs={6} sm={6} md={6} lg={6}>
-          <p className={classes.estimateText} title={formatBalance(usdiBalance, usdiDecimals, { showAll: true })}>
-            Balance:&nbsp;
-            <Loading loading={isUsdiLoading}>{formatBalance(usdiBalance, usdiDecimals)}</Loading>
-          </p>
-        </GridItem>
-        {address && (
+    <GridContainer>
+      <GridItem xs={6} sm={6} md={6} lg={6}>
+        <GridContainer className={classes.withdrawContainer}>
+          <GridItem xs={12} sm={12} md={12} lg={12}>
+            <GridContainer justify="center" spacing={2}>
+              <GridItem xs={4} sm={4} md={4} lg={4}>
+                <div className={classes.tokenInfo}>
+                  <span className={classes.tokenName}>USDi</span>
+                </div>
+              </GridItem>
+              <GridItem xs={8} sm={8} md={8} lg={8}>
+                <CustomTextField
+                  classes={{ root: classes.input }}
+                  value={toValue}
+                  placeholder="withdraw amount"
+                  maxEndAdornment
+                  onMaxClick={() => handleMaxClick()}
+                  onChange={handleAmountChange}
+                  error={!isUndefined(isValidToValueFlag) && !isValidToValueFlag && toValue !== '0'}
+                />
+              </GridItem>
+            </GridContainer>
+          </GridItem>
           <GridItem xs={6} sm={6} md={6} lg={6}>
-            <p className={classes.estimateText} style={{ justifyContent: 'flex-end' }} title={toFixed(pegTokenPrice, BN_18)}>
-              <span>1 USDi ≈ {toFixed(pegTokenPrice, BN_18, 6)} USD</span>
+            <p className={classes.estimateText} title={formatBalance(usdiBalance, usdiDecimals, { showAll: true })}>
+              Balance:&nbsp;
+              <Loading loading={isUsdiLoading}>{formatBalance(usdiBalance, usdiDecimals)}</Loading>
             </p>
           </GridItem>
-        )}
-      </GridContainer>
-      <GridContainer className={classes.outputContainer}>
-        <GridItem xs={12} sm={12} md={12} lg={12}>
-          <p className={classes.estimateText}>To</p>
-        </GridItem>
-        <GridItem xs={12} sm={12} md={12} lg={12}>
-          <GridContainer>{renderEstimate()}</GridContainer>
-        </GridItem>
-      </GridContainer>
-      <GridContainer className={classes.maxlossContainer}>
-        <GridItem xs={4} sm={4} md={4} className={classes.slippageTitle}>
-          Max loss(%):
-        </GridItem>
-        <GridItem xs={8} sm={8} md={8}>
-          <CustomTextField
-            classes={{ root: classes.input }}
-            value={allowMaxLoss}
-            placeholder="Allow loss percent"
-            maxEndAdornment
-            onMaxClick={() => setAllowMaxLoss('50')}
-            onChange={event => {
-              const value = event.target.value
-              setAllowMaxLoss(value)
-            }}
-            error={!isUndefined(isValidAllowLossFlag) && !isValidAllowLossFlag}
-          />
-        </GridItem>
-      </GridContainer>
-      <GridContainer>
-        <GridItem xs={12} sm={12} md={12} lg={12}>
-          <div className={classes.footerContainer}>
+          {address && (
+            <GridItem xs={6} sm={6} md={6} lg={6}>
+              <p className={classes.estimateText} style={{ justifyContent: 'flex-end' }} title={toFixed(pegTokenPrice, BN_18)}>
+                <span>1 USDi ≈ {toFixed(pegTokenPrice, BN_18, 6)} USD</span>
+              </p>
+            </GridItem>
+          )}
+        </GridContainer>
+        <GridContainer className={classes.maxlossContainer}>
+          <GridItem xs={4} sm={4} md={4} className={classes.slippageTitle}>
+            Max Slippage(%):
+          </GridItem>
+          <GridItem xs={8} sm={8} md={8}>
+            <CustomTextField
+              classes={{ root: classes.input }}
+              value={allowMaxLoss}
+              placeholder="Allow loss percent"
+              maxEndAdornment
+              onMaxClick={() => setAllowMaxLoss('50')}
+              onChange={event => {
+                const value = event.target.value
+                setAllowMaxLoss(value)
+              }}
+              error={!isUndefined(isValidAllowLossFlag) && !isValidAllowLossFlag}
+            />
+          </GridItem>
+        </GridContainer>
+        <GridContainer>
+          <GridItem xs={7} sm={7} md={7} lg={7}>
             <Button
               disabled={!isLogin || (isLogin && (isUndefined(isValidToValueFlag) || !isValidToValueFlag))}
               color="colorful"
               onClick={withdraw}
               className={classes.blockButton}
-              fullWidth={true}
+              fullWidth
             >
               Withdraw
               <Tooltip
@@ -635,9 +632,25 @@ const Withdraw = ({ userProvider, USDI_ADDRESS, VAULT_ADDRESS, VAULT_ABI, EXCHAN
                 <InfoIcon style={{ marginLeft: '0.5rem' }} />
               </Tooltip>
             </Button>
-          </div>
-        </GridItem>
-      </GridContainer>
+          </GridItem>
+          <GridItem xs={1} sm={1} md={1} lg={1}></GridItem>
+          <GridItem xs={4} sm={4} md={4} lg={4}>
+            <Button color="colorful" fullWidth onClick={withdraw} className={classes.blockButton}>
+              Zap
+            </Button>
+          </GridItem>
+        </GridContainer>
+      </GridItem>
+      <GridItem xs={6} sm={6} md={6} lg={6}>
+        <GridContainer className="pl-12">
+          <GridItem xs={12} sm={12} md={12} lg={12}>
+            <p className={classes.estimateText}>To receive:</p>
+          </GridItem>
+          <GridItem xs={12} sm={12} md={12} lg={12}>
+            <GridContainer>{renderEstimate()}</GridContainer>
+          </GridItem>
+        </GridContainer>
+      </GridItem>
       <Modal className={classes.modal} open={isWithdrawLoading} aria-labelledby="simple-modal-title" aria-describedby="simple-modal-description">
         <Paper elevation={3} className={classes.widthdrawLoadingPaper}>
           <div className={classes.modalBody}>
@@ -714,7 +727,7 @@ const Withdraw = ({ userProvider, USDI_ADDRESS, VAULT_ADDRESS, VAULT_ABI, EXCHAN
           )}
         </div>
       </Modal>
-    </>
+    </GridContainer>
   )
 }
 

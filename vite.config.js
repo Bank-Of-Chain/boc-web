@@ -33,7 +33,13 @@ export default defineConfig({
       '@': path.resolve(__dirname, './src')
     }
   },
-  plugins: [UnoCSS(), reactRefresh(), Analyze()],
+  plugins: [
+    UnoCSS({
+      rules: [[/^leh-(\d+\.{0,1}\d{0,2})$/, ([, d]) => ({ 'line-height': `${d}` })]]
+    }),
+    reactRefresh(),
+    Analyze()
+  ],
   optimizeDeps: {
     esbuildOptions: {
       // Node.js global to browser globalThis

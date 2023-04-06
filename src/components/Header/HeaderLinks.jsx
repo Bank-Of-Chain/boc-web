@@ -173,7 +173,7 @@ export default function HeaderLinks(props) {
         )}
         {pathname === '/' ? (
           <ListItem className={classes.listItem}>
-            <Button color="colorful-border" href="/#/usdi" className={classes.m4}>
+            <Button color="colorful-border" href="/#/pools" className={classes.m4}>
               Launch App
             </Button>
           </ListItem>
