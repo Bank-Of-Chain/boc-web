@@ -8,7 +8,7 @@ const Info = props => {
   const { VAULT_ADDRESS, PEG_TOKEN_ADDRESS, HARESTER_ADDRESS } = props
   return (
     <GridContainer>
-      <GridItem xs={6} sm={6} md={6}>
+      <GridItem xs={6} sm={12} md={6} className="pr-4">
         <p className="flex justify-between items-center">
           <span className="color-neutral-500">vault:</span>
           <span className="color-fuchsia-700 cursor-pointer">{VAULT_ADDRESS}</span>
@@ -22,7 +22,7 @@ const Info = props => {
           <span className="color-fuchsia-700 cursor-pointer">{HARESTER_ADDRESS}</span>
         </p>
       </GridItem>
-      <GridItem xs={6} sm={6} md={6} className="pl-12">
+      <GridItem xs={6} sm={12} md={6} className="pl-12" style={{ borderLeft: '1px solid #737373' }}>
         <p className="text-neutral-500">
           Vault is connected with a large number of high-quality strategies to provide stable returns. Different strategies bring different returns
           under various complex market conditions. BoC protocol will optimally allocate funds under different market conditions according to the

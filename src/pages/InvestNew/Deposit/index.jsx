@@ -90,7 +90,7 @@ const Deposit = () => {
 
   const { userProvider } = useWallet()
 
-  const { minimumInvestmentAmount } = useVault(VAULT_ADDRESS, VAULT_ABI, userProvider)
+  const { minimumInvestmentAmount, redeemFeeBps, trusteeFeeBps } = useVault(VAULT_ADDRESS, VAULT_ABI, userProvider)
 
   const address = useUserAddress(userProvider)
 
@@ -530,7 +530,7 @@ const Deposit = () => {
   return (
     <>
       <GridContainer>
-        <GridItem xs={6} sm={6} md={6} lg={6}>
+        <GridItem xs={6} sm={12} md={6} lg={6}>
           <GridContainer>
             {map(formConfig, item => {
               if (tokenSelect.includes(item.address)) {
@@ -629,9 +629,9 @@ const Deposit = () => {
             </GridItem>
           </GridContainer>
         </GridItem>
-        <GridItem xs={6} sm={6} md={6} lg={6} className="pl-12">
-          <p className="color-neutral-500">performance fee: 20%</p>
-          <p className="color-neutral-500">withdraw fee:0%</p>
+        <GridItem xs={6} sm={12} md={6} lg={6} className="pl-12" style={{ borderLeft: '1px solid #737373' }}>
+          <p className="color-neutral-500">performance fee: {toFixed(trusteeFeeBps, 100, 2)}%</p>
+          <p className="color-neutral-500">withdraw fee: {toFixed(redeemFeeBps, 100, 2)}%</p>
           <p className="color-neutral-500">
             You can put any ratio and any amount of USDT,USDC,DAI into the Vault, the protocol will invest your funds in each protocol at the next
             rebalancing.

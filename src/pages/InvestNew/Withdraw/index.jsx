@@ -13,7 +13,6 @@ import Tooltip from '@material-ui/core/Tooltip'
 import InfoIcon from '@material-ui/icons/Info'
 import Step from '@material-ui/core/Step'
 import WarningIcon from '@material-ui/icons/Warning'
-import SimpleSelect from '@/components/SimpleSelect'
 import CustomTextField from '@/components/CustomTextField'
 import BocStepper from '@/components/Stepper/Stepper'
 import BocStepLabel from '@/components/Stepper/StepLabel'
@@ -488,39 +487,19 @@ const Withdraw = () => {
       )
     }
     console.log('estimateWithdrawArray=', estimateWithdrawArray)
-    const options = map(estimateWithdrawArray, item => {
-      return {
-        label: item.symbol,
-        value: item.tokenAddress,
-        img: `./images/${item.tokenAddress}.png`
-      }
-    })
 
-    return map(estimateWithdrawArray, item => {
-      return (
-        <GridItem key={item.tokenAddress} xs={12} sm={12} md={12} lg={12} style={{ paddingTop: '0.5rem' }}>
-          <GridContainer justify="center" spacing={1}>
-            <GridItem xs={4} sm={4} md={4} lg={4}>
-              <SimpleSelect disabled value={item.tokenAddress} options={options} />
+    return (
+      <GridContainer>
+        {map(estimateWithdrawArray, item => {
+          return (
+            <GridItem xs={4} sm={4} md={4} lg={4} className="flex justify-end text-center py-2">
+              <span>{toFixed(item.amounts, BigNumber.from(10).pow(item.decimals), 6)}</span>
+              <img className="w-6 b-rd-3 ml-2" src={`./images/${item.tokenAddress}.png`} />
             </GridItem>
-            <GridItem xs={8} sm={8} md={8} lg={8}>
-              <CustomTextField
-                classes={{ root: classes.input }}
-                value={toFixed(item.amounts, BigNumber.from(10).pow(item.decimals), 6)}
-                placeholder="withdraw amount"
-                disabled
-              />
-            </GridItem>
-            <GridItem xs={12} sm={12} md={12} lg={12}>
-              <p className={classes.estimateText} title={formatBalance(item.balance, item.decimals, { showAll: true })}>
-                Balance:&nbsp;
-                {formatBalance(item.balance, item.decimals)}
-              </p>
-            </GridItem>
-          </GridContainer>
-        </GridItem>
-      )
-    })
+          )
+        })}
+      </GridContainer>
+    )
   }
 
   const isValidToValueFlag = isValidToValue()
@@ -550,7 +529,7 @@ const Withdraw = () => {
 
   return (
     <GridContainer>
-      <GridItem xs={6} sm={6} md={6} lg={6}>
+      <GridItem xs={6} sm={12} md={6} lg={6}>
         <GridContainer className="pb-4">
           <GridItem xs={12} sm={12} md={12} lg={12}>
             <GridContainer>
@@ -559,7 +538,7 @@ const Withdraw = () => {
                   <span className={classes.tokenName}>USDi</span>
                 </div>
               </GridItem>
-              <GridItem xs={8} sm={8} md={8} lg={8}>
+              <GridItem xs={8} sm={8} md={8} lg={8} className="px-4">
                 <CustomTextField
                   classes={{ root: classes.input }}
                   value={toValue}
@@ -577,16 +556,16 @@ const Withdraw = () => {
               Balance:&nbsp;
               <Loading loading={isUsdiLoading}>{formatBalance(usdiBalance, usdiDecimals)}</Loading>
             </span>
-            <span className="color-neutral-500" style={{ justifyContent: 'flex-end' }} title={toFixed(pegTokenPrice, BN_18)}>
+            <span className="color-neutral-500 px-4 justify-end" title={toFixed(pegTokenPrice, BN_18)}>
               <span>1 USDi ≈ {toFixed(pegTokenPrice, BN_18, 6)} USD</span>
             </span>
           </GridItem>
         </GridContainer>
         <GridContainer className="pb-4">
           <GridItem xs={4} sm={4} md={4} className="color-neutral-500 flex items-center">
-            Max Slippage(%):
+            Max loss(%):
           </GridItem>
-          <GridItem xs={8} sm={8} md={8}>
+          <GridItem xs={8} sm={8} md={8} className="px-4">
             <CustomTextField
               classes={{ root: classes.input }}
               value={allowMaxLoss}
@@ -622,21 +601,21 @@ const Withdraw = () => {
               </Tooltip>
             </Button>
           </GridItem>
-          <GridItem xs={4} sm={4} md={4} lg={4} className="pl-4">
+          <GridItem xs={4} sm={4} md={4} lg={4} className="px-4">
             <Button color="colorful" fullWidth onClick={withdraw} className={classes.blockButton}>
               Zap
             </Button>
           </GridItem>
         </GridContainer>
       </GridItem>
-      <GridItem xs={6} sm={6} md={6} lg={6}>
+      <GridItem xs={6} sm={12} md={6} lg={6} style={{ borderLeft: '1px solid #737373' }}>
         <GridContainer className="pl-12">
-          <GridItem xs={12} sm={12} md={12} lg={12}>
-            <p className={classes.estimateText}>To receive:</p>
-          </GridItem>
-          <GridItem xs={12} sm={12} md={12} lg={12}>
-            <GridContainer>{renderEstimate()}</GridContainer>
-          </GridItem>
+          <p>To receive:</p>
+          {renderEstimate()}
+          <p className="color-neutral-500">
+            After redemption, you may receive a variety of USD anchored tokens, which can be converted into unified tokens with one click through the
+            Zap feature
+          </p>
         </GridContainer>
       </GridItem>
       <Modal className={classes.modal} open={isWithdrawLoading} aria-labelledby="simple-modal-title" aria-describedby="simple-modal-description">

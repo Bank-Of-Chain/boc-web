@@ -155,8 +155,10 @@ const useVault = (VAULT_ADDRESS, VAULT_ABI, userProvider) => {
    *
    */
   const queryRedeemFeeBps = useCallback(() => {
+    const vaultContract = getVaultContract()
+    if (isEmpty(vaultContract)) return
     setIsRedeemFeeBpsLoading(true)
-    return getVaultContract()
+    return vaultContract
       .redeemFeeBps()
       .then(setRedeemFeeBps)
       .finally(() => setIsRedeemFeeBpsLoading(false))
@@ -166,8 +168,10 @@ const useVault = (VAULT_ADDRESS, VAULT_ABI, userProvider) => {
    *
    */
   const queryTrusteeFeeBps = useCallback(() => {
+    const vaultContract = getVaultContract()
+    if (isEmpty(vaultContract)) return
     setIsTrusteeFeeBpsLoading(true)
-    return getVaultContract()
+    return vaultContract
       .trusteeFeeBps()
       .then(setTrusteeFeeBps)
       .finally(() => setIsTrusteeFeeBpsLoading(false))
@@ -192,6 +196,24 @@ const useVault = (VAULT_ADDRESS, VAULT_ABI, userProvider) => {
     }
     queryBaseInfo()
   }, [address, VAULT_ADDRESS, VAULT_ABI, userProvider, queryBaseInfo, valid])
+
+  useEffect(() => {
+    const vaultContract = getVaultContract()
+    if (isEmpty(vaultContract)) return
+    vaultContract.on('RedeemFeeUpdated', queryRedeemFeeBps)
+    return () => {
+      vaultContract.off('RedeemFeeUpdated', queryRedeemFeeBps)
+    }
+  }, [getVaultContract, queryRedeemFeeBps])
+
+  useEffect(() => {
+    const vaultContract = getVaultContract
+    if (isEmpty(vaultContract)) return
+    vaultContract.on('TrusteeFeeBpsChanged', queryTrusteeFeeBps)
+    return () => {
+      vaultContract.off('TrusteeFeeBpsChanged', queryTrusteeFeeBps)
+    }
+  }, [getVaultContract, queryTrusteeFeeBps])
 
   return {
     loading,
