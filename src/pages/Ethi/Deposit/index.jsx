@@ -418,12 +418,11 @@ const Deposit = () => {
           <p className="color-neutral-500">performance fee: {toFixed(trusteeFeeBps, 100, 2)}%</p>
           <p className="color-neutral-500">withdraw fee: {toFixed(redeemFeeBps, 100, 2)}%</p>
           <p className="color-neutral-500">
-            You can put any ratio and any amount of USDT,USDC,DAI into the Vault, the protocol will invest your funds in each protocol at the next
-            rebalancing.
+            You can put any ratio and any amount of ETH into the Vault, the protocol will invest your funds in each protocol at the next rebalancing.
           </p>
           <p>
             <span className="color-fuchsia-700">pending:</span>
-            <span className="color-neutral-500">Wait for the rebalance to complete the share distribution.(T + 1)</span>
+            <span className="color-neutral-500 ml-2">Wait for the rebalance to complete the share distribution.(T + 1)</span>
           </p>
         </GridItem>
       </GridContainer>

@@ -4,22 +4,23 @@ import React from 'react'
 import GridContainer from '@/components/Grid/GridContainer'
 import GridItem from '@/components/Grid/GridItem'
 
-const Info = props => {
-  const { VAULT_ADDRESS, PEG_TOKEN_ADDRESS, HARESTER_ADDRESS } = props
+// === Services === //
+import { dashboardHost } from '@/helpers/location'
+
+// === Constants === //
+import { ETHI_FOR_ETH, ETHI_VAULT } from '@/config/config'
+
+const EthiInfo = () => {
   return (
     <GridContainer>
       <GridItem xs={6} sm={12} md={6} className="pr-4">
         <p className="flex justify-between items-center">
           <span className="color-neutral-500">vault:</span>
-          <span className="color-fuchsia-700 cursor-pointer">{VAULT_ADDRESS}</span>
+          <span className="color-fuchsia-700 cursor-pointer">{ETHI_VAULT}</span>
         </p>
         <p className="flex justify-between items-center">
           <span className="color-neutral-500">lp token:</span>
-          <span className="color-fuchsia-700 cursor-pointer">{PEG_TOKEN_ADDRESS}</span>
-        </p>
-        <p className="flex justify-between items-center">
-          <span className="color-neutral-500">harvester:</span>
-          <span className="color-fuchsia-700 cursor-pointer">{HARESTER_ADDRESS}</span>
+          <span className="color-fuchsia-700 cursor-pointer">{ETHI_FOR_ETH}</span>
         </p>
       </GridItem>
       <GridItem xs={6} sm={12} md={6} className="pl-12" style={{ borderLeft: '1px solid #737373' }}>
@@ -28,10 +29,12 @@ const Info = props => {
           under various complex market conditions. BoC protocol will optimally allocate funds under different market conditions according to the
           positioning algorithm, bringing stable excess returns to users.
         </p>
-        <p className="color-fuchsia-700 text-3 cursor-pointer">策略详情&gt;&gt;</p>
+        <a href={dashboardHost(1, 'ethi')} target="blank" className="color-fuchsia-700 text-3 ">
+          策略详情&gt;&gt;
+        </a>
       </GridItem>
     </GridContainer>
   )
 }
 
-export default Info
+export default EthiInfo

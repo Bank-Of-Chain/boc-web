@@ -527,13 +527,7 @@ const Withdraw = () => {
       )
     }
     if (isEmpty(estimateWithdrawArray) || isEmpty(toValue)) {
-      return (
-        <GridItem xs={12} sm={12} md={12} lg={12}>
-          <div className={classes.estimateItem}>
-            <p style={{ fontSize: 26, textAlign: 'right' }}>0.00</p>
-          </div>
-        </GridItem>
-      )
+      return <GridItem xs={12} sm={12} md={12} lg={12}></GridItem>
     }
 
     return (
@@ -645,7 +639,7 @@ const Withdraw = () => {
             </Button>
           </GridItem>
           <GridItem xs={4} sm={4} md={4} lg={4} className="px-4">
-            <Button color="colorful" fullWidth onClick={withdraw} className={classes.blockButton}>
+            <Button color="colorful" fullWidth className={classes.blockButton}>
               Zap
             </Button>
           </GridItem>
@@ -655,7 +649,7 @@ const Withdraw = () => {
         <p>To receive:</p>
         {renderEstimate()}
         <p className="color-neutral-500">
-          After redemption, you may receive a variety of USD anchored tokens, which can be converted into unified tokens with one click through the
+          After redemption, you may receive a variety of ETH anchored tokens, which can be converted into unified tokens with one click through the
           Zap feature
         </p>
       </GridItem>

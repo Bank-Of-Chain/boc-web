@@ -478,15 +478,8 @@ const Withdraw = () => {
       )
     }
     if (isEmpty(estimateWithdrawArray) || isEmpty(toValue)) {
-      return (
-        <GridItem xs={12} sm={12} md={12} lg={12}>
-          <div className={classes.estimateItem}>
-            <p style={{ fontSize: 26, textAlign: 'right' }}>0.00</p>
-          </div>
-        </GridItem>
-      )
+      return <GridItem xs={12} sm={12} md={12} lg={12}></GridItem>
     }
-    console.log('estimateWithdrawArray=', estimateWithdrawArray)
 
     return (
       <GridContainer>
@@ -602,7 +595,7 @@ const Withdraw = () => {
             </Button>
           </GridItem>
           <GridItem xs={4} sm={4} md={4} lg={4} className="px-4">
-            <Button color="colorful" fullWidth onClick={withdraw} className={classes.blockButton}>
+            <Button color="colorful" fullWidth className={classes.blockButton}>
               Zap
             </Button>
           </GridItem>
