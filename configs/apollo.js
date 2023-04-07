@@ -21,18 +21,7 @@ const start = async () => {
   const { status, data } = await Promise.any([axios.get(insideUrl), axios.get(outsideUrl)]).catch(() => {
     console.error(`load ${nextEnv} config error`)
     return {
-      status: 200,
-      data: {
-        'boc.networks.eth.vaultAddress': '',
-        'boc.networks.eth.pegTokenAddress': '',
-        'boc.networks.eth.vaultBufferAddress': '',
-        'boc.networks.polygon.vaultAddress': '',
-        'boc.networks.polygon.pegTokenAddress': '',
-        'boc.networks.polygon.vaultBufferAddress': '',
-        'boc.networks.ethi.vaultAddress': '',
-        'boc.networks.ethi.pegTokenAddress': '',
-        'boc.networks.ethi.vaultBufferAddress': ''
-      }
+      status: 400
     }
   })
   if (status === 200) {

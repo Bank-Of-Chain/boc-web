@@ -50,7 +50,7 @@ function Invest(props) {
     dispatch(setCurrentTab(tab))
   }
 
-  const { minimumInvestmentAmount, exchangeManager } = useVault(VAULT_ADDRESS, VAULT_ABI, userProvider)
+  const { minimumInvestmentAmount, exchangeManager, redeemFeeBps, trusteeFeeBps } = useVault(VAULT_ADDRESS, VAULT_ABI, userProvider)
 
   const changeRouter = path => {
     let promise = Promise.resolve({})
@@ -153,6 +153,8 @@ function Invest(props) {
                     userProvider={userProvider}
                     VAULT_ADDRESS={VAULT_ADDRESS}
                     VAULT_ABI={VAULT_ABI}
+                    redeemFeeBps={redeemFeeBps}
+                    trusteeFeeBps={trusteeFeeBps}
                     EXCHANGE_AGGREGATOR_ABI={EXCHANGE_AGGREGATOR_ABI}
                     exchangeManager={exchangeManager}
                     EXCHANGE_ADAPTER_ABI={EXCHANGE_ADAPTER_ABI}
