@@ -29,7 +29,6 @@ import ApproveArray from '@/components/ApproveArray/ApproveArrayV3'
 import useVault from '@/hooks/useVault'
 import useWallet from '@/hooks/useWallet'
 import useUserAddress from '@/hooks/useUserAddress'
-import useRedeemFeeBps from '@/hooks/useRedeemFeeBps'
 import useErc20Token from '@/hooks/useErc20Token'
 
 // === Constants === //
@@ -101,7 +100,7 @@ const Withdraw = () => {
   const { userProvider } = useWallet()
 
   const address = useUserAddress(userProvider)
-  const { pegTokenPrice, getPegTokenPrice, exchangeManager } = useVault(VAULT_ADDRESS, VAULT_ABI, userProvider)
+  const { pegTokenPrice, getPegTokenPrice, exchangeManager, redeemFeeBps, trusteeFeeBps } = useVault(VAULT_ADDRESS, VAULT_ABI, userProvider)
 
   const {
     balance: usdiBalance,
@@ -109,12 +108,6 @@ const Withdraw = () => {
     loading: isUsdiLoading,
     queryBalance: queryUsdiBalance
   } = useErc20Token(USDI_ADDRESS, userProvider)
-
-  const { value: redeemFeeBps } = useRedeemFeeBps({
-    userProvider,
-    VAULT_ADDRESS,
-    VAULT_ABI
-  })
 
   const redeemFeeBpsPercent = redeemFeeBps.toNumber() / 100
 
@@ -135,7 +128,7 @@ const Withdraw = () => {
       const vaultContractWithSigner = vaultContract.connect(signer)
 
       try {
-        let [tokens, amounts] = await vaultContractWithSigner.callStatic.burn(nextValue, allowMaxLossValue)
+        let [tokens, amounts] = await vaultContractWithSigner.callStatic.burn(nextValue, allowMaxLossValue, redeemFeeBps, trusteeFeeBps)
         console.log(
           'tokens, amounts=',
           tokens,
@@ -268,21 +261,21 @@ const Withdraw = () => {
       let tx, resp
       // if gasLimit times not 1, need estimateGas
       if (isNumber(MULTIPLE_OF_GAS) && MULTIPLE_OF_GAS !== 1) {
-        const gas = await vaultContractWithSigner.estimateGas.burn(nextValue, allowMaxLossValue)
+        const gas = await vaultContractWithSigner.estimateGas.burn(nextValue, allowMaxLossValue, redeemFeeBps, trusteeFeeBps)
         setCurrentStep(3)
         estimateGasFinish = Date.now()
         const gasLimit = Math.ceil(gas * MULTIPLE_OF_GAS)
         // gasLimit not exceed maximum
         const maxGasLimit = gasLimit < MAX_GAS_LIMIT ? gasLimit : MAX_GAS_LIMIT
-        resp = await vaultContractWithSigner.callStatic.burn(nextValue, allowMaxLossValue, {
+        resp = await vaultContractWithSigner.callStatic.burn(nextValue, allowMaxLossValue, redeemFeeBps, trusteeFeeBps, {
           gasLimit: maxGasLimit
         })
-        tx = await vaultContractWithSigner.burn(nextValue, allowMaxLossValue, {
+        tx = await vaultContractWithSigner.burn(nextValue, allowMaxLossValue, redeemFeeBps, trusteeFeeBps, {
           gasLimit: maxGasLimit
         })
       } else {
-        resp = await vaultContractWithSigner.callStatic.burn(nextValue, allowMaxLossValue)
-        tx = await vaultContractWithSigner.burn(nextValue, allowMaxLossValue)
+        resp = await vaultContractWithSigner.callStatic.burn(nextValue, allowMaxLossValue, redeemFeeBps, trusteeFeeBps)
+        tx = await vaultContractWithSigner.burn(nextValue, allowMaxLossValue, redeemFeeBps, trusteeFeeBps)
       }
       withdrawFinish = Date.now()
 

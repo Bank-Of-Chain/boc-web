@@ -27,6 +27,12 @@ const useVault = (VAULT_ADDRESS, VAULT_ABI, userProvider) => {
   const [underlyingUnitsPerShare, setUnderlyingUnitsPerShare] = useState(ethers.BigNumber.from(0))
   const [minimumInvestmentAmount, setMinimumInvestmentAmount] = useState(ethers.BigNumber.from(0))
 
+  // ===
+  const [isRedeemFeeBpsLoading, setIsRedeemFeeBpsLoading] = useState(false)
+  const [isTrusteeFeeBpsLoading, setIsTrusteeFeeBpsLoading] = useState(false)
+  const [redeemFeeBps, setRedeemFeeBps] = useState(ethers.BigNumber.from(0))
+  const [trusteeFeeBps, setTrusteeFeeBps] = useState(ethers.BigNumber.from(0))
+
   const address = useUserAddress(userProvider)
 
   /**
@@ -37,6 +43,15 @@ const useVault = (VAULT_ADDRESS, VAULT_ABI, userProvider) => {
     if (isEmpty(VAULT_ABI)) return new Error('VAULT_ABI is need!')
     if (isEmpty(userProvider)) return new Error('userProvider is need!')
   }, [VAULT_ADDRESS, VAULT_ABI, userProvider])
+
+  /**
+   *
+   */
+  const getVaultContract = useCallback(() => {
+    const error = valid()
+    if (error) return
+    return new Contract(VAULT_ADDRESS, VAULT_ABI, userProvider)
+  }, [valid, VAULT_ADDRESS, VAULT_ABI, userProvider])
 
   /**
    *
@@ -136,6 +151,36 @@ const useVault = (VAULT_ADDRESS, VAULT_ABI, userProvider) => {
     })
   }, [valid, VAULT_ADDRESS, VAULT_ABI, userProvider, pegTokenPrice])
 
+  /**
+   *
+   */
+  const queryRedeemFeeBps = useCallback(() => {
+    setIsRedeemFeeBpsLoading(true)
+    return getVaultContract()
+      .redeemFeeBps()
+      .then(setRedeemFeeBps)
+      .finally(() => setIsRedeemFeeBpsLoading(false))
+  }, [getVaultContract])
+
+  /**
+   *
+   */
+  const queryTrusteeFeeBps = useCallback(() => {
+    setIsTrusteeFeeBpsLoading(true)
+    return getVaultContract()
+      .trusteeFeeBps()
+      .then(setTrusteeFeeBps)
+      .finally(() => setIsTrusteeFeeBpsLoading(false))
+  }, [getVaultContract])
+
+  useEffect(() => {
+    queryRedeemFeeBps()
+  }, [queryRedeemFeeBps])
+
+  useEffect(() => {
+    queryTrusteeFeeBps()
+  }, [queryTrusteeFeeBps])
+
   useEffect(getPegTokenPrice, [getPegTokenPrice])
 
   useEffect(() => {
@@ -162,7 +207,11 @@ const useVault = (VAULT_ADDRESS, VAULT_ABI, userProvider) => {
     queryBaseInfo,
     updateRebaseThreshold,
     updateMinimumInvestmentAmount,
-    underlyingUnitsPerShare
+    underlyingUnitsPerShare,
+    isRedeemFeeBpsLoading,
+    isTrusteeFeeBpsLoading,
+    redeemFeeBps,
+    trusteeFeeBps
   }
 }
 
