@@ -26,24 +26,9 @@ const componentsStyle = () => ({
     width: '42rem',
     outline: 0
   },
-  withdrawContainer: {
-    padding: '1.25rem',
-    borderTopLeftRadius: '1.25rem',
-    borderTopRightRadius: '1.25rem'
-  },
   outputContainer: {
     padding: '1.25rem',
     marginTop: '0.625rem'
-  },
-  maxlossContainer: {
-    padding: '1.25rem',
-    marginTop: '0.625rem',
-    borderBottomLeftRadius: '1.25rem',
-    borderBottomRightRadius: '1.25rem'
-  },
-  slippageTitle: {
-    display: 'flex',
-    alignItems: 'center'
   },
   estimateText: {
     height: '1.25rem',

@@ -361,72 +361,62 @@ const Deposit = () => {
       <GridContainer>
         <GridItem xs={6} sm={6} md={6} lg={6}>
           <GridContainer classes={{ root: classes.depositContainer }}>
-            <GridItem xs={12} sm={12} md={12} lg={12} className={classes.tokenInputWrapper}>
+            <GridItem xs={12} sm={12} md={12} lg={12}>
               <GridContainer>
-                <GridItem xs={12} sm={12} md={12} lg={12}>
-                  <GridContainer justify="center" spacing={2}>
-                    <GridItem xs={4} sm={4} md={4} lg={4}>
-                      <div className={classes.tokenInfo}>
-                        <img className={classes.tokenLogo} alt="" src={`./images/0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE.png`} />
-                        <span className={classes.tokenName}>ETH</span>
-                      </div>
-                    </GridItem>
-                    <GridItem xs={8} sm={8} md={8} lg={8}>
-                      <CustomTextField
-                        classes={{ root: classes.input }}
-                        value={ethValue}
-                        onChange={handleInputChange}
-                        placeholder="deposit amount"
-                        maxEndAdornment
-                        onMaxClick={handleMaxClick}
-                        error={!isUndefined(isValid) && !isValid}
-                      />
-                    </GridItem>
-                  </GridContainer>
+                <GridItem xs={4} sm={4} md={4} lg={4}>
+                  <div className={classes.tokenInfo}>
+                    <img className={classes.tokenLogo} alt="" src={`./images/0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE.png`} />
+                    <span className={classes.tokenName}>ETH</span>
+                  </div>
                 </GridItem>
-                <GridItem xs={12} sm={12} md={12} lg={12}>
-                  <div
-                    className={classes.balance}
+                <GridItem xs={8} sm={8} md={8} lg={8} className="px-4">
+                  <CustomTextField
+                    classes={{ root: classes.input }}
+                    value={ethValue}
+                    onChange={handleInputChange}
+                    placeholder="deposit amount"
+                    maxEndAdornment
+                    onMaxClick={handleMaxClick}
+                    error={!isUndefined(isValid) && !isValid}
+                  />
+                </GridItem>
+                <GridItem xs={12} sm={12} md={12} lg={12} className="pt-2">
+                  <span
+                    className="color-neutral-500"
                     title={formatBalance(ethBalance, ethDecimals, {
                       showAll: true
                     })}
                   >
                     Balance:&nbsp;&nbsp;
                     <Loading loading={isEthLoading}>{formatBalance(ethBalance, ethDecimals)}</Loading>
-                  </div>
+                  </span>
                 </GridItem>
               </GridContainer>
             </GridItem>
           </GridContainer>
-          <GridContainer classes={{ root: classes.estimateContainer }}>
+          <GridContainer className="mt-4 pr-4">
             <GridItem xs={12} sm={12} md={12} lg={12}>
-              <p className={classes.estimateText}>
-                <span>Estimated Gas Fee&nbsp;:</span>
-                <Loading loading={gasPriceLoading}>
-                  <span>{toFixed(getGasFee(), BigNumber.from(10).pow(ethDecimals), 6)} ETH</span>
-                </Loading>
-              </p>
-            </GridItem>
-          </GridContainer>
-          <GridContainer>
-            <GridItem xs={12} sm={12} md={12} lg={12}>
-              <div className={classes.footerContainer}>
-                <Button
-                  disabled={!isLogin || (isLogin && !isValid)}
-                  color="colorful"
-                  onClick={openEstimateModal}
-                  className={classes.blockButton}
-                  fullWidth={true}
-                >
-                  Deposit
-                </Button>
-              </div>
+              <Button
+                disabled={!isLogin || (isLogin && !isValid)}
+                color="colorful"
+                onClick={openEstimateModal}
+                className={classes.blockButton}
+                fullWidth={true}
+              >
+                Deposit
+              </Button>
             </GridItem>
           </GridContainer>
         </GridItem>
         <GridItem xs={6} sm={6} md={6} lg={6} className="pl-12">
-          <p className="color-neutral-500">performance fee: 20%</p>
-          <p className="color-neutral-500">withdraw fee:0%</p>
+          <p className="color-neutral-500">
+            Estimated Gas Fee:&nbsp;
+            <Loading loading={gasPriceLoading}>
+              <span>{toFixed(getGasFee(), BigNumber.from(10).pow(ethDecimals), 6)} ETH</span>
+            </Loading>
+          </p>
+          <p className="color-neutral-500">performance fee:&nbsp;20%</p>
+          <p className="color-neutral-500">withdraw fee:&nbsp;0%</p>
           <p className="color-neutral-500">
             You can put any ratio and any amount of USDT,USDC,DAI into the Vault, the protocol will invest your funds in each protocol at the next
             rebalancing.

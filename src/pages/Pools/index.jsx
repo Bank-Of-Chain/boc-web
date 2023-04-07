@@ -33,7 +33,7 @@ const vaultArray = [
 ]
 
 const Pools = () => {
-  const [openIndex, setOpenIndex] = useState(0)
+  const [openIndex, setOpenIndex] = useState(-1)
 
   /**
    *
@@ -73,7 +73,8 @@ const Pools = () => {
                 <GridItem xs={12} sm={12} md={12}>
                   <GridContainer
                     style={{ width: '100%' }}
-                    className="b-1 border-rd-4 py-4 px-8 bg-dark-500 mt-4 leh-3 text-center shadow-xl shadow-dark-900"
+                    className="b-1 border-rd-4 py-4 px-8 bg-dark-500 mt-4 leh-3 text-center shadow-xl shadow-dark-900 cursor-pointer"
+                    onClick={() => handleOpenClick(index)}
                   >
                     <GridItem xs={3} sm={3} md={3}>
                       {name}
@@ -87,8 +88,8 @@ const Pools = () => {
                     <GridItem xs={3} sm={3} md={3}>
                       {depositAmount}
                     </GridItem>
-                    <GridItem xs={1} sm={1} md={1} onClick={() => handleOpenClick(index)}>
-                      <span className="cursor-pointer">open</span>
+                    <GridItem xs={1} sm={1} md={1}>
+                      <div className={openIndex === index ? 'i-ep-arrow-up-bold' : 'i-ep-arrow-down-bold'}></div>
                     </GridItem>
                   </GridContainer>
                 </GridItem>

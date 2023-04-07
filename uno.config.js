@@ -1,7 +1,16 @@
 import { defineConfig, presetIcons, presetUno, presetWind } from 'unocss'
 
 const config = {
-  presets: [presetUno(), presetWind(), presetIcons()],
+  presets: [
+    presetUno(),
+    presetWind(),
+    presetIcons({
+      prefix: 'i-',
+      extraProperties: {
+        display: 'inline-block'
+      }
+    })
+  ],
   shortcuts: [
     {
       'flex-center': 'flex justify-center items-center',

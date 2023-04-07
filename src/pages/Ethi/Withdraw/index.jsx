@@ -590,43 +590,35 @@ const Withdraw = () => {
   return (
     <GridContainer>
       <GridItem xs={6} sm={6} md={6} lg={6}>
-        <GridContainer>
-          <GridItem xs={12} sm={12} md={12} lg={12}>
-            <GridContainer justify="center" spacing={2}>
-              <GridItem xs={4} sm={4} md={4} lg={4}>
-                <div className={classes.tokenInfo}>
-                  <span className={classes.tokenName}>ETHi</span>
-                </div>
-              </GridItem>
-              <GridItem xs={8} sm={8} md={8} lg={8}>
-                <CustomTextField
-                  classes={{ root: classes.input }}
-                  value={toValue}
-                  placeholder="withdraw amount"
-                  maxEndAdornment
-                  onMaxClick={() => handleMaxClick()}
-                  onChange={handleAmountChange}
-                  error={!isUndefined(isValidToValueFlag) && !isValidToValueFlag && toValue !== '0'}
-                />
-              </GridItem>
-            </GridContainer>
+        <GridContainer className="pb-4">
+          <GridItem xs={4} sm={4} md={4} lg={4}>
+            <div className={classes.tokenInfo}>
+              <span className={classes.tokenName}>ETHi</span>
+            </div>
           </GridItem>
-          <GridItem xs={6} sm={6} md={6} lg={6}>
-            <p className={classes.estimateText} title={formatBalance(ethiBalance, ethiDecimals, { showAll: true })}>
+          <GridItem xs={8} sm={8} md={8} lg={8}>
+            <CustomTextField
+              classes={{ root: classes.input }}
+              value={toValue}
+              placeholder="withdraw amount"
+              maxEndAdornment
+              onMaxClick={() => handleMaxClick()}
+              onChange={handleAmountChange}
+              error={!isUndefined(isValidToValueFlag) && !isValidToValueFlag && toValue !== '0'}
+            />
+          </GridItem>
+          <GridItem xs={12} sm={12} md={12} lg={12} className="flex justify-between pt-2">
+            <span className="color-neutral-500" title={formatBalance(ethiBalance, ethiDecimals, { showAll: true })}>
               Balance:&nbsp;
               <Loading loading={isEthiLoading}>{formatBalance(ethiBalance, ethiDecimals)}</Loading>
-            </p>
+            </span>
+            <span className="color-neutral-500" style={{ justifyContent: 'flex-end' }} title={toFixed(pegTokenPrice, BN_18)}>
+              <span>1ETHi ≈ {toFixed(pegTokenPrice, BN_18, 6)}ETH</span>
+            </span>
           </GridItem>
-          {address && (
-            <GridItem xs={6} sm={6} md={6} lg={6}>
-              <p className={classes.estimateText} style={{ justifyContent: 'flex-end' }} title={toFixed(pegTokenPrice, BN_18)}>
-                <span>1ETHi ≈ {toFixed(pegTokenPrice, BN_18, 6)}ETH</span>
-              </p>
-            </GridItem>
-          )}
         </GridContainer>
-        <GridContainer>
-          <GridItem xs={4} sm={4} md={4} className={classes.slippageTitle}>
+        <GridContainer className="pb-4">
+          <GridItem xs={4} sm={4} md={4} className="color-neutral-500 flex items-center">
             Max Slippage(%):
           </GridItem>
           <GridItem xs={8} sm={8} md={8}>
@@ -644,8 +636,8 @@ const Withdraw = () => {
             />
           </GridItem>
         </GridContainer>
-        <GridContainer className="mt-3">
-          <GridItem xs={7} sm={7} md={7} lg={7}>
+        <GridContainer>
+          <GridItem xs={8} sm={8} md={8} lg={8}>
             <Button
               disabled={!isLogin || (isLogin && (isUndefined(isValidToValueFlag) || !isValidToValueFlag))}
               color="colorful"
@@ -665,8 +657,7 @@ const Withdraw = () => {
               </Tooltip>
             </Button>
           </GridItem>
-          <GridItem xs={1} sm={1} md={1} lg={1}></GridItem>
-          <GridItem xs={4} sm={4} md={4} lg={4}>
+          <GridItem xs={4} sm={4} md={4} lg={4} className="pl-4">
             <Button color="colorful" fullWidth onClick={withdraw} className={classes.blockButton}>
               Zap
             </Button>

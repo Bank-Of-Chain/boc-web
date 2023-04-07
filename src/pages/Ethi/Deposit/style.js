@@ -2,7 +2,7 @@ const componentsStyle = () => ({
   modal: {
     display: 'flex',
     alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: 'center'
   },
   modalBody: {
     textAlign: 'center'
@@ -22,12 +22,6 @@ const componentsStyle = () => ({
   estimateBalanceNum: {
     flex: 1,
     textAlign: 'right'
-  },
-  footerContainer: {
-    marginTop: '0.625rem'
-  },
-  tokenInputWrapper: {
-    marginTop: '1rem'
   },
   inputLabelWrapper: {
     display: 'flex',
@@ -159,11 +153,6 @@ const componentsStyle = () => ({
     width: '19.375rem',
     padding: '1.25rem 0',
     borderRadius: '1.25rem'
-  },
-  balance: {
-    display: 'flex',
-    alignItems: 'center',
-    color: '#BEBEBE'
   },
   tip: {
     marginTop: '0.75rem',

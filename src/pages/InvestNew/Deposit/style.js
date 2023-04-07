@@ -2,8 +2,7 @@ const componentsStyle = () => ({
   modal: {
     display: 'flex',
     alignItems: 'center',
-    justifyContent: 'center',
-    marginLeft: '90px'
+    justifyContent: 'center'
   },
   modalBody: {
     textAlign: 'center'
@@ -34,12 +33,6 @@ const componentsStyle = () => ({
   estimateBalanceNum: {
     flex: 1,
     textAlign: 'right'
-  },
-  footerContainer: {
-    marginTop: '0.625rem'
-  },
-  tokenInputWrapper: {
-    marginTop: '1rem'
   },
   depositComfirmArea: {
     display: 'flex',
@@ -167,11 +160,6 @@ const componentsStyle = () => ({
     width: '19.375rem',
     padding: '1.25rem 0',
     borderRadius: '1.25rem'
-  },
-  balance: {
-    display: 'flex',
-    alignItems: 'center',
-    color: '#BEBEBE'
   },
   tip: {
     fontSize: '0.75rem',

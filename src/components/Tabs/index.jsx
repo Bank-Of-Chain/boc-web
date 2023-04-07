@@ -28,7 +28,15 @@ const CustomTabs = props => {
   return (
     <GridContainer>
       <GridItem xs={12} sm={12} md={12}>
-        <Tabs value={value} onChange={handleTabChange}>
+        <Tabs
+          value={value}
+          onChange={handleTabChange}
+          TabIndicatorProps={{
+            style: {
+              backgroundColor: '#d946ef'
+            }
+          }}
+        >
           {map(tabs, (item, index) => {
             return <Tab key={index} label={item} {...a11yProps(index)} />
           })}

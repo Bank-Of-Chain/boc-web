@@ -566,8 +566,8 @@ const Deposit = () => {
                   })
                 }
                 return (
-                  <GridItem key={item.name} xs={12} sm={12} md={12} lg={12} className={classes.tokenInputWrapper}>
-                    <GridContainer justify="center" spacing={2}>
+                  <GridItem key={item.name} xs={12} sm={12} md={12} lg={12} className="pb-4">
+                    <GridContainer>
                       <GridItem xs={4} sm={4} md={4} lg={4}>
                         <SimpleSelect
                           options={selectOptions}
@@ -583,7 +583,7 @@ const Deposit = () => {
                           }}
                         />
                       </GridItem>
-                      <GridItem xs={8} sm={8} md={8} lg={8}>
+                      <GridItem xs={8} sm={8} md={8} lg={8} className="px-4">
                         <CustomTextField
                           classes={{ root: classes.input }}
                           value={item.value}
@@ -596,7 +596,7 @@ const Deposit = () => {
                       </GridItem>
                       <GridItem xs={12} sm={12} md={12} lg={12}>
                         <div
-                          className={classes.balance}
+                          className="color-neutral-500 mt-2"
                           title={formatBalance(item.balance, item.decimals, {
                             showAll: true
                           })}
@@ -611,23 +611,21 @@ const Deposit = () => {
               }
             })}
           </GridContainer>
-          <GridContainer>
+          <GridContainer className="pr-4">
             <GridItem xs={12} sm={12} md={12} lg={12}>
-              <div className={classes.footerContainer}>
-                <Button
-                  disabled={
-                    !isLogin ||
-                    (isLogin &&
-                      (some(formConfig, item => isValidValue(item.name) === false) || every(formConfig, item => isValidValue(item.name) !== true)))
-                  }
-                  color="colorful"
-                  onClick={openEstimateModal}
-                  className={classes.blockButton}
-                  fullWidth={true}
-                >
-                  Deposit
-                </Button>
-              </div>
+              <Button
+                disabled={
+                  !isLogin ||
+                  (isLogin &&
+                    (some(formConfig, item => isValidValue(item.name) === false) || every(formConfig, item => isValidValue(item.name) !== true)))
+                }
+                color="colorful"
+                onClick={openEstimateModal}
+                className={classes.blockButton}
+                fullWidth={true}
+              >
+                Deposit
+              </Button>
             </GridItem>
           </GridContainer>
         </GridItem>
@@ -640,7 +638,7 @@ const Deposit = () => {
           </p>
           <p>
             <span className="color-fuchsia-700">pending:</span>
-            <span className="color-neutral-500">Wait for the rebalance to complete the share distribution.(T + 1)</span>
+            <span className="color-neutral-500 ml-2">Wait for the rebalance to complete the share distribution.(T + 1)</span>
           </p>
         </GridItem>
       </GridContainer>
