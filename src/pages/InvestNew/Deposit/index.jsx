@@ -74,7 +74,8 @@ const steps = [
   'Get USDi'
 ]
 
-const Deposit = () => {
+const Deposit = props => {
+  const { reload } = props
   const classes = useStyles()
   const dispatch = useDispatch()
   const [usdtValue, setUsdtValue] = useState('')
@@ -509,7 +510,8 @@ const Deposit = () => {
     queryUsdcBalance()
     queryDaiBalance()
     queryVaultBufferBalance()
-  }, [queryUsdtBalance, queryUsdcBalance, queryDaiBalance, queryVaultBufferBalance])
+    reload()
+  }, [reload, queryUsdtBalance, queryUsdcBalance, queryDaiBalance, queryVaultBufferBalance])
 
   useEffect(() => {
     estimateMint()

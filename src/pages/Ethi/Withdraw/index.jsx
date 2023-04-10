@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react'
+import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react'
 import * as ethers from 'ethers'
 import BN from 'bignumber.js'
 import { useDispatch } from 'react-redux'
@@ -44,29 +44,25 @@ import { isAd, isEs, isRp, isMaxLoss, isLossMuch, isExchangeFail, errorTextOutpu
 
 // === Constants === //
 import { ETH_ADDRESS, WETH_ADDRESS } from '@/constants/tokens'
-import { MULTIPLE_OF_GAS, MAX_GAS_LIMIT, IERC20_ABI } from '@/constants'
+import { MULTIPLE_OF_GAS, MAX_GAS_LIMIT, IERC20_ABI, RPC_URL } from '@/constants'
 import { TRANSACTION_REPLACED, CALL_EXCEPTION } from '@/constants/metamask'
 import { BN_18 } from '@/constants/big-number'
 import { ETHI_FOR_ETH as ETHI_ADDRESS, ETHI_VAULT as VAULT_ADDRESS } from '@/config/config'
-import { VAULT_ABI_V2_0 as VAULT_ABI } from '@/constants/abi'
+import { VAULT_ABI_V2_0 as VAULT_ABI, VALUE_INTERPRETER_ABI_V2_0 } from '@/constants/abi'
 
 // === Styles === //
 import styles from './style'
 import { some } from 'lodash'
 
-const { BigNumber } = ethers
+const { BigNumber, providers } = ethers
 const useStyles = makeStyles(styles)
 
 const steps = [{ title: 'Shares Validation' }, { title: 'Gas Estimates' }, { title: 'Withdraw' }]
 
 const WITHDRAW_EXCHANGE_THRESHOLD = BigNumber.from(10).pow(16)
 
-const Withdraw = () => {
-  //  EXCHANGE_AGGREGATOR_ABI, EXCHANGE_ADAPTER_ABI, PRICE_ORCALE_ABI
-  const EXCHANGE_AGGREGATOR_ABI = [],
-    EXCHANGE_ADAPTER_ABI = [],
-    PRICE_ORCALE_ABI = []
-
+const Withdraw = props => {
+  const { reload } = props
   const classes = useStyles()
   const dispatch = useDispatch()
   const [toValue, setToValue] = useState('')
@@ -102,7 +98,7 @@ const Withdraw = () => {
     userProvider,
     VAULT_ADDRESS,
     VAULT_ABI,
-    PRICE_ORCALE_ABI
+    PRICE_ORCALE_ABI: VALUE_INTERPRETER_ABI_V2_0
   })
 
   const {
@@ -112,7 +108,12 @@ const Withdraw = () => {
     queryBalance: queryEthiBalance
   } = useErc20Token(ETHI_ADDRESS, userProvider)
 
-  const { pegTokenPrice, getPegTokenPrice, exchangeManager, redeemFeeBps, trusteeFeeBps } = useVault(VAULT_ADDRESS, VAULT_ABI, userProvider)
+  const provider = useMemo(() => new providers.StaticJsonRpcProvider(RPC_URL[1], 1), [RPC_URL])
+  const { pegTokenPrice, getPegTokenPrice, exchangeManager, redeemFeeBps, trusteeFeeBps } = useVault(
+    VAULT_ADDRESS,
+    VAULT_ABI,
+    userProvider || provider
+  )
 
   const isValidToValueFlag = isValid(toValue, ethiDecimals, ethiBalance)
 
@@ -237,7 +238,7 @@ const Withdraw = () => {
       return Promise.all(
         map(tokens, async (token, i) => {
           const amount = toFixed(amounts[i], 1)
-          const amountsInEth = await priceProvider.valueInEth(token, amount)
+          const amountsInEth = await priceProvider.calcCanonicalAssetValueInEth(token, amount)
           if (WITHDRAW_EXCHANGE_THRESHOLD.gt(amountsInEth)) {
             return
           }
@@ -554,7 +555,10 @@ const Withdraw = () => {
     return () => clearInterval(timer)
   }, [getPegTokenPrice])
 
-  const handleBurnCall = useCallback(() => queryEthiBalance(), [queryEthiBalance])
+  const handleBurnCall = useCallback(() => {
+    reload()
+    queryEthiBalance()
+  }, [reload, queryEthiBalance])
 
   useEffect(() => {
     const listener = () => {
@@ -721,8 +725,6 @@ const Withdraw = () => {
               tokens={burnTokens}
               userProvider={userProvider}
               exchangeManager={exchangeManager}
-              EXCHANGE_ADAPTER_ABI={EXCHANGE_ADAPTER_ABI}
-              EXCHANGE_AGGREGATOR_ABI={EXCHANGE_AGGREGATOR_ABI}
               slippage={slipper}
               onSlippageChange={setSlipper}
               handleClose={() => setIsShowZipModal(false)}

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react'
+import React, { useState, useEffect, useCallback, useMemo } from 'react'
 import * as ethers from 'ethers'
 import BN from 'bignumber.js'
 import { useDispatch } from 'react-redux'
@@ -33,7 +33,7 @@ import useErc20Token from '@/hooks/useErc20Token'
 // === Constants === //
 import { warmDialog } from '@/reducers/meta-reducer'
 import { toFixed, formatBalance } from '@/helpers/number-format'
-import { USDT_ADDRESS, IERC20_ABI, MULTIPLE_OF_GAS, MAX_GAS_LIMIT } from '@/constants'
+import { USDT_ADDRESS, IERC20_ABI, MULTIPLE_OF_GAS, MAX_GAS_LIMIT, RPC_URL } from '@/constants'
 import { USDC_ADDRESS, DAI_ADDRESS } from '@/constants/tokens'
 import { BN_18 } from '@/constants/big-number'
 import { TRANSACTION_REPLACED, CALL_EXCEPTION } from '@/constants/metamask'
@@ -53,17 +53,15 @@ import { isAd, isEs, isRp, isMaxLoss, isLossMuch, isExchangeFail, errorTextOutpu
 // === Styles === //
 import styles from './style'
 
-const { BigNumber } = ethers
+const { BigNumber, providers } = ethers
 const useStyles = makeStyles(styles)
 
 const steps = [{ title: 'Shares Validation' }, { title: 'Gas Estimates' }, { title: 'Withdraw' }]
 
 const RECEIVE_MIX_VALUE = 'Mix'
 
-const Withdraw = () => {
-  // {  EXCHANGE_AGGREGATOR_ABI, EXCHANGE_ADAPTER_ABI }
-  const EXCHANGE_ADAPTER_ABI = [],
-    EXCHANGE_AGGREGATOR_ABI = []
+const Withdraw = props => {
+  const { reload } = props
   const classes = useStyles()
   const dispatch = useDispatch()
   const [receiveToken] = useState(RECEIVE_MIX_VALUE)
@@ -99,7 +97,12 @@ const Withdraw = () => {
   const { userProvider } = useWallet()
 
   const address = useUserAddress(userProvider)
-  const { pegTokenPrice, getPegTokenPrice, exchangeManager, redeemFeeBps, trusteeFeeBps } = useVault(VAULT_ADDRESS, VAULT_ABI, userProvider)
+  const provider = useMemo(() => new providers.StaticJsonRpcProvider(RPC_URL[1], 1), [RPC_URL])
+  const { pegTokenPrice, getPegTokenPrice, exchangeManager, redeemFeeBps, trusteeFeeBps } = useVault(
+    VAULT_ADDRESS,
+    VAULT_ABI,
+    userProvider || provider
+  )
 
   const {
     balance: usdiBalance,
@@ -500,7 +503,10 @@ const Withdraw = () => {
 
   const isLogin = !isEmpty(userProvider)
 
-  const handleBurnCall = useCallback(() => queryUsdiBalance(), [queryUsdiBalance])
+  const handleBurnCall = useCallback(() => {
+    queryUsdiBalance()
+    reload()
+  }, [reload, queryUsdiBalance])
 
   useEffect(() => {
     getPegTokenPrice()
@@ -678,8 +684,6 @@ const Withdraw = () => {
               tokens={burnTokens}
               userProvider={userProvider}
               exchangeManager={exchangeManager}
-              EXCHANGE_ADAPTER_ABI={EXCHANGE_ADAPTER_ABI}
-              EXCHANGE_AGGREGATOR_ABI={EXCHANGE_AGGREGATOR_ABI}
               slippage={slipper}
               onSlippageChange={setSlipper}
               handleClose={() => setIsShowZipModal(false)}

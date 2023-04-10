@@ -65,7 +65,8 @@ const steps = [
   'Get ETHi'
 ]
 
-const Deposit = () => {
+const Deposit = props => {
+  const { reload } = props
   const classes = useStyles()
   const dispatch = useDispatch()
   const [ethValue, setEthValue] = useState('')
@@ -338,7 +339,8 @@ const Deposit = () => {
   const handleMint = useCallback(() => {
     queryEthBalance()
     queryVaultBufferBalance()
-  }, [queryEthBalance, queryVaultBufferBalance])
+    reload()
+  }, [reload, queryEthBalance, queryVaultBufferBalance])
 
   useEffect(() => {
     estimateMint()

@@ -16,11 +16,25 @@ const EthiInfo = () => {
       <GridItem xs={6} sm={12} md={6} className="pr-4">
         <p className="flex justify-between items-center">
           <span className="color-neutral-500">vault:</span>
-          <span className="color-fuchsia-700 cursor-pointer">{ETHI_VAULT}</span>
+          <a
+            className="color-fuchsia-700 decoration-none"
+            rel="noopener noreferrer"
+            href={`https://etherscan.io/address/${ETHI_VAULT}`}
+            target="_blank"
+          >
+            {ETHI_VAULT}
+          </a>
         </p>
         <p className="flex justify-between items-center">
           <span className="color-neutral-500">lp token:</span>
-          <span className="color-fuchsia-700 cursor-pointer">{ETHI_FOR_ETH}</span>
+          <a
+            className="color-fuchsia-700 decoration-none"
+            rel="noopener noreferrer"
+            href={`https://etherscan.io/address/${ETHI_FOR_ETH}`}
+            target="_blank"
+          >
+            {ETHI_FOR_ETH}
+          </a>
         </p>
       </GridItem>
       <GridItem xs={6} sm={12} md={6} className="pl-12" style={{ borderLeft: '1px solid #737373' }}>

@@ -18,36 +18,58 @@ import { getAPY } from '@/services/api-service'
 // === Utils === //
 import map from 'lodash/map'
 import numeral from 'numeral'
-import { BigNumber } from 'ethers'
+import { BigNumber, providers } from 'ethers'
 import { toFixed } from '@/helpers/number-format'
 
 // === constants === //
-import { ETHI_VAULT, USDI_VAULT_FOR_ETH, ETHI_FOR_ETH, USDI_FOR_ETH, VAULT_BUFFER_FOR_ETHI_ETH, VAULT_BUFFER_FOR_USDI_ETH } from '@/config/config'
+import { RPC_URL } from '@/constants'
 import { VAULT_ABI_V2_0 as VAULT_ABI } from '@/constants/abi'
+import { ETHI_VAULT, USDI_VAULT_FOR_ETH, ETHI_FOR_ETH, USDI_FOR_ETH, VAULT_BUFFER_FOR_ETHI_ETH, VAULT_BUFFER_FOR_USDI_ETH } from '@/config/config'
 
 const Pools = props => {
   const { userProvider } = props
   const [openIndex, setOpenIndex] = useState(-1)
 
   // balances
-  const { balance: ethiBalance, decimals: ethiDecimals, loading: ethiBalanceLoading } = useErc20Token(ETHI_FOR_ETH, userProvider)
-  const { balance: usdiBalance, decimals: usdiDecimals, loading: usdiBalanceLoading } = useErc20Token(USDI_FOR_ETH, userProvider)
+  const {
+    balance: ethiBalance,
+    decimals: ethiDecimals,
+    loading: ethiBalanceLoading,
+    queryBalance: ethiQueryBalance
+  } = useErc20Token(ETHI_FOR_ETH, userProvider)
+  const {
+    balance: usdiBalance,
+    decimals: usdiDecimals,
+    loading: usdiBalanceLoading,
+    queryBalance: usdiQueryBalance
+  } = useErc20Token(USDI_FOR_ETH, userProvider)
 
   const {
     balance: vaultBufferEthiBalance,
     decimals: vaultBufferEthiDecimals,
-    loading: vaultBufferEthiBalanceLoading
+    loading: vaultBufferEthiBalanceLoading,
+    queryBalance: vaultBufferEthiQueryBalance
   } = useErc20Token(VAULT_BUFFER_FOR_ETHI_ETH, userProvider)
 
   const {
     balance: vaultBufferUsdiBalance,
     decimals: vaultBufferUsdiDecimals,
-    loading: vaultBufferUsdiBalanceLoading
+    loading: vaultBufferUsdiBalanceLoading,
+    queryBalance: vaultBufferUsdiQueryBalance
   } = useErc20Token(VAULT_BUFFER_FOR_USDI_ETH, userProvider)
 
+  const provider = useMemo(() => new providers.StaticJsonRpcProvider(RPC_URL[1], 1), [RPC_URL])
   // totalAssets
-  const { totalAsset: ethiVaultTotalAsset, pegTokenPrice: ethiPrice } = useVault(ETHI_VAULT, VAULT_ABI, userProvider)
-  const { totalAsset: usdiVaultTotalAsset, pegTokenPrice: usdiPrice } = useVault(USDI_VAULT_FOR_ETH, VAULT_ABI, userProvider)
+  const {
+    totalAsset: ethiVaultTotalAsset,
+    isTotalAssetLoading: isEthiTotalAssetLoading,
+    pegTokenPrice: ethiPrice
+  } = useVault(ETHI_VAULT, VAULT_ABI, userProvider || provider)
+  const {
+    totalAsset: usdiVaultTotalAsset,
+    isTotalAssetLoading: isUsdiTotalAssetLoading,
+    pegTokenPrice: usdiPrice
+  } = useVault(USDI_VAULT_FOR_ETH, VAULT_ABI, userProvider || provider)
 
   const { result: usdiApy, loading: usdiApyLoading } = useAsync(() =>
     getAPY({ chainId: 1, tokenType: 'USDi' })
@@ -81,7 +103,11 @@ const Pools = props => {
         ),
         name: 'Usd Vault',
         apy: <Loading loading={usdiApyLoading}>{usdiApy}%</Loading>,
-        tvl: `${numeral(toFixed(usdiVaultTotalAsset, BigNumber.from(10).pow(18), 2)).format('0,0.[00]')} USD`,
+        tvl: (
+          <Loading loading={isUsdiTotalAssetLoading}>{`${numeral(toFixed(usdiVaultTotalAsset, BigNumber.from(10).pow(18), 2)).format(
+            '0,0.[00]'
+          )} USD`}</Loading>
+        ),
         depositAmount: (
           <span>
             <Loading loading={usdiBalanceLoading}>
@@ -91,7 +117,7 @@ const Pools = props => {
               <span>
                 <span className="mx-1">+</span>
                 <Loading loading={vaultBufferUsdiBalanceLoading}>
-                  {numeral(toFixed(vaultBufferUsdiBalance.mul(usdiPrice), BigNumber.from(10).pow(36), 2)).format('0,0.[00]')}
+                  {numeral(toFixed(vaultBufferUsdiBalance, BigNumber.from(10).pow(vaultBufferUsdiDecimals), 2)).format('0,0.[00]')}
                 </Loading>
                 <span className="color-fuchsia-700 mx-1">(pending)</span>
               </span>
@@ -99,23 +125,34 @@ const Pools = props => {
             USD
           </span>
         ),
-        txComponents: <UsdiVault />
+        txComponents: (
+          <UsdiVault
+            reload={() => {
+              usdiQueryBalance()
+              vaultBufferUsdiQueryBalance()
+            }}
+          />
+        )
       },
       {
         icon: <img className="w-12 b-rd-6" src="/images/0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE.png" />,
         name: 'Eth Vault',
         apy: <Loading loading={ethiApyLoading}>{ethiApy}%</Loading>,
-        tvl: `${numeral(toFixed(ethiVaultTotalAsset, BigNumber.from(10).pow(18), 4)).format('0,0.[0000]')} ETH`,
+        tvl: (
+          <Loading loading={isEthiTotalAssetLoading}>{`${numeral(toFixed(ethiVaultTotalAsset, BigNumber.from(10).pow(18), 4)).format(
+            '0,0.[0000]'
+          )} ETH`}</Loading>
+        ),
         depositAmount: (
           <span>
             <Loading loading={ethiBalanceLoading}>
-              {numeral(toFixed(ethiBalance.mul(ethiPrice), BigNumber.from(10).pow(36), 2)).format('0,0.[00]')}
+              {numeral(toFixed(ethiBalance.mul(ethiPrice), BigNumber.from(10).pow(36), 4)).format('0,0.[0000]')}
             </Loading>
             {vaultBufferEthiBalance.gt(0) && (
               <span>
                 <span className="mx-1">+</span>
                 <Loading loading={vaultBufferEthiBalanceLoading}>
-                  {numeral(toFixed(vaultBufferEthiBalance.mul(ethiPrice), BigNumber.from(10).pow(36), 2)).format('0,0.[00]')}
+                  {numeral(toFixed(vaultBufferEthiBalance, BigNumber.from(10).pow(vaultBufferEthiDecimals), 4)).format('0,0.[0000]')}
                 </Loading>
                 <span className="color-fuchsia-700 mx-1">(pending)</span>
               </span>
@@ -123,7 +160,14 @@ const Pools = props => {
             ETH
           </span>
         ),
-        txComponents: <EthiVault />
+        txComponents: (
+          <EthiVault
+            reload={() => {
+              ethiQueryBalance()
+              vaultBufferEthiQueryBalance()
+            }}
+          />
+        )
       }
     ]
   }, [

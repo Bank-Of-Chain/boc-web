@@ -1,8 +1,8 @@
 const style = {
   selectWrapper: {
-    height: '51px',
+    height: '3rem',
     position: 'relative',
-    lineHeight: '51px',
+    lineHeight: '3rem',
     userSelect: 'none'
   },
   selectTrigger: {
