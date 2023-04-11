@@ -13,11 +13,11 @@ import { USDI_FOR_ETH, USDI_VAULT_FOR_ETH } from '@/config/config'
 const UsdiInfo = () => {
   return (
     <GridContainer>
-      <GridItem xs={6} sm={12} md={6} className="pr-4">
+      <GridItem xs={6} sm={12} md={6} className="pr-12">
         <p className="flex justify-between items-center">
-          <span className="color-neutral-500">vault:</span>
+          <span className="color-neutral-500">Vault:</span>
           <a
-            className="color-fuchsia-700 decoration-none"
+            className="color-fuchsia-700 decoration-none text-3.5"
             rel="noopener noreferrer"
             href={`https://etherscan.io/address/${USDI_VAULT_FOR_ETH}`}
             target="_blank"
@@ -26,9 +26,9 @@ const UsdiInfo = () => {
           </a>
         </p>
         <p className="flex justify-between items-center">
-          <span className="color-neutral-500">lp token:</span>
+          <span className="color-neutral-500">USDi:</span>
           <a
-            className="color-fuchsia-700 decoration-none"
+            className="color-fuchsia-700 decoration-none text-3.5"
             rel="noopener noreferrer"
             href={`https://etherscan.io/address/${USDI_FOR_ETH}`}
             target="_blank"

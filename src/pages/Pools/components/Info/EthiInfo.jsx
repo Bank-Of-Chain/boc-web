@@ -13,11 +13,11 @@ import { ETHI_FOR_ETH, ETHI_VAULT } from '@/config/config'
 const EthiInfo = () => {
   return (
     <GridContainer>
-      <GridItem xs={6} sm={12} md={6} className="pr-4">
+      <GridItem xs={6} sm={12} md={6} className="pr-12">
         <p className="flex justify-between items-center">
-          <span className="color-neutral-500">vault:</span>
+          <span className="color-neutral-500">Vault:</span>
           <a
-            className="color-fuchsia-700 decoration-none"
+            className="color-fuchsia-700 decoration-none text-3.5"
             rel="noopener noreferrer"
             href={`https://etherscan.io/address/${ETHI_VAULT}`}
             target="_blank"
@@ -26,9 +26,9 @@ const EthiInfo = () => {
           </a>
         </p>
         <p className="flex justify-between items-center">
-          <span className="color-neutral-500">lp token:</span>
+          <span className="color-neutral-500">ETHi:</span>
           <a
-            className="color-fuchsia-700 decoration-none"
+            className="color-fuchsia-700 decoration-none text-3.5"
             rel="noopener noreferrer"
             href={`https://etherscan.io/address/${ETHI_FOR_ETH}`}
             target="_blank"

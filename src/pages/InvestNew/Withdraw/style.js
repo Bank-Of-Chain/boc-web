@@ -149,8 +149,7 @@ const componentsStyle = () => ({
   estimateItem: {
     textAlign: 'center',
     minHeight: '100px',
-    color: '#A0A0A0',
-    paddingTop: '35px'
+    color: '#A0A0A0'
   },
   tokenName: {
     fontSize: '1.625rem'

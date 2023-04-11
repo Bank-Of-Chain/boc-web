@@ -532,7 +532,7 @@ const Deposit = props => {
   return (
     <>
       <GridContainer>
-        <GridItem xs={6} sm={12} md={6} lg={6}>
+        <GridItem xs={6} sm={12} md={6} lg={6} className="p-8 pb-0">
           <GridContainer>
             {map(formConfig, item => {
               if (tokenSelect.includes(item.address)) {
@@ -682,8 +682,8 @@ const Deposit = props => {
           </div>
           <div className={classes.itemBottom}>
             <div className={classes.exchangeInfo}>
-              Receive:
-              <span className={classes.usdiInfo}>{toFixed(estimateVaultBuffValue, BigNumber.from(10).pow(vaultBufferDecimals), 2)}</span>USDi Tickets
+              Valuation:
+              <span className={classes.usdiInfo}>{toFixed(estimateVaultBuffValue, BigNumber.from(10).pow(vaultBufferDecimals), 2)}</span>USD
             </div>
           </div>
           <div className={classes.buttonGroup}>

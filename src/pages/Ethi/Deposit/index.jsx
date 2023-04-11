@@ -113,14 +113,17 @@ const Deposit = props => {
     })
   }, [userProvider, VAULT_ADDRESS, VAULT_ABI, ethBalance, ethDecimals, address, ethValue, isValid])
 
-  const getGasFee = useCallback(() => {
-    if (gasPriceLoading || gasLimitLoading || !isValid) {
-      return BigNumber.from(0)
-    }
-    // metamask gaslimit great than contract gaslimit, so add extra limit
-    const metamaskExtraLimit = 114
-    return mintGasLimit.add(metamaskExtraLimit).mul(BigNumber.from(gasPrice.toString()))
-  }, [gasPrice, gasPriceLoading, mintGasLimit, gasLimitLoading, isValid])
+  const getGasFee = useCallback(
+    flag => {
+      if (gasPriceLoading || gasLimitLoading || (!isValid && isUndefined(flag))) {
+        return BigNumber.from(0)
+      }
+      // metamask gaslimit great than contract gaslimit, so add extra limit
+      const metamaskExtraLimit = 114
+      return mintGasLimit.add(metamaskExtraLimit).mul(BigNumber.from(gasPrice.toString()))
+    },
+    [gasPrice, gasPriceLoading, mintGasLimit, gasLimitLoading, isValid]
+  )
 
   const handleInputChange = event => {
     setIsEstimate(true)
@@ -132,7 +135,7 @@ const Deposit = props => {
    * @returns
    */
   const handleMaxClick = useCallback(() => {
-    const v = getGasFee()
+    const v = getGasFee(true)
     if (v.lte(0)) {
       dispatch(
         warmDialog({
@@ -361,8 +364,8 @@ const Deposit = props => {
   return (
     <>
       <GridContainer>
-        <GridItem xs={6} sm={12} md={6} lg={6}>
-          <GridContainer classes={{ root: classes.depositContainer }}>
+        <GridItem xs={6} sm={12} md={6} lg={6} className="p-8 pb-0">
+          <GridContainer>
             <GridItem xs={12} sm={12} md={12} lg={12}>
               <GridContainer>
                 <GridItem xs={4} sm={4} md={4} lg={4}>
@@ -393,10 +396,18 @@ const Deposit = props => {
                     <Loading loading={isEthLoading}>{formatBalance(ethBalance, ethDecimals)}</Loading>
                   </span>
                 </GridItem>
+                <GridItem xs={12} sm={12} md={12} lg={12} className="pt-2">
+                  <span className="color-neutral-500">
+                    Estimated Gas Fee:&nbsp;
+                    <Loading loading={gasPriceLoading} className="v-btm">
+                      <span>{toFixed(getGasFee(), BigNumber.from(10).pow(ethDecimals), 6)} ETH</span>
+                    </Loading>
+                  </span>
+                </GridItem>
               </GridContainer>
             </GridItem>
           </GridContainer>
-          <GridContainer className="mt-4 pr-4">
+          <GridContainer className="mt-8 pr-4">
             <GridItem xs={12} sm={12} md={12} lg={12}>
               <Button
                 disabled={!isLogin || (isLogin && !isValid)}
@@ -411,12 +422,6 @@ const Deposit = props => {
           </GridContainer>
         </GridItem>
         <GridItem xs={6} sm={12} md={6} lg={6} className="pl-12" style={{ borderLeft: '1px solid #737373' }}>
-          <p className="color-neutral-500">
-            Estimated Gas Fee:&nbsp;
-            <Loading loading={gasPriceLoading}>
-              <span>{toFixed(getGasFee(), BigNumber.from(10).pow(ethDecimals), 6)} ETH</span>
-            </Loading>
-          </p>
           <p className="color-neutral-500">performance fee: {toFixed(trusteeFeeBps, 100, 2)}%</p>
           <p className="color-neutral-500">withdraw fee: {toFixed(redeemFeeBps, 100, 2)}%</p>
           <p className="color-neutral-500">
@@ -458,8 +463,8 @@ const Deposit = props => {
           </div>
           <div className={classes.itemBottom}>
             <div className={classes.exchangeInfo}>
-              Receive:
-              <span className={classes.usdiInfo}>{toFixed(estimateVaultBuffValue, BigNumber.from(10).pow(vaultBufferDecimals), 2)}</span>ETHi Tickets
+              Valuation:
+              <span className={classes.usdiInfo}>{toFixed(estimateVaultBuffValue, BigNumber.from(10).pow(vaultBufferDecimals), 2)}</span>ETH
             </div>
           </div>
           <div className={classes.buttonGroup}>

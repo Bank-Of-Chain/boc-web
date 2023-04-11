@@ -17,7 +17,7 @@ const componentsStyle = () => ({
   modal: {
     display: 'flex',
     alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: 'center'
   },
   modalBody: {
     textAlign: 'center'
@@ -136,8 +136,7 @@ const componentsStyle = () => ({
   estimateItem: {
     textAlign: 'center',
     minHeight: '100px',
-    color: '#A0A0A0',
-    paddingTop: '35px'
+    color: '#A0A0A0'
   },
   setting: {
     position: 'absolute',

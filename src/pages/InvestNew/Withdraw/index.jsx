@@ -78,21 +78,28 @@ const Withdraw = props => {
     // {
     //   address: USDT_ADDRESS,
     //   amount: '100000000',
-    //   symbol: 'USDT'
+    //   symbol: 'USDT',
+    //   decimals: 6
     // },
     // {
     //   address: USDC_ADDRESS,
     //   amount: '10000000',
-    //   symbol: 'USDC'
+    //   symbol: 'USDC',
+    //   decimals: 6
     // },
     // {
     //   address: DAI_ADDRESS,
     //   amount: '10000000000000000000',
-    //   symbol: 'DAI'
+    //   symbol: 'DAI',
+    //   decimals: 18
     // }
   ])
   console.log('USDC_ADDRESS=', USDC_ADDRESS, 'DAI_ADDRESS=', DAI_ADDRESS, JSON.stringify(burnTokens))
   const [isShowZipModal, setIsShowZipModal] = useState(false)
+
+  // === Zap === //
+  const [zapTokens, setZapTokens] = useState([])
+  const [showZapModal, setShowZapModal] = useState(false)
 
   const { userProvider } = useWallet()
 
@@ -204,14 +211,13 @@ const Withdraw = props => {
         const fromContract = new ethers.Contract(token, IERC20_ABI, userProvider)
         const fromDecimal = await fromContract.decimals()
         const tokenSymbol = await fromContract.symbol()
-        const exchangeAmounts = amounts[i]
-        if (BigNumber.from(10).pow(fromDecimal).gt(exchangeAmounts)) {
-          return
-        }
+        const exchangeAmounts = toFixed(amounts[i], 1)
+        if (exchangeAmounts === '0') return
         return {
           address: token,
-          amount: toFixed(amounts[i], 1),
-          symbol: tokenSymbol
+          amount: exchangeAmounts,
+          symbol: tokenSymbol,
+          decimals: fromDecimal
         }
       })
     ).then(array => {
@@ -432,6 +438,34 @@ const Withdraw = props => {
     return true
   }, [allowMaxLoss])
 
+  /**
+   *
+   */
+  const zapStart = useCallback(() => {
+    const nextZapTokens = compact(
+      map(burnTokens, token => {
+        const { decimals, amount } = token
+        if (BigNumber.from(10).pow(decimals).gt(amount)) {
+          return
+        }
+        return token
+      })
+    )
+    if (!isEmpty(nextZapTokens)) {
+      setZapTokens(nextZapTokens)
+      setIsShowZipModal(false)
+      setShowZapModal(true)
+    }
+  }, [burnTokens])
+
+  /**
+   *
+   */
+  const zapCancel = useCallback(() => {
+    setIsShowZipModal(false)
+    setBurnTokens([])
+  }, [])
+
   useEffect(() => {
     if (isEmpty(toValue) || !isValidToValue() || !isValidAllowLoss()) {
       setEstimateWithdrawArray([])
@@ -481,20 +515,24 @@ const Withdraw = props => {
       )
     }
     if (isEmpty(estimateWithdrawArray) || isEmpty(toValue)) {
-      return <GridItem xs={12} sm={12} md={12} lg={12}></GridItem>
+      return (
+        <GridItem xs={12} sm={12} md={12} lg={12} className="text-center">
+          <span className="i-uil-calculator-alt text-20 color-neutral-500"></span>
+        </GridItem>
+      )
     }
 
     return (
-      <GridContainer>
-        {map(estimateWithdrawArray, item => {
+      <div className="flex flex-wrap justify-start">
+        {map(estimateWithdrawArray, (item, index) => {
           return (
-            <GridItem xs={4} sm={4} md={4} lg={4} className="flex justify-end text-center py-2">
-              <span>{toFixed(item.amounts, BigNumber.from(10).pow(item.decimals), 6)}</span>
-              <img className="w-6 b-rd-3 ml-2" src={`./images/${item.tokenAddress}.png`} />
-            </GridItem>
+            <div className="flex text-center p-4 align-center" key={index}>
+              <img className="w-6 b-rd-3 mr-2" src={`./images/${item.tokenAddress}.png`} />
+              <span>{toFixed(item.amounts, BigNumber.from(10).pow(item.decimals), 2)}</span>
+            </div>
           )
         })}
-      </GridContainer>
+      </div>
     )
   }
 
@@ -528,7 +566,7 @@ const Withdraw = props => {
 
   return (
     <GridContainer>
-      <GridItem xs={6} sm={12} md={6} lg={6}>
+      <GridItem xs={6} sm={12} md={6} lg={6} className="p-8 pb-0">
         <GridContainer className="pb-4">
           <GridItem xs={12} sm={12} md={12} lg={12}>
             <GridContainer>
@@ -580,7 +618,7 @@ const Withdraw = props => {
           </GridItem>
         </GridContainer>
         <GridContainer>
-          <GridItem xs={8} sm={8} md={8} lg={8}>
+          <GridItem xs={12} sm={12} md={12} lg={12} className="pr-4">
             <Button
               disabled={!isLogin || (isLogin && (isUndefined(isValidToValueFlag) || !isValidToValueFlag))}
               color="colorful"
@@ -600,22 +638,15 @@ const Withdraw = props => {
               </Tooltip>
             </Button>
           </GridItem>
-          <GridItem xs={4} sm={4} md={4} lg={4} className="px-4">
-            <Button color="colorful" fullWidth className={classes.blockButton}>
-              Zap
-            </Button>
-          </GridItem>
         </GridContainer>
       </GridItem>
-      <GridItem xs={6} sm={12} md={6} lg={6} style={{ borderLeft: '1px solid #737373' }}>
-        <GridContainer className="pl-12">
-          <p>To receive:</p>
-          {renderEstimate()}
-          <p className="color-neutral-500">
-            After redemption, you may receive a variety of USD anchored tokens, which can be converted into unified tokens with one click through the
-            Zap feature
-          </p>
-        </GridContainer>
+      <GridItem xs={6} sm={12} md={6} lg={6} className="pl-12" style={{ borderLeft: '1px solid #737373' }}>
+        <p>To receive:</p>
+        {renderEstimate()}
+        <p className="color-neutral-500">
+          After redemption, you may receive a variety of USD anchored tokens, which can be converted into unified tokens with one click through the
+          Zap feature
+        </p>
       </GridItem>
       <Modal className={classes.modal} open={isWithdrawLoading} aria-labelledby="simple-modal-title" aria-describedby="simple-modal-description">
         <Paper elevation={3} className={classes.widthdrawLoadingPaper}>
@@ -673,20 +704,73 @@ const Withdraw = props => {
       </Modal>
       <Modal
         className={classes.modal}
-        open={isShowZipModal && !!address}
+        open={isShowZipModal && !!address && !!exchangeManager}
         aria-labelledby="simple-modal-title"
         aria-describedby="simple-modal-description"
       >
+        <div className="outline-0 w-168">
+          <div
+            className="p-7 color-white b-rd-5"
+            style={{
+              background: 'linear-gradient(111.68deg, #2C2F36 7.59%, #333437 102.04%)'
+            }}
+          >
+            <div className="mh-40 p-5 b-1 b-solid b-rd-t-5 b-color-purple-400">
+              <p className="text-center color-green-500 pb-4" style={{ borderBottom: '1px dashed #c084fc' }}>
+                Withdraw Success!
+              </p>
+              <p>Receive:</p>
+              <GridContainer>
+                <GridItem xs={12} sm={12} md={12} lg={12} className="flex justify-start flex-wrap">
+                  {map(burnTokens, item => {
+                    return (
+                      <div className="flex text-center items-center p-2">
+                        <img className="w-6 b-rd-3" src={`./images/${item.address}.png`} />
+                        <span className="mx-2">{toFixed(item.amount, BigNumber.from(10).pow(item.decimals), 2)}</span>
+                        <span>{item.symbol}</span>
+                      </div>
+                    )
+                  })}
+                </GridItem>
+              </GridContainer>
+            </div>
+            <div className="p-5 b-1 b-solid b-rd-b-5 b-color-purple-400 mt-4">
+              <GridContainer>
+                <GridItem xs={8} sm={8} md={8} lg={8}>
+                  <Button
+                    disabled={isEmpty(burnTokens) || burnTokens.length <= 1}
+                    color="colorful"
+                    onClick={zapStart}
+                    className={classes.blockButton}
+                    fullWidth
+                  >
+                    Start Zapping
+                  </Button>
+                </GridItem>
+                <GridItem xs={4} sm={4} md={4} lg={4} className="pl-4">
+                  <Button color="danger" onClick={zapCancel} className={classes.blockButton} fullWidth>
+                    Cancel
+                  </Button>
+                </GridItem>
+              </GridContainer>
+            </div>
+          </div>
+        </div>
+      </Modal>
+      <Modal className={classes.modal} open={showZapModal} aria-labelledby="simple-modal-title" aria-describedby="simple-modal-description">
         <div className={classes.swapBody}>
           {!isEmpty(address) && !isEmpty(exchangeManager) && (
             <ApproveArray
               address={address}
-              tokens={burnTokens}
+              tokens={zapTokens}
               userProvider={userProvider}
               exchangeManager={exchangeManager}
               slippage={slipper}
               onSlippageChange={setSlipper}
-              handleClose={() => setIsShowZipModal(false)}
+              handleClose={() => {
+                setShowZapModal(false)
+                setZapTokens([])
+              }}
             />
           )}
         </div>

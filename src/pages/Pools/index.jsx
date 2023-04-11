@@ -63,12 +63,14 @@ const Pools = props => {
   const {
     totalAsset: ethiVaultTotalAsset,
     isTotalAssetLoading: isEthiTotalAssetLoading,
-    pegTokenPrice: ethiPrice
+    pegTokenPrice: ethiPrice,
+    queryTotalAssets: queryEthiTotalAssets
   } = useVault(ETHI_VAULT, VAULT_ABI, userProvider || provider)
   const {
     totalAsset: usdiVaultTotalAsset,
     isTotalAssetLoading: isUsdiTotalAssetLoading,
-    pegTokenPrice: usdiPrice
+    pegTokenPrice: usdiPrice,
+    queryTotalAssets: queryUsdiTotalAssets
   } = useVault(USDI_VAULT_FOR_ETH, VAULT_ABI, userProvider || provider)
 
   const { result: usdiApy, loading: usdiApyLoading } = useAsync(() =>
@@ -83,6 +85,11 @@ const Pools = props => {
   )
 
   const vaultArray = useMemo(() => {
+    const style = {
+      backgroundImage: 'linear-gradient(223.3deg,#a68efd 20.71%,#f4acf3 103.56%)',
+      WebkitBackgroundClip: 'text',
+      WebkitTextFillColor: 'transparent'
+    }
     return [
       {
         icon: (
@@ -102,27 +109,36 @@ const Pools = props => {
           </div>
         ),
         name: 'Usd Vault',
-        apy: <Loading loading={usdiApyLoading}>{usdiApy}%</Loading>,
+        apy: (
+          <Loading className="vertical-middle" loading={usdiApyLoading}>
+            {usdiApy}%
+          </Loading>
+        ),
         tvl: (
-          <Loading loading={isUsdiTotalAssetLoading}>{`${numeral(toFixed(usdiVaultTotalAsset, BigNumber.from(10).pow(18), 2)).format(
-            '0,0.[00]'
-          )} USD`}</Loading>
+          <Loading className="vertical-middle" loading={isUsdiTotalAssetLoading}>
+            {numeral(toFixed(usdiVaultTotalAsset, BigNumber.from(10).pow(18), 2)).format('0,0.[00]')}
+            <span className="ml-1" style={style}>
+              USD
+            </span>
+          </Loading>
         ),
         depositAmount: (
           <span>
-            <Loading loading={usdiBalanceLoading}>
+            <Loading className="vertical-middle" loading={usdiBalanceLoading}>
               {numeral(toFixed(usdiBalance.mul(usdiPrice), BigNumber.from(10).pow(36), 2)).format('0,0.[00]')}
             </Loading>
             {vaultBufferUsdiBalance.gt(0) && (
               <span>
                 <span className="mx-1">+</span>
-                <Loading loading={vaultBufferUsdiBalanceLoading}>
+                <Loading className="vertical-middle" loading={vaultBufferUsdiBalanceLoading}>
                   {numeral(toFixed(vaultBufferUsdiBalance, BigNumber.from(10).pow(vaultBufferUsdiDecimals), 2)).format('0,0.[00]')}
                 </Loading>
                 <span className="color-fuchsia-700 mx-1">(pending)</span>
               </span>
             )}
-            USD
+            <span className="ml-1" style={style}>
+              USD
+            </span>
           </span>
         ),
         txComponents: (
@@ -130,6 +146,7 @@ const Pools = props => {
             reload={() => {
               usdiQueryBalance()
               vaultBufferUsdiQueryBalance()
+              queryUsdiTotalAssets()
             }}
           />
         )
@@ -137,27 +154,36 @@ const Pools = props => {
       {
         icon: <img className="w-12 b-rd-6" src="/images/0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE.png" />,
         name: 'Eth Vault',
-        apy: <Loading loading={ethiApyLoading}>{ethiApy}%</Loading>,
+        apy: (
+          <Loading className="vertical-middle" loading={ethiApyLoading}>
+            {ethiApy}%
+          </Loading>
+        ),
         tvl: (
-          <Loading loading={isEthiTotalAssetLoading}>{`${numeral(toFixed(ethiVaultTotalAsset, BigNumber.from(10).pow(18), 4)).format(
-            '0,0.[0000]'
-          )} ETH`}</Loading>
+          <Loading className="vertical-middle" loading={isEthiTotalAssetLoading}>
+            {numeral(toFixed(ethiVaultTotalAsset, BigNumber.from(10).pow(18), 4)).format('0,0.[0000]')}
+            <span className="ml-1" style={style}>
+              ETH
+            </span>
+          </Loading>
         ),
         depositAmount: (
           <span>
-            <Loading loading={ethiBalanceLoading}>
+            <Loading className="vertical-middle" loading={ethiBalanceLoading}>
               {numeral(toFixed(ethiBalance.mul(ethiPrice), BigNumber.from(10).pow(36), 4)).format('0,0.[0000]')}
             </Loading>
             {vaultBufferEthiBalance.gt(0) && (
               <span>
                 <span className="mx-1">+</span>
-                <Loading loading={vaultBufferEthiBalanceLoading}>
+                <Loading className="vertical-middle" loading={vaultBufferEthiBalanceLoading}>
                   {numeral(toFixed(vaultBufferEthiBalance, BigNumber.from(10).pow(vaultBufferEthiDecimals), 4)).format('0,0.[0000]')}
                 </Loading>
                 <span className="color-fuchsia-700 mx-1">(pending)</span>
               </span>
             )}
-            ETH
+            <span className="ml-1" style={style}>
+              ETH
+            </span>
           </span>
         ),
         txComponents: (
@@ -165,6 +191,7 @@ const Pools = props => {
             reload={() => {
               ethiQueryBalance()
               vaultBufferEthiQueryBalance()
+              queryEthiTotalAssets()
             }}
           />
         )

@@ -252,7 +252,9 @@ const useVault = (VAULT_ADDRESS, VAULT_ABI, userProvider) => {
     isRedeemFeeBpsLoading,
     isTrusteeFeeBpsLoading,
     redeemFeeBps,
-    trusteeFeeBps
+    trusteeFeeBps,
+    // === actions === //
+    queryTotalAssets
   }
 }
 
