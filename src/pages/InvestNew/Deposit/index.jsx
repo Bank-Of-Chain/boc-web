@@ -66,7 +66,7 @@ const steps = [
     <div>Step1:</div>
     <div>Deposit</div>
   </>,
-  'Get USDi Ticket',
+  'Pending USD',
   <>
     <div>Step2:</div>
     <div>Allocation</div>

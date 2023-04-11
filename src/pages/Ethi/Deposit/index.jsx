@@ -57,7 +57,7 @@ const steps = [
     <div>Step1:</div>
     <div>Deposit</div>
   </>,
-  'Get ETHi Ticket',
+  'Pending ETH',
   <>
     <div>Step2:</div>
     <div>Allocation</div>
