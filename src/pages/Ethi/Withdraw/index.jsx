@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react'
+import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react'
 import * as ethers from 'ethers'
 import BN from 'bignumber.js'
 import { useDispatch } from 'react-redux'
@@ -21,10 +21,10 @@ import GridItem from '@/components/Grid/GridItem'
 import Button from '@/components/CustomButtons/Button'
 import Loading from '@/components/LoadingComponent'
 import ApproveArrayV3 from '@/components/ApproveArray/ApproveArrayV3'
-import SimpleSelect from '@/components/SimpleSelect'
 
 // === Hooks === //
 import useVault from '@/hooks/useVault'
+import useWallet from '@/hooks/useWallet'
 import { warmDialog } from '@/reducers/meta-reducer'
 import usePriceProvider from '@/hooks/usePriceProvider'
 import useErc20Token from '@/hooks/useErc20Token'
@@ -44,15 +44,17 @@ import { isAd, isEs, isRp, isMaxLoss, isLossMuch, isExchangeFail, errorTextOutpu
 
 // === Constants === //
 import { ETH_ADDRESS, WETH_ADDRESS } from '@/constants/tokens'
-import { MULTIPLE_OF_GAS, MAX_GAS_LIMIT, IERC20_ABI } from '@/constants'
+import { MULTIPLE_OF_GAS, MAX_GAS_LIMIT, IERC20_ABI, RPC_URL } from '@/constants'
 import { TRANSACTION_REPLACED, CALL_EXCEPTION } from '@/constants/metamask'
 import { BN_18 } from '@/constants/big-number'
+import { ETHI_FOR_ETH as ETHI_ADDRESS, ETHI_VAULT as VAULT_ADDRESS } from '@/config/config'
+import { VAULT_ABI_V2_0 as VAULT_ABI, VALUE_INTERPRETER_ABI_V2_0 } from '@/constants/abi'
 
 // === Styles === //
 import styles from './style'
 import { some } from 'lodash'
 
-const { BigNumber } = ethers
+const { BigNumber, providers } = ethers
 const useStyles = makeStyles(styles)
 
 const steps = [{ title: 'Shares Validation' }, { title: 'Gas Estimates' }, { title: 'Withdraw' }]
@@ -60,19 +62,7 @@ const steps = [{ title: 'Shares Validation' }, { title: 'Gas Estimates' }, { tit
 const WITHDRAW_EXCHANGE_THRESHOLD = BigNumber.from(10).pow(16)
 
 const Withdraw = props => {
-  const {
-    exchangeManager,
-    ETHI_ADDRESS,
-    userProvider,
-    VAULT_ADDRESS,
-    VAULT_ABI,
-    EXCHANGE_AGGREGATOR_ABI,
-    EXCHANGE_ADAPTER_ABI,
-    PRICE_ORCALE_ABI,
-    redeemFeeBps,
-    trusteeFeeBps
-  } = props
-
+  const { reload } = props
   const classes = useStyles()
   const dispatch = useDispatch()
   const [toValue, setToValue] = useState('')
@@ -89,16 +79,24 @@ const Withdraw = props => {
     // {
     //   address: ETH_ADDRESS,
     //   amount: '10000000000000000000',
-    //   symbol: 'ETH'
+    //   symbol: 'ETH',
+    //   decimals: 18
     // },
     // {
     //   address: WETH_ADDRESS,
     //   amount: '1000000000000000000',
-    //   symbol: 'WETH'
+    //   symbol: 'WETH',
+    //   decimals: 18
     // }
   ])
   console.log('WETH_ADDRESS=', WETH_ADDRESS, JSON.stringify(burnTokens))
   const [isShowZipModal, setIsShowZipModal] = useState(false)
+
+  // === Zap === //
+  const [zapTokens, setZapTokens] = useState([])
+  const [showZapModal, setShowZapModal] = useState(false)
+
+  const { userProvider } = useWallet()
 
   const address = useUserAddress(userProvider)
 
@@ -106,7 +104,7 @@ const Withdraw = props => {
     userProvider,
     VAULT_ADDRESS,
     VAULT_ABI,
-    PRICE_ORCALE_ABI
+    PRICE_ORCALE_ABI: VALUE_INTERPRETER_ABI_V2_0
   })
 
   const {
@@ -116,7 +114,12 @@ const Withdraw = props => {
     queryBalance: queryEthiBalance
   } = useErc20Token(ETHI_ADDRESS, userProvider)
 
-  const { pegTokenPrice, getPegTokenPrice } = useVault(VAULT_ADDRESS, VAULT_ABI, userProvider)
+  const provider = useMemo(() => new providers.StaticJsonRpcProvider(RPC_URL[1], 1), [RPC_URL])
+  const { pegTokenPrice, getPegTokenPrice, exchangeManager, redeemFeeBps, trusteeFeeBps } = useVault(
+    VAULT_ADDRESS,
+    VAULT_ABI,
+    userProvider || provider
+  )
 
   const isValidToValueFlag = isValid(toValue, ethiDecimals, ethiBalance)
 
@@ -237,29 +240,29 @@ const Withdraw = props => {
         'amounts',
         amounts.map(el => el.toString())
       )
-      const priceProvider = await getPriceProvider()
       return Promise.all(
         map(tokens, async (token, i) => {
           const amount = toFixed(amounts[i], 1)
-          const amountsInEth = await priceProvider.valueInEth(token, amount)
-          if (WITHDRAW_EXCHANGE_THRESHOLD.gt(amountsInEth)) {
-            return
-          }
-
+          if (amount === '0') return
           let balance = BigNumber.from(0)
           let tokenSymbol = 'ETH'
+          let fromDecimal = 0
           if (token === ETH_ADDRESS) {
             balance = await userProvider.getBalance(address)
+            tokenSymbol = 'ETH'
+            fromDecimal = 18
           } else {
             const contract = new ethers.Contract(token, IERC20_ABI, userProvider)
             balance = await contract.balanceOf(address)
             tokenSymbol = await contract.symbol()
+            fromDecimal = await contract.decimals()
           }
 
           return {
             address: token,
             amount: balance.gt(amounts[i]) ? amount : balance.toString(),
-            symbol: tokenSymbol
+            symbol: tokenSymbol,
+            decimals: fromDecimal
           }
         })
       ).then(array => {
@@ -508,6 +511,42 @@ const Withdraw = props => {
 
   /**
    *
+   */
+  const zapStart = useCallback(async () => {
+    const priceProvider = await getPriceProvider()
+    Promise.all(
+      map(burnTokens, async token => {
+        const { address, amount } = token
+        const amountsInEth = await priceProvider.calcCanonicalAssetValueInEth(address, amount)
+        if (WITHDRAW_EXCHANGE_THRESHOLD.gt(amountsInEth)) {
+          return
+        }
+        return token
+      })
+    ).then(array => {
+      const nextZapTokens = compact(array)
+      if (
+        some(nextZapTokens, i => {
+          return i.address !== ETH_ADDRESS && i.amount !== '0'
+        })
+      ) {
+        setZapTokens(nextZapTokens)
+        setIsShowZipModal(false)
+        setShowZapModal(true)
+      }
+    })
+  }, [getPriceProvider, burnTokens])
+
+  /**
+   *
+   */
+  const zapCancel = useCallback(() => {
+    setIsShowZipModal(false)
+    setBurnTokens([])
+  }, [])
+
+  /**
+   *
    * @returns
    */
   const renderEstimate = () => {
@@ -532,46 +571,24 @@ const Withdraw = props => {
     }
     if (isEmpty(estimateWithdrawArray) || isEmpty(toValue)) {
       return (
-        <GridItem xs={12} sm={12} md={12} lg={12}>
-          <div className={classes.estimateItem}>
-            <p style={{ fontSize: 26, textAlign: 'right' }}>0.00</p>
-          </div>
+        <GridItem xs={12} sm={12} md={12} lg={12} className="text-center">
+          <span className="i-uil-calculator-alt text-20 color-neutral-500"></span>
         </GridItem>
       )
     }
 
-    const options = map(estimateWithdrawArray, item => {
-      return {
-        label: item.symbol,
-        value: item.tokenAddress,
-        img: `./images/${item.tokenAddress}.png`
-      }
-    })
-
-    return map(estimateWithdrawArray, item => {
-      return (
-        <GridItem key={item.tokenAddress} xs={12} sm={12} md={12} lg={12} style={{ paddingTop: '0.5rem' }}>
-          <GridContainer justify="center" spacing={1}>
-            <GridItem xs={4} sm={4} md={4} lg={4}>
-              <SimpleSelect disabled value={item.tokenAddress} options={options} />
-            </GridItem>
-            <GridItem xs={8} sm={8} md={8} lg={8}>
-              <CustomTextField
-                classes={{ root: classes.input }}
-                value={toFixed(item.amounts, BigNumber.from(10).pow(item.decimals), 6)}
-                placeholder="withdraw amount"
-                disabled
-              />
-            </GridItem>
-            <GridItem xs={12} sm={12} md={12} lg={12}>
-              <p className={classes.estimateText} title={formatBalance(item.balance, item.decimals, { showAll: true })}>
-                Balance:&nbsp; {formatBalance(item.balance, item.decimals)}
-              </p>
-            </GridItem>
-          </GridContainer>
-        </GridItem>
-      )
-    })
+    return (
+      <div className="flex flex-wrap justify-start">
+        {map(estimateWithdrawArray, (item, index) => {
+          return (
+            <div className="flex text-center p-4" key={index}>
+              <img className="w-6 b-rd-3 mr-2" src={`./images/${item.tokenAddress}.png`} />
+              <span>{toFixed(item.amounts, BigNumber.from(10).pow(item.decimals), 4)}</span>
+            </div>
+          )
+        })}
+      </div>
+    )
   }
 
   const isValidAllowLossFlag = isValidAllowLoss()
@@ -584,7 +601,10 @@ const Withdraw = props => {
     return () => clearInterval(timer)
   }, [getPegTokenPrice])
 
-  const handleBurnCall = useCallback(() => queryEthiBalance(), [queryEthiBalance])
+  const handleBurnCall = useCallback(() => {
+    reload()
+    queryEthiBalance()
+  }, [reload, queryEthiBalance])
 
   useEffect(() => {
     const listener = () => {
@@ -599,80 +619,58 @@ const Withdraw = props => {
   }, [VAULT_ADDRESS, VAULT_ABI, userProvider, handleBurnCall])
 
   return (
-    <>
-      <GridContainer className={classes.withdrawContainer}>
-        <GridItem xs={12} sm={12} md={12} lg={12}>
-          <p className={classes.estimateText}>From</p>
-        </GridItem>
-        <GridItem xs={12} sm={12} md={12} lg={12}>
-          <GridContainer justify="center" spacing={2}>
-            <GridItem xs={4} sm={4} md={4} lg={4}>
-              <div className={classes.tokenInfo}>
-                <span className={classes.tokenName}>ETHi</span>
-              </div>
-            </GridItem>
-            <GridItem xs={8} sm={8} md={8} lg={8}>
-              <CustomTextField
-                classes={{ root: classes.input }}
-                value={toValue}
-                placeholder="withdraw amount"
-                maxEndAdornment
-                onMaxClick={() => handleMaxClick()}
-                onChange={handleAmountChange}
-                error={!isUndefined(isValidToValueFlag) && !isValidToValueFlag && toValue !== '0'}
-              />
-            </GridItem>
-          </GridContainer>
-        </GridItem>
-        <GridItem xs={6} sm={6} md={6} lg={6}>
-          <p className={classes.estimateText} title={formatBalance(ethiBalance, ethiDecimals, { showAll: true })}>
-            Balance:&nbsp;
-            <Loading loading={isEthiLoading}>{formatBalance(ethiBalance, ethiDecimals)}</Loading>
-          </p>
-        </GridItem>
-        {address && (
-          <GridItem xs={6} sm={6} md={6} lg={6}>
-            <p className={classes.estimateText} style={{ justifyContent: 'flex-end' }} title={toFixed(pegTokenPrice, BN_18)}>
+    <GridContainer>
+      <GridItem xs={6} sm={12} md={6} lg={6} className="p-8 pb-0">
+        <GridContainer className="pb-4">
+          <GridItem xs={4} sm={4} md={4} lg={4}>
+            <div className={classes.tokenInfo}>
+              <span className={classes.tokenName}>ETHi</span>
+            </div>
+          </GridItem>
+          <GridItem xs={8} sm={8} md={8} lg={8} className="px-4">
+            <CustomTextField
+              classes={{ root: classes.input }}
+              value={toValue}
+              placeholder="withdraw amount"
+              maxEndAdornment
+              onMaxClick={() => handleMaxClick()}
+              onChange={handleAmountChange}
+              error={!isUndefined(isValidToValueFlag) && !isValidToValueFlag && toValue !== '0'}
+            />
+          </GridItem>
+          <GridItem xs={12} sm={12} md={12} lg={12} className="flex justify-between pt-2">
+            <span className="color-neutral-500" title={formatBalance(ethiBalance, ethiDecimals, { showAll: true })}>
+              Balance:&nbsp;
+              <Loading className="v-btm" loading={isEthiLoading}>
+                {formatBalance(ethiBalance, ethiDecimals)}
+              </Loading>
+            </span>
+            <span className="color-neutral-500 px-4 justify-end" title={toFixed(pegTokenPrice, BN_18)}>
               <span>1ETHi ≈ {toFixed(pegTokenPrice, BN_18, 6)}ETH</span>
-            </p>
+            </span>
           </GridItem>
-        )}
-      </GridContainer>
-      <GridContainer className={classes.outputContainer}>
-        <GridItem xs={12} sm={12} md={12} lg={12}>
-          <p className={classes.estimateText}>To</p>
-        </GridItem>
-        <GridItem xs={12} sm={12} md={12} lg={12}>
-          {renderEstimate()}
-        </GridItem>
-        {isEmpty(VAULT_ADDRESS) && (
-          <GridItem xs={12} sm={12} md={12} lg={12}>
-            <p style={{ textAlign: 'center', color: 'red' }}>Switch to the ETH chain firstly!</p>
+        </GridContainer>
+        <GridContainer className="pb-4">
+          <GridItem xs={4} sm={4} md={4} className="color-neutral-500 flex items-center">
+            Max loss(%):
           </GridItem>
-        )}
-      </GridContainer>
-      <GridContainer className={classes.maxlossContainer}>
-        <GridItem xs={4} sm={4} md={4} className={classes.slippageTitle}>
-          Max loss(%):
-        </GridItem>
-        <GridItem xs={8} sm={8} md={8}>
-          <CustomTextField
-            classes={{ root: classes.input }}
-            value={allowMaxLoss}
-            placeholder="Allow loss percent"
-            maxEndAdornment
-            onMaxClick={() => setAllowMaxLoss('50')}
-            onChange={event => {
-              const value = event.target.value
-              setAllowMaxLoss(value)
-            }}
-            error={!isUndefined(isValidAllowLossFlag) && !isValidAllowLossFlag}
-          />
-        </GridItem>
-      </GridContainer>
-      <GridContainer>
-        <GridItem xs={12} sm={12} md={12} lg={12}>
-          <div className={classes.footerContainer}>
+          <GridItem xs={8} sm={8} md={8} className="px-4">
+            <CustomTextField
+              classes={{ root: classes.input }}
+              value={allowMaxLoss}
+              placeholder="Allow loss percent"
+              maxEndAdornment
+              onMaxClick={() => setAllowMaxLoss('50')}
+              onChange={event => {
+                const value = event.target.value
+                setAllowMaxLoss(value)
+              }}
+              error={!isUndefined(isValidAllowLossFlag) && !isValidAllowLossFlag}
+            />
+          </GridItem>
+        </GridContainer>
+        <GridContainer>
+          <GridItem xs={12} sm={12} md={12} lg={12} className="pr-4">
             <Button
               disabled={!isLogin || (isLogin && (isUndefined(isValidToValueFlag) || !isValidToValueFlag))}
               color="colorful"
@@ -691,9 +689,17 @@ const Withdraw = props => {
                 <InfoIcon style={{ marginLeft: '0.5rem' }} />
               </Tooltip>
             </Button>
-          </div>
-        </GridItem>
-      </GridContainer>
+          </GridItem>
+        </GridContainer>
+      </GridItem>
+      <GridItem xs={6} sm={12} md={6} lg={6} className="pl-12" style={{ borderLeft: '1px solid #737373' }}>
+        <p>To receive:</p>
+        {renderEstimate()}
+        <p className="color-neutral-500">
+          After redemption, you may receive a variety of ETH anchored tokens, which can be converted into unified tokens with one click through the
+          Zap feature
+        </p>
+      </GridItem>
       <Modal className={classes.modal} open={isWithdrawLoading} aria-labelledby="simple-modal-title" aria-describedby="simple-modal-description">
         <Paper elevation={3} className={classes.widthdrawLoadingPaper}>
           <div className={classes.modalBody}>
@@ -750,28 +756,79 @@ const Withdraw = props => {
       </Modal>
       <Modal
         className={classes.modal}
-        open={isShowZipModal && !!address}
+        open={isShowZipModal && !!address && !!exchangeManager}
         aria-labelledby="simple-modal-title"
         aria-describedby="simple-modal-description"
       >
+        <div className="outline-0 w-168">
+          <div
+            className="p-7 color-white b-rd-5"
+            style={{
+              background: 'linear-gradient(111.68deg, #2C2F36 7.59%, #333437 102.04%)'
+            }}
+          >
+            <div className="mh-40 p-5 b-1 b-solid b-rd-t-5 b-color-purple-400">
+              <p className="text-center color-green-500 pb-4" style={{ borderBottom: '1px dashed #c084fc' }}>
+                Withdraw Success!
+              </p>
+              <p>Receive:</p>
+              <GridContainer>
+                <GridItem xs={12} sm={12} md={12} lg={12} className="flex justify-start flex-wrap">
+                  {map(burnTokens, item => {
+                    return (
+                      <div className="flex text-center items-center p-2">
+                        <img className="w-6 b-rd-3" src={`./images/${item.address}.png`} />
+                        <span className="mx-2">{toFixed(item.amount, BigNumber.from(10).pow(item.decimals), 4)}</span>
+                        <span>{item.symbol}</span>
+                      </div>
+                    )
+                  })}
+                </GridItem>
+              </GridContainer>
+            </div>
+            <div className="p-5 b-1 b-solid b-rd-b-5 b-color-purple-400 mt-4">
+              <GridContainer>
+                <GridItem xs={8} sm={8} md={8} lg={8}>
+                  <Button
+                    disabled={isEmpty(burnTokens) || burnTokens.length <= 1}
+                    color="colorful"
+                    onClick={zapStart}
+                    className={classes.blockButton}
+                    fullWidth
+                  >
+                    Start Zapping
+                  </Button>
+                </GridItem>
+                <GridItem xs={4} sm={4} md={4} lg={4} className="pl-4">
+                  <Button color="danger" onClick={zapCancel} className={classes.blockButton} fullWidth>
+                    Cancel
+                  </Button>
+                </GridItem>
+              </GridContainer>
+            </div>
+          </div>
+        </div>
+      </Modal>
+      <Modal className={classes.modal} open={showZapModal} aria-labelledby="simple-modal-title" aria-describedby="simple-modal-description">
         <div className={classes.swapBody}>
           {!isEmpty(address) && !isEmpty(exchangeManager) && (
             <ApproveArrayV3
               isEthi
               address={address}
-              tokens={burnTokens}
+              tokens={zapTokens}
               userProvider={userProvider}
               exchangeManager={exchangeManager}
-              EXCHANGE_ADAPTER_ABI={EXCHANGE_ADAPTER_ABI}
-              EXCHANGE_AGGREGATOR_ABI={EXCHANGE_AGGREGATOR_ABI}
               slippage={slipper}
               onSlippageChange={setSlipper}
-              handleClose={() => setIsShowZipModal(false)}
+              handleClose={() => {
+                setShowZapModal(false)
+                setZapTokens([])
+              }}
             />
           )}
         </div>
       </Modal>
-    </>
+    </GridContainer>
   )
 }
 

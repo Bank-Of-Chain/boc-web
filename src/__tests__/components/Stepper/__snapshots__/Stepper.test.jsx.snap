@@ -1,0 +1,45 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`StepConnector Component Render 1`] = `
+<DocumentFragment>
+  <div
+    class="MuiStepConnector-root MuiStepConnector-horizontal"
+  >
+    <span
+      class="MuiStepConnector-line WithStyles(ForwardRef(StepConnector))-line-5 MuiStepConnector-lineHorizontal"
+    />
+  </div>
+</DocumentFragment>
+`;
+
+exports[`StepIcon Component Render 1`] = `
+<DocumentFragment>
+  <div
+    class="makeStyles-root-6"
+  >
+    <div
+      class="makeStyles-circle-8"
+    />
+  </div>
+</DocumentFragment>
+`;
+
+exports[`StepLabel Component Render 1`] = `
+<DocumentFragment>
+  <span
+    class="MuiStepLabel-root MuiStepLabel-horizontal"
+  >
+    <span
+      class="MuiStepLabel-labelContainer"
+    />
+  </span>
+</DocumentFragment>
+`;
+
+exports[`Stepper Component Render 1`] = `
+<DocumentFragment>
+  <div
+    class="MuiPaper-root MuiStepper-root WithStyles(ForwardRef(Stepper))-root-1 MuiStepper-horizontal MuiPaper-elevation0"
+  />
+</DocumentFragment>
+`;

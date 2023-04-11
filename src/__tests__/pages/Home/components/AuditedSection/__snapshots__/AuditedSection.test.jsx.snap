@@ -1,0 +1,32 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`AuditedSection Component Render 1`] = `
+<DocumentFragment>
+  <div
+    class="makeStyles-section-1"
+  >
+    <div
+      class="makeStyles-inner-3"
+    >
+      <h1
+        class="makeStyles-title-4"
+      >
+        Your assets,
+      </h1>
+      <h1
+        class="makeStyles-title-4"
+      >
+        secured
+      </h1>
+      <div
+        class="makeStyles-divider-6"
+      />
+      <h4
+        class="makeStyles-text-5"
+      >
+        The underlying smart contracts of the BoC protocol have been thoroughly and repeatedly tested. BoC contracts are currently under our first third-party audit.
+      </h4>
+    </div>
+  </div>
+</DocumentFragment>
+`;

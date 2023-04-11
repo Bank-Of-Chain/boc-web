@@ -38,6 +38,7 @@ import { USDT_ADDRESS, USDC_ADDRESS, DAI_ADDRESS, MULTIPLE_OF_GAS, MAX_GAS_LIMIT
 import { ETH_ADDRESS } from '@/constants/tokens'
 import { BN_6, BN_18 } from '@/constants/big-number'
 import { TRANSACTION_REPLACED, CALL_EXCEPTION } from '@/constants/metamask'
+import { EXCHANGE_ADAPTER_ABI_V1_5_9 as EXCHANGE_ADAPTER_ABI, EXCHANGE_AGGREGATOR_ABI_v1_6_0 as EXCHANGE_AGGREGATOR_ABI } from '@/constants/abi'
 
 // === Styles === //
 import styles from './style-v3'
@@ -49,7 +50,7 @@ const MAX_RETRY_TIME = 2
 const ApproveArrayV3 = props => {
   const classes = useStyles()
   const dispatch = useDispatch()
-  const { isEthi, userProvider, tokens, address: userAddress, exchangeManager, EXCHANGE_AGGREGATOR_ABI, EXCHANGE_ADAPTER_ABI, handleClose } = props
+  const { isEthi, userProvider, tokens, address: userAddress, exchangeManager, handleClose } = props
 
   const refArray = map(tokens, () => useRef(null))
   const [exchangePlatformAdapters, setExchangePlatformAdapters] = useState({})

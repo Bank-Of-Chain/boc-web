@@ -13,7 +13,7 @@ import useMediaQuery from '@material-ui/core/useMediaQuery'
 import styles from './productStyle'
 
 import { Navigation, Autoplay } from 'swiper'
-import { Swiper, SwiperSlide } from 'swiper/react/swiper-react'
+import { Swiper, SwiperSlide } from 'swiper/react'
 import 'swiper/swiper-bundle.min.css'
 
 const useStyles = makeStyles(styles)

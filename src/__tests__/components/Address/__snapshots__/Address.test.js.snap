@@ -1,9 +1,0 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
-
-exports[`Address Component Render 1`] = `
-<DocumentFragment>
-  <span>
-    0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266
-  </span>
-</DocumentFragment>
-`;

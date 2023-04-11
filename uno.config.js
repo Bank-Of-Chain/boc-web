@@ -1,0 +1,28 @@
+import { defineConfig, presetIcons, presetUno, presetWind } from 'unocss'
+
+const config = {
+  presets: [
+    presetUno(),
+    presetWind(),
+    presetIcons({
+      prefix: 'i-',
+      extraProperties: {
+        display: 'inline-block'
+      }
+    })
+  ],
+  shortcuts: [
+    {
+      'flex-center': 'flex justify-center items-center',
+      'flex-col-center': 'flex flex-col justify-center items-center'
+    }
+  ],
+  rules: [],
+  theme: {
+    colors: {
+      primary: '#34E0A1'
+    }
+  }
+}
+
+export default defineConfig(config)

@@ -17,7 +17,7 @@ const useErc20Token = (tokenAddress, userProvider) => {
   const address = useUserAddress(userProvider)
   const [balance, setBalance] = useState(BigNumber.from(0))
   const [decimals, setDecimals] = useState(1)
-  const [isBalanceloading, setIsBalanceloading] = useState(true)
+  const [isBalanceLoading, setIsBalanceLoading] = useState(true)
   const [isDecimalsLoading, setIsDecimalsLoading] = useState(true)
 
   const balanceOf = useCallback(
@@ -44,11 +44,11 @@ const useErc20Token = (tokenAddress, userProvider) => {
       setDecimals(1)
       return nextBalance
     }
-    setIsBalanceloading(true)
+    setIsBalanceLoading(true)
 
     nextBalance = await balanceOf(address)
     setBalance(nextBalance)
-    setIsBalanceloading(false)
+    setIsBalanceLoading(false)
     return nextBalance
   }, [tokenAddress, address, balanceOf])
 
@@ -132,7 +132,9 @@ const useErc20Token = (tokenAddress, userProvider) => {
   return {
     balance,
     decimals,
-    loading: isBalanceloading && isDecimalsLoading,
+    loading: isBalanceLoading && isDecimalsLoading,
+    isBalanceLoading,
+    isDecimalsLoading,
     // actions
     approve,
     queryBalance,

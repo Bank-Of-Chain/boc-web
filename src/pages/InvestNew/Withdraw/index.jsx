@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react'
+import React, { useState, useEffect, useCallback, useMemo } from 'react'
 import * as ethers from 'ethers'
 import BN from 'bignumber.js'
 import { useDispatch } from 'react-redux'
@@ -13,7 +13,6 @@ import Tooltip from '@material-ui/core/Tooltip'
 import InfoIcon from '@material-ui/icons/Info'
 import Step from '@material-ui/core/Step'
 import WarningIcon from '@material-ui/icons/Warning'
-import SimpleSelect from '@/components/SimpleSelect'
 import CustomTextField from '@/components/CustomTextField'
 import BocStepper from '@/components/Stepper/Stepper'
 import BocStepLabel from '@/components/Stepper/StepLabel'
@@ -27,16 +26,19 @@ import ApproveArray from '@/components/ApproveArray/ApproveArrayV3'
 
 // === Hooks === //
 import useVault from '@/hooks/useVault'
+import useWallet from '@/hooks/useWallet'
 import useUserAddress from '@/hooks/useUserAddress'
 import useErc20Token from '@/hooks/useErc20Token'
 
 // === Constants === //
 import { warmDialog } from '@/reducers/meta-reducer'
 import { toFixed, formatBalance } from '@/helpers/number-format'
-import { USDT_ADDRESS, IERC20_ABI, MULTIPLE_OF_GAS, MAX_GAS_LIMIT } from '@/constants'
+import { USDT_ADDRESS, IERC20_ABI, MULTIPLE_OF_GAS, MAX_GAS_LIMIT, RPC_URL } from '@/constants'
 import { USDC_ADDRESS, DAI_ADDRESS } from '@/constants/tokens'
 import { BN_18 } from '@/constants/big-number'
 import { TRANSACTION_REPLACED, CALL_EXCEPTION } from '@/constants/metamask'
+import { USDI_FOR_ETH as USDI_ADDRESS, USDI_VAULT_FOR_ETH as VAULT_ADDRESS } from '@/config/config'
+import { VAULT_ABI_V2_0 as VAULT_ABI } from '@/constants/abi'
 
 // === Utils === //
 import isUndefined from 'lodash/isUndefined'
@@ -51,24 +53,15 @@ import { isAd, isEs, isRp, isMaxLoss, isLossMuch, isExchangeFail, errorTextOutpu
 // === Styles === //
 import styles from './style'
 
-const { BigNumber } = ethers
+const { BigNumber, providers } = ethers
 const useStyles = makeStyles(styles)
 
 const steps = [{ title: 'Shares Validation' }, { title: 'Gas Estimates' }, { title: 'Withdraw' }]
 
 const RECEIVE_MIX_VALUE = 'Mix'
 
-const Withdraw = ({
-  userProvider,
-  USDI_ADDRESS,
-  VAULT_ADDRESS,
-  VAULT_ABI,
-  EXCHANGE_AGGREGATOR_ABI,
-  exchangeManager,
-  EXCHANGE_ADAPTER_ABI,
-  redeemFeeBps,
-  trusteeFeeBps
-}) => {
+const Withdraw = props => {
+  const { reload } = props
   const classes = useStyles()
   const dispatch = useDispatch()
   const [receiveToken] = useState(RECEIVE_MIX_VALUE)
@@ -85,24 +78,38 @@ const Withdraw = ({
     // {
     //   address: USDT_ADDRESS,
     //   amount: '100000000',
-    //   symbol: 'USDT'
+    //   symbol: 'USDT',
+    //   decimals: 6
     // },
     // {
     //   address: USDC_ADDRESS,
     //   amount: '10000000',
-    //   symbol: 'USDC'
+    //   symbol: 'USDC',
+    //   decimals: 6
     // },
     // {
     //   address: DAI_ADDRESS,
     //   amount: '10000000000000000000',
-    //   symbol: 'DAI'
+    //   symbol: 'DAI',
+    //   decimals: 18
     // }
   ])
   console.log('USDC_ADDRESS=', USDC_ADDRESS, 'DAI_ADDRESS=', DAI_ADDRESS, JSON.stringify(burnTokens))
   const [isShowZipModal, setIsShowZipModal] = useState(false)
 
+  // === Zap === //
+  const [zapTokens, setZapTokens] = useState([])
+  const [showZapModal, setShowZapModal] = useState(false)
+
+  const { userProvider } = useWallet()
+
   const address = useUserAddress(userProvider)
-  const { pegTokenPrice, getPegTokenPrice } = useVault(VAULT_ADDRESS, VAULT_ABI, userProvider)
+  const provider = useMemo(() => new providers.StaticJsonRpcProvider(RPC_URL[1], 1), [RPC_URL])
+  const { pegTokenPrice, getPegTokenPrice, exchangeManager, redeemFeeBps, trusteeFeeBps } = useVault(
+    VAULT_ADDRESS,
+    VAULT_ABI,
+    userProvider || provider
+  )
 
   const {
     balance: usdiBalance,
@@ -204,14 +211,13 @@ const Withdraw = ({
         const fromContract = new ethers.Contract(token, IERC20_ABI, userProvider)
         const fromDecimal = await fromContract.decimals()
         const tokenSymbol = await fromContract.symbol()
-        const exchangeAmounts = amounts[i]
-        if (BigNumber.from(10).pow(fromDecimal).gt(exchangeAmounts)) {
-          return
-        }
+        const exchangeAmounts = toFixed(amounts[i], 1)
+        if (exchangeAmounts === '0') return
         return {
           address: token,
-          amount: toFixed(amounts[i], 1),
-          symbol: tokenSymbol
+          amount: exchangeAmounts,
+          symbol: tokenSymbol,
+          decimals: fromDecimal
         }
       })
     ).then(array => {
@@ -432,6 +438,34 @@ const Withdraw = ({
     return true
   }, [allowMaxLoss])
 
+  /**
+   *
+   */
+  const zapStart = useCallback(() => {
+    const nextZapTokens = compact(
+      map(burnTokens, token => {
+        const { decimals, amount } = token
+        if (BigNumber.from(10).pow(decimals).gt(amount)) {
+          return
+        }
+        return token
+      })
+    )
+    if (!isEmpty(nextZapTokens)) {
+      setZapTokens(nextZapTokens)
+      setIsShowZipModal(false)
+      setShowZapModal(true)
+    }
+  }, [burnTokens])
+
+  /**
+   *
+   */
+  const zapCancel = useCallback(() => {
+    setIsShowZipModal(false)
+    setBurnTokens([])
+  }, [])
+
   useEffect(() => {
     if (isEmpty(toValue) || !isValidToValue() || !isValidAllowLoss()) {
       setEstimateWithdrawArray([])
@@ -482,47 +516,24 @@ const Withdraw = ({
     }
     if (isEmpty(estimateWithdrawArray) || isEmpty(toValue)) {
       return (
-        <GridItem xs={12} sm={12} md={12} lg={12}>
-          <div className={classes.estimateItem}>
-            <p style={{ fontSize: 26, textAlign: 'right' }}>0.00</p>
-          </div>
+        <GridItem xs={12} sm={12} md={12} lg={12} className="text-center">
+          <span className="i-uil-calculator-alt text-20 color-neutral-500"></span>
         </GridItem>
       )
     }
-    console.log('estimateWithdrawArray=', estimateWithdrawArray)
-    const options = map(estimateWithdrawArray, item => {
-      return {
-        label: item.symbol,
-        value: item.tokenAddress,
-        img: `./images/${item.tokenAddress}.png`
-      }
-    })
 
-    return map(estimateWithdrawArray, item => {
-      return (
-        <GridItem key={item.tokenAddress} xs={12} sm={12} md={12} lg={12} style={{ paddingTop: '0.5rem' }}>
-          <GridContainer justify="center" spacing={1}>
-            <GridItem xs={4} sm={4} md={4} lg={4}>
-              <SimpleSelect disabled value={item.tokenAddress} options={options} />
-            </GridItem>
-            <GridItem xs={8} sm={8} md={8} lg={8}>
-              <CustomTextField
-                classes={{ root: classes.input }}
-                value={toFixed(item.amounts, BigNumber.from(10).pow(item.decimals), 6)}
-                placeholder="withdraw amount"
-                disabled
-              />
-            </GridItem>
-            <GridItem xs={12} sm={12} md={12} lg={12}>
-              <p className={classes.estimateText} title={formatBalance(item.balance, item.decimals, { showAll: true })}>
-                Balance:&nbsp;
-                {formatBalance(item.balance, item.decimals)}
-              </p>
-            </GridItem>
-          </GridContainer>
-        </GridItem>
-      )
-    })
+    return (
+      <div className="flex flex-wrap justify-start">
+        {map(estimateWithdrawArray, (item, index) => {
+          return (
+            <div className="flex text-center p-4 align-center" key={index}>
+              <img className="w-6 b-rd-3 mr-2" src={`./images/${item.tokenAddress}.png`} />
+              <span>{toFixed(item.amounts, BigNumber.from(10).pow(item.decimals), 2)}</span>
+            </div>
+          )
+        })}
+      </div>
+    )
   }
 
   const isValidToValueFlag = isValidToValue()
@@ -530,7 +541,10 @@ const Withdraw = ({
 
   const isLogin = !isEmpty(userProvider)
 
-  const handleBurnCall = useCallback(() => queryUsdiBalance(), [queryUsdiBalance])
+  const handleBurnCall = useCallback(() => {
+    queryUsdiBalance()
+    reload()
+  }, [reload, queryUsdiBalance])
 
   useEffect(() => {
     getPegTokenPrice()
@@ -551,81 +565,66 @@ const Withdraw = ({
   }, [VAULT_ADDRESS, VAULT_ABI, userProvider, handleBurnCall])
 
   return (
-    <>
-      <GridContainer className={classes.withdrawContainer}>
-        <GridItem xs={12} sm={12} md={12} lg={12}>
-          <p className={classes.estimateText}>From</p>
-        </GridItem>
-        <GridItem xs={12} sm={12} md={12} lg={12}>
-          <GridContainer justify="center" spacing={2}>
-            <GridItem xs={4} sm={4} md={4} lg={4}>
-              <div className={classes.tokenInfo}>
-                <span className={classes.tokenName}>USDi</span>
-              </div>
-            </GridItem>
-            <GridItem xs={8} sm={8} md={8} lg={8}>
-              <CustomTextField
-                classes={{ root: classes.input }}
-                value={toValue}
-                placeholder="withdraw amount"
-                maxEndAdornment
-                onMaxClick={() => handleMaxClick()}
-                onChange={handleAmountChange}
-                error={!isUndefined(isValidToValueFlag) && !isValidToValueFlag && toValue !== '0'}
-              />
-            </GridItem>
-          </GridContainer>
-        </GridItem>
-        <GridItem xs={6} sm={6} md={6} lg={6}>
-          <p className={classes.estimateText} title={formatBalance(usdiBalance, usdiDecimals, { showAll: true })}>
-            Balance:&nbsp;
-            <Loading loading={isUsdiLoading}>{formatBalance(usdiBalance, usdiDecimals)}</Loading>
-          </p>
-        </GridItem>
-        {address && (
-          <GridItem xs={6} sm={6} md={6} lg={6}>
-            <p className={classes.estimateText} style={{ justifyContent: 'flex-end' }} title={toFixed(pegTokenPrice, BN_18)}>
-              <span>1 USDi ≈ {toFixed(pegTokenPrice, BN_18, 6)} USD</span>
-            </p>
+    <GridContainer>
+      <GridItem xs={6} sm={12} md={6} lg={6} className="p-8 pb-0">
+        <GridContainer className="pb-4">
+          <GridItem xs={12} sm={12} md={12} lg={12}>
+            <GridContainer>
+              <GridItem xs={4} sm={4} md={4} lg={4}>
+                <div className={classes.tokenInfo}>
+                  <span className={classes.tokenName}>USDi</span>
+                </div>
+              </GridItem>
+              <GridItem xs={8} sm={8} md={8} lg={8} className="px-4">
+                <CustomTextField
+                  classes={{ root: classes.input }}
+                  value={toValue}
+                  placeholder="withdraw amount"
+                  maxEndAdornment
+                  onMaxClick={() => handleMaxClick()}
+                  onChange={handleAmountChange}
+                  error={!isUndefined(isValidToValueFlag) && !isValidToValueFlag && toValue !== '0'}
+                />
+              </GridItem>
+            </GridContainer>
           </GridItem>
-        )}
-      </GridContainer>
-      <GridContainer className={classes.outputContainer}>
-        <GridItem xs={12} sm={12} md={12} lg={12}>
-          <p className={classes.estimateText}>To</p>
-        </GridItem>
-        <GridItem xs={12} sm={12} md={12} lg={12}>
-          <GridContainer>{renderEstimate()}</GridContainer>
-        </GridItem>
-      </GridContainer>
-      <GridContainer className={classes.maxlossContainer}>
-        <GridItem xs={4} sm={4} md={4} className={classes.slippageTitle}>
-          Max loss(%):
-        </GridItem>
-        <GridItem xs={8} sm={8} md={8}>
-          <CustomTextField
-            classes={{ root: classes.input }}
-            value={allowMaxLoss}
-            placeholder="Allow loss percent"
-            maxEndAdornment
-            onMaxClick={() => setAllowMaxLoss('50')}
-            onChange={event => {
-              const value = event.target.value
-              setAllowMaxLoss(value)
-            }}
-            error={!isUndefined(isValidAllowLossFlag) && !isValidAllowLossFlag}
-          />
-        </GridItem>
-      </GridContainer>
-      <GridContainer>
-        <GridItem xs={12} sm={12} md={12} lg={12}>
-          <div className={classes.footerContainer}>
+          <GridItem xs={12} sm={12} md={12} lg={12} className="flex justify-between pt-2">
+            <span className="color-neutral-500" title={formatBalance(usdiBalance, usdiDecimals, { showAll: true })}>
+              Balance:&nbsp;
+              <Loading loading={isUsdiLoading}>{formatBalance(usdiBalance, usdiDecimals)}</Loading>
+            </span>
+            <span className="color-neutral-500 px-4 justify-end" title={toFixed(pegTokenPrice, BN_18)}>
+              <span>1 USDi ≈ {toFixed(pegTokenPrice, BN_18, 6)} USD</span>
+            </span>
+          </GridItem>
+        </GridContainer>
+        <GridContainer className="pb-4">
+          <GridItem xs={4} sm={4} md={4} className="color-neutral-500 flex items-center">
+            Max loss(%):
+          </GridItem>
+          <GridItem xs={8} sm={8} md={8} className="px-4">
+            <CustomTextField
+              classes={{ root: classes.input }}
+              value={allowMaxLoss}
+              placeholder="Allow loss percent"
+              maxEndAdornment
+              onMaxClick={() => setAllowMaxLoss('50')}
+              onChange={event => {
+                const value = event.target.value
+                setAllowMaxLoss(value)
+              }}
+              error={!isUndefined(isValidAllowLossFlag) && !isValidAllowLossFlag}
+            />
+          </GridItem>
+        </GridContainer>
+        <GridContainer>
+          <GridItem xs={12} sm={12} md={12} lg={12} className="pr-4">
             <Button
               disabled={!isLogin || (isLogin && (isUndefined(isValidToValueFlag) || !isValidToValueFlag))}
               color="colorful"
               onClick={withdraw}
               className={classes.blockButton}
-              fullWidth={true}
+              fullWidth
             >
               Withdraw
               <Tooltip
@@ -638,9 +637,17 @@ const Withdraw = ({
                 <InfoIcon style={{ marginLeft: '0.5rem' }} />
               </Tooltip>
             </Button>
-          </div>
-        </GridItem>
-      </GridContainer>
+          </GridItem>
+        </GridContainer>
+      </GridItem>
+      <GridItem xs={6} sm={12} md={6} lg={6} className="pl-12" style={{ borderLeft: '1px solid #737373' }}>
+        <p>To receive:</p>
+        {renderEstimate()}
+        <p className="color-neutral-500">
+          After redemption, you may receive a variety of USD anchored tokens, which can be converted into unified tokens with one click through the
+          Zap feature
+        </p>
+      </GridItem>
       <Modal className={classes.modal} open={isWithdrawLoading} aria-labelledby="simple-modal-title" aria-describedby="simple-modal-description">
         <Paper elevation={3} className={classes.widthdrawLoadingPaper}>
           <div className={classes.modalBody}>
@@ -697,27 +704,78 @@ const Withdraw = ({
       </Modal>
       <Modal
         className={classes.modal}
-        open={isShowZipModal && !!address}
+        open={isShowZipModal && !!address && !!exchangeManager}
         aria-labelledby="simple-modal-title"
         aria-describedby="simple-modal-description"
       >
+        <div className="outline-0 w-168">
+          <div
+            className="p-7 color-white b-rd-5"
+            style={{
+              background: 'linear-gradient(111.68deg, #2C2F36 7.59%, #333437 102.04%)'
+            }}
+          >
+            <div className="mh-40 p-5 b-1 b-solid b-rd-t-5 b-color-purple-400">
+              <p className="text-center color-green-500 pb-4" style={{ borderBottom: '1px dashed #c084fc' }}>
+                Withdraw Success!
+              </p>
+              <p>Receive:</p>
+              <GridContainer>
+                <GridItem xs={12} sm={12} md={12} lg={12} className="flex justify-start flex-wrap">
+                  {map(burnTokens, item => {
+                    return (
+                      <div className="flex text-center items-center p-2">
+                        <img className="w-6 b-rd-3" src={`./images/${item.address}.png`} />
+                        <span className="mx-2">{toFixed(item.amount, BigNumber.from(10).pow(item.decimals), 2)}</span>
+                        <span>{item.symbol}</span>
+                      </div>
+                    )
+                  })}
+                </GridItem>
+              </GridContainer>
+            </div>
+            <div className="p-5 b-1 b-solid b-rd-b-5 b-color-purple-400 mt-4">
+              <GridContainer>
+                <GridItem xs={8} sm={8} md={8} lg={8}>
+                  <Button
+                    disabled={isEmpty(burnTokens) || burnTokens.length <= 1}
+                    color="colorful"
+                    onClick={zapStart}
+                    className={classes.blockButton}
+                    fullWidth
+                  >
+                    Start Zapping
+                  </Button>
+                </GridItem>
+                <GridItem xs={4} sm={4} md={4} lg={4} className="pl-4">
+                  <Button color="danger" onClick={zapCancel} className={classes.blockButton} fullWidth>
+                    Cancel
+                  </Button>
+                </GridItem>
+              </GridContainer>
+            </div>
+          </div>
+        </div>
+      </Modal>
+      <Modal className={classes.modal} open={showZapModal} aria-labelledby="simple-modal-title" aria-describedby="simple-modal-description">
         <div className={classes.swapBody}>
           {!isEmpty(address) && !isEmpty(exchangeManager) && (
             <ApproveArray
               address={address}
-              tokens={burnTokens}
+              tokens={zapTokens}
               userProvider={userProvider}
               exchangeManager={exchangeManager}
-              EXCHANGE_ADAPTER_ABI={EXCHANGE_ADAPTER_ABI}
-              EXCHANGE_AGGREGATOR_ABI={EXCHANGE_AGGREGATOR_ABI}
               slippage={slipper}
               onSlippageChange={setSlipper}
-              handleClose={() => setIsShowZipModal(false)}
+              handleClose={() => {
+                setShowZapModal(false)
+                setZapTokens([])
+              }}
             />
           )}
         </div>
       </Modal>
-    </>
+    </GridContainer>
   )
 }
 

@@ -24,11 +24,11 @@ import map from 'lodash/map'
 import get from 'lodash/get'
 import find from 'lodash/find'
 import { isInMobileWalletApp, isInMobileH5 } from '@/helpers/plugin-util'
-import { isMarketingHost } from '@/helpers/location'
+import { dashboardHost } from '@/helpers/location'
 import { useLocation } from 'react-router-dom'
 
 // === Constants === //
-import { NET_WORKS, DASHBOARD_URL, DOCUMENT_URL, CHAIN_ID, LEGACYS, POLYGON_HIDDEN } from '@/constants'
+import { NET_WORKS, DOCUMENT_URL, CHAIN_ID, LEGACYS, POLYGON_HIDDEN } from '@/constants'
 import { INVEST_TAB } from '@/constants/invest'
 
 const CHAIN_SELECTOR_SHOW_ROUTER = ['/usdi']
@@ -98,24 +98,13 @@ export default function HeaderLinks(props) {
     }
   }
 
-  const dashboardUrlRender = () => {
-    let nextChainId = CHAIN_ID || '1'
-    let nextVault = pathname === '/ethi' ? 'ethi' : 'usdi'
-
-    // If it's in ETHi, jump to eth chain
-    if (nextVault === 'ethi') {
-      nextChainId = '1'
-    }
-    return `${isMarketingHost() ? 'https://dashboard.bankofchain.io' : DASHBOARD_URL}/#/?chain=${nextChainId}&vault=${nextVault}`
-  }
-
   const handleGoToAccount = () => dispatch(setCurrentTab(INVEST_TAB.account))
 
   return (
     <>
       <List className={classes.list}>
         <ListItem className={classes.listItem}>
-          <Button color="colorful-text" className={classes.m4} target="_blank" href={dashboardUrlRender()} disableRipple={true}>
+          <Button color="colorful-text" className={classes.m4} target="_blank" href={dashboardHost(1, 'ethi')} disableRipple={true}>
             Dashboard
           </Button>
         </ListItem>
@@ -173,7 +162,7 @@ export default function HeaderLinks(props) {
         )}
         {pathname === '/' ? (
           <ListItem className={classes.listItem}>
-            <Button color="colorful-border" href="/#/usdi" className={classes.m4}>
+            <Button color="colorful-border" href="/#/pools" className={classes.m4}>
               Launch App
             </Button>
           </ListItem>

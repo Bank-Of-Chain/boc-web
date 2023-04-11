@@ -1,0 +1,25 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Timeline Component Render 1`] = `
+<DocumentFragment>
+  <div
+    class="makeStyles-timelineWrapper-1"
+  >
+    <div
+      class="makeStyles-topInfo-2"
+    >
+      Now
+    </div>
+    <div
+      class="makeStyles-events-3"
+    >
+      <div
+        class="makeStyles-connector-4"
+      />
+      <ul
+        class="MuiTimeline-root MuiTimeline-alignAlternate makeStyles-timeline-6"
+      />
+    </div>
+  </div>
+</DocumentFragment>
+`;

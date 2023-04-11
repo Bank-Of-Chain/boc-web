@@ -12,7 +12,7 @@ const usePriceProvider = params => {
       throw new Error('userProvider or VAULT_ADDRESS is empty')
     }
     const vaultContract = new Contract(VAULT_ADDRESS, VAULT_ABI, userProvider)
-    return vaultContract.priceProvider().then(priceOracleAddress => {
+    return vaultContract.valueInterpreter().then(priceOracleAddress => {
       const priceOracleContract = new Contract(priceOracleAddress, PRICE_ORCALE_ABI, userProvider)
       return priceOracleContract
     })

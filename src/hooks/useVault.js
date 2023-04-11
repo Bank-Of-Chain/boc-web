@@ -7,7 +7,7 @@ import isEmpty from 'lodash/isEmpty'
 // === Hooks === //
 import useUserAddress from './useUserAddress'
 
-const { Contract } = ethers
+const { Contract, BigNumber } = ethers
 
 /**
  *
@@ -20,18 +20,19 @@ const useVault = (VAULT_ADDRESS, VAULT_ABI, userProvider) => {
   const [error, setError] = useState()
   const [loading, setLoading] = useState(false)
   const [exchangeManager, setExchangeManager] = useState('')
-  const [pegTokenPrice, setPegTokenPrice] = useState(ethers.BigNumber.from(1))
-  const [decimals, setDecimals] = useState(ethers.BigNumber.from(0))
-  const [totalAsset, setTotalAsset] = useState(ethers.BigNumber.from(0))
-  const [rebaseThreshold, setRebaseThreshold] = useState(ethers.BigNumber.from(0))
-  const [underlyingUnitsPerShare, setUnderlyingUnitsPerShare] = useState(ethers.BigNumber.from(0))
-  const [minimumInvestmentAmount, setMinimumInvestmentAmount] = useState(ethers.BigNumber.from(0))
+  const [pegTokenPrice, setPegTokenPrice] = useState(BigNumber.from(1))
+  const [decimals, setDecimals] = useState(BigNumber.from(0))
+  const [totalAsset, setTotalAsset] = useState(BigNumber.from(0))
+  const [rebaseThreshold, setRebaseThreshold] = useState(BigNumber.from(0))
+  const [underlyingUnitsPerShare, setUnderlyingUnitsPerShare] = useState(BigNumber.from(0))
+  const [minimumInvestmentAmount, setMinimumInvestmentAmount] = useState(BigNumber.from(0))
 
   // ===
   const [isRedeemFeeBpsLoading, setIsRedeemFeeBpsLoading] = useState(false)
   const [isTrusteeFeeBpsLoading, setIsTrusteeFeeBpsLoading] = useState(false)
-  const [redeemFeeBps, setRedeemFeeBps] = useState(ethers.BigNumber.from(0))
-  const [trusteeFeeBps, setTrusteeFeeBps] = useState(ethers.BigNumber.from(0))
+  const [redeemFeeBps, setRedeemFeeBps] = useState(BigNumber.from(0))
+  const [trusteeFeeBps, setTrusteeFeeBps] = useState(BigNumber.from(0))
+  const [isTotalAssetLoading, setIsTotalAssetLoading] = useState(false)
 
   const address = useUserAddress(userProvider)
 
@@ -154,9 +155,24 @@ const useVault = (VAULT_ADDRESS, VAULT_ABI, userProvider) => {
   /**
    *
    */
+  const queryTotalAssets = useCallback(() => {
+    const vaultContract = getVaultContract()
+    if (isEmpty(vaultContract)) return
+    setIsTotalAssetLoading(true)
+    return vaultContract
+      .totalAssets()
+      .catch(() => ethers.BigNumber.from(0))
+      .then(setTotalAsset)
+      .finally(() => setIsTotalAssetLoading(false))
+  }, [getVaultContract])
+  /**
+   *
+   */
   const queryRedeemFeeBps = useCallback(() => {
+    const vaultContract = getVaultContract()
+    if (isEmpty(vaultContract)) return
     setIsRedeemFeeBpsLoading(true)
-    return getVaultContract()
+    return vaultContract
       .redeemFeeBps()
       .then(setRedeemFeeBps)
       .finally(() => setIsRedeemFeeBpsLoading(false))
@@ -166,8 +182,10 @@ const useVault = (VAULT_ADDRESS, VAULT_ABI, userProvider) => {
    *
    */
   const queryTrusteeFeeBps = useCallback(() => {
+    const vaultContract = getVaultContract()
+    if (isEmpty(vaultContract)) return
     setIsTrusteeFeeBpsLoading(true)
-    return getVaultContract()
+    return vaultContract
       .trusteeFeeBps()
       .then(setTrusteeFeeBps)
       .finally(() => setIsTrusteeFeeBpsLoading(false))
@@ -181,6 +199,10 @@ const useVault = (VAULT_ADDRESS, VAULT_ABI, userProvider) => {
     queryTrusteeFeeBps()
   }, [queryTrusteeFeeBps])
 
+  useEffect(() => {
+    queryTotalAssets()
+  }, [queryTotalAssets])
+
   useEffect(getPegTokenPrice, [getPegTokenPrice])
 
   useEffect(() => {
@@ -193,10 +215,29 @@ const useVault = (VAULT_ADDRESS, VAULT_ABI, userProvider) => {
     queryBaseInfo()
   }, [address, VAULT_ADDRESS, VAULT_ABI, userProvider, queryBaseInfo, valid])
 
+  useEffect(() => {
+    const vaultContract = getVaultContract()
+    if (isEmpty(vaultContract)) return
+    vaultContract.on('RedeemFeeUpdated', queryRedeemFeeBps)
+    return () => {
+      vaultContract.off('RedeemFeeUpdated', queryRedeemFeeBps)
+    }
+  }, [getVaultContract, queryRedeemFeeBps])
+
+  useEffect(() => {
+    const vaultContract = getVaultContract()
+    if (isEmpty(vaultContract)) return
+    vaultContract.on('TrusteeFeeBpsChanged', queryTrusteeFeeBps)
+    return () => {
+      vaultContract.off('TrusteeFeeBpsChanged', queryTrusteeFeeBps)
+    }
+  }, [getVaultContract, queryTrusteeFeeBps])
+
   return {
     loading,
     error,
     totalAsset,
+    isTotalAssetLoading,
     decimals,
     exchangeManager,
     pegTokenPrice,
@@ -211,7 +252,9 @@ const useVault = (VAULT_ADDRESS, VAULT_ABI, userProvider) => {
     isRedeemFeeBpsLoading,
     isTrusteeFeeBpsLoading,
     redeemFeeBps,
-    trusteeFeeBps
+    trusteeFeeBps,
+    // === actions === //
+    queryTotalAssets
   }
 }
 
