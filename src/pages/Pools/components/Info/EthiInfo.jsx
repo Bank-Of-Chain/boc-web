@@ -7,13 +7,16 @@ import GridItem from '@/components/Grid/GridItem'
 // === Services === //
 import { dashboardHost } from '@/helpers/location'
 
+// === Utils === //
+import { addToken } from '@/helpers/wallet'
+
 // === Constants === //
 import { ETHI_FOR_ETH, ETHI_VAULT } from '@/config/config'
 
 const EthiInfo = () => {
   return (
     <GridContainer>
-      <GridItem xs={6} sm={12} md={6} className="pr-12">
+      <GridItem xs={6} sm={12} md={6} className="pl-8 pr-12">
         <p className="flex justify-between items-center">
           <span className="color-neutral-500">Vault:</span>
           <a
@@ -27,6 +30,7 @@ const EthiInfo = () => {
         </p>
         <p className="flex justify-between items-center">
           <span className="color-neutral-500">ETHi:</span>
+          <span className="i-ri-add-circle-fill color-fuchsia-700 cursor-pointer" onClick={() => addToken(ETHI_FOR_ETH, 'ETHi', 18)} />
           <a
             className="color-fuchsia-700 decoration-none text-3.5"
             rel="noopener noreferrer"

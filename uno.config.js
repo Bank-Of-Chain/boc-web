@@ -17,10 +17,10 @@ const config = {
       'flex-col-center': 'flex flex-col justify-center items-center'
     }
   ],
-  rules: [],
+  rules: [[/^leh-(\d+\.{0,1}\d{0,2})$/, ([, d]) => ({ 'line-height': `${d}` })]],
   theme: {
     colors: {
-      primary: '#34E0A1'
+      primary: 'rgb(217, 70, 239)'
     }
   }
 }
