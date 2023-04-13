@@ -119,9 +119,17 @@ const Deposit = props => {
       if (gasPriceLoading || gasLimitLoading || (!isValid && isUndefined(flag))) {
         return BigNumber.from(0)
       }
+      const MAX_BLOCK_GAS_LIMIT = BigNumber.from(10).pow(9).mul(MAX_GAS_LIMIT)
       // metamask gaslimit great than contract gaslimit, so add extra limit
       const metamaskExtraLimit = 114
-      return mintGasLimit.add(metamaskExtraLimit).mul(BigNumber.from(gasPrice.toString()))
+      const ethLeft = mintGasLimit
+        .add(metamaskExtraLimit)
+        // 1. because MULTIPLE_OF_GAS, so we need left more ETH for success deposited.
+        // 2. metamask avarage price is 1.5 times of current gas price.
+        .mul(BigNumber.from(Math.ceil(gasPrice * MULTIPLE_OF_GAS * 1.5).toString()))
+
+      // if ethLeft value gt MAX_BLOCK_GAS_LIMIT, we use MAX_BLOCK_GAS_LIMIT firstly
+      return ethLeft.gt(MAX_BLOCK_GAS_LIMIT) ? MAX_BLOCK_GAS_LIMIT : ethLeft
     },
     [gasPrice, gasPriceLoading, mintGasLimit, gasLimitLoading, isValid]
   )
