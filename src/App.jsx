@@ -31,8 +31,6 @@ import { isInMobileWalletApp, isInMobileH5, hasWalletInstalled } from './helpers
 import './App.css'
 
 const Home = lazy(() => import('./pages/Home/index'))
-const InvestNew = lazy(() => import('./pages/InvestNew/index'))
-const Ethi = lazy(() => import('./pages/Ethi/index'))
 const Pools = lazy(() => import('./pages/Pools/index'))
 const Team = lazy(() => import('./pages/Team/index'))
 
@@ -264,32 +262,6 @@ function App() {
             >
               <Frame {...nextProps}>
                 <Home {...nextProps} />
-              </Frame>
-            </Suspense>
-          </Route>
-          <Route path="/usdi">
-            <Suspense
-              fallback={
-                <Backdrop className={classes.backdrop} open>
-                  <CircularProgress color="inherit" />
-                </Backdrop>
-              }
-            >
-              <Frame {...nextProps}>
-                <InvestNew {...nextProps} />
-              </Frame>
-            </Suspense>
-          </Route>
-          <Route path="/ethi">
-            <Suspense
-              fallback={
-                <Backdrop className={classes.backdrop} open>
-                  <CircularProgress color="inherit" />
-                </Backdrop>
-              }
-            >
-              <Frame {...nextProps}>
-                <Ethi {...nextProps} />
               </Frame>
             </Suspense>
           </Route>

@@ -1,4 +1,4 @@
-import React, { useCallback, useState, useEffect, forwardRef, useImperativeHandle } from 'react'
+import React, { useCallback, useState, useEffect, forwardRef, useImperativeHandle, useMemo } from 'react'
 import classNames from 'classnames'
 import { makeStyles } from '@material-ui/core/styles'
 
@@ -9,6 +9,9 @@ import RefreshIcon from '@material-ui/icons/Refresh'
 import GridContainer from '@/components/Grid/GridContainer'
 import GridItem from '@/components/Grid/GridItem'
 import SimpleSelect from '@/components/SimpleSelect'
+
+// === Hooks === //
+import useErc20Token from '@/hooks/useErc20Token'
 
 // === Utils === //
 import * as ethers from 'ethers'
@@ -23,8 +26,8 @@ import BN from 'bignumber.js'
 import { getProtocolsFromBestRouter } from '@/helpers/swap-util'
 
 // === Constants === //
+import { ETH_ADDRESS } from '@/constants/tokens'
 import { IERC20_ABI, EXCHANGE_EXTRA_PARAMS, ORACLE_ADDITIONAL_SLIPPAGE } from '@/constants'
-import { ETH_ADDRESS, WETH_ADDRESS } from '@/constants/tokens'
 
 // === Styles === //
 import styles from './style'
@@ -45,7 +48,6 @@ const TokenItem = (props, ref) => {
     receiveToken,
     exchangePlatformAdapters,
     exchangeManager,
-    receiveTokenDecimals,
     EXCHANGE_AGGREGATOR_ABI,
     style,
     onChange,
@@ -56,8 +58,6 @@ const TokenItem = (props, ref) => {
 
   const [isReload, setIsReload] = useState(false)
   const [value, setValue] = useState('')
-  const [balance, setBalance] = useState(BN_0)
-  const [decimals, setDecimals] = useState(0)
   const [allowances, setAllowances] = useState(BN_0)
   const [exclude, setExclude] = useState({})
   const [swapInfo, setSwapInfo] = useState(undefined)
@@ -66,6 +66,14 @@ const TokenItem = (props, ref) => {
   const [done, setDone] = useState(false)
   const [retryTimes, setRetryTimes] = useState(0)
   const [isApproving, setIsApproving] = useState(false)
+
+  const { decimals: receiveDecimals } = useErc20Token(receiveToken, userProvider)
+
+  const { balance, decimals: tokenDecimals, approve, queryAllowance } = useErc20Token(address, userProvider)
+
+  const decimals = useMemo(() => BigNumber.from(10).pow(tokenDecimals), [tokenDecimals])
+
+  const receiveTokenDecimals = useMemo(() => BigNumber.from(10).pow(receiveDecimals), [receiveDecimals])
 
   const isReciveToken = token.address === receiveToken
   const isFetching = !isReciveToken && (isSwapInfoFetching || isStaticCalling)
@@ -101,6 +109,9 @@ const TokenItem = (props, ref) => {
   // console.log('receiveTokenDecimals=', receiveTokenDecimals.toString())
   // console.groupEnd(`init state:${address}:${sycIndex++}`)
 
+  /**
+   *
+   */
   const resetState = useCallback(() => {
     setIsReload(false)
     setExclude({})
@@ -115,6 +126,9 @@ const TokenItem = (props, ref) => {
     })
   }, [onChange])
 
+  /**
+   *
+   */
   const isApproveEnough = useCallback(() => {
     if (token.address === ETH_ADDRESS || isReciveToken) return true
     try {
@@ -180,66 +194,6 @@ const TokenItem = (props, ref) => {
     [userProvider, swapInfo, onChange, exclude, retryTimes, onStaticCallFinish, EXCHANGE_AGGREGATOR_ABI, address, exchangeManager]
   )
 
-  const approve = async () => {
-    // ETH no need approve
-    if (isEmpty(token) || isNil(value) || value === '0') return
-    // console.groupCollapsed(`approve call:${address}:${++sycIndex}`)
-    const signer = userProvider.getSigner()
-    const contract = new Contract(address, IERC20_ABI, userProvider)
-    const contractWithUser = contract.connect(signer)
-    let nextValue
-    try {
-      nextValue = BigNumber.from(new BN(value).multipliedBy(decimals.toString()).toFixed())
-    } catch (e) {
-      return
-    }
-    const allowanceAmount = await contractWithUser.allowance(userAddress, exchangeManager)
-    // If deposit amount greater than allow amount, reset amount
-    if (nextValue.gt(allowanceAmount)) {
-      // If allowance equal 0, approve nextAmount, otherwise increaseAllowance
-      if (allowanceAmount.gt(0)) {
-        if (address === WETH_ADDRESS) {
-          // WETH don't support increaseAllowance
-          return contractWithUser
-            .approve(exchangeManager, 0)
-            .then(tx => tx.wait())
-            .then(() => {
-              reload()
-              return contractWithUser.approve(exchangeManager, nextValue).then(tx => tx.wait())
-            })
-        }
-        return contractWithUser
-          .increaseAllowance(exchangeManager, nextValue.sub(allowanceAmount))
-          .then(tx => tx.wait())
-          .catch(e => {
-            // cancel by user
-            if (e.code === 4001) {
-              return Promise.reject(e)
-            }
-            // If increase failed, approve 0 and approve nextAmounts
-            return contractWithUser
-              .approve(exchangeManager, 0)
-              .then(tx => tx.wait())
-              .then(() => {
-                reload()
-                return contractWithUser.approve(exchangeManager, nextValue).then(tx => tx.wait())
-              })
-          })
-      } else {
-        return contractWithUser
-          .approve(exchangeManager, nextValue)
-          .then(tx => tx.wait())
-          .catch(e => {
-            // cancel by user
-            if (e.code === 4001) {
-              return Promise.reject(e)
-            }
-          })
-      }
-    }
-    // console.groupEnd(`approve call:${address}:${sycIndex}`)
-  }
-
   // item fetch swap path failed
   const isSwapError = !isFetching && !isReciveToken && isOverMaxRetry
 
@@ -267,6 +221,11 @@ const TokenItem = (props, ref) => {
     return true
   }, [slippage])
 
+  /**
+   *
+   * @param {*} value
+   * @returns
+   */
   const handleInputChange = value => {
     const num = Number(value)
     if (isNaN(num) || num < 0) {
@@ -283,23 +242,22 @@ const TokenItem = (props, ref) => {
     })
   }
 
+  /**
+   *
+   */
   const reload = useCallback(async () => {
-    const { address } = token
     // console.groupCollapsed(`reload call:${address}:${++sycIndex}`)
     setIsReload(true)
 
-    const contract = new Contract(address, IERC20_ABI, userProvider)
-    const nextAllowance = (await contract.allowance(userAddress, exchangeManager).catch(() => BN_0)).toString()
-    const nextBalance = (await contract.balanceOf(userAddress).catch(() => BN_0)).toString()
-    const nextDecimals = BigNumber.from(10).pow(await contract.decimals().catch(() => BN_0))
-
-    setBalance(nextBalance)
-    setDecimals(nextDecimals)
+    const nextAllowance = (await queryAllowance(userAddress, exchangeManager).catch(() => BN_0)).toString()
     setAllowances(nextAllowance)
     setIsReload(false)
     // console.groupEnd(`reload call:${address}:${sycIndex}`)
-  }, [token, userAddress, exchangeManager, userProvider])
+  }, [userAddress, exchangeManager, queryAllowance])
 
+  /**
+   *
+   */
   const reloadSwap = () => {
     // console.groupCollapsed(`reloadSwap call:${address}:${++sycIndex}`)
     setSwapInfo(undefined)
@@ -309,6 +267,9 @@ const TokenItem = (props, ref) => {
     // console.groupEnd(`reloadSwap call:${address}:${sycIndex}`)
   }
 
+  /**
+   *
+   */
   const queryBestSwapInfo = useCallback(async () => {
     if (isNil(decimals) || isEmptyValue() || value === '0' || isReciveToken) {
       return
@@ -390,6 +351,9 @@ const TokenItem = (props, ref) => {
     }
   }, [token, value, decimals, exchangePlatformAdapters, exclude, receiveToken, isReciveToken, slippage, isEmptyValue, userAddress, userProvider])
 
+  /**
+   *
+   */
   const estimateWithValue = useCallback(
     debounce(async () => {
       if (isEmptyValue()) {
@@ -425,6 +389,12 @@ const TokenItem = (props, ref) => {
     [retryTimes, queryBestSwapInfo, onChange, isApproveEnough, isEmptyValue]
   )
 
+  const isGetSwapInfoSuccess = !isSwapInfoFetching && !isEmpty(swapInfo) && !isOverMaxRetry
+
+  // staticcall success or getswapinfo success
+  const isSwapSuccess =
+    !isFetching && !isReciveToken && ((isApproveEnough() && done) || (!isApproveEnough() && !isEmpty(swapInfo))) && !isOverMaxRetry
+
   useEffect(resetState, [receiveToken, slippage])
 
   useEffect(() => {
@@ -433,15 +403,7 @@ const TokenItem = (props, ref) => {
 
   useEffect(() => {
     reload()
-    // const timer = setInterval(reload, 3000)
-    // return () => clearInterval(timer)
   }, [reload])
-
-  const isGetSwapInfoSuccess = !isSwapInfoFetching && !isEmpty(swapInfo) && !isOverMaxRetry
-
-  // staticcall success or getswapinfo success
-  const isSwapSuccess =
-    !isFetching && !isReciveToken && ((isApproveEnough() && done) || (!isApproveEnough() && !isEmpty(swapInfo))) && !isOverMaxRetry
 
   useEffect(() => {
     const isValidSlippageValue = isValidSlippage()
@@ -511,20 +473,24 @@ const TokenItem = (props, ref) => {
     staticCall()
   }, [done, value, retryTimes, swapInfo, staticCall, isStaticCalling, isApproveEnough, isEmptyValue, isErrorValue, isOverMaxRetry, isReciveToken])
 
-  useImperativeHandle(ref, () => {
-    return {
-      approve: () => approve().then(reload),
-      value,
-      isApproving,
-      isFetching,
-      swapInfo,
-      done,
-      isApproveEnough,
-      retryTimes,
-      isErrorValue,
-      isEmptyValue
-    }
-  })
+  useImperativeHandle(
+    ref,
+    () => {
+      return {
+        approve: () => approve(exchangeManager, BigNumber.from(new BN(value).multipliedBy(decimals.toString()).toFixed())).then(reload),
+        value,
+        isApproving,
+        isFetching,
+        swapInfo,
+        done,
+        isApproveEnough,
+        retryTimes,
+        isErrorValue,
+        isEmptyValue
+      }
+    },
+    [isEmptyValue, isErrorValue, isErrorValue, done, swapInfo, isFetching, isApproving, value, reload, exchangeManager, decimals]
+  )
 
   return (
     <div key={address} className={classNames(classes.approveItemWrapper)} style={style}>

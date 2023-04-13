@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react'
+import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react'
 import * as ethers from 'ethers'
 import BN from 'bignumber.js'
 import { useDispatch } from 'react-redux'
@@ -41,7 +41,7 @@ import useUserAddress from '@/hooks/useUserAddress'
 // === Constants === //
 import { ETH_ADDRESS } from '@/constants/tokens'
 import { BN_18 } from '@/constants/big-number'
-import { MULTIPLE_OF_GAS, MAX_GAS_LIMIT } from '@/constants'
+import { MULTIPLE_OF_GAS, MAX_GAS_LIMIT, RPC_URL } from '@/constants'
 import { TRANSACTION_REPLACED, CALL_EXCEPTION } from '@/constants/metamask'
 import { ETHI_VAULT as VAULT_ADDRESS, VAULT_BUFFER_FOR_ETHI_ETH as VAULT_BUFFER_ADDRESS } from '@/config/config'
 import { VAULT_ABI_V2_0 as VAULT_ABI } from '@/constants/abi'
@@ -49,7 +49,7 @@ import { VAULT_ABI_V2_0 as VAULT_ABI } from '@/constants/abi'
 // === Styles === //
 import styles from './style'
 
-const { BigNumber } = ethers
+const { BigNumber, providers } = ethers
 const useStyles = makeStyles(styles)
 
 const steps = [
@@ -78,7 +78,8 @@ const Deposit = props => {
 
   const { userProvider } = useWallet()
 
-  const { minimumInvestmentAmount, redeemFeeBps, trusteeFeeBps } = useVault(VAULT_ADDRESS, VAULT_ABI, userProvider)
+  const provider = useMemo(() => new providers.StaticJsonRpcProvider(RPC_URL[1], 1), [RPC_URL])
+  const { minimumInvestmentAmount, redeemFeeBps, trusteeFeeBps } = useVault(VAULT_ADDRESS, VAULT_ABI, userProvider || provider)
 
   const { gasPrice, gasPriceLoading } = useMetaMask(userProvider)
 
@@ -118,9 +119,17 @@ const Deposit = props => {
       if (gasPriceLoading || gasLimitLoading || (!isValid && isUndefined(flag))) {
         return BigNumber.from(0)
       }
+      const MAX_BLOCK_GAS_LIMIT = BigNumber.from(10).pow(9).mul(MAX_GAS_LIMIT)
       // metamask gaslimit great than contract gaslimit, so add extra limit
       const metamaskExtraLimit = 114
-      return mintGasLimit.add(metamaskExtraLimit).mul(BigNumber.from(gasPrice.toString()))
+      const ethLeft = mintGasLimit
+        .add(metamaskExtraLimit)
+        // 1. because MULTIPLE_OF_GAS, so we need left more ETH for success deposited.
+        // 2. metamask avarage price is 1.5 times of current gas price.
+        .mul(BigNumber.from(Math.ceil(gasPrice * MULTIPLE_OF_GAS * 1.5).toString()))
+
+      // if ethLeft value gt MAX_BLOCK_GAS_LIMIT, we use MAX_BLOCK_GAS_LIMIT firstly
+      return ethLeft.gt(MAX_BLOCK_GAS_LIMIT) ? MAX_BLOCK_GAS_LIMIT : ethLeft
     },
     [gasPrice, gasPriceLoading, mintGasLimit, gasLimitLoading, isValid]
   )

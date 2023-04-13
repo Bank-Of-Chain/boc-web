@@ -466,13 +466,13 @@ const ApproveArrayV3 = props => {
           />
         </GridItem>
       </GridContainer>
-      <GridContainer className={classes.buttonGroup}>
-        <GridItem xs={5} sm={5} md={5}>
+      <GridContainer className="mt-4">
+        <GridItem xs={4} sm={4} md={4} className="pr-4">
           <Button color="danger" fullWidth={true} onClick={handleClose} className={classes.cancelButton}>
             Cancel
           </Button>
         </GridItem>
-        <GridItem xs={7} sm={7} md={7} className={classes.okWrapper}>
+        <GridItem xs={8} sm={8} md={8}>
           <Button
             color="colorful"
             fullWidth={true}
@@ -481,7 +481,7 @@ const ApproveArrayV3 = props => {
             className={classes.okButton}
             startIcon={isSwapping ? <CachedIcon className={classes.loading} /> : null}
           >
-            Swap
+            Zap
           </Button>
         </GridItem>
       </GridContainer>
