@@ -271,14 +271,9 @@ const Withdraw = props => {
         })
       ).then(array => {
         const nextBurnTokens = compact(array)
-        if (
-          some(nextBurnTokens, i => {
-            return i.address !== ETH_ADDRESS && i.amount !== '0'
-          })
-        ) {
-          setBurnTokens(nextBurnTokens)
-          setIsShowZipModal(true)
-        }
+
+        setBurnTokens(nextBurnTokens)
+        setIsShowZipModal(true)
       })
     },
     [userProvider, address, getPriceProvider]
@@ -538,8 +533,6 @@ const Withdraw = props => {
         })
       ) {
         setZapTokens(nextZapTokens)
-        setIsShowZipModal(false)
-        setShowZapModal(true)
       }
     })
   }, [getPriceProvider, burnTokens])
@@ -601,6 +594,10 @@ const Withdraw = props => {
   const isValidAllowLossFlag = isValidAllowLoss()
 
   const isLogin = !isEmpty(userProvider)
+
+  useEffect(() => {
+    zapStart()
+  }, [zapStart])
 
   useEffect(() => {
     getPegTokenPrice()
@@ -795,20 +792,23 @@ const Withdraw = props => {
             </div>
             <div className="p-5 b-1 b-solid b-rd-b-5 b-color-purple-400 mt-4">
               <GridContainer>
+                <GridItem xs={4} sm={4} md={4} lg={4} className="pr-4">
+                  <Button color="danger" onClick={zapCancel} className={classes.blockButton} fullWidth>
+                    Cancel
+                  </Button>
+                </GridItem>
                 <GridItem xs={8} sm={8} md={8} lg={8}>
                   <Button
-                    disabled={isEmpty(burnTokens) || burnTokens.length <= 1}
+                    disabled={isEmpty(zapTokens)}
                     color="colorful"
-                    onClick={zapStart}
+                    onClick={() => {
+                      setIsShowZipModal(false)
+                      setShowZapModal(true)
+                    }}
                     className={classes.blockButton}
                     fullWidth
                   >
                     Start Zapping
-                  </Button>
-                </GridItem>
-                <GridItem xs={4} sm={4} md={4} lg={4} className="pl-4">
-                  <Button color="danger" onClick={zapCancel} className={classes.blockButton} fullWidth>
-                    Cancel
                   </Button>
                 </GridItem>
               </GridContainer>

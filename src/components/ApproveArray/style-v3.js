@@ -125,12 +125,6 @@ const componentsStyle = () => ({
     justifyContent: 'center',
     alignItems: 'center'
   },
-  buttonGroup: {
-    marginTop: '0.625rem'
-  },
-  okWrapper: {
-    paddingLeft: '0.75rem'
-  },
   okButton: {
     borderRadius: '1.25rem',
     padding: '1.25rem 0'

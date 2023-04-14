@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useMemo } from 'react'
 
 // === Hooks === //
 import useUserAddress from '@/hooks/useUserAddress'
@@ -19,6 +19,8 @@ const useErc20Token = (tokenAddress, userProvider) => {
   const [decimals, setDecimals] = useState(1)
   const [isBalanceLoading, setIsBalanceLoading] = useState(true)
   const [isDecimalsLoading, setIsDecimalsLoading] = useState(true)
+
+  const tokenContract = useMemo(() => new ethers.Contract(tokenAddress, IERC20_ABI, userProvider), [tokenAddress, userProvider])
 
   const balanceOf = useCallback(
     async address => {
@@ -69,6 +71,19 @@ const useErc20Token = (tokenAddress, userProvider) => {
       .then(setDecimals)
       .finally(() => setIsDecimalsLoading(false))
   }, [tokenAddress, userProvider])
+
+  /**
+   *
+   */
+  const queryAllowance = useCallback(
+    (address, targetAddress) => {
+      if (isEmpty(address) || isEmpty(targetAddress) || isEmpty(tokenContract)) {
+        return
+      }
+      return tokenContract.allowance(address, targetAddress)
+    },
+    [tokenContract]
+  )
 
   const approve = useCallback(
     async (targetAddress, amount) => {
@@ -139,6 +154,7 @@ const useErc20Token = (tokenAddress, userProvider) => {
     approve,
     queryBalance,
     queryDecimals,
+    queryAllowance,
     balanceOf
   }
 }

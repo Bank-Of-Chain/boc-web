@@ -45,16 +45,16 @@ import useErc20Token from '@/hooks/useErc20Token'
 import useUserAddress from '@/hooks/useUserAddress'
 
 // === Constants === //
-import { USDT_ADDRESS, USDC_ADDRESS, DAI_ADDRESS, IERC20_ABI, MULTIPLE_OF_GAS, MAX_GAS_LIMIT } from '@/constants'
 import { BN_18 } from '@/constants/big-number'
 import { TRANSACTION_REPLACED, CALL_EXCEPTION } from '@/constants/metamask'
 import { USDI_VAULT_FOR_ETH as VAULT_ADDRESS, VAULT_BUFFER_FOR_USDI_ETH as VAULT_BUFFER_ADDRESS } from '@/config/config'
+import { USDT_ADDRESS, USDC_ADDRESS, DAI_ADDRESS, IERC20_ABI, MULTIPLE_OF_GAS, MAX_GAS_LIMIT, RPC_URL } from '@/constants'
 import { VAULT_ABI_V2_0 as VAULT_ABI } from '@/constants/abi'
 
 // === Styles === //
 import styles from './style'
 
-const { BigNumber } = ethers
+const { BigNumber, providers } = ethers
 const useStyles = makeStyles(styles)
 const TOKEN = {
   USDT: 'USDT',
@@ -94,7 +94,8 @@ const Deposit = props => {
 
   const { userProvider } = useWallet()
 
-  const { minimumInvestmentAmount, redeemFeeBps, trusteeFeeBps } = useVault(VAULT_ADDRESS, VAULT_ABI, userProvider)
+  const provider = useMemo(() => new providers.StaticJsonRpcProvider(RPC_URL[1], 1), [RPC_URL])
+  const { minimumInvestmentAmount, redeemFeeBps, trusteeFeeBps } = useVault(VAULT_ADDRESS, VAULT_ABI, userProvider || provider)
 
   const address = useUserAddress(userProvider)
 
