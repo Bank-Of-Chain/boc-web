@@ -21,8 +21,10 @@ import GridItem from '@/components/Grid/GridItem'
 import Button from '@/components/CustomButtons/Button'
 import Loading from '@/components/LoadingComponent'
 import ApproveArrayV3 from '@/components/ApproveArray/ApproveArrayV3'
+import SnackBarCard from '@/components/SnackBarCard'
 
 // === Hooks === //
+import { useSnackbar } from 'notistack'
 import useVault from '@/hooks/useVault'
 import useWallet from '@/hooks/useWallet'
 import { warmDialog } from '@/reducers/meta-reducer'
@@ -74,6 +76,8 @@ const Withdraw = props => {
   const [currentStep, setCurrentStep] = useState(0)
   const [withdrawError, setWithdrawError] = useState({})
   const loadingTimer = useRef()
+
+  const { enqueueSnackbar, closeSnackbar } = useSnackbar()
 
   const [burnTokens, setBurnTokens] = useState([
     // {
@@ -344,6 +348,9 @@ const Withdraw = props => {
       withdrawFinish = Date.now()
 
       console.log('tx=', tx, 'tx.hash=', tx.hash, 'resp=', resp)
+      setIsWithdrawLoading(false)
+      const { hash } = tx
+      enqueueSnackbar(<SnackBarCard tx={tx} method="burn" hash={hash} close={() => closeSnackbar(hash)} />, { persist: true, key: hash })
       // if user add gas in metamask, next code runs error, and return a new transaction.
       const isSuccess = await tx.wait().catch(error => {
         const { code, replacement, cancelled, reason, receipt } = error

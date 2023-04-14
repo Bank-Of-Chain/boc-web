@@ -15,7 +15,6 @@ import BocStepper from '@/components/Stepper/Stepper'
 import BocStepLabel from '@/components/Stepper/StepLabel'
 import BocStepIcon from '@/components/Stepper/StepIcon'
 import BocStepConnector from '@/components/Stepper/StepConnector'
-import CircularProgress from '@material-ui/core/CircularProgress'
 import Modal from '@material-ui/core/Modal'
 import Paper from '@material-ui/core/Paper'
 import Loading from '@/components/LoadingComponent'
@@ -23,6 +22,7 @@ import GridContainer from '@/components/Grid/GridContainer'
 import GridItem from '@/components/Grid/GridItem'
 import CustomTextField from '@/components/CustomTextField'
 import Button from '@/components/CustomButtons/Button'
+import SnackBarCard from '@/components/SnackBarCard'
 
 // === Utils === //
 import { isAd, isEs, isRp, isDistributing, errorTextOutput, isLessThanMinValue } from '@/helpers/error-handler'
@@ -31,6 +31,7 @@ import { toFixed, formatBalance } from '@/helpers/number-format'
 import { isValid as isValidNumber } from '@/helpers/number'
 
 // === Hooks === //
+import { useSnackbar } from 'notistack'
 import useVault from '@/hooks/useVault'
 import useWallet from '@/hooks/useWallet'
 import { useAsync } from 'react-async-hook'
@@ -70,13 +71,15 @@ const Deposit = props => {
   const classes = useStyles()
   const dispatch = useDispatch()
   const [ethValue, setEthValue] = useState('')
-  const [isLoading, setIsLoading] = useState(false)
+  const [, setIsLoading] = useState(false)
   const [, setIsEstimate] = useState(false)
   const [isOpenEstimateModal, setIsOpenEstimateModal] = useState(false)
   const [estimateVaultBuffValue, setEstimateVaultBuffValue] = useState(BigNumber.from(0))
   const loadingTimer = useRef()
 
   const { userProvider } = useWallet()
+
+  const { enqueueSnackbar, closeSnackbar } = useSnackbar()
 
   const { minimumInvestmentAmount, redeemFeeBps, trusteeFeeBps } = useVault(VAULT_ADDRESS, VAULT_ABI, userProvider)
 
@@ -226,6 +229,9 @@ const Deposit = props => {
         value: amount
       })
       .then(tx => {
+        setIsOpenEstimateModal(false)
+        const { hash } = tx
+        enqueueSnackbar(<SnackBarCard tx={tx} method="mint" hash={hash} close={() => closeSnackbar(hash)} />, { persist: true, key: hash })
         // if user add gas in metamask, next code runs error, and return a new transaction.
         return tx
           .wait()
@@ -266,7 +272,7 @@ const Deposit = props => {
     console.log('isSuccess=', isSuccess)
     loadingTimer.current = setTimeout(() => {
       setIsLoading(false)
-      setIsOpenEstimateModal(false)
+      // setIsOpenEstimateModal(false)
       if (isUndefined(isSuccess)) {
         dispatch(
           warmDialog({
@@ -477,14 +483,14 @@ const Deposit = props => {
           </div>
         </Paper>
       </Modal>
-      <Modal className={classes.modal} open={isLoading} aria-labelledby="simple-modal-title" aria-describedby="simple-modal-description">
+      {/* <Modal className={classes.modal} open={isLoading} aria-labelledby="simple-modal-title" aria-describedby="simple-modal-description">
         <Paper elevation={3} className={classes.depositModal}>
           <div className={classes.modalBody}>
             <CircularProgress color="inherit" />
             <p>On Deposit...</p>
           </div>
         </Paper>
-      </Modal>
+      </Modal> */}
     </>
   )
 }

@@ -23,8 +23,10 @@ import GridItem from '@/components/Grid/GridItem'
 import Button from '@/components/CustomButtons/Button'
 import Loading from '@/components/LoadingComponent'
 import ApproveArray from '@/components/ApproveArray/ApproveArrayV3'
+import SnackBarCard from '@/components/SnackBarCard'
 
 // === Hooks === //
+import { useSnackbar } from 'notistack'
 import useVault from '@/hooks/useVault'
 import useWallet from '@/hooks/useWallet'
 import useUserAddress from '@/hooks/useUserAddress'
@@ -100,6 +102,8 @@ const Withdraw = props => {
   // === Zap === //
   const [zapTokens, setZapTokens] = useState([])
   const [showZapModal, setShowZapModal] = useState(false)
+
+  const { enqueueSnackbar, closeSnackbar } = useSnackbar()
 
   const { userProvider } = useWallet()
 
@@ -287,6 +291,9 @@ const Withdraw = props => {
       }
       withdrawFinish = Date.now()
 
+      setIsWithdrawLoading(false)
+      const { hash } = tx
+      enqueueSnackbar(<SnackBarCard tx={tx} method="burn" hash={hash} close={() => closeSnackbar(hash)} />, { persist: true, key: hash })
       // if user add gas in metamask, next code runs error, and return a new transaction.
       const isSuccess = await tx.wait().catch(error => {
         console.log('TRANSACTION_REPLACED=', error)
@@ -591,7 +598,9 @@ const Withdraw = props => {
           <GridItem xs={12} sm={12} md={12} lg={12} className="flex justify-between pt-2">
             <span className="color-neutral-500" title={formatBalance(usdiBalance, usdiDecimals, { showAll: true })}>
               Balance:&nbsp;
-              <Loading loading={isUsdiLoading}>{formatBalance(usdiBalance, usdiDecimals)}</Loading>
+              <Loading className="vertical-middle" loading={isUsdiLoading}>
+                {formatBalance(usdiBalance, usdiDecimals)}
+              </Loading>
             </span>
             <span className="color-neutral-500 px-4 justify-end" title={toFixed(pegTokenPrice, BN_18)}>
               <span>1 USDi ≈ {toFixed(pegTokenPrice, BN_18, 6)} USD</span>
