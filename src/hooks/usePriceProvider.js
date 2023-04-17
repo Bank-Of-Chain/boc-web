@@ -1,3 +1,4 @@
+import { useCallback } from 'react'
 // === Utils === //
 import * as ethers from 'ethers'
 import isEmpty from 'lodash/isEmpty'
@@ -7,7 +8,7 @@ const { Contract } = ethers
 const usePriceProvider = params => {
   const { userProvider, VAULT_ADDRESS, VAULT_ABI, PRICE_ORCALE_ABI } = params
 
-  const getPriceProvider = async () => {
+  const getPriceProvider = useCallback(async () => {
     if (isEmpty(userProvider) || isEmpty(VAULT_ADDRESS)) {
       throw new Error('userProvider or VAULT_ADDRESS is empty')
     }
@@ -16,7 +17,7 @@ const usePriceProvider = params => {
       const priceOracleContract = new Contract(priceOracleAddress, PRICE_ORCALE_ABI, userProvider)
       return priceOracleContract
     })
-  }
+  }, [VAULT_ADDRESS, VAULT_ABI, userProvider, PRICE_ORCALE_ABI])
 
   return {
     getPriceProvider
