@@ -26,6 +26,7 @@ import numeral from 'numeral'
 
 // === Constants === //
 // import { ZERO_ADDRESS } from '@/constants/tokens'
+import { CHAIN_BROWSER_URL } from '@/constants'
 import { ETHI_VAULT, USDI_VAULT_FOR_ETH } from '@/config/config'
 import { TRANSACTION_REPLACED, CALL_EXCEPTION } from '@/constants/metamask'
 
@@ -57,7 +58,7 @@ const SnackBarCard = props => {
   const [transactionReceipt, setTransactionReceipt] = useState()
   const [, setIsTransactionReceiptLoading] = useState(true)
 
-  const [openDetails, setOpenDetails] = useState(true)
+  const [openDetails, setOpenDetails] = useState(false)
 
   const { gasPrice, sendTransaction, queryTransaction, queryTransactionReceipt } = useMetaMask(userProvider)
 
@@ -67,14 +68,14 @@ const SnackBarCard = props => {
    *
    */
   const queryTransactionReceiptCall = useCallback(
-    hash => {
-      if (isEmpty(hash)) return
+    targetHash => {
+      if (isEmpty(targetHash)) return
       setIsTransactionReceiptLoading(true)
-      queryTransactionReceipt(hash)
+      queryTransactionReceipt(targetHash)
         .catch(() => undefined)
         .then(v => {
           if (!isEmpty(v)) {
-            const nextPenddingTx = filter(penddingTx, item => item !== hash && item !== replaceHash)
+            const nextPenddingTx = filter(penddingTx, item => item !== hash && item !== replaceHash && item !== cancelHash)
             setPenddingTx(nextPenddingTx)
           }
           return setTransactionReceipt(v)
@@ -84,7 +85,7 @@ const SnackBarCard = props => {
           setFetchingTime(fetchingTime - 1)
         })
     },
-    [fetchingTime, penddingTx, replaceHash]
+    [fetchingTime, penddingTx, replaceHash, cancelHash, hash]
   )
 
   /**
@@ -208,7 +209,7 @@ const SnackBarCard = props => {
             hash<span className="ml-1 mr-2">:</span>
             <span className="color-lightblue-500 cursor-pointer">{short(hash)}</span>
           </span>
-          <span className="cursor-pointer i-ic-baseline-launch ml-2 text-5"></span>
+          <span onClick={() => window.open(`${CHAIN_BROWSER_URL}/tx/${hash}`)} className="cursor-pointer i-ic-baseline-launch ml-2 text-5"></span>
         </div>
       )}
       {!isEmpty(replaceHash) && (
@@ -217,7 +218,10 @@ const SnackBarCard = props => {
             hash<span className="ml-1 mr-2">:</span>
             <span className="color-lightblue-500 cursor-pointer animate__animated animate__bounce">{short(replaceHash)}</span>
           </span>
-          <span className="cursor-pointer i-ic-baseline-launch ml-2 text-5"></span>
+          <span
+            onClick={() => window.open(`${CHAIN_BROWSER_URL}/tx/${replaceHash}`)}
+            className="cursor-pointer i-ic-baseline-launch ml-2 text-5"
+          ></span>
         </div>
       )}
       {!isEmpty(cancelHash) && (
@@ -226,7 +230,10 @@ const SnackBarCard = props => {
             hash<span className="ml-1 mr-2">:</span>
             <span className="color-lightblue-500 cursor-pointer animate__animated animate__bounce">{short(cancelHash)}</span>
           </span>
-          <span className="cursor-pointer i-ic-baseline-launch ml-2 text-5"></span>
+          <span
+            onClick={() => window.open(`${CHAIN_BROWSER_URL}/tx/${cancelHash}`)}
+            className="cursor-pointer i-ic-baseline-launch ml-2 text-5"
+          ></span>
         </div>
       )}
       {!isEmptyTx && (
