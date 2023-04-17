@@ -26,16 +26,20 @@ import ApproveArray from '@/components/ApproveArray/ApproveArrayV3'
 import SnackBarCard from '@/components/SnackBarCard'
 
 // === Hooks === //
+import { useAtom } from 'jotai'
 import { useSnackbar } from 'notistack'
 import useVault from '@/hooks/useVault'
 import useWallet from '@/hooks/useWallet'
 import useUserAddress from '@/hooks/useUserAddress'
 import useErc20Token from '@/hooks/useErc20Token'
 
+// === Stores === //
+import { penddingTxAtom } from '@/jotai'
+
 // === Constants === //
 import { warmDialog } from '@/reducers/meta-reducer'
 import { toFixed, formatBalance } from '@/helpers/number-format'
-import { USDT_ADDRESS, IERC20_ABI, MULTIPLE_OF_GAS, MAX_GAS_LIMIT, RPC_URL } from '@/constants'
+import { USDT_ADDRESS, IERC20_ABI, MULTIPLE_OF_GAS, MAX_GAS_LIMIT, RPC_URL, EXCHANGE_MANAGER } from '@/constants'
 import { USDC_ADDRESS, DAI_ADDRESS } from '@/constants/tokens'
 import { BN_18 } from '@/constants/big-number'
 import { TRANSACTION_REPLACED, CALL_EXCEPTION } from '@/constants/metamask'
@@ -106,6 +110,8 @@ const Withdraw = props => {
   const { enqueueSnackbar, closeSnackbar } = useSnackbar()
 
   const { userProvider } = useWallet()
+
+  const [penddingTx, setPenddingTx] = useAtom(penddingTxAtom)
 
   const address = useUserAddress(userProvider)
   const provider = useMemo(() => new providers.StaticJsonRpcProvider(RPC_URL[1], 1), [RPC_URL])
@@ -234,6 +240,16 @@ const Withdraw = props => {
   }
 
   const withdraw = async () => {
+    if (!isEmpty(penddingTx)) {
+      dispatch(
+        warmDialog({
+          open: true,
+          type: 'warning',
+          message: 'An existing transaction is executing. Please try again later!'
+        })
+      )
+      return
+    }
     let withdrawTimeStart = Date.now(),
       withdrawValidFinish = 0,
       preWithdrawGetCoins = 0,
@@ -293,7 +309,47 @@ const Withdraw = props => {
 
       setIsWithdrawLoading(false)
       const { hash } = tx
-      enqueueSnackbar(<SnackBarCard tx={tx} method="burn" hash={hash} close={() => closeSnackbar(hash)} />, { persist: true, key: hash })
+      const cardArray = compact(
+        await Promise.all(
+          map(resp._assets, async (token, index) => {
+            const tokenContract = new ethers.Contract(token, IERC20_ABI, userProvider)
+            const amount = get(resp._amounts, index, BigNumber.from(0))
+            if (amount.gt(0)) {
+              return {
+                tokenAddress: token,
+                decimals: await tokenContract.decimals(),
+                amounts: amount
+              }
+            }
+          })
+        )
+      )
+      setPenddingTx([...penddingTx, hash])
+      enqueueSnackbar(
+        <SnackBarCard
+          tx={tx}
+          text={
+            <span>
+              burn <span className="color-lightblue-500">{toValue}</span> USDi
+            </span>
+          }
+          hash={hash}
+          close={() => closeSnackbar(hash)}
+        >
+          <div className="flex flex-wrap mb-2">
+            {map(cardArray, item => {
+              const { tokenAddress, amounts } = item
+              return (
+                <div className="flex items-center mr-2">
+                  <img className="w-4 h-4 b-rd-2" src={`/images/${tokenAddress}.png`} alt={tokenAddress} />
+                  <span className="ml-1">{toFixed(amounts, BigNumber.from(10).pow(item.decimals), 2)}</span>
+                </div>
+              )
+            })}
+          </div>
+        </SnackBarCard>,
+        { persist: true, key: hash }
+      )
       // if user add gas in metamask, next code runs error, and return a new transaction.
       const isSuccess = await tx.wait().catch(error => {
         console.log('TRANSACTION_REPLACED=', error)
@@ -627,7 +683,7 @@ const Withdraw = props => {
         <GridContainer>
           <GridItem xs={12} sm={12} md={12} lg={12} className="pr-4">
             <Button
-              disabled={!isLogin || (isLogin && (isUndefined(isValidToValueFlag) || !isValidToValueFlag))}
+              disabled={!isLogin || !isEmpty(penddingTx) || (isLogin && (isUndefined(isValidToValueFlag) || !isValidToValueFlag))}
               color="colorful"
               onClick={withdraw}
               className={classes.blockButton}
@@ -774,7 +830,7 @@ const Withdraw = props => {
               address={address}
               tokens={zapTokens}
               userProvider={userProvider}
-              exchangeManager={exchangeManager}
+              exchangeManager={EXCHANGE_MANAGER}
               slippage={slipper}
               onSlippageChange={setSlipper}
               handleClose={() => {

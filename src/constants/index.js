@@ -326,3 +326,6 @@ export const IERC20_ABI = [
     type: 'event'
   }
 ]
+
+// TODO: because exchangeManager in v2.0 has none adapter, so use the exchangeManager contract deploy on v1.6.9. Zhangyi's suggestion
+export const EXCHANGE_MANAGER = '0x921FE3dF4F2073f0d4d0B839B6068460397a04f9'
