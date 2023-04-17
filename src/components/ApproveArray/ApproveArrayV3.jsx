@@ -1,5 +1,4 @@
-/* eslint-disable */
-import React, { useEffect, useState, useCallback, useRef } from 'react'
+import React, { useEffect, useState, useCallback, useMemo } from 'react'
 import { makeStyles } from '@material-ui/core/styles'
 import PropTypes from 'prop-types'
 
@@ -12,6 +11,10 @@ import CustomTextField from '@/components/CustomTextField'
 import Loading from '@/components/LoadingComponent'
 import CachedIcon from '@material-ui/icons/Cached'
 import TokenItem from '@/components/TokenItem/TokenItemV2'
+import SnackBarCard from '@/components/SnackBarCard'
+
+// === Hooks === //
+import { useSnackbar } from 'notistack'
 
 // === Utils === //
 import { useDispatch } from 'react-redux'
@@ -52,12 +55,14 @@ const ApproveArrayV3 = props => {
   const dispatch = useDispatch()
   const { isEthi, userProvider, tokens, address: userAddress, exchangeManager, handleClose } = props
 
-  const refArray = map(tokens, () => useRef(null))
+  const { enqueueSnackbar, closeSnackbar } = useSnackbar()
+
+  const refArray = useMemo(() => map(tokens, () => React.createRef(null)), [tokens])
   const [exchangePlatformAdapters, setExchangePlatformAdapters] = useState({})
   const [receiveToken, setReceiveToken] = useState(isEthi ? ETH_ADDRESS : USDT_ADDRESS)
   const [slippage, setSlippage] = useState('0.5')
   const [isSwapping, setIsSwapping] = useState(false)
-  const [count, setCount] = useState(0)
+  const [, setCount] = useState(0)
   const [callStateArray, setCallStateArray] = useState(map(tokens, () => undefined))
 
   const swapInfoArray = map(refArray, item => get(item, 'current.swapInfo', {}))
@@ -158,6 +163,32 @@ const ApproveArrayV3 = props => {
   const receiveTokenDecimals = selectOptions.find(el => el.value === receiveToken).decimal
   const receiveTokenAmount = find(tokens, el => el.address === receiveToken)?.amount || '0'
 
+  /**
+   *
+   */
+  const snackbarCall = useCallback(
+    obj => {
+      const { tx, tokenAddress, amount, decimals } = obj
+      const { hash } = tx
+      enqueueSnackbar(
+        <SnackBarCard
+          tx={tx}
+          text={
+            <span>
+              approve
+              <span className="mx-2 color-lightblue-500 cursor-pointer">{toFixed(amount, BigNumber.from(10).pow(decimals), isEthi ? 4 : 2)}</span>
+              <img className="w-4 h-4 b-rd-2 v-text-bottom" src={`/images/${tokenAddress}.png`} alt={tokenAddress} />
+            </span>
+          }
+          hash={hash}
+          close={() => closeSnackbar(hash)}
+        />,
+        { persist: true, key: hash }
+      )
+    },
+    [enqueueSnackbar, closeSnackbar]
+  )
+
   const approveAll = async () => {
     // console.groupCollapsed('approveAll call')
     try {
@@ -167,7 +198,7 @@ const ApproveArrayV3 = props => {
         const enough = refArray[i].current.isApproveEnough()
         // console.log(`refArray[${i}] isApproveEnough=`, enough)
         if (enough) continue
-        await refArray[i].current.approve()
+        await refArray[i].current.approve(snackbarCall)
       }
     } catch (error) {
       setIsSwapping(false)
@@ -239,6 +270,33 @@ const ApproveArrayV3 = props => {
       } else {
         tx = await contractWithSigner.batchSwap(nextSwapArray)
       }
+      const { hash } = tx
+      enqueueSnackbar(
+        <SnackBarCard
+          tx={tx}
+          text={
+            <span>
+              swap into
+              <img className="w-4 h-4 b-rd-2 v-text-bottom ml-2" src={`/images/${receiveToken}.png`} alt={receiveToken} />
+            </span>
+          }
+          hash={hash}
+          close={() => closeSnackbar(hash)}
+        >
+          <div className="flex flex-wrap mb-2">
+            {map(tokens, (item, index) => {
+              const value = refArray[index].current.value
+              return (
+                <div className="flex items-center mr-2">
+                  <img className="w-4 h-4 b-rd-2" src={`/images/${item.address}.png`} alt={item.address} />
+                  <span className="ml-1">{value}</span>
+                </div>
+              )
+            })}
+          </div>
+        </SnackBarCard>,
+        { persist: true, key: hash }
+      )
       const isSuccess = await tx.wait().catch(error => {
         console.log('TRANSACTION_REPLACED=', error, Object.keys(error))
         const { code, replacement, cancelled, reason, receipt } = error

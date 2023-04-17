@@ -477,8 +477,10 @@ const TokenItem = (props, ref) => {
     ref,
     () => {
       return {
-        approve: () => approve(exchangeManager, BigNumber.from(new BN(value).multipliedBy(decimals.toString()).toFixed())).then(reload),
+        approve: callback =>
+          approve(exchangeManager, BigNumber.from(new BN(value).multipliedBy(decimals.toString()).toFixed()), callback).then(reload),
         value,
+        tokenAddress: token.address,
         isApproving,
         isFetching,
         swapInfo,
@@ -489,7 +491,22 @@ const TokenItem = (props, ref) => {
         isEmptyValue
       }
     },
-    [isEmptyValue, isErrorValue, isErrorValue, done, swapInfo, isFetching, isApproving, value, reload, exchangeManager, decimals]
+    [
+      token,
+      approve,
+      isEmptyValue,
+      isErrorValue,
+      done,
+      swapInfo,
+      isFetching,
+      isApproving,
+      value,
+      reload,
+      exchangeManager,
+      decimals,
+      isApproveEnough,
+      retryTimes
+    ]
   )
 
   return (

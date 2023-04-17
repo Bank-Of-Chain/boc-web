@@ -5,6 +5,7 @@ import useUserAddress from '@/hooks/useUserAddress'
 
 // === Utils === //
 import * as ethers from 'ethers'
+import noop from 'lodash/noop'
 import isEmpty from 'lodash/isEmpty'
 
 // === Constants === //
@@ -80,13 +81,14 @@ const useErc20Token = (tokenAddress, userProvider) => {
       if (isEmpty(address) || isEmpty(targetAddress) || isEmpty(tokenContract)) {
         return
       }
+      if (tokenAddress === ETH_ADDRESS) return Promise.resolve(BigNumber.from(0))
       return tokenContract.allowance(address, targetAddress)
     },
     [tokenContract]
   )
 
   const approve = useCallback(
-    async (targetAddress, amount) => {
+    async (targetAddress, amount, callback = noop) => {
       const tokenContract = new ethers.Contract(tokenAddress, IERC20_ABI, userProvider)
       const signer = userProvider.getSigner()
 
@@ -101,11 +103,15 @@ const useErc20Token = (tokenAddress, userProvider) => {
         // If allowance equal 0, approve nextAmount, otherwise approve 0 and approve nextAmount
         // WETH used increaseAllowance with no effect
         if (allowanceAmount.gt(0) && tokenAddress !== WETH_ADDRESS) {
-          console.log('add allowance:', amount.sub(allowanceAmount).toString())
+          const increaseAmounts = amount.sub(allowanceAmount)
+          console.log('add allowance:', increaseAmounts.toString())
           console.groupEnd('approve')
           return tokenContractWithUser
-            .increaseAllowance(targetAddress, amount.sub(allowanceAmount))
-            .then(tx => tx.wait())
+            .increaseAllowance(targetAddress, increaseAmounts)
+            .then(tx => {
+              callback({ tx, tokenAddress, amount: increaseAmounts, decimals })
+              return tx.wait()
+            })
             .catch(e => {
               // cancel by user
               if (e.code === 4001) {
@@ -114,15 +120,26 @@ const useErc20Token = (tokenAddress, userProvider) => {
               // If increase failed, approve 0 and approve nextAmounts
               return tokenContractWithUser
                 .approve(targetAddress, 0)
-                .then(tx => tx.wait())
-                .then(() => tokenContractWithUser.approve(targetAddress, amount).then(tx => tx.wait()))
+                .then(tx => {
+                  callback({ tx, tokenAddress, amount: BigNumber.from(0), decimals })
+                  return tx.wait()
+                })
+                .then(() =>
+                  tokenContractWithUser.approve(targetAddress, amount).then(tx => {
+                    callback({ tx, tokenAddress, amount, decimals })
+                    return tx.wait()
+                  })
+                )
             })
         } else {
           console.log('next allowance:', amount.toString())
           console.groupEnd('approve')
           return tokenContractWithUser
             .approve(targetAddress, amount)
-            .then(tx => tx.wait())
+            .then(tx => {
+              callback({ tx, tokenAddress, amount, decimals })
+              return tx.wait()
+            })
             .catch(e => {
               // cancel by user
               if (e.code === 4001) {
@@ -133,7 +150,7 @@ const useErc20Token = (tokenAddress, userProvider) => {
       }
       console.groupEnd('approve')
     },
-    [tokenAddress, userProvider, address]
+    [tokenAddress, userProvider, address, decimals]
   )
 
   useEffect(() => {

@@ -22,7 +22,6 @@ import BocStepper from '@/components/Stepper/Stepper'
 import BocStepLabel from '@/components/Stepper/StepLabel'
 import BocStepIcon from '@/components/Stepper/StepIcon'
 import BocStepConnector from '@/components/Stepper/StepConnector'
-import CircularProgress from '@material-ui/core/CircularProgress'
 import Modal from '@material-ui/core/Modal'
 import Paper from '@material-ui/core/Paper'
 import GridContainer from '@/components/Grid/GridContainer'
@@ -36,12 +35,18 @@ import SimpleSelect from '@/components/SimpleSelect/SimpleSelectV2'
 import AddIcon from '@material-ui/icons/Add'
 import ExpandLessIcon from '@material-ui/icons/ExpandLess'
 import ClearIcon from '@material-ui/icons/Clear'
+import SnackBarCard from '@/components/SnackBarCard'
 
 // === Hooks === //
+import { useAtom } from 'jotai'
+import { useSnackbar } from 'notistack'
 import useVault from '@/hooks/useVault'
 import useWallet from '@/hooks/useWallet'
 import useErc20Token from '@/hooks/useErc20Token'
 import useUserAddress from '@/hooks/useUserAddress'
+
+// === Stores === //
+import { penddingTxAtom } from '@/jotai'
 
 // === Constants === //
 import { BN_18 } from '@/constants/big-number'
@@ -49,6 +54,9 @@ import { TRANSACTION_REPLACED, CALL_EXCEPTION } from '@/constants/metamask'
 import { USDI_VAULT_FOR_ETH as VAULT_ADDRESS, VAULT_BUFFER_FOR_USDI_ETH as VAULT_BUFFER_ADDRESS } from '@/config/config'
 import { USDT_ADDRESS, USDC_ADDRESS, DAI_ADDRESS, IERC20_ABI, MULTIPLE_OF_GAS, MAX_GAS_LIMIT, RPC_URL } from '@/constants'
 import { VAULT_ABI_V2_0 as VAULT_ABI } from '@/constants/abi'
+
+// === Utils === //
+import { isEqual } from 'lodash'
 
 // === Styles === //
 import styles from './style'
@@ -81,7 +89,7 @@ const Deposit = props => {
   const [usdtValue, setUsdtValue] = useState('')
   const [usdcValue, setUsdcValue] = useState('')
   const [daiValue, setDaiValue] = useState('')
-  const [isLoading, setIsLoading] = useState(false)
+  const [, setIsLoading] = useState(false)
   const [, setIsEstimate] = useState(false)
   const [isOpenEstimateModal, setIsOpenEstimateModal] = useState(false)
   const [estimateVaultBuffValue, setEstimateVaultBuffValue] = useState(BigNumber.from(0))
@@ -89,7 +97,11 @@ const Deposit = props => {
 
   const [tokenSelect, setTokenSelect] = useState([USDT_ADDRESS, USDC_ADDRESS, DAI_ADDRESS])
 
+  const { enqueueSnackbar, closeSnackbar } = useSnackbar()
+
   const { userProvider } = useWallet()
+
+  const [penddingTx, setPenddingTx] = useAtom(penddingTxAtom)
 
   const provider = useMemo(() => new providers.StaticJsonRpcProvider(RPC_URL[1], 1), [RPC_URL])
   const { minimumInvestmentAmount, redeemFeeBps, trusteeFeeBps } = useVault(VAULT_ADDRESS, VAULT_ABI, userProvider || provider)
@@ -244,6 +256,16 @@ const Deposit = props => {
    *
    */
   const deposit = useCallback(async () => {
+    if (!isEmpty(penddingTx)) {
+      dispatch(
+        warmDialog({
+          open: true,
+          type: 'warning',
+          message: 'An existing transaction is executing. Please try again later!'
+        })
+      )
+      return
+    }
     clearTimeout(loadingTimer.current)
     // step1: valid three tokens
     const isValidUsdtValue = isValidValue(TOKEN.USDT)
@@ -268,18 +290,40 @@ const Deposit = props => {
     console.log('nextTokens=', nextTokens, nextAmounts)
     const signer = userProvider.getSigner()
     for (const key in nextTokens) {
-      const contract = new ethers.Contract(nextTokens[key], IERC20_ABI, userProvider)
+      const tokenAddress = nextTokens[key]
+      const tokenAmounts = nextAmounts[key]
+      const decimals = isEqual(tokenAddress, DAI_ADDRESS) ? 18 : 6
+      const contract = new ethers.Contract(tokenAddress, IERC20_ABI, userProvider)
       const contractWithUser = contract.connect(signer)
       // get allow amount
       const allowanceAmount = await contractWithUser.allowance(address, VAULT_ADDRESS)
       // If deposit amount greater than allow amount, reset amount
-      if (nextAmounts[key].gt(allowanceAmount)) {
+      if (tokenAmounts.gt(allowanceAmount)) {
         // If allowance equal 0, approve nextAmount, otherwise approve 0 and approve nextAmount
         if (allowanceAmount.gt(0)) {
-          console.log('add allowance:', nextAmounts[key].sub(allowanceAmount).toString())
+          const increaseAmount = tokenAmounts.sub(allowanceAmount)
+          console.log('add allowance:', increaseAmount.toString())
           await contractWithUser
-            .increaseAllowance(VAULT_ADDRESS, nextAmounts[key].sub(allowanceAmount))
-            .then(tx => tx.wait())
+            .increaseAllowance(VAULT_ADDRESS, increaseAmount)
+            .then(tx => {
+              const { hash } = tx
+              enqueueSnackbar(
+                <SnackBarCard
+                  tx={tx}
+                  text={
+                    <span>
+                      approve
+                      <span className="mx-2 color-lightblue-500 cursor-pointer">{toFixed(increaseAmount, BigNumber.from(10).pow(decimals), 2)}</span>
+                      <img className="w-4 h-4 b-rd-2 v-text-bottom" src={`/images/${tokenAddress}.png`} alt={tokenAddress} />
+                    </span>
+                  }
+                  hash={hash}
+                  close={() => closeSnackbar(hash)}
+                />,
+                { persist: true, key: hash }
+              )
+              return tx.wait()
+            })
             .catch(e => {
               // cancel by user
               if (e.code === 4001) {
@@ -289,14 +333,72 @@ const Deposit = props => {
               // If increase failed, approve 0 and approve nextAmounts
               return contractWithUser
                 .approve(VAULT_ADDRESS, 0)
-                .then(tx => tx.wait())
-                .then(() => contractWithUser.approve(VAULT_ADDRESS, nextAmounts[key]).then(tx => tx.wait()))
+                .then(tx => {
+                  const { hash } = tx
+                  enqueueSnackbar(
+                    <SnackBarCard
+                      tx={tx}
+                      text={
+                        <span>
+                          approve
+                          <span className="mx-2 color-lightblue-500 cursor-pointer">0</span>
+                          <img className="w-4 h-4 b-rd-2 v-text-bottom" src={`/images/${tokenAddress}.png`} alt={tokenAddress} />
+                        </span>
+                      }
+                      hash={hash}
+                      close={() => closeSnackbar(hash)}
+                    />,
+                    { persist: true, key: hash }
+                  )
+                  return tx.wait()
+                })
+                .then(() =>
+                  contractWithUser.approve(VAULT_ADDRESS, tokenAmounts).then(tx => {
+                    const { hash } = tx
+                    enqueueSnackbar(
+                      <SnackBarCard
+                        tx={tx}
+                        text={
+                          <span>
+                            approve
+                            <span className="mx-2 color-lightblue-500 cursor-pointer">
+                              {toFixed(tokenAmounts, BigNumber.from(10).pow(decimals), 2)}
+                            </span>
+                            <img className="w-4 h-4 b-rd-2 v-text-bottom" src={`/images/${tokenAddress}.png`} alt={tokenAddress} />
+                          </span>
+                        }
+                        hash={hash}
+                        close={() => closeSnackbar(hash)}
+                      />,
+                      { persist: true, key: hash }
+                    )
+                    return tx.wait()
+                  })
+                )
             })
         } else {
-          console.log('current allowance:', allowanceAmount.toString(), 'next allowance:', nextAmounts[key].toString())
+          console.log('current allowance:', allowanceAmount.toString(), 'next allowance:', tokenAmounts.toString())
           await contractWithUser
-            .approve(VAULT_ADDRESS, nextAmounts[key])
-            .then(tx => tx.wait())
+            .approve(VAULT_ADDRESS, tokenAmounts)
+            .then(tx => {
+              const { hash } = tx
+              enqueueSnackbar(
+                <SnackBarCard
+                  tx={tx}
+                  text={
+                    <span>
+                      approve
+                      <span className="mx-2 color-lightblue-500 cursor-pointer">{toFixed(tokenAmounts, BigNumber.from(10).pow(decimals), 2)}</span>
+                      <img className="w-4 h-4 b-rd-2 v-text-bottom" src={`/images/${tokenAddress}.png`} alt={tokenAddress} />
+                    </span>
+                  }
+                  hash={hash}
+                  close={() => closeSnackbar(hash)}
+                />,
+                { persist: true, key: hash }
+              )
+              return tx.wait()
+            })
             .catch(e => {
               // cancel by user
               if (e.code === 4001) {
@@ -374,9 +476,38 @@ const Deposit = props => {
       const maxGasLimit = gasLimit < MAX_GAS_LIMIT ? gasLimit : MAX_GAS_LIMIT
       extendObj.gasLimit = maxGasLimit
     }
+    const result = await nVaultWithUser.callStatic.mint(nextTokens, nextAmounts, 0, extendObj)
     const isSuccess = await nVaultWithUser
       .mint(nextTokens, nextAmounts, 0, extendObj)
       .then(tx => {
+        setIsOpenEstimateModal(false)
+        const { hash } = tx
+        setPenddingTx([...penddingTx, hash])
+        enqueueSnackbar(
+          <SnackBarCard
+            tx={tx}
+            text={
+              <span>
+                mint <span className="color-lightblue-500">{toFixed(result, BigNumber.from(10).pow(18), 2)}</span> USDi
+              </span>
+            }
+            hash={hash}
+            close={() => closeSnackbar(hash)}
+          >
+            <div className="flex flex-wrap mb-2">
+              {map(nextTokens, (item, index) => {
+                const decimals = isEqual(item, DAI_ADDRESS) ? 18 : 6
+                return (
+                  <div className="flex items-center mr-2">
+                    <img className="w-4 h-4 b-rd-2" src={`/images/${item}.png`} alt={item} />
+                    <span className="ml-1">{toFixed(nextAmounts[index], BigNumber.from(10).pow(decimals), 2)}</span>
+                  </div>
+                )
+              })}
+            </div>
+          </SnackBarCard>,
+          { persist: true, key: hash }
+        )
         // if user add gas in metamask, next code runs error, and return a new transaction.
         return tx
           .wait()
@@ -415,7 +546,7 @@ const Deposit = props => {
 
     loadingTimer.current = setTimeout(() => {
       setIsLoading(false)
-      setIsOpenEstimateModal(false)
+      // setIsOpenEstimateModal(false)
       if (isUndefined(isSuccess)) {
         dispatch(
           warmDialog({
@@ -605,7 +736,9 @@ const Deposit = props => {
                           })}
                         >
                           Balance:&nbsp;&nbsp;
-                          <Loading loading={item.loading}>{formatBalance(item.balance, item.decimals)}</Loading>
+                          <Loading className="vertical-middle" loading={item.loading}>
+                            {formatBalance(item.balance, item.decimals)}
+                          </Loading>
                         </div>
                       </GridItem>
                     </GridContainer>
@@ -619,6 +752,7 @@ const Deposit = props => {
               <Button
                 disabled={
                   !isLogin ||
+                  !isEmpty(penddingTx) ||
                   (isLogin &&
                     (some(formConfig, item => isValidValue(item.name) === false) || every(formConfig, item => isValidValue(item.name) !== true)))
                 }
@@ -697,14 +831,14 @@ const Deposit = props => {
           </div>
         </Paper>
       </Modal>
-      <Modal className={classes.modal} open={isLoading} aria-labelledby="simple-modal-title" aria-describedby="simple-modal-description">
+      {/* <Modal className={classes.modal} open={isLoading} aria-labelledby="simple-modal-title" aria-describedby="simple-modal-description">
         <Paper elevation={3} className={classes.depositModal}>
           <div className={classes.modalBody}>
             <CircularProgress color="inherit" />
             <p>On Deposit...</p>
           </div>
         </Paper>
-      </Modal>
+      </Modal> */}
     </>
   )
 }

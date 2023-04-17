@@ -15,7 +15,6 @@ import BocStepper from '@/components/Stepper/Stepper'
 import BocStepLabel from '@/components/Stepper/StepLabel'
 import BocStepIcon from '@/components/Stepper/StepIcon'
 import BocStepConnector from '@/components/Stepper/StepConnector'
-import CircularProgress from '@material-ui/core/CircularProgress'
 import Modal from '@material-ui/core/Modal'
 import Paper from '@material-ui/core/Paper'
 import Loading from '@/components/LoadingComponent'
@@ -23,6 +22,7 @@ import GridContainer from '@/components/Grid/GridContainer'
 import GridItem from '@/components/Grid/GridItem'
 import CustomTextField from '@/components/CustomTextField'
 import Button from '@/components/CustomButtons/Button'
+import SnackBarCard from '@/components/SnackBarCard'
 
 // === Utils === //
 import { isAd, isEs, isRp, isDistributing, errorTextOutput, isLessThanMinValue } from '@/helpers/error-handler'
@@ -31,12 +31,17 @@ import { toFixed, formatBalance } from '@/helpers/number-format'
 import { isValid as isValidNumber } from '@/helpers/number'
 
 // === Hooks === //
+import { useAtom } from 'jotai'
+import { useSnackbar } from 'notistack'
 import useVault from '@/hooks/useVault'
 import useWallet from '@/hooks/useWallet'
 import { useAsync } from 'react-async-hook'
 import useMetaMask from '@/hooks/useMetaMask'
 import useErc20Token from '@/hooks/useErc20Token'
 import useUserAddress from '@/hooks/useUserAddress'
+
+// === Stores === //
+import { penddingTxAtom } from '@/jotai'
 
 // === Constants === //
 import { ETH_ADDRESS } from '@/constants/tokens'
@@ -70,7 +75,7 @@ const Deposit = props => {
   const classes = useStyles()
   const dispatch = useDispatch()
   const [ethValue, setEthValue] = useState('')
-  const [isLoading, setIsLoading] = useState(false)
+  const [, setIsLoading] = useState(false)
   const [, setIsEstimate] = useState(false)
   const [isOpenEstimateModal, setIsOpenEstimateModal] = useState(false)
   const [estimateVaultBuffValue, setEstimateVaultBuffValue] = useState(BigNumber.from(0))
@@ -78,7 +83,12 @@ const Deposit = props => {
 
   const { userProvider } = useWallet()
 
+  const { enqueueSnackbar, closeSnackbar } = useSnackbar()
+
+  const [penddingTx, setPenddingTx] = useAtom(penddingTxAtom)
+
   const provider = useMemo(() => new providers.StaticJsonRpcProvider(RPC_URL[1], 1), [RPC_URL])
+
   const { minimumInvestmentAmount, redeemFeeBps, trusteeFeeBps } = useVault(VAULT_ADDRESS, VAULT_ABI, userProvider || provider)
 
   const { gasPrice, gasPriceLoading } = useMetaMask(userProvider)
@@ -170,6 +180,16 @@ const Deposit = props => {
    *
    */
   const deposit = useCallback(async () => {
+    if (!isEmpty(penddingTx)) {
+      dispatch(
+        warmDialog({
+          open: true,
+          type: 'warning',
+          message: 'An existing transaction is executing. Please try again later!'
+        })
+      )
+      return
+    }
     clearTimeout(loadingTimer.current)
     if (!isValid) {
       return dispatch(
@@ -228,6 +248,11 @@ const Deposit = props => {
       const maxGasLimit = gasLimit < MAX_GAS_LIMIT ? gasLimit : MAX_GAS_LIMIT
       extendObj.gasLimit = maxGasLimit
     }
+    const result = await nVaultWithUser.callStatic.mint([ETH_ADDRESS], [amount], 0, {
+      ...extendObj,
+      from: address,
+      value: amount
+    })
     const isSuccess = await nVaultWithUser
       .mint([ETH_ADDRESS], [amount], 0, {
         ...extendObj,
@@ -235,6 +260,29 @@ const Deposit = props => {
         value: amount
       })
       .then(tx => {
+        setIsOpenEstimateModal(false)
+        const { hash } = tx
+        setPenddingTx([...penddingTx, hash])
+        enqueueSnackbar(
+          <SnackBarCard
+            tx={tx}
+            text={
+              <span>
+                mint <span className="color-lightblue-500">{toFixed(result, BigNumber.from(10).pow(18), 4)}</span> ETHi
+              </span>
+            }
+            hash={hash}
+            close={() => closeSnackbar(hash)}
+          >
+            <div className="flex flex-wrap mb-2">
+              <div className="flex items-center mr-2">
+                <img className="w-4 h-4 b-rd-2" src={`/images/${ETH_ADDRESS}.png`} alt={ETH_ADDRESS} />
+                <span className="ml-1">{ethValue}</span>
+              </div>
+            </div>
+          </SnackBarCard>,
+          { persist: true, key: hash }
+        )
         // if user add gas in metamask, next code runs error, and return a new transaction.
         return tx
           .wait()
@@ -275,7 +323,7 @@ const Deposit = props => {
     console.log('isSuccess=', isSuccess)
     loadingTimer.current = setTimeout(() => {
       setIsLoading(false)
-      setIsOpenEstimateModal(false)
+      // setIsOpenEstimateModal(false)
       if (isUndefined(isSuccess)) {
         dispatch(
           warmDialog({
@@ -297,7 +345,7 @@ const Deposit = props => {
         )
       }
     }, 2000)
-  }, [ethValue, ethDecimals, VAULT_ADDRESS, VAULT_ABI, userProvider, isValid, address, dispatch, minimumInvestmentAmount])
+  }, [ethValue, ethDecimals, VAULT_ADDRESS, VAULT_ABI, userProvider, isValid, address, dispatch, minimumInvestmentAmount, penddingTx])
 
   const estimateMint = useCallback(
     debounce(async () => {
@@ -419,7 +467,7 @@ const Deposit = props => {
           <GridContainer className="mt-8 pr-4">
             <GridItem xs={12} sm={12} md={12} lg={12}>
               <Button
-                disabled={!isLogin || (isLogin && !isValid)}
+                disabled={!isLogin || !isEmpty(penddingTx) || (isLogin && !isValid)}
                 color="colorful"
                 onClick={openEstimateModal}
                 className={classes.blockButton}
@@ -486,14 +534,14 @@ const Deposit = props => {
           </div>
         </Paper>
       </Modal>
-      <Modal className={classes.modal} open={isLoading} aria-labelledby="simple-modal-title" aria-describedby="simple-modal-description">
+      {/* <Modal className={classes.modal} open={isLoading} aria-labelledby="simple-modal-title" aria-describedby="simple-modal-description">
         <Paper elevation={3} className={classes.depositModal}>
           <div className={classes.modalBody}>
             <CircularProgress color="inherit" />
             <p>On Deposit...</p>
           </div>
         </Paper>
-      </Modal>
+      </Modal> */}
     </>
   )
 }

@@ -2,18 +2,18 @@
  * pr02-sg config
  */
 
-const ETHI_FOR_ETH = '0x1A597356E7064D4401110FAa2242bD0B51D1E4Fa'
+export const ETHI_FOR_ETH = '0x1A597356E7064D4401110FAa2242bD0B51D1E4Fa'
 
-const USDI_FOR_ETH = '0x83131242843257bc6C43771762ba467346Efb2CF'
-const USDI_FOR_MATIC = ''
+export const USDI_FOR_ETH = '0x83131242843257bc6C43771762ba467346Efb2CF'
+export const USDI_FOR_MATIC = ''
 
-const ETHI_VAULT = '0x8f0Cb368C63fbEDF7a90E43fE50F7eb8B9411746'
-const USDI_VAULT_FOR_ETH = '0x30D120f80D60E7b58CA9fFaf1aaB1815f000B7c3'
-const USDI_VAULT_FOR_MATIC = ''
+export const ETHI_VAULT = '0x8f0Cb368C63fbEDF7a90E43fE50F7eb8B9411746'
+export const USDI_VAULT_FOR_ETH = '0x30D120f80D60E7b58CA9fFaf1aaB1815f000B7c3'
+export const USDI_VAULT_FOR_MATIC = ''
 
-const VAULT_BUFFER_FOR_ETHI_ETH = '0xC8915157b36ed6D0F36827a1Bb5E9b0cDd1e87Cd'
-const VAULT_BUFFER_FOR_USDI_ETH = '0x0b8D3634a05cc6b50E4D026c0eaFa8469cA98480'
-const VAULT_BUFFER_FOR_USDI_MATIC = ''
+export const VAULT_BUFFER_FOR_ETHI_ETH = '0xC8915157b36ed6D0F36827a1Bb5E9b0cDd1e87Cd'
+export const VAULT_BUFFER_FOR_USDI_ETH = '0x0b8D3634a05cc6b50E4D026c0eaFa8469cA98480'
+export const VAULT_BUFFER_FOR_USDI_MATIC = ''
 
 const configBase = {
   env: 'pr02-sg',
@@ -114,7 +114,7 @@ const config1 = {
       id: 'mutilCoins',
       name: 'Vault for USDi',
       path: '#/usdi',
-      abi_version: 'usdi-v1.6.0',
+      abi_version: 'v2.0',
       VAULT_ADDRESS: USDI_VAULT_FOR_ETH,
       USDI_ADDRESS: USDI_FOR_ETH,
       VAULT_BUFFER_ADDRESS: VAULT_BUFFER_FOR_USDI_ETH
@@ -124,7 +124,7 @@ const config1 = {
       name: 'Vault for ETHi',
       description: 'Vault for ETHi',
       path: '#/ethi',
-      abi_version: 'ethi-v1.6.0',
+      abi_version: 'v2.0',
       VAULT_ADDRESS: ETHI_VAULT,
       ETHI_ADDRESS: ETHI_FOR_ETH,
       VAULT_BUFFER_ADDRESS: VAULT_BUFFER_FOR_ETHI_ETH

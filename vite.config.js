@@ -1,6 +1,7 @@
 import path from 'path'
 import UnoCSS from 'unocss/vite'
 import { defineConfig } from 'vite'
+import eslint from 'vite-plugin-eslint'
 import Analyze from 'rollup-plugin-visualizer'
 import reactRefresh from '@vitejs/plugin-react-refresh'
 import nodePolyfills from 'rollup-plugin-polyfill-node'
@@ -33,7 +34,7 @@ export default defineConfig({
       '@': path.resolve(__dirname, './src')
     }
   },
-  plugins: [UnoCSS(), reactRefresh(), Analyze()],
+  plugins: [UnoCSS(), reactRefresh(), Analyze(), eslint()],
   optimizeDeps: {
     esbuildOptions: {
       // Node.js global to browser globalThis
