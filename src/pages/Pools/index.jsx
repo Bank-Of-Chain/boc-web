@@ -8,12 +8,16 @@ import UsdiVault from './components/Vault/UsdiVault'
 import Loading from '@/components/LoadingComponent'
 
 // === Hooks === //
+import { useAtom } from 'jotai'
 import useVault from '@/hooks/useVault'
 import { useAsync } from 'react-async-hook'
 import useErc20Token from '@/hooks/useErc20Token'
 
 // === Services === //
 import { getAPY } from '@/services/api-service'
+
+// === Stores === //
+import { penddingTxAtom } from '@/jotai'
 
 // === Utils === //
 import map from 'lodash/map'
@@ -29,6 +33,9 @@ import { ETHI_VAULT, USDI_VAULT_FOR_ETH, ETHI_FOR_ETH, USDI_FOR_ETH, VAULT_BUFFE
 const Pools = props => {
   const { userProvider } = props
   const [openIndex, setOpenIndex] = useState(-1)
+
+  const [penddingTx] = useAtom(penddingTxAtom)
+  console.log('penddingTx=', penddingTx)
 
   // balances
   const {

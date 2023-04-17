@@ -24,6 +24,7 @@
     ],
     "rules": {
         "react/prop-types": 0,
-        "react-hooks/exhaustive-deps": 0
+        "no-unused-vars": 1,
+        "no-debugger": 1
     }
 }
