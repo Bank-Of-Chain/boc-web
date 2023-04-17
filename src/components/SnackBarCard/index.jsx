@@ -7,11 +7,16 @@ import Tooltip from '@material-ui/core/Tooltip'
 import LinearProgress from '@material-ui/core/LinearProgress'
 
 // === Hooks === //
+import { useAtom } from 'jotai'
 import useWallet from '@/hooks/useWallet'
 import useMetaMask from '@/hooks/useMetaMask'
 
+// === Stores === //
+import { penddingTxAtom } from '@/jotai'
+
 // === Utils === //
 import get from 'lodash/get'
+import filter from 'lodash/filter'
 import toLower from 'lodash/toLower'
 import isEmpty from 'lodash/isEmpty'
 import { short } from '@/helpers/string-utils'
@@ -39,14 +44,21 @@ const VAULT_MAP = {
 }
 
 const SnackBarCard = props => {
-  const { tx, hash, close, method } = props
+  const { tx, hash, close, text, closeDurationDefault = 10, children } = props
+
+  const [penddingTx, setPenddingTx] = useAtom(penddingTxAtom)
   const { userProvider } = useWallet()
   const [replaceHash, setReplaceHash] = useState()
+  const [cancelHash, setCancelHash] = useState()
+  const [isIgnore, setIsIgnore] = useState(false)
   const [duration, setDuration] = useState(DEFAULT_DURATION)
   const [closeDuration, setCloseDuration] = useState(-1)
   const [fetchingTime, setFetchingTime] = useState(MAX_FETCHING_TIMES)
   const [transactionReceipt, setTransactionReceipt] = useState()
   const [, setIsTransactionReceiptLoading] = useState(true)
+
+  const [openDetails, setOpenDetails] = useState(true)
+
   const { gasPrice, sendTransaction, queryTransaction, queryTransactionReceipt } = useMetaMask(userProvider)
 
   const isEmptyTx = isEmpty(transactionReceipt)
@@ -60,27 +72,35 @@ const SnackBarCard = props => {
       setIsTransactionReceiptLoading(true)
       queryTransactionReceipt(hash)
         .catch(() => undefined)
-        .then(setTransactionReceipt)
+        .then(v => {
+          if (!isEmpty(v)) {
+            const nextPenddingTx = filter(penddingTx, item => item !== hash && item !== replaceHash)
+            setPenddingTx(nextPenddingTx)
+          }
+          return setTransactionReceipt(v)
+        })
         .finally(() => {
           setIsTransactionReceiptLoading(false)
           setFetchingTime(fetchingTime - 1)
         })
     },
-    [fetchingTime]
+    [fetchingTime, penddingTx, replaceHash]
   )
 
   /**
    *
    */
-  const speed = useCallback(async () => {
+  const speedUp = useCallback(async () => {
     //TODO:
-    console.error('can not pop up the metamask with txid or hash currently!')
+    console.error('can not speed up the tx with txid or hash currently!')
   }, [userProvider, hash])
 
   /**
    *
    */
   const txCancel = useCallback(async () => {
+    //TODO:
+    console.error('can not cancel the tx with txid or hash currently!')
     // queryTransaction(hash).then(tx => {
     //   const cancelTransation = {
     //     from: tx.from,
@@ -95,20 +115,27 @@ const SnackBarCard = props => {
     // })
   }, [hash, queryTransaction, sendTransaction])
 
+  /**
+   *
+   */
+  const closeHandle = useCallback(() => {
+    setIsIgnore(true)
+  })
+
   useEffect(() => {
     if (isEmpty(transactionReceipt)) return
     if (transactionReceipt.status === '0x1' || transactionReceipt.status === '0x0') {
       setDuration(TX_DONE_DURATION)
-      setCloseDuration(10)
+      setCloseDuration(closeDurationDefault)
     }
-  }, [transactionReceipt])
+  }, [transactionReceipt, closeDurationDefault])
 
   useEffect(() => {
     const interval = setInterval(() => {
-      queryTransactionReceiptCall(replaceHash || hash)
+      queryTransactionReceiptCall(cancelHash || replaceHash || hash)
     }, duration)
     return () => clearInterval(interval)
-  }, [hash, replaceHash, duration, queryTransactionReceiptCall])
+  }, [hash, cancelHash, replaceHash, duration, queryTransactionReceiptCall])
 
   useEffect(() => {
     if (fetchingTime <= 0) {
@@ -127,7 +154,7 @@ const SnackBarCard = props => {
       if (code === TRANSACTION_REPLACED) {
         // if user add gas for tx canceled, return undefined
         if (cancelled) {
-          setReplaceHash(replacement.hash)
+          setCancelHash(replacement.hash)
           return
         }
         setReplaceHash(replacement.hash)
@@ -151,27 +178,53 @@ const SnackBarCard = props => {
 
   return (
     <div
-      className={classnames('animate__animated w-72 p-4 b-rd-1 shadow-xl shadow-dark-900', {
-        'bg-purple-500': isEmptyTx,
-        'bg-green-500 animate__shakeY animate__delay-0.4s': transactionReceipt?.status === '0x1',
-        'bg-red-500 animate__shakeX animate__delay-0.4s': transactionReceipt?.status === '0x0'
+      className={classnames('w-72 p-4 b-rd-1 shadow-xl shadow-dark-900', {
+        hidden: isIgnore,
+        'bg-purple-700': isEmptyTx,
+        'bg-green-700': transactionReceipt?.status === '0x1',
+        'bg-red-700': transactionReceipt?.status === '0x0'
       })}
     >
-      {isEmptyTx && <div className="text-center text-bold b-b-1 b-solid b-color mb-4 mt-2 p-1">Pendding...</div>}
-      {transactionReceipt?.status === '0x1' && <div className="text-center text-bold b-b-1 b-solid b-color mb-4 mt-2 p-1">Success!</div>}
-      {transactionReceipt?.status === '0x0' && <div className="text-center text-bold b-b-1 b-solid b-color mb-4 mt-2 p-1">Failed!</div>}
-      <div className="flex justify-between mb-2">
-        <span>
-          hash<span className="ml-1 mr-2">:</span>
-          <span className="color-lightblue-500 cursor-pointer">{short(hash)}</span>
-        </span>
-        {isEmpty(replaceHash) && <span className="cursor-pointer i-ic-baseline-launch ml-2 text-5"></span>}
-      </div>
+      {isEmptyTx && (
+        <div className="flex justify-center items-center text-bold b-b-1 b-solid mb-4 mt-2 p-1">
+          <span className="i-ic-outline-schedule-send mr-1"></span>Pendding...
+        </div>
+      )}
+      {transactionReceipt?.status === '0x1' && (
+        <div className="flex justify-center items-center text-bold b-b-1 b-solid b-color mb-4 mt-2 p-1 animate__animated animate__shakeY animate__delay-0.4s">
+          <span className="i-ic-sharp-check color-green-500 mr-1"></span>
+          {isEmpty(cancelHash) ? 'Success!' : 'Cancel!'}
+        </div>
+      )}
+      {transactionReceipt?.status === '0x0' && (
+        <div className="flex justify-center items-center text-bold b-b-1 b-solid b-color mb-4 mt-2 p-1 animate__animated animate__shakeX animate__delay-0.4s">
+          <span className="i-ic-sharp-close color-red-500 mr-1"></span>
+          Failed!
+        </div>
+      )}
+      {isEmpty(replaceHash) && isEmpty(cancelHash) && (
+        <div className="flex justify-between mb-2">
+          <span>
+            hash<span className="ml-1 mr-2">:</span>
+            <span className="color-lightblue-500 cursor-pointer">{short(hash)}</span>
+          </span>
+          <span className="cursor-pointer i-ic-baseline-launch ml-2 text-5"></span>
+        </div>
+      )}
       {!isEmpty(replaceHash) && (
         <div className="flex justify-between mb-2">
           <span>
-            Replaced By<span className="ml-1 mr-2">:</span>
-            <span className="color-lightblue-500 cursor-pointer">{short(replaceHash)}</span>
+            hash<span className="ml-1 mr-2">:</span>
+            <span className="color-lightblue-500 cursor-pointer animate__animated animate__bounce">{short(replaceHash)}</span>
+          </span>
+          <span className="cursor-pointer i-ic-baseline-launch ml-2 text-5"></span>
+        </div>
+      )}
+      {!isEmpty(cancelHash) && (
+        <div className="flex justify-between mb-2">
+          <span>
+            hash<span className="ml-1 mr-2">:</span>
+            <span className="color-lightblue-500 cursor-pointer animate__animated animate__bounce">{short(cancelHash)}</span>
           </span>
           <span className="cursor-pointer i-ic-baseline-launch ml-2 text-5"></span>
         </div>
@@ -188,12 +241,20 @@ const SnackBarCard = props => {
           <span>{numeral(toFixed(BigNumber.from(gasPrice), BigNumber.from(10).pow(9))).format('0,0')} Gwei</span>
         </span>
       </div>
-      <div className="flex justify-between mb-2">
+      <div className="flex justify-start items-center mb-2">
         <span>
-          method<span className="ml-1 mr-2">:</span>
-          <span>{method}</span>
+          action<span className="ml-1 mr-2">:</span>
+          <span>{text}</span>
         </span>
+        <span
+          onClick={() => setOpenDetails(!openDetails)}
+          className={classnames('cursor-pointer ml-2', {
+            'i-ic-sharp-keyboard-double-arrow-down': !openDetails,
+            'i-ic-sharp-keyboard-double-arrow-up': openDetails
+          })}
+        />
       </div>
+      {openDetails && children}
       {!isEmptyTx && (
         <div className="mb-2">
           gas used<span className="ml-1 mr-2">:</span>
@@ -226,17 +287,22 @@ const SnackBarCard = props => {
       </div>
       <div className="flex justify-center">
         {isEmptyTx && (
+          <Tooltip placement="top" title={'The tx will be speed up in 1.5x gasprice'}>
+            <span className="cursor-pointer bg-green-500 color-white px-2 py-1 b-rd-1 flex items-center mr-2 !hidden" onClick={speedUp}>
+              <span>Speed Up</span>
+              <span className="i-mdi-alert-circle ml-1" />
+            </span>
+          </Tooltip>
+        )}
+        {isEmptyTx && (
           <Tooltip placement="top" title={'The tx will be cancelled in 1.5x gasprice'}>
-            <span className="cursor-pointer bg-red-500 color-white px-2 py-1 b-rd-1 flex items-center" onClick={txCancel}>
+            <span className="cursor-pointer bg-red-500 color-white px-2 py-1 b-rd-1 flex items-center mr-2 !hidden" onClick={txCancel}>
               <span>Cancel</span>
               <span className="i-mdi-alert-circle ml-1" />
             </span>
           </Tooltip>
         )}
-        <span className="cursor-pointer bg-sky-500 color-white px-2 py-1 b-rd-1 hidden" onClick={speed}>
-          Speed Up
-        </span>
-        <span className="cursor-pointer bg-stone-400 color-white px-2 py-1 b-rd-1 ml-2" onClick={close}>
+        <span className="cursor-pointer bg-stone-400 color-white px-2 py-1 b-rd-1 " onClick={closeHandle}>
           Ignore {closeDuration > 0 && `(${closeDuration}s)`}
         </span>
       </div>
