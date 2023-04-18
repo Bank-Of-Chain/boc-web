@@ -210,7 +210,7 @@ const Deposit = props => {
 
     const errorHandle = error => {
       const errorMsg = errorTextOutput(error)
-      let tip = errorMsg
+      let tip = 'transaction failed'
       if (isEs(errorMsg)) {
         tip = 'Vault has been shut down, please try again later!'
       } else if (isAd(errorMsg)) {
@@ -223,8 +223,6 @@ const Deposit = props => {
         tip = `Deposit Amount must be greater than ${toFixed(minimumInvestmentAmount, BN_18, 2)}ETH!`
       } else if (isEqual(ACTION_REJECTED, error.code)) {
         tip = error.reason
-      } else {
-        tip = errorMsg
       }
       if (tip) {
         dispatch(
@@ -251,11 +249,13 @@ const Deposit = props => {
       const maxGasLimit = gasLimit < MAX_GAS_LIMIT ? gasLimit : MAX_GAS_LIMIT
       extendObj.gasLimit = maxGasLimit
     }
-    const result = await nVaultWithUser.callStatic.mint([ETH_ADDRESS], [amount], 0, {
-      ...extendObj,
-      from: address,
-      value: amount
-    })
+    const result = await nVaultWithUser.callStatic
+      .mint([ETH_ADDRESS], [amount], 0, {
+        ...extendObj,
+        from: address,
+        value: amount
+      })
+      .catch(errorHandle)
     const isSuccess = await nVaultWithUser
       .mint([ETH_ADDRESS], [amount], 0, {
         ...extendObj,
