@@ -48,7 +48,7 @@ const EthiInfo = () => {
           positioning algorithm, bringing stable excess returns to users.
         </p>
         <a href={dashboardHost(1, 'ethi')} target="blank" className="color-fuchsia-700 text-3 ">
-          策略详情&gt;&gt;
+          Details &gt;&gt;
         </a>
       </GridItem>
     </GridContainer>

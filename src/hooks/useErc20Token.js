@@ -11,6 +11,7 @@ import isEmpty from 'lodash/isEmpty'
 // === Constants === //
 import { IERC20_ABI } from '@/constants'
 import { ETH_ADDRESS, WETH_ADDRESS } from '@/constants/tokens'
+import { ACTION_REJECTED } from '@/constants/metamask'
 
 const { BigNumber } = ethers
 
@@ -114,7 +115,7 @@ const useErc20Token = (tokenAddress, userProvider) => {
             })
             .catch(e => {
               // cancel by user
-              if (e.code === 4001) {
+              if (e.code === 4001 || e.code === ACTION_REJECTED) {
                 return Promise.reject(e)
               }
               // If increase failed, approve 0 and approve nextAmounts
@@ -142,7 +143,7 @@ const useErc20Token = (tokenAddress, userProvider) => {
             })
             .catch(e => {
               // cancel by user
-              if (e.code === 4001) {
+              if (e.code === 4001 || e.code === ACTION_REJECTED) {
                 return Promise.reject(e)
               }
             })

@@ -20,11 +20,18 @@
     },
     "plugins": [
         "react",
-        "react-hooks"
+        "react-hooks",
+        "i18n"
     ],
     "rules": {
         "react/prop-types": 0,
         "no-unused-vars": 1,
-        "no-debugger": 1
+        "no-debugger": 1,
+        "i18n/no-chinese-character": [
+            1,
+            {
+              "includeIdentifier": true
+            }
+          ]
     }
 }

@@ -3759,6 +3759,11 @@ eslint-config-prettier@^8.5.0:
   resolved "https://registry.npmmirror.com/eslint-config-prettier/-/eslint-config-prettier-8.8.0.tgz#bfda738d412adc917fd7b038857110efe98c9348"
   integrity sha512-wLbQiFre3tdGgpDv67NQKnJuTlcUVYHas3k+DZCc2U2BadthoEY4B7hLPvAxaqdyOGCzuLfii2fqGph10va7oA==
 
+eslint-plugin-i18n@^2.1.0:
+  version "2.1.0"
+  resolved "https://registry.npmmirror.com/eslint-plugin-i18n/-/eslint-plugin-i18n-2.1.0.tgz#6298b70d4df0fe588eb709e70fdee2c97da39e67"
+  integrity sha512-VXDiguvLhpKzzNm5bcgF3SjvT66eGvXoFHB+avUcg2QdqNejCfwAwbr0R7NEQMmiut6OT9G8olj6kcSHuUeEyA==
+
 eslint-plugin-react-hooks@^4.6.0:
   version "4.6.0"
   resolved "https://registry.npmmirror.com/eslint-plugin-react-hooks/-/eslint-plugin-react-hooks-4.6.0.tgz#4c3e697ad95b77e93f8646aaa1630c1ba607edd3"
@@ -5453,6 +5458,11 @@ jiti@^1.16.0:
   version "1.18.2"
   resolved "https://registry.npmmirror.com/jiti/-/jiti-1.18.2.tgz#80c3ef3d486ebf2450d9335122b32d121f2a83cd"
   integrity sha512-QAdOptna2NYiSSpv0O/BwoHBSmz4YhpzJHyi+fnMRTXFjp7B8i/YG5Z8IfusxB1ufjcD2Sre1F3R+nX3fvy7gg==
+
+jotai@^2.0.4:
+  version "2.0.4"
+  resolved "https://registry.npmmirror.com/jotai/-/jotai-2.0.4.tgz#084accf703e3da768e0dbbeeec740545adca67ca"
+  integrity sha512-XkR1Jtm4a2iKV/7fdB3rNHjJz8FkkDMVczqiAok7lt8W4F69l/ZQkPGWSEV+hJOJXRn27k6XYKOoKEQIwBuAMA==
 
 js-sdsl@^4.1.4:
   version "4.4.0"

@@ -42,7 +42,7 @@ import { toFixed, formatBalance } from '@/helpers/number-format'
 import { USDT_ADDRESS, IERC20_ABI, MULTIPLE_OF_GAS, MAX_GAS_LIMIT, RPC_URL, EXCHANGE_MANAGER } from '@/constants'
 import { USDC_ADDRESS, DAI_ADDRESS } from '@/constants/tokens'
 import { BN_18 } from '@/constants/big-number'
-import { TRANSACTION_REPLACED, CALL_EXCEPTION } from '@/constants/metamask'
+import { TRANSACTION_REPLACED, CALL_EXCEPTION, ACTION_REJECTED } from '@/constants/metamask'
 import { USDI_FOR_ETH as USDI_ADDRESS, USDI_VAULT_FOR_ETH as VAULT_ADDRESS } from '@/config/config'
 import { VAULT_ABI_V2_0 as VAULT_ABI } from '@/constants/abi'
 
@@ -53,8 +53,9 @@ import get from 'lodash/get'
 import debounce from 'lodash/debounce'
 import compact from 'lodash/compact'
 import isEmpty from 'lodash/isEmpty'
+import isEqual from 'lodash/isEqual'
 import isNumber from 'lodash/isNumber'
-import { isAd, isEs, isRp, isMaxLoss, isLossMuch, isExchangeFail, errorTextOutput } from '@/helpers/error-handler'
+import { isAd, isEs, isRp, isMaxLoss, isLossMuch, isExchangeFail, errorTextOutput, isRLTM } from '@/helpers/error-handler'
 
 // === Styles === //
 import styles from './style'
@@ -183,7 +184,7 @@ const Withdraw = props => {
           tip = 'Vault is in adjustment status, please try again later!'
         } else if (isRp(errorMsg)) {
           tip = 'Vault is in rebase status, please try again later!'
-        } else if (isMaxLoss(errorMsg)) {
+        } else if (isMaxLoss(errorMsg) || isRLTM(errorMsg)) {
           tip = 'Failed to withdraw, please increase the Max Loss!'
         } else if (isLossMuch(errorMsg)) {
           tip = 'Failed to exchange, please increase the exchange slippage or choose mixed token!'
@@ -433,6 +434,8 @@ const Withdraw = props => {
         tip = 'Failed to exchange, please increase the exchange slippage or choose mixed token!'
       } else if (isExchangeFail(errorMsg)) {
         tip = 'Failed to exchange, Please try again later or choose mixed token!'
+      } else if (isEqual(ACTION_REJECTED, error.code)) {
+        tip = error.reason
       }
       dispatch(
         warmDialog({

@@ -3,14 +3,12 @@ import classNames from 'classnames'
 import { useDispatch } from 'react-redux'
 import copy from 'copy-to-clipboard'
 import { warmDialog } from '@/reducers/meta-reducer'
-import { setCurrentTab } from '@/reducers/invest-reducer'
-
 import { makeStyles } from '@material-ui/core/styles'
 
 // === Components === //
 import List from '@material-ui/core/List'
 import ListItem from '@material-ui/core/ListItem'
-import { AccountIcon, CopyIcon, ChangeWalletIcon, ExitIcon } from '@/components/SvgIcons'
+import { CopyIcon, ChangeWalletIcon, ExitIcon } from '@/components/SvgIcons'
 
 import Button from '../CustomButtons/Button'
 import styles from './headerLinksStyle'
@@ -29,7 +27,6 @@ import { useLocation } from 'react-router-dom'
 
 // === Constants === //
 import { NET_WORKS, DOCUMENT_URL, CHAIN_ID, LEGACYS, POLYGON_HIDDEN } from '@/constants'
-import { INVEST_TAB } from '@/constants/invest'
 
 const CHAIN_SELECTOR_SHOW_ROUTER = ['/usdi']
 
@@ -97,8 +94,6 @@ export default function HeaderLinks(props) {
       handleClose()
     }
   }
-
-  const handleGoToAccount = () => dispatch(setCurrentTab(INVEST_TAB.account))
 
   return (
     <>
@@ -189,10 +184,6 @@ export default function HeaderLinks(props) {
                   className: classNames(classes.accountLink, classes.m4)
                 }}
                 dropdownList={[
-                  <div key="My Account" className={classes.dropdownLink} onClick={handleGoToAccount}>
-                    <AccountIcon />
-                    <span className={classes.dropdownLinkText}>My Account</span>
-                  </div>,
                   <div key="Copy Addres" onClick={handleCopyAddress} className={classes.dropdownLink}>
                     <CopyIcon />
                     <span className={classes.dropdownLinkText}>Copy Address</span>

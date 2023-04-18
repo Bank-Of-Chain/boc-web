@@ -29,6 +29,7 @@ import { isAd, isEs, isRp, isDistributing, errorTextOutput, isLessThanMinValue }
 import { warmDialog } from '@/reducers/meta-reducer'
 import { toFixed, formatBalance } from '@/helpers/number-format'
 import { isValid as isValidNumber } from '@/helpers/number'
+import isEqual from 'lodash/isEqual'
 
 // === Hooks === //
 import { useAtom } from 'jotai'
@@ -47,7 +48,7 @@ import { penddingTxAtom } from '@/jotai'
 import { ETH_ADDRESS } from '@/constants/tokens'
 import { BN_18 } from '@/constants/big-number'
 import { MULTIPLE_OF_GAS, MAX_GAS_LIMIT, RPC_URL } from '@/constants'
-import { TRANSACTION_REPLACED, CALL_EXCEPTION } from '@/constants/metamask'
+import { TRANSACTION_REPLACED, CALL_EXCEPTION, ACTION_REJECTED } from '@/constants/metamask'
 import { ETHI_VAULT as VAULT_ADDRESS, VAULT_BUFFER_FOR_ETHI_ETH as VAULT_BUFFER_ADDRESS } from '@/config/config'
 import { VAULT_ABI_V2_0 as VAULT_ABI } from '@/constants/abi'
 
@@ -220,6 +221,8 @@ const Deposit = props => {
         tip = 'Vault is in distributing, please try again later!'
       } else if (isLessThanMinValue(errorMsg)) {
         tip = `Deposit Amount must be greater than ${toFixed(minimumInvestmentAmount, BN_18, 2)}ETH!`
+      } else if (isEqual(ACTION_REJECTED, error.code)) {
+        tip = error.reason
       } else {
         tip = errorMsg
       }

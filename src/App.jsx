@@ -27,6 +27,9 @@ import map from 'lodash/map'
 import { WALLETS } from './constants/wallet'
 import { isInMobileWalletApp, isInMobileH5, hasWalletInstalled } from './helpers/plugin-util'
 
+// === Constants === //
+import { ACTION_REJECTED } from '@/constants/metamask'
+
 // === Styles === //
 import './App.css'
 
@@ -168,7 +171,7 @@ function App() {
         params: [{ chainId: data[0].chainId }]
       })
     } catch (switchError) {
-      if (switchError.code === 4001) {
+      if (switchError.code === 4001 || switchError.code === ACTION_REJECTED) {
         return Promise.reject()
       }
       // not checking specific error code, because maybe we're not using MetaMask

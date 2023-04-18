@@ -116,3 +116,12 @@ export const isLessThanMinValue = (errorMsg = '') => {
 export const isTransferNotEnough = (errorMsg = '') => {
   return errorMsg.includes("'ERC20: transfer amount exceeds allowance'") || errorMsg.includes('"ERC20: transfer amount exceeds allowance"')
 }
+
+/**
+ * adjustment
+ * @param {*} errorMsg
+ * @returns
+ */
+export const isRLTM = (errorMsg = '') => {
+  return errorMsg.includes('RLTM')
+}
