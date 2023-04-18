@@ -56,7 +56,8 @@ import { USDT_ADDRESS, USDC_ADDRESS, DAI_ADDRESS, IERC20_ABI, MULTIPLE_OF_GAS, M
 import { VAULT_ABI_V2_0 as VAULT_ABI } from '@/constants/abi'
 
 // === Utils === //
-import { isEqual } from 'lodash'
+import isEqual from 'lodash/isEqual'
+import { isValid as isValidNumber } from '@/helpers/number'
 
 // === Styles === //
 import styles from './style'
@@ -162,19 +163,8 @@ const Deposit = props => {
   const isValidValue = useCallback(
     token => {
       const { value, balance, decimals } = tokenBasicState[token]
-      if (value === '' || value === '-' || value === '0' || isEmpty(value.replace(/ /g, ''))) return
-      // not a number
-      if (isNaN(Number(value))) return false
-      const nextValue = BN(value)
-      const nextFromValue = nextValue.multipliedBy(BigNumber.from(10).pow(decimals).toString())
-      // should be positive
-      if (nextFromValue.lte(0)) return false
-      // should be integer
-      const nextFromValueString = nextValue.multipliedBy(BigNumber.from(10).pow(decimals).toString())
-      if (nextFromValueString.toFixed().indexOf('.') !== -1) return false
-      // balance less than value
-      if (balance.lt(BigNumber.from(nextFromValue.toFixed()))) return false
-      return true
+
+      return isValidNumber(value, decimals, balance)
     },
     [tokenBasicState]
   )

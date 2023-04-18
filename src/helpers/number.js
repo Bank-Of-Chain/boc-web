@@ -21,7 +21,7 @@ export const isValid = (str = '', decimals = 1, lower) => {
   const nextValue = BN(str)
   const nextFromValue = nextValue.multipliedBy(decimalsValue.toString())
 
-  if (nextFromValue.lt(0)) return false
+  if (nextFromValue.lte(0)) return false
   // value should be integer
   if (!nextFromValue.isInteger()) return false
   // balance less than value
