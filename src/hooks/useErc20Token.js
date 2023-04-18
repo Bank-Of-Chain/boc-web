@@ -7,6 +7,7 @@ import useUserAddress from '@/hooks/useUserAddress'
 import * as ethers from 'ethers'
 import noop from 'lodash/noop'
 import isEmpty from 'lodash/isEmpty'
+import isEqual from 'lodash/isEqual'
 
 // === Constants === //
 import { IERC20_ABI } from '@/constants'
@@ -19,6 +20,7 @@ const useErc20Token = (tokenAddress, userProvider) => {
   const address = useUserAddress(userProvider)
   const [balance, setBalance] = useState(BigNumber.from(0))
   const [decimals, setDecimals] = useState(1)
+  const [totalSupply, setTotalSupply] = useState(BigNumber.from(0))
   const [isBalanceLoading, setIsBalanceLoading] = useState(true)
   const [isDecimalsLoading, setIsDecimalsLoading] = useState(true)
 
@@ -88,9 +90,35 @@ const useErc20Token = (tokenAddress, userProvider) => {
     [tokenContract]
   )
 
+  /**
+   *
+   */
+  const queryTotalSupply = useCallback(() => {
+    if (isEmpty(tokenContract)) {
+      return
+    }
+    if (tokenAddress === ETH_ADDRESS) return Promise.resolve(BigNumber.from(0))
+    return tokenContract.totalSupply().then(setTotalSupply)
+  }, [tokenContract])
+
+  /**
+   *
+   */
+  const handleTransfer = useCallback(
+    (fromAddress, toAddress) => {
+      if (isEqual(toAddress, address) || isEqual(fromAddress, address)) {
+        queryBalance()
+        queryTotalSupply()
+      }
+    },
+    [address, queryBalance, queryTotalSupply]
+  )
+
+  /**
+   *
+   */
   const approve = useCallback(
     async (targetAddress, amount, callback = noop) => {
-      const tokenContract = new ethers.Contract(tokenAddress, IERC20_ABI, userProvider)
       const signer = userProvider.getSigner()
 
       const tokenContractWithUser = tokenContract.connect(signer)
@@ -151,7 +179,7 @@ const useErc20Token = (tokenAddress, userProvider) => {
       }
       console.groupEnd('approve')
     },
-    [tokenAddress, userProvider, address, decimals]
+    [tokenContract, userProvider, decimals]
   )
 
   useEffect(() => {
@@ -162,9 +190,23 @@ const useErc20Token = (tokenAddress, userProvider) => {
     queryDecimals()
   }, [queryDecimals])
 
+  useEffect(() => {
+    queryTotalSupply()
+  }, [queryTotalSupply])
+
+  useEffect(() => {
+    if (isEmpty(tokenContract)) return
+    tokenContract.on('Transfer', handleTransfer)
+    return () => {
+      tokenContract.off('Transfer', handleTransfer)
+    }
+  }, [tokenContract, handleTransfer])
+
   return {
     balance,
     decimals,
+    totalSupply,
+    tokenContract,
     loading: isBalanceLoading && isDecimalsLoading,
     isBalanceLoading,
     isDecimalsLoading,
