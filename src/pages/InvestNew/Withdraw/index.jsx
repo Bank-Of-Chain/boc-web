@@ -421,7 +421,7 @@ const Withdraw = props => {
     } catch (error) {
       console.log('withdraw original error :', error)
       const errorMsg = errorTextOutput(error)
-      let tip = errorMsg
+      let tip = 'transaction failed'
       if (isEs(errorMsg)) {
         tip = 'Vault has been shut down, please try again later!'
       } else if (isAd(errorMsg)) {
