@@ -44,7 +44,7 @@ import isEqual from 'lodash/isEqual'
 import isNumber from 'lodash/isNumber'
 import { isValid } from '@/helpers/number'
 import { toFixed, formatBalance } from '@/helpers/number-format'
-import { isAd, isEs, isRp, isMaxLoss, isLossMuch, isExchangeFail, errorTextOutput } from '@/helpers/error-handler'
+import { isAd, isEs, isRp, isMaxLoss, isLossMuch, isExchangeFail, errorTextOutput, isRLTM } from '@/helpers/error-handler'
 
 // === Stores === //
 import { penddingTxAtom } from '@/jotai'
@@ -202,7 +202,7 @@ const Withdraw = props => {
           tip = 'Vault is in adjustment status, please try again later!'
         } else if (isRp(errorMsg)) {
           tip = 'Vault is in rebase status, please try again later!'
-        } else if (isMaxLoss(errorMsg)) {
+        } else if (isMaxLoss(errorMsg) || isRLTM(errorMsg)) {
           tip = 'Failed to withdraw, please increase the Max Loss!'
         } else if (isLossMuch(errorMsg)) {
           tip = 'Failed to exchange, please increase the exchange slippage!'
@@ -599,6 +599,8 @@ const Withdraw = props => {
         })
       ) {
         setZapTokens(nextZapTokens)
+      } else {
+        setZapTokens([])
       }
     })
   }, [getPriceProvider, burnTokens])

@@ -316,7 +316,7 @@ const Deposit = props => {
             })
             .catch(e => {
               // cancel by user
-              if (e.code === 4001) {
+              if (e.code === 4001 || e.code === ACTION_REJECTED) {
                 setIsLoading(false)
                 return Promise.reject(e)
               }
@@ -391,7 +391,7 @@ const Deposit = props => {
             })
             .catch(e => {
               // cancel by user
-              if (e.code === 4001) {
+              if (e.code === 4001 || e.code === ACTION_REJECTED) {
                 setIsLoading(false)
                 return Promise.reject(e)
               }
