@@ -255,7 +255,14 @@ const SnackBarCard = props => {
         <div className="mb-2">
           <span className="color-stone-400">Gas Used</span>
           <span className="ml-1 mr-2">:</span>
-          <span>{toFixed(BigNumber.from(parseInt(transactionReceipt.gasUsed, 16)), BigNumber.from(10).pow(9))} ETH</span>
+          <span>
+            {toFixed(
+              BigNumber.from(transactionReceipt.gasUsed).mul(BigNumber.from(transactionReceipt.effectiveGasPrice)),
+              BigNumber.from(10).pow(18),
+              9
+            )}
+            &nbsp;ETH
+          </span>
         </div>
       )}
       {isEmptyTx && (
