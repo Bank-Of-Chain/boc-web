@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useMemo } from 'react'
+import React, { useState, useCallback, useMemo, useEffect } from 'react'
 import GridContainer from '@/components/Grid/GridContainer'
 import GridItem from '@/components/Grid/GridItem'
 
@@ -22,6 +22,7 @@ import { penddingTxAtom } from '@/jotai'
 // === Utils === //
 import map from 'lodash/map'
 import numeral from 'numeral'
+import isEmpty from 'lodash/isEmpty'
 import { BigNumber, providers } from 'ethers'
 import { toFixed } from '@/helpers/number-format'
 
@@ -42,27 +43,31 @@ const Pools = props => {
     balance: ethiBalance,
     decimals: ethiDecimals,
     loading: ethiBalanceLoading,
-    queryBalance: ethiQueryBalance
+    queryBalance: ethiQueryBalance,
+    tokenContract: ethiTokenContract
   } = useErc20Token(ETHI_FOR_ETH, userProvider)
   const {
     balance: usdiBalance,
     decimals: usdiDecimals,
     loading: usdiBalanceLoading,
-    queryBalance: usdiQueryBalance
+    queryBalance: usdiQueryBalance,
+    tokenContract: usdiTokenContract
   } = useErc20Token(USDI_FOR_ETH, userProvider)
 
   const {
     balance: vaultBufferEthiBalance,
     decimals: vaultBufferEthiDecimals,
     loading: vaultBufferEthiBalanceLoading,
-    queryBalance: vaultBufferEthiQueryBalance
+    queryBalance: vaultBufferEthiQueryBalance,
+    totalSupply: vaultBufferEthiTotalSupply
   } = useErc20Token(VAULT_BUFFER_FOR_ETHI_ETH, userProvider)
 
   const {
     balance: vaultBufferUsdiBalance,
     decimals: vaultBufferUsdiDecimals,
     loading: vaultBufferUsdiBalanceLoading,
-    queryBalance: vaultBufferUsdiQueryBalance
+    queryBalance: vaultBufferUsdiQueryBalance,
+    totalSupply: vaultBufferUsdiTotalSupply
   } = useErc20Token(VAULT_BUFFER_FOR_USDI_ETH, userProvider)
 
   const provider = useMemo(() => new providers.StaticJsonRpcProvider(RPC_URL[1], 1), [RPC_URL])
@@ -123,7 +128,7 @@ const Pools = props => {
         ),
         tvl: (
           <Loading className="vertical-middle" loading={isUsdiTotalAssetLoading}>
-            {numeral(toFixed(usdiVaultTotalAsset, BigNumber.from(10).pow(18), 2)).format('0,0.[00]')}
+            {numeral(toFixed(usdiVaultTotalAsset.add(vaultBufferUsdiTotalSupply), BigNumber.from(10).pow(18), 2)).format('0,0.[00]')}
             <span className="ml-1" style={style}>
               USD
             </span>
@@ -168,7 +173,7 @@ const Pools = props => {
         ),
         tvl: (
           <Loading className="vertical-middle" loading={isEthiTotalAssetLoading}>
-            {numeral(toFixed(ethiVaultTotalAsset, BigNumber.from(10).pow(18), 4)).format('0,0.[0000]')}
+            {numeral(toFixed(ethiVaultTotalAsset.add(vaultBufferEthiTotalSupply), BigNumber.from(10).pow(18), 4)).format('0,0.[0000]')}
             <span className="ml-1" style={style}>
               ETH
             </span>
@@ -224,7 +229,9 @@ const Pools = props => {
     vaultBufferEthiDecimals,
     vaultBufferUsdiDecimals,
     ethiPrice,
-    usdiPrice
+    usdiPrice,
+    vaultBufferEthiTotalSupply,
+    vaultBufferUsdiTotalSupply
   ])
 
   /**
@@ -236,6 +243,22 @@ const Pools = props => {
     },
     [openIndex]
   )
+
+  useEffect(() => {
+    if (isEmpty(ethiTokenContract)) return
+    ethiTokenContract.on('Transfer', queryEthiTotalAssets)
+    return () => {
+      ethiTokenContract.off('Transfer', queryEthiTotalAssets)
+    }
+  }, [ethiTokenContract, queryEthiTotalAssets])
+
+  useEffect(() => {
+    if (isEmpty(usdiTokenContract)) return
+    usdiTokenContract.on('Transfer', queryUsdiTotalAssets)
+    return () => {
+      usdiTokenContract.off('Transfer', queryUsdiTotalAssets)
+    }
+  }, [usdiTokenContract, queryUsdiTotalAssets])
 
   return (
     <div className="max-w-6xl color-white pt-13 px-20 pb-0 mt-24 mx-auto">
