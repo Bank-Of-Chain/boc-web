@@ -1,16 +1,32 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 
+// === Utils === //
+import isEmpty from 'lodash/isEmpty'
+
+/**
+ *
+ * @param {*} provider
+ * @returns
+ */
 const useUserAddress = provider => {
   const [userAddress, setUserAddress] = useState('')
 
-  useEffect(() => {
-    const getUserAddress = async injectedProvider => {
-      const signer = injectedProvider.getSigner()
-      if (signer) setUserAddress(await signer.getAddress())
+  /**
+   *
+   */
+  const queryUserAddress = useCallback(() => {
+    const signer = provider?.getSigner()
+    if (isEmpty(provider) || isEmpty(signer)) {
+      setUserAddress('')
+      return
     }
-
-    if (provider) getUserAddress(provider)
+    signer
+      .getAddress()
+      .then(setUserAddress)
+      .catch(() => setUserAddress(''))
   }, [provider])
+
+  useEffect(queryUserAddress, [queryUserAddress])
 
   return userAddress
 }
