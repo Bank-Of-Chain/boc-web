@@ -330,9 +330,11 @@ const Withdraw = props => {
         <SnackBarCard
           tx={tx}
           text={
-            <span>
-              burn <span className="color-lightblue-500">{toValue}</span> USDi
-            </span>
+            <>
+              <span className="flex items-center mr-2 mb-2">withdraw</span>
+              <span className="flex items-center mr-2 mb-2 color-lightblue-500">{toValue} USD</span>
+              <span className="flex items-center mr-2 mb-2">from Usd Vault</span>
+            </>
           }
           hash={hash}
           close={() => closeSnackbar(hash)}

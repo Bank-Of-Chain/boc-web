@@ -301,7 +301,7 @@ const Deposit = props => {
                 <SnackBarCard
                   tx={tx}
                   text={
-                    <span>
+                    <span className="mb-2">
                       approve
                       <span className="mx-2 color-lightblue-500 cursor-pointer">{toFixed(increaseAmount, BigNumber.from(10).pow(decimals), 2)}</span>
                       <img className="w-4 h-4 b-rd-2 v-text-bottom" src={`/images/${tokenAddress}.png`} alt={tokenAddress} />
@@ -329,7 +329,7 @@ const Deposit = props => {
                     <SnackBarCard
                       tx={tx}
                       text={
-                        <span>
+                        <span className="mb-2">
                           approve
                           <span className="mx-2 color-lightblue-500 cursor-pointer">0</span>
                           <img className="w-4 h-4 b-rd-2 v-text-bottom" src={`/images/${tokenAddress}.png`} alt={tokenAddress} />
@@ -349,7 +349,7 @@ const Deposit = props => {
                       <SnackBarCard
                         tx={tx}
                         text={
-                          <span>
+                          <span className="mb-2">
                             approve
                             <span className="mx-2 color-lightblue-500 cursor-pointer">
                               {toFixed(tokenAmounts, BigNumber.from(10).pow(decimals), 2)}
@@ -376,7 +376,7 @@ const Deposit = props => {
                 <SnackBarCard
                   tx={tx}
                   text={
-                    <span>
+                    <span className="mb-2">
                       approve
                       <span className="mx-2 color-lightblue-500 cursor-pointer">{toFixed(tokenAmounts, BigNumber.from(10).pow(decimals), 2)}</span>
                       <img className="w-4 h-4 b-rd-2 v-text-bottom" src={`/images/${tokenAddress}.png`} alt={tokenAddress} />
@@ -479,8 +479,8 @@ const Deposit = props => {
           <SnackBarCard
             tx={tx}
             text={
-              <span>
-                mint <span className="color-lightblue-500">{toFixed(result, BigNumber.from(10).pow(18), 2)}</span> USDi
+              <span className="mb-2">
+                deposit <span className="color-lightblue-500">{toFixed(result, BigNumber.from(10).pow(18), 2)} USD</span> to Usd Vault
               </span>
             }
             hash={hash}
