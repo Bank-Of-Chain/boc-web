@@ -483,7 +483,7 @@ const Withdraw = props => {
         tip = 'Vault is in adjustment status, please try again later!'
       } else if (isRp(errorMsg)) {
         tip = 'Vault is in rebase status, please try again later!'
-      } else if (isMaxLoss(errorMsg)) {
+      } else if (isMaxLoss(errorMsg) || isRLTM(errorMsg)) {
         tip = 'Failed to withdraw, please increase the Max Loss!'
       } else if (isLossMuch(errorMsg)) {
         tip = 'Failed to exchange, please increase the exchange slippage!'
