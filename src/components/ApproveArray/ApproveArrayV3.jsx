@@ -30,6 +30,7 @@ import isEmpty from 'lodash/isEmpty'
 import debounce from 'lodash/debounce'
 import compact from 'lodash/compact'
 import find from 'lodash/find'
+import isEqual from 'lodash/isEqual'
 import isNumber from 'lodash/isNumber'
 import isUndefined from 'lodash/isUndefined'
 import { toFixed } from '@/helpers/number-format'
@@ -40,7 +41,7 @@ import { errorTextOutput, isLossMuch } from '@/helpers/error-handler'
 import { USDT_ADDRESS, USDC_ADDRESS, DAI_ADDRESS, MULTIPLE_OF_GAS, MAX_GAS_LIMIT } from '@/constants'
 import { ETH_ADDRESS } from '@/constants/tokens'
 import { BN_6, BN_18 } from '@/constants/big-number'
-import { TRANSACTION_REPLACED, CALL_EXCEPTION } from '@/constants/metamask'
+import { TRANSACTION_REPLACED, CALL_EXCEPTION, ACTION_REJECTED } from '@/constants/metamask'
 import { EXCHANGE_ADAPTER_ABI_V1_5_9 as EXCHANGE_ADAPTER_ABI, EXCHANGE_AGGREGATOR_ABI_v1_6_0 as EXCHANGE_AGGREGATOR_ABI } from '@/constants/abi'
 
 // === Styles === //
@@ -355,8 +356,8 @@ const ApproveArrayV3 = props => {
       let message = 'Swap Failed, please retry.'
       if (isLossMuch(errorMsg)) {
         message = 'Swap Failed, please increase the slippage and retry.'
-      } else if (error.code === 4001) {
-        message = errorMsg
+      } else if (isEqual(ACTION_REJECTED, error.code)) {
+        message = error.reason
       }
       dispatch(
         warmDialog({

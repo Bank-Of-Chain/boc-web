@@ -40,6 +40,7 @@ import get from 'lodash/get'
 import debounce from 'lodash/debounce'
 import compact from 'lodash/compact'
 import isEmpty from 'lodash/isEmpty'
+import isEqual from 'lodash/isEqual'
 import isNumber from 'lodash/isNumber'
 import { isValid } from '@/helpers/number'
 import { toFixed, formatBalance } from '@/helpers/number-format'
@@ -51,7 +52,7 @@ import { penddingTxAtom } from '@/jotai'
 // === Constants === //
 import { ETH_ADDRESS, WETH_ADDRESS } from '@/constants/tokens'
 import { MULTIPLE_OF_GAS, MAX_GAS_LIMIT, IERC20_ABI, RPC_URL, EXCHANGE_MANAGER } from '@/constants'
-import { TRANSACTION_REPLACED, CALL_EXCEPTION } from '@/constants/metamask'
+import { TRANSACTION_REPLACED, CALL_EXCEPTION, ACTION_REJECTED } from '@/constants/metamask'
 import { BN_18 } from '@/constants/big-number'
 import { ETHI_FOR_ETH as ETHI_ADDRESS, ETHI_VAULT as VAULT_ADDRESS } from '@/config/config'
 import { VAULT_ABI_V2_0 as VAULT_ABI, VALUE_INTERPRETER_ABI_V2_0 } from '@/constants/abi'
@@ -488,6 +489,8 @@ const Withdraw = props => {
         tip = 'Failed to exchange, please increase the exchange slippage!'
       } else if (isExchangeFail(errorMsg)) {
         tip = 'Failed to exchange, Please try again later!'
+      } else if (isEqual(ACTION_REJECTED, error.code)) {
+        tip = error.reason
       } else {
         tip = errorMsg
       }

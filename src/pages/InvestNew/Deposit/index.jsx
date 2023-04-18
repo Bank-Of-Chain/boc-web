@@ -50,7 +50,7 @@ import { penddingTxAtom } from '@/jotai'
 
 // === Constants === //
 import { BN_18 } from '@/constants/big-number'
-import { TRANSACTION_REPLACED, CALL_EXCEPTION } from '@/constants/metamask'
+import { TRANSACTION_REPLACED, CALL_EXCEPTION, ACTION_REJECTED } from '@/constants/metamask'
 import { USDI_VAULT_FOR_ETH as VAULT_ADDRESS, VAULT_BUFFER_FOR_USDI_ETH as VAULT_BUFFER_ADDRESS } from '@/config/config'
 import { USDT_ADDRESS, USDC_ADDRESS, DAI_ADDRESS, IERC20_ABI, MULTIPLE_OF_GAS, MAX_GAS_LIMIT, RPC_URL } from '@/constants'
 import { VAULT_ABI_V2_0 as VAULT_ABI } from '@/constants/abi'
@@ -440,6 +440,8 @@ const Deposit = props => {
         tip = 'Vault is in distributing, please try again later!'
       } else if (isLessThanMinValue(errorMsg)) {
         tip = `Deposit Amount must be greater than ${toFixed(minimumInvestmentAmount, BN_18, 2)}USD!`
+      } else if (isEqual(ACTION_REJECTED, error.code)) {
+        tip = error.reason
       }
       if (tip) {
         dispatch(
