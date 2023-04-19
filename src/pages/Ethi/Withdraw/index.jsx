@@ -388,24 +388,26 @@ const Withdraw = props => {
         <SnackBarCard
           tx={tx}
           text={
-            <span>
-              burn <span className="color-lightblue-500">{toValue}</span> ETHi
-            </span>
+            <>
+              <span className="flex items-center mr-2 mb-2">withdraw</span>
+              <span className="flex items-center mr-2 mb-2 color-lightblue-500">{toValue} ETH</span>
+              <span className="flex items-center mr-2 mb-2">from Eth Vault</span>
+            </>
           }
           hash={hash}
           close={() => closeSnackbar(hash)}
         >
-          {map(cardArray, item => {
-            const { tokenAddress, amounts } = item
-            return (
-              <div className="flex flex-wrap mb-2">
+          <div className="flex flex-wrap mb-2">
+            {map(cardArray, item => {
+              const { tokenAddress, amounts } = item
+              return (
                 <div className="flex items-center mr-2">
                   <img className="w-4 h-4 b-rd-2" src={`/images/${tokenAddress}.png`} alt={tokenAddress} />
                   <span className="ml-1">{toFixed(amounts, BigNumber.from(10).pow(item.decimals), 4)}</span>
                 </div>
-              </div>
-            )
-          })}
+              )
+            })}
+          </div>
         </SnackBarCard>,
         { persist: true, key: hash }
       )

@@ -15,9 +15,7 @@ import useMetaMask from '@/hooks/useMetaMask'
 import { penddingTxAtom } from '@/jotai'
 
 // === Utils === //
-import get from 'lodash/get'
 import filter from 'lodash/filter'
-import toLower from 'lodash/toLower'
 import isEmpty from 'lodash/isEmpty'
 import { short } from '@/helpers/string-utils'
 import { toFixed } from '@/helpers/number-format'
@@ -27,7 +25,6 @@ import numeral from 'numeral'
 // === Constants === //
 // import { ZERO_ADDRESS } from '@/constants/tokens'
 import { CHAIN_BROWSER_URL } from '@/constants'
-import { ETHI_VAULT, USDI_VAULT_FOR_ETH } from '@/config/config'
 import { TRANSACTION_REPLACED, CALL_EXCEPTION } from '@/constants/metamask'
 
 // if tx is pendding, we get tx data every 300ms
@@ -38,11 +35,6 @@ const TX_DONE_DURATION = 60 * 60 * 1000
 
 // after MAX_FETCHING_TIMES fetching, if transactionReceipt is null, we will close the SnackBarCard
 const MAX_FETCHING_TIMES = 1000
-
-const VAULT_MAP = {
-  [toLower(USDI_VAULT_FOR_ETH)]: 'USDi Vault',
-  [toLower(ETHI_VAULT)]: 'ETHi Vault'
-}
 
 const SnackBarCard = props => {
   const { tx, hash, close, text, closeDurationDefault = 10, children } = props
@@ -179,26 +171,23 @@ const SnackBarCard = props => {
 
   return (
     <div
-      className={classnames('w-72 p-4 b-rd-1 shadow-xl shadow-dark-900', {
-        hidden: isIgnore,
-        'bg-purple-700': isEmptyTx,
-        'bg-green-700': transactionReceipt?.status === '0x1',
-        'bg-red-700': transactionReceipt?.status === '0x0'
+      className={classnames('w-72 p-4 b-rd-1 shadow-xl shadow-dark-500 bg-truegray-900', {
+        hidden: isIgnore
       })}
     >
       {isEmptyTx && (
-        <div className="flex justify-center items-center text-bold b-b-1 b-solid mb-4 mt-2 p-1">
+        <div className="flex justify-center items-center font-bold b-b-1 b-color-stone-400 b-solid mb-4 mt-2 p-1 color-purple-700">
           <span className="i-ic-outline-schedule-send mr-1"></span>Pendding...
         </div>
       )}
       {transactionReceipt?.status === '0x1' && (
-        <div className="flex justify-center items-center text-bold b-b-1 b-solid b-color mb-4 mt-2 p-1 animate__animated animate__shakeY animate__delay-0.4s">
+        <div className="flex justify-center items-center font-bold b-b-1 b-color-stone-400 b-solid b-color mb-4 mt-2 p-1 color-green-700">
           <span className="i-ic-sharp-check color-green-500 mr-1"></span>
           {isEmpty(cancelHash) ? 'Success!' : 'Cancel!'}
         </div>
       )}
       {transactionReceipt?.status === '0x0' && (
-        <div className="flex justify-center items-center text-bold b-b-1 b-solid b-color mb-4 mt-2 p-1 animate__animated animate__shakeX animate__delay-0.4s">
+        <div className="flex justify-center items-center font-bold b-b-1 b-color-stone-400 b-solid b-color mb-4 mt-2 p-1 color-red-700">
           <span className="i-ic-sharp-close color-red-500 mr-1"></span>
           Failed!
         </div>
@@ -206,7 +195,8 @@ const SnackBarCard = props => {
       {isEmpty(replaceHash) && isEmpty(cancelHash) && (
         <div className="flex justify-between mb-2">
           <span>
-            hash<span className="ml-1 mr-2">:</span>
+            <span className="color-stone-400">Hash</span>
+            <span className="ml-1 mr-2">:</span>
             <span className="color-lightblue-500 cursor-pointer">{short(hash)}</span>
           </span>
           <span onClick={() => window.open(`${CHAIN_BROWSER_URL}/tx/${hash}`)} className="cursor-pointer i-ic-baseline-launch ml-2 text-5"></span>
@@ -215,8 +205,9 @@ const SnackBarCard = props => {
       {!isEmpty(replaceHash) && (
         <div className="flex justify-between mb-2">
           <span>
-            hash<span className="ml-1 mr-2">:</span>
-            <span className="color-lightblue-500 cursor-pointer animate__animated animate__bounce">{short(replaceHash)}</span>
+            <span className="color-stone-400">Hash</span>
+            <span className="ml-1 mr-2">:</span>
+            <span className="color-lightblue-500 cursor-pointer">{short(replaceHash)}</span>
           </span>
           <span
             onClick={() => window.open(`${CHAIN_BROWSER_URL}/tx/${replaceHash}`)}
@@ -227,19 +218,14 @@ const SnackBarCard = props => {
       {!isEmpty(cancelHash) && (
         <div className="flex justify-between mb-2">
           <span>
-            hash<span className="ml-1 mr-2">:</span>
-            <span className="color-lightblue-500 cursor-pointer animate__animated animate__bounce">{short(cancelHash)}</span>
+            <span className="color-stone-400">Hash</span>
+            <span className="ml-1 mr-2">:</span>
+            <span className="color-lightblue-500 cursor-pointer">{short(cancelHash)}</span>
           </span>
           <span
             onClick={() => window.open(`${CHAIN_BROWSER_URL}/tx/${cancelHash}`)}
             className="cursor-pointer i-ic-baseline-launch ml-2 text-5"
           ></span>
-        </div>
-      )}
-      {!isEmptyTx && (
-        <div className="mb-2">
-          to<span className="ml-1 mr-2">:</span>
-          <span className="color-lightblue-500 cursor-pointer">{get(VAULT_MAP, transactionReceipt.to, short(transactionReceipt.to))}</span>
         </div>
       )}
       <div className="flex justify-between" style={{ display: 'none' }}>
@@ -248,50 +234,50 @@ const SnackBarCard = props => {
           <span>{numeral(toFixed(BigNumber.from(gasPrice), BigNumber.from(10).pow(9))).format('0,0')} Gwei</span>
         </span>
       </div>
-      <div className="flex justify-start items-center mb-2">
-        <span>
-          action<span className="ml-1 mr-2">:</span>
-          <span>{text}</span>
+      <div className="flex justify-start items-center">
+        <span className="flex flex-wrap">
+          <span className="color-stone-400">Action</span>
+          <span className="ml-1 mr-2">:</span>
+          {text}
         </span>
-        <span
-          onClick={() => setOpenDetails(!openDetails)}
-          className={classnames('cursor-pointer ml-2', {
-            'i-ic-sharp-keyboard-double-arrow-down': !openDetails,
-            'i-ic-sharp-keyboard-double-arrow-up': openDetails
-          })}
-        />
+        {!isEmpty(children) && (
+          <span
+            onClick={() => setOpenDetails(!openDetails)}
+            className={classnames('cursor-pointer ml-2 mb-2', {
+              'i-ic-sharp-keyboard-double-arrow-down': !openDetails,
+              'i-ic-sharp-keyboard-double-arrow-up': openDetails
+            })}
+          />
+        )}
       </div>
       {openDetails && children}
       {!isEmptyTx && (
         <div className="mb-2">
-          gas used<span className="ml-1 mr-2">:</span>
-          <span>{toFixed(BigNumber.from(parseInt(transactionReceipt.gasUsed, 16)), BigNumber.from(10).pow(9))} ETH</span>
+          <span className="color-stone-400">Gas Used</span>
+          <span className="ml-1 mr-2">:</span>
+          <span>
+            {toFixed(
+              BigNumber.from(transactionReceipt.gasUsed).mul(BigNumber.from(transactionReceipt.effectiveGasPrice)),
+              BigNumber.from(10).pow(18),
+              9
+            )}
+            &nbsp;ETH
+          </span>
         </div>
       )}
-      <div className="block my-2">
-        <Box display="flex" alignItems="center">
-          <Box width="100%" mr={1}>
-            {isEmptyTx ? (
+      {isEmptyTx && (
+        <div className="block my-4">
+          <Box display="flex" alignItems="center">
+            <Box width="100%">
               <LinearProgress
                 classes={{
                   barColorPrimary: '!bg-lightblue-500'
                 }}
               />
-            ) : (
-              <LinearProgress
-                classes={{
-                  barColorPrimary: '!bg-lightblue-500'
-                }}
-                variant={'determinate'}
-                value={100}
-              />
-            )}
+            </Box>
           </Box>
-          <Box minWidth={35} className="text-center">
-            <span>{isEmptyTx ? '1/2' : '2/2'}</span>
-          </Box>
-        </Box>
-      </div>
+        </div>
+      )}
       <div className="flex justify-center">
         {isEmptyTx && (
           <Tooltip placement="top" title={'The tx will be speed up in 1.5x gasprice'}>

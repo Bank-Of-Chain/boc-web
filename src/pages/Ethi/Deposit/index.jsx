@@ -270,8 +270,8 @@ const Deposit = props => {
           <SnackBarCard
             tx={tx}
             text={
-              <span>
-                mint <span className="color-lightblue-500">{toFixed(result, BigNumber.from(10).pow(18), 4)}</span> ETHi
+              <span className="mb-2">
+                deposit <span className="color-lightblue-500">{toFixed(result, BigNumber.from(10).pow(18), 4)} ETH</span> to Eth Vault
               </span>
             }
             hash={hash}

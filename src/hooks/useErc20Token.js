@@ -195,12 +195,12 @@ const useErc20Token = (tokenAddress, userProvider) => {
   }, [queryTotalSupply])
 
   useEffect(() => {
-    if (isEmpty(tokenContract)) return
+    if (isEmpty(tokenContract) || isEmpty(address)) return
     tokenContract.on('Transfer', handleTransfer)
     return () => {
       tokenContract.off('Transfer', handleTransfer)
     }
-  }, [tokenContract, handleTransfer])
+  }, [tokenContract, handleTransfer, address])
 
   return {
     balance,

@@ -12,6 +12,7 @@ import { useAtom } from 'jotai'
 import useVault from '@/hooks/useVault'
 import { useAsync } from 'react-async-hook'
 import useErc20Token from '@/hooks/useErc20Token'
+import useUserAddress from '@/hooks/useUserAddress'
 
 // === Services === //
 import { getAPY } from '@/services/api-service'
@@ -33,6 +34,7 @@ import { ETHI_VAULT, USDI_VAULT_FOR_ETH, ETHI_FOR_ETH, USDI_FOR_ETH, VAULT_BUFFE
 
 const Pools = props => {
   const { userProvider } = props
+  const address = useUserAddress(userProvider)
   const [openIndex, setOpenIndex] = useState(-1)
 
   const [penddingTx] = useAtom(penddingTxAtom)
@@ -245,20 +247,20 @@ const Pools = props => {
   )
 
   useEffect(() => {
-    if (isEmpty(ethiTokenContract)) return
+    if (isEmpty(address) || isEmpty(ethiTokenContract)) return
     ethiTokenContract.on('Transfer', queryEthiTotalAssets)
     return () => {
       ethiTokenContract.off('Transfer', queryEthiTotalAssets)
     }
-  }, [ethiTokenContract, queryEthiTotalAssets])
+  }, [ethiTokenContract, queryEthiTotalAssets, address])
 
   useEffect(() => {
-    if (isEmpty(usdiTokenContract)) return
+    if (isEmpty(address) || isEmpty(usdiTokenContract)) return
     usdiTokenContract.on('Transfer', queryUsdiTotalAssets)
     return () => {
       usdiTokenContract.off('Transfer', queryUsdiTotalAssets)
     }
-  }, [usdiTokenContract, queryUsdiTotalAssets])
+  }, [usdiTokenContract, queryUsdiTotalAssets, address])
 
   return (
     <div className="max-w-6xl color-white pt-13 px-20 pb-0 mt-24 mx-auto">

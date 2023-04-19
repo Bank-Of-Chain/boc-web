@@ -175,7 +175,7 @@ const ApproveArrayV3 = props => {
         <SnackBarCard
           tx={tx}
           text={
-            <span>
+            <span className="mb-2">
               approve
               <span className="mx-2 color-lightblue-500 cursor-pointer">{toFixed(amount, BigNumber.from(10).pow(decimals), isEthi ? 4 : 2)}</span>
               <img className="w-4 h-4 b-rd-2 v-text-bottom" src={`/images/${tokenAddress}.png`} alt={tokenAddress} />
@@ -276,26 +276,29 @@ const ApproveArrayV3 = props => {
         <SnackBarCard
           tx={tx}
           text={
-            <span>
-              swap into
-              <img className="w-4 h-4 b-rd-2 v-text-bottom ml-2" src={`/images/${receiveToken}.png`} alt={receiveToken} />
-            </span>
+            <>
+              <span className="flex items-center mr-2 mb-2">swap</span>
+              {compact(
+                map(tokens, (item, index) => {
+                  if (refArray[index].current.tokenAddress === receiveToken) return
+                  const value = refArray[index].current.value
+                  return (
+                    <span className="flex items-center mr-2 mb-2">
+                      <img className="w-4 h-4 b-rd-2" src={`/images/${item.address}.png`} alt={item.address} />
+                      <span className="ml-1">{toFixed(value, 1, isEthi ? 4 : 2)}</span>
+                    </span>
+                  )
+                })
+              )}
+              <span className="flex items-center mr-2 mb-2">
+                for <img className="w-4 h-4 b-rd-2 v-text-bottom ml-2" src={`/images/${receiveToken}.png`} alt={receiveToken} />
+                <span className="ml-1">{toFixed(receiveAmount, receiveTokenDecimals, isEthi ? 4 : 2)}</span>
+              </span>
+            </>
           }
           hash={hash}
           close={() => closeSnackbar(hash)}
-        >
-          <div className="flex flex-wrap mb-2">
-            {map(tokens, (item, index) => {
-              const value = refArray[index].current.value
-              return (
-                <div className="flex items-center mr-2">
-                  <img className="w-4 h-4 b-rd-2" src={`/images/${item.address}.png`} alt={item.address} />
-                  <span className="ml-1">{value}</span>
-                </div>
-              )
-            })}
-          </div>
-        </SnackBarCard>,
+        />,
         { persist: true, key: hash }
       )
       const isSuccess = await tx.wait().catch(error => {
