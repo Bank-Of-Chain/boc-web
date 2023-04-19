@@ -175,6 +175,7 @@ const SnackBarCard = props => {
         hidden: isIgnore
       })}
     >
+      <span onClick={closeHandle} className="i-ep-circle-close-filled absolute -right-2 -top-2 cursor-pointer text-6 hover:bg-red-400"></span>
       {isEmptyTx && (
         <div className="flex justify-center items-center font-bold b-b-1 b-color-stone-400 b-solid mb-4 mt-2 p-1 color-purple-700">
           <span className="i-ic-outline-schedule-send mr-1"></span>Pendding...
