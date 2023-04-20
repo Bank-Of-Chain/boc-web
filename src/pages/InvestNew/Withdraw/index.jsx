@@ -331,9 +331,14 @@ const Withdraw = props => {
           tx={tx}
           text={
             <>
-              <span className="flex items-center mr-2 mb-2">withdraw</span>
-              <span className="flex items-center mr-2 mb-2 color-lightblue-500">{toValue} USD</span>
-              <span className="flex items-center mr-2 mb-2">from Usd Vault</span>
+              <span className="flex items-center mr-1 mb-2">withdraw</span>
+              <span className="flex items-center mr-1 mb-2 color-lightblue-500">
+                {toFixed(resp._actuallyReceivedAmount, BigNumber.from(10).pow(usdiDecimals), 2)}
+              </span>
+              <span className="flex items-center mr-1 mb-2 color-lightblue-500">USD</span>
+              <span className="flex items-center mr-1 mb-2">from</span>
+              <span className="flex items-center mr-1 mb-2">Usd</span>
+              <span className="flex items-center mr-1 mb-2">Vault</span>
             </>
           }
           hash={hash}
