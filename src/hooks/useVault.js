@@ -34,6 +34,14 @@ const useVault = (VAULT_ADDRESS, VAULT_ABI, userProvider) => {
   const [trusteeFeeBps, setTrusteeFeeBps] = useState(BigNumber.from(0))
   const [isTotalAssetLoading, setIsTotalAssetLoading] = useState(false)
 
+  // ===
+  const [totalDebt, setTotalDebt] = useState(BigNumber.from(0))
+  const [isTotalDebtLoading, setIsTotalDebtLoading] = useState(false)
+  const [totalAssetsIncludeVaultBuffer, setTotalAssetsIncludeVaultBuffer] = useState(BigNumber.from(0))
+  const [isTotalAssetsIncludeVaultBufferLoading, setIsTotalAssetsIncludeVaultBufferLoading] = useState(false)
+  const [totalValueInVaultBuffer, setTotalValueInVaultBuffer] = useState(BigNumber.from(0))
+  const [isTotalValueInVaultBufferLoading, setIsTotalValueInVaultBufferLoading] = useState(false)
+
   const address = useUserAddress(userProvider)
 
   /**
@@ -191,6 +199,45 @@ const useVault = (VAULT_ADDRESS, VAULT_ABI, userProvider) => {
       .finally(() => setIsTrusteeFeeBpsLoading(false))
   }, [getVaultContract])
 
+  /**
+   *
+   */
+  const queryTotalDebt = useCallback(() => {
+    const vaultContract = getVaultContract()
+    if (isEmpty(vaultContract)) return
+    setIsTotalDebtLoading(true)
+    return vaultContract
+      .totalDebt()
+      .then(setTotalDebt)
+      .finally(() => setIsTotalDebtLoading(false))
+  }, [getVaultContract])
+
+  /**
+   *
+   */
+  const queryTotalAssetsIncludeVaultBuffer = useCallback(() => {
+    const vaultContract = getVaultContract()
+    if (isEmpty(vaultContract)) return
+    setIsTotalAssetsIncludeVaultBufferLoading(true)
+    return vaultContract
+      .totalAssetsIncludeVaultBuffer()
+      .then(setTotalAssetsIncludeVaultBuffer)
+      .finally(() => setIsTotalAssetsIncludeVaultBufferLoading(false))
+  }, [getVaultContract])
+
+  /**
+   *
+   */
+  const queryTotalValueInVaultBuffer = useCallback(() => {
+    const vaultContract = getVaultContract()
+    if (isEmpty(vaultContract)) return
+    setIsTotalValueInVaultBufferLoading(true)
+    return vaultContract
+      .totalValueInVaultBuffer()
+      .then(setTotalValueInVaultBuffer)
+      .finally(() => setIsTotalValueInVaultBufferLoading(false))
+  }, [getVaultContract])
+
   useEffect(() => {
     queryRedeemFeeBps()
   }, [queryRedeemFeeBps])
@@ -202,6 +249,18 @@ const useVault = (VAULT_ADDRESS, VAULT_ABI, userProvider) => {
   useEffect(() => {
     queryTotalAssets()
   }, [queryTotalAssets])
+
+  useEffect(() => {
+    queryTotalDebt()
+  }, [queryTotalDebt])
+
+  useEffect(() => {
+    queryTotalAssetsIncludeVaultBuffer()
+  }, [queryTotalAssetsIncludeVaultBuffer])
+
+  useEffect(() => {
+    queryTotalValueInVaultBuffer()
+  }, [queryTotalValueInVaultBuffer])
 
   useEffect(getPegTokenPrice, [getPegTokenPrice])
 
@@ -241,20 +300,29 @@ const useVault = (VAULT_ADDRESS, VAULT_ABI, userProvider) => {
     decimals,
     exchangeManager,
     pegTokenPrice,
-    getPegTokenPrice,
     minimumInvestmentAmount,
-    fetchUnderlyingUnitsPerShare,
     rebaseThreshold,
-    queryBaseInfo,
-    updateRebaseThreshold,
-    updateMinimumInvestmentAmount,
     underlyingUnitsPerShare,
     isRedeemFeeBpsLoading,
     isTrusteeFeeBpsLoading,
     redeemFeeBps,
     trusteeFeeBps,
+    totalDebt,
+    isTotalDebtLoading,
+    totalAssetsIncludeVaultBuffer,
+    isTotalAssetsIncludeVaultBufferLoading,
+    totalValueInVaultBuffer,
+    isTotalValueInVaultBufferLoading,
     // === actions === //
-    queryTotalAssets
+    queryTotalAssets,
+    getPegTokenPrice,
+    fetchUnderlyingUnitsPerShare,
+    updateRebaseThreshold,
+    updateMinimumInvestmentAmount,
+    queryBaseInfo,
+    queryTotalDebt,
+    queryTotalAssetsIncludeVaultBuffer,
+    queryTotalValueInVaultBuffer
   }
 }
 
