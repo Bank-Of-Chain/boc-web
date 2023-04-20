@@ -41,7 +41,7 @@ const EthiInfo = () => {
           </a>
         </p>
       </GridItem>
-      <GridItem xs={6} sm={12} md={6} className="pl-12" style={{ borderLeft: '1px solid #737373' }}>
+      <GridItem xs={6} sm={12} md={6} className="px-12" style={{ borderLeft: '1px solid #737373' }}>
         <p className="text-neutral-500">
           Vault is connected with a large number of high-quality strategies to provide stable returns. Different strategies bring different returns
           under various complex market conditions. BoC protocol will optimally allocate funds under different market conditions according to the

@@ -713,7 +713,7 @@ const Withdraw = props => {
           </GridItem>
         </GridContainer>
       </GridItem>
-      <GridItem xs={6} sm={12} md={6} lg={6} className="pl-12" style={{ borderLeft: '1px solid #737373' }}>
+      <GridItem xs={6} sm={12} md={6} lg={6} className="px-12" style={{ borderLeft: '1px solid #737373' }}>
         <p>To receive:</p>
         {renderEstimate()}
         <p className="color-neutral-500">

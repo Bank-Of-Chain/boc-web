@@ -3,19 +3,11 @@ import React, { useState } from 'react'
 // === Components === //
 import Tabs from '@material-ui/core/Tabs'
 import Tab from '@material-ui/core/Tab'
-import TabPanel from '@/components/TabPanel'
 import GridContainer from '@/components/Grid/GridContainer'
 import GridItem from '@/components/Grid/GridItem'
 
 // === Utils === //
 import { map } from 'lodash'
-
-function a11yProps(index) {
-  return {
-    id: `full-width-tab-${index}`,
-    'aria-controls': `full-width-tabpanel-${index}`
-  }
-}
 
 const CustomTabs = props => {
   const { tabs, contents, defaultKey = 0 } = props
@@ -33,21 +25,22 @@ const CustomTabs = props => {
           onChange={handleTabChange}
           TabIndicatorProps={{
             style: {
+              minWidth: '160px',
               backgroundColor: '#d946ef'
             }
           }}
         >
           {map(tabs, (item, index) => {
-            return <Tab key={index} label={item} {...a11yProps(index)} />
+            return <Tab key={index} label={item} />
           })}
         </Tabs>
       </GridItem>
       <GridItem xs={12} sm={12} md={12}>
         {map(contents, (item, index) => {
           return (
-            <TabPanel key={index} value={value} index={index}>
+            <div key={index} className={value === index ? '' : 'hidden'}>
               {item}
-            </TabPanel>
+            </div>
           )
         })}
       </GridItem>

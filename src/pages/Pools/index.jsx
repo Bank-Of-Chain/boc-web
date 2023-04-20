@@ -311,11 +311,9 @@ const Pools = props => {
                     </GridItem>
                   </GridContainer>
                 </GridItem>
-                {openIndex === index && (
-                  <GridItem xs={12} sm={12} md={12}>
-                    {txComponents}
-                  </GridItem>
-                )}
+                <GridItem xs={12} sm={12} md={12} className={openIndex === index ? '' : 'hidden'}>
+                  {txComponents}
+                </GridItem>
               </GridContainer>
             )
           })}
