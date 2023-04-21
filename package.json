@@ -91,7 +91,7 @@
   "scripts": {
     "apollo": "node ./configs/apollo.js",
     "mustache": "mustache ./configs/address.json ./configs/config.template.js > ./src/config/config.js",
-    "start": "vite",
+    "start": "vite --open",
     "build": "vite build",
     "preview": "vite preview",
     "test": "vitest",
