@@ -481,7 +481,7 @@ const Deposit = props => {
             </GridItem>
           </GridContainer>
         </GridItem>
-        <GridItem xs={6} sm={12} md={6} lg={6} className="pl-12" style={{ borderLeft: '1px solid #737373' }}>
+        <GridItem xs={6} sm={12} md={6} lg={6} className="px-12" style={{ borderLeft: '1px solid #737373' }}>
           <p className="color-neutral-500">performance fee: {toFixed(trusteeFeeBps, 100, 2)}%</p>
           <p className="color-neutral-500">withdraw fee: {toFixed(redeemFeeBps, 100, 2)}%</p>
           <p className="color-neutral-500">

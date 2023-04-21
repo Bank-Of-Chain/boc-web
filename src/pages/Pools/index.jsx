@@ -75,16 +75,21 @@ const Pools = props => {
   const provider = useMemo(() => new providers.StaticJsonRpcProvider(RPC_URL[1], 1), [RPC_URL])
   // totalAssets
   const {
-    totalAsset: ethiVaultTotalAsset,
+    totalAssetsIncludeVaultBuffer: ethiTotalAssetsIncludeVaultBuffer,
+    queryTotalAssetsIncludeVaultBuffer: queryEthiTotalAssetsIncludeVaultBuffer,
     isTotalAssetLoading: isEthiTotalAssetLoading,
     pegTokenPrice: ethiPrice,
-    queryTotalAssets: queryEthiTotalAssets
+    totalValueInVaultBuffer: ethiTotalValueInVaultBuffer,
+    queryTotalValueInVaultBuffer: queryEthiTotalValueInVaultBuffer
   } = useVault(ETHI_VAULT, VAULT_ABI, userProvider || provider)
+
   const {
-    totalAsset: usdiVaultTotalAsset,
+    totalAssetsIncludeVaultBuffer: usdiTotalAssetsIncludeVaultBuffer,
+    queryTotalAssetsIncludeVaultBuffer: queryUsdiTotalAssetsIncludeVaultBuffer,
     isTotalAssetLoading: isUsdiTotalAssetLoading,
     pegTokenPrice: usdiPrice,
-    queryTotalAssets: queryUsdiTotalAssets
+    totalValueInVaultBuffer: usdiTotalValueInVaultBuffer,
+    queryTotalValueInVaultBuffer: queryUsdiTotalValueInVaultBuffer
   } = useVault(USDI_VAULT_FOR_ETH, VAULT_ABI, userProvider || provider)
 
   const { result: usdiApy, loading: usdiApyLoading } = useAsync(() =>
@@ -97,6 +102,22 @@ const Pools = props => {
       .catch(() => 0)
       .then((data = 0) => 1 * parseFloat(data).toFixed(2))
   )
+
+  const ethiPegTokenTicketPrice = useMemo(() => {
+    const priceDecimals = BigNumber.from(10).pow(18)
+    if (vaultBufferEthiTotalSupply.isZero()) {
+      return priceDecimals
+    }
+    return ethiTotalValueInVaultBuffer.mul(priceDecimals).div(vaultBufferEthiTotalSupply)
+  }, [ethiTotalValueInVaultBuffer, vaultBufferEthiTotalSupply])
+
+  const usdiPegTokenTicketPrice = useMemo(() => {
+    const priceDecimals = BigNumber.from(10).pow(18)
+    if (vaultBufferUsdiTotalSupply.isZero()) {
+      return priceDecimals
+    }
+    return usdiTotalValueInVaultBuffer.mul(priceDecimals).div(vaultBufferUsdiTotalSupply)
+  }, [usdiTotalValueInVaultBuffer, vaultBufferUsdiTotalSupply])
 
   const vaultArray = useMemo(() => {
     const style = {
@@ -130,7 +151,7 @@ const Pools = props => {
         ),
         tvl: (
           <Loading className="vertical-middle" loading={isUsdiTotalAssetLoading}>
-            {numeral(toFixed(usdiVaultTotalAsset.add(vaultBufferUsdiTotalSupply), BigNumber.from(10).pow(18), 2)).format('0,0.[00]')}
+            {numeral(toFixed(usdiTotalAssetsIncludeVaultBuffer, BigNumber.from(10).pow(18), 2)).format('0,0.[00]')}
             <span className="ml-1" style={style}>
               USD
             </span>
@@ -145,7 +166,9 @@ const Pools = props => {
               <span>
                 <span className="mx-1">+</span>
                 <Loading className="vertical-middle" loading={vaultBufferUsdiBalanceLoading}>
-                  {numeral(toFixed(vaultBufferUsdiBalance, BigNumber.from(10).pow(vaultBufferUsdiDecimals), 2)).format('0,0.[00]')}
+                  {numeral(
+                    toFixed(vaultBufferUsdiBalance.mul(usdiPegTokenTicketPrice), BigNumber.from(10).pow(vaultBufferUsdiDecimals + ethiDecimals), 2)
+                  ).format('0,0.[00]')}
                 </Loading>
                 <span className="color-fuchsia-700 mx-1">(pending)</span>
               </span>
@@ -160,7 +183,8 @@ const Pools = props => {
             reload={() => {
               usdiQueryBalance()
               vaultBufferUsdiQueryBalance()
-              queryUsdiTotalAssets()
+              queryUsdiTotalValueInVaultBuffer()
+              queryUsdiTotalAssetsIncludeVaultBuffer()
             }}
           />
         )
@@ -175,7 +199,7 @@ const Pools = props => {
         ),
         tvl: (
           <Loading className="vertical-middle" loading={isEthiTotalAssetLoading}>
-            {numeral(toFixed(ethiVaultTotalAsset.add(vaultBufferEthiTotalSupply), BigNumber.from(10).pow(18), 4)).format('0,0.[0000]')}
+            {numeral(toFixed(ethiTotalAssetsIncludeVaultBuffer, BigNumber.from(10).pow(18), 4)).format('0,0.[0000]')}
             <span className="ml-1" style={style}>
               ETH
             </span>
@@ -190,7 +214,9 @@ const Pools = props => {
               <span>
                 <span className="mx-1">+</span>
                 <Loading className="vertical-middle" loading={vaultBufferEthiBalanceLoading}>
-                  {numeral(toFixed(vaultBufferEthiBalance, BigNumber.from(10).pow(vaultBufferEthiDecimals), 4)).format('0,0.[0000]')}
+                  {numeral(
+                    toFixed(vaultBufferEthiBalance.mul(ethiPegTokenTicketPrice), BigNumber.from(10).pow(vaultBufferEthiDecimals + ethiDecimals), 4)
+                  ).format('0,0.[0000]')}
                 </Loading>
                 <span className="color-fuchsia-700 mx-1">(pending)</span>
               </span>
@@ -205,7 +231,8 @@ const Pools = props => {
             reload={() => {
               ethiQueryBalance()
               vaultBufferEthiQueryBalance()
-              queryEthiTotalAssets()
+              queryEthiTotalValueInVaultBuffer()
+              queryEthiTotalAssetsIncludeVaultBuffer()
             }}
           />
         )
@@ -216,8 +243,6 @@ const Pools = props => {
     usdiApyLoading,
     ethiApy,
     ethiApyLoading,
-    ethiVaultTotalAsset,
-    usdiVaultTotalAsset,
     ethiBalance,
     ethiBalanceLoading,
     usdiBalance,
@@ -233,7 +258,13 @@ const Pools = props => {
     ethiPrice,
     usdiPrice,
     vaultBufferEthiTotalSupply,
-    vaultBufferUsdiTotalSupply
+    vaultBufferUsdiTotalSupply,
+    ethiTotalAssetsIncludeVaultBuffer,
+    usdiTotalAssetsIncludeVaultBuffer,
+    queryEthiTotalAssetsIncludeVaultBuffer,
+    queryUsdiTotalAssetsIncludeVaultBuffer,
+    ethiPegTokenTicketPrice,
+    usdiPegTokenTicketPrice
   ])
 
   /**
@@ -248,19 +279,19 @@ const Pools = props => {
 
   useEffect(() => {
     if (isEmpty(address) || isEmpty(ethiTokenContract)) return
-    ethiTokenContract.on('Transfer', queryEthiTotalAssets)
+    ethiTokenContract.on('Transfer', queryEthiTotalAssetsIncludeVaultBuffer)
     return () => {
-      ethiTokenContract.off('Transfer', queryEthiTotalAssets)
+      ethiTokenContract.off('Transfer', queryEthiTotalAssetsIncludeVaultBuffer)
     }
-  }, [ethiTokenContract, queryEthiTotalAssets, address])
+  }, [ethiTokenContract, queryEthiTotalAssetsIncludeVaultBuffer, address])
 
   useEffect(() => {
     if (isEmpty(address) || isEmpty(usdiTokenContract)) return
-    usdiTokenContract.on('Transfer', queryUsdiTotalAssets)
+    usdiTokenContract.on('Transfer', queryUsdiTotalAssetsIncludeVaultBuffer)
     return () => {
-      usdiTokenContract.off('Transfer', queryUsdiTotalAssets)
+      usdiTokenContract.off('Transfer', queryUsdiTotalAssetsIncludeVaultBuffer)
     }
-  }, [usdiTokenContract, queryUsdiTotalAssets, address])
+  }, [usdiTokenContract, queryUsdiTotalAssetsIncludeVaultBuffer, address])
 
   return (
     <div className="max-w-6xl color-white pt-13 px-20 pb-0 mt-24 mx-auto">
@@ -311,11 +342,9 @@ const Pools = props => {
                     </GridItem>
                   </GridContainer>
                 </GridItem>
-                {openIndex === index && (
-                  <GridItem xs={12} sm={12} md={12}>
-                    {txComponents}
-                  </GridItem>
-                )}
+                <GridItem xs={12} sm={12} md={12} className={openIndex === index ? '' : 'hidden'}>
+                  {txComponents}
+                </GridItem>
               </GridContainer>
             )
           })}
