@@ -33,7 +33,7 @@ const useStyles = makeStyles(styles)
 const useSmStyles = makeStyles(smStyle)
 
 const notice =
-  'The team is currently busy preparing for the release of BOC V2.0. The operations for the current online version 1.0 are suspended,(including harvesting and rebalancing.) Hence, the BoC APY will continuously decrease until it reaches 0%, as expected. The underlying strategies of BOC V1.0 are still operating normally, and the actual yield will be reflected once BOC V2.0 is released. The totally new version of BOC will be brought to you as soon as possible. If you have any questions or suggestions, please contact us via contact@bankofchain.io'
+  'The team is currently busy preparing for the release of BoC V2.0. The operations for the current online version 1.0 are suspended,(including harvesting and rebalancing.) Hence, the BoC APY will continuously decrease until it reaches 0%, as expected. The underlying strategies of BoC V1.0 are still operating normally, and the actual yield will be reflected once BoC V2.0 is released. The totally new version of BoC will be brought to you as soon as possible. If you have any questions or suggestions, please contact us via contact@bankofchain.io'
 
 export default function LendingSectionV2() {
   const isLayoutSm = useMediaQuery('(max-width: 960px)')
