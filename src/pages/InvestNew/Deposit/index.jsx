@@ -14,7 +14,7 @@ import isEmpty from 'lodash/isEmpty'
 import isNumber from 'lodash/isNumber'
 import compact from 'lodash/compact'
 import filter from 'lodash/filter'
-import { isAd, isEs, isRp, isDistributing, errorTextOutput, isLessThanMinValue } from '@/helpers/error-handler'
+import { isAd, isEs, isRp, isDistributing, errorTextOutput, isLessThanMinValue, isILTM } from '@/helpers/error-handler'
 
 // === Components === //
 import Step from '@material-ui/core/Step'
@@ -442,6 +442,8 @@ const Deposit = props => {
         tip = `Deposit Amount must be greater than ${toFixed(minimumInvestmentAmount, BN_18, 2)}USD!`
       } else if (isEqual(ACTION_REJECTED, error.code)) {
         tip = error.reason
+      } else if (isILTM(errorMsg)) {
+        tip = 'Investment less than minimum'
       }
       if (tip) {
         dispatch(
@@ -611,6 +613,8 @@ const Deposit = props => {
           tip = 'Vault is in distributing, please try again later!'
         } else if (isLessThanMinValue(errorMsg)) {
           tip = `Deposit Amount must be greater than ${toFixed(minimumInvestmentAmount, BN_18, 2)}USD!`
+        } else if (isILTM(errorMsg)) {
+          tip = 'Investment less than minimum'
         }
         if (tip) {
           dispatch(
@@ -640,7 +644,7 @@ const Deposit = props => {
   useEffect(() => {
     estimateMint()
     return () => estimateMint.cancel()
-  }, [usdcValue, usdtValue, daiValue, estimateMint])
+  }, [estimateMint])
 
   useEffect(() => {
     if (isEmpty(VAULT_ABI) || isEmpty(userProvider) || isEmpty(VAULT_ABI)) return

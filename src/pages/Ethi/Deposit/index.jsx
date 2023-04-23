@@ -25,7 +25,7 @@ import Button from '@/components/CustomButtons/Button'
 import SnackBarCard from '@/components/SnackBarCard'
 
 // === Utils === //
-import { isAd, isEs, isRp, isDistributing, errorTextOutput, isLessThanMinValue } from '@/helpers/error-handler'
+import { isAd, isEs, isRp, isDistributing, errorTextOutput, isLessThanMinValue, isILTM } from '@/helpers/error-handler'
 import { warmDialog } from '@/reducers/meta-reducer'
 import { toFixed, formatBalance } from '@/helpers/number-format'
 import { isValid as isValidNumber } from '@/helpers/number'
@@ -223,6 +223,8 @@ const Deposit = props => {
         tip = `Deposit Amount must be greater than ${toFixed(minimumInvestmentAmount, BN_18, 2)}ETH!`
       } else if (isEqual(ACTION_REJECTED, error.code)) {
         tip = error.reason
+      } else if (isILTM(errorMsg)) {
+        tip = 'Investment less than minimum'
       }
       if (tip) {
         dispatch(
@@ -372,6 +374,8 @@ const Deposit = props => {
           tip = 'Vault is in distributing, please try again later!'
         } else if (isLessThanMinValue(errorMsg)) {
           tip = `Deposit Amount must be greater than ${toFixed(minimumInvestmentAmount, BN_18, 2)}ETH!`
+        } else if (isILTM(errorMsg)) {
+          tip = 'Investment less than minimum'
         } else {
           tip = errorMsg
         }

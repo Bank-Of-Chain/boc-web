@@ -125,3 +125,12 @@ export const isTransferNotEnough = (errorMsg = '') => {
 export const isRLTM = (errorMsg = '') => {
   return errorMsg.includes('RLTM')
 }
+
+/**
+ * //Investment less than minimum
+ * @param {*} errorMsg
+ * @returns
+ */
+export const isILTM = (errorMsg = '') => {
+  return errorMsg.includes('ILTM')
+}
