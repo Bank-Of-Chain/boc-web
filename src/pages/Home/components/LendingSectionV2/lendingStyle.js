@@ -135,7 +135,7 @@ const lendingSectionStyle = {
     borderRadius: '1rem'
   },
   wrapper: {
-    padding: '3.75rem 2rem'
+    padding: '3.75rem 2rem 1rem'
   },
   headerWrapper: {
     padding: '3.875rem 3.75rem 0'
