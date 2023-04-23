@@ -9,6 +9,8 @@ import CircularProgress from '@material-ui/core/CircularProgress'
 import useMediaQuery from '@material-ui/core/useMediaQuery'
 import Tooltip from '@material-ui/core/Tooltip'
 import IOSSwitch from '@/components/Switch/IOSSwitch'
+import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown'
+import ArrowDropUpIcon from '@material-ui/icons/ArrowDropUp'
 
 // === Utils === //
 import map from 'lodash/map'
@@ -30,6 +32,9 @@ import styles, { smStyle } from './lendingStyle'
 const useStyles = makeStyles(styles)
 const useSmStyles = makeStyles(smStyle)
 
+const notice =
+  'The team is currently busy preparing for the release of BoC V2.0. The operations for the current online version 1.0 are suspended,(including harvesting and rebalancing.) Hence, the BoC APY will continuously decrease until it reaches 0%, as expected. The underlying strategies of BoC V1.0 are still operating normally, and the actual yield will be reflected once BoC V2.0 is released. The totally new version of BoC will be brought to you as soon as possible. If you have any questions or suggestions, please contact us via contact@bankofchain.io'
+
 export default function LendingSectionV2() {
   const isLayoutSm = useMediaQuery('(max-width: 960px)')
   const smClasses = useSmStyles()
@@ -37,6 +42,8 @@ export default function LendingSectionV2() {
 
   const [isEthiEnable, setIsEthiEnable] = useState(true)
   const [isUsdiEnable, setIsUsdiEnable] = useState(true)
+
+  const [isNoticeOpen, setIsNoticeOpen] = useState(false)
 
   const { loading, usdi, ethi } = useApyFetch('1')
 
@@ -218,6 +225,36 @@ export default function LendingSectionV2() {
                   })
                 )}
               </GridContainer>
+            </GridItem>
+            <GridItem md={12} xs={12} sm={12}>
+              <p style={{ color: '#94a3b8', background: '#1F2023', padding: '1rem', borderRadius: '1rem', margin: '1rem' }}>
+                <svg
+                  style={{ verticalAlign: 'middle' }}
+                  viewBox="64 64 896 896"
+                  focusable="false"
+                  data-icon="sound"
+                  width="1em"
+                  height="1em"
+                  fill="currentColor"
+                  aria-hidden="true"
+                >
+                  <path d="M625.9 115c-5.9 0-11.9 1.6-17.4 5.3L254 352H90c-8.8 0-16 7.2-16 16v288c0 8.8 7.2 16 16 16h164l354.5 231.7c5.5 3.6 11.6 5.3 17.4 5.3 16.7 0 32.1-13.3 32.1-32.1V147.1c0-18.8-15.4-32.1-32.1-32.1zM586 803L293.4 611.7l-18-11.7H146V424h129.4l17.9-11.7L586 221v582zm348-327H806c-8.8 0-16 7.2-16 16v40c0 8.8 7.2 16 16 16h128c8.8 0 16-7.2 16-16v-40c0-8.8-7.2-16-16-16zm-41.9 261.8l-110.3-63.7a15.9 15.9 0 00-21.7 5.9l-19.9 34.5c-4.4 7.6-1.8 17.4 5.8 21.8L856.3 800a15.9 15.9 0 0021.7-5.9l19.9-34.5c4.4-7.6 1.7-17.4-5.8-21.8zM760 344a15.9 15.9 0 0021.7 5.9L892 286.2c7.6-4.4 10.2-14.2 5.8-21.8L878 230a15.9 15.9 0 00-21.7-5.9L746 287.8a15.99 15.99 0 00-5.8 21.8L760 344z"></path>
+                </svg>
+                &nbsp;
+                {isNoticeOpen ? (
+                  <span>
+                    <span>Please be well noticed !</span>
+                    <br></br>
+                    {notice}
+                    <ArrowDropUpIcon style={{ float: 'right', clear: 'both', cursor: 'pointer' }} onClick={() => setIsNoticeOpen(false)} />
+                  </span>
+                ) : (
+                  <span>
+                    Please be well noticed !
+                    <ArrowDropDownIcon style={{ float: 'right', clear: 'both', cursor: 'pointer' }} onClick={() => setIsNoticeOpen(true)} />
+                  </span>
+                )}
+              </p>
             </GridItem>
           </GridContainer>
         </div>
