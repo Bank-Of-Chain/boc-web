@@ -18,6 +18,9 @@ const componentsStyle = () => ({
     borderBottomRightRadius: '1.25rem',
     padding: '1.25rem'
   },
+  input: {
+    height: '2.75rem'
+  },
   estimateText: {
     margin: '0.25rem 0',
     display: 'flex',

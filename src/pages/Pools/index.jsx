@@ -160,11 +160,12 @@ const Pools = props => {
         depositAmount: (
           <span>
             <Loading className="vertical-middle" loading={usdiBalanceLoading}>
-              {numeral(toFixed(usdiBalance.mul(usdiPrice), BigNumber.from(10).pow(36), 2)).format('0,0.[00]')}
+              {(!usdiBalance.mul(usdiPrice).isZero() || vaultBufferUsdiBalance.isZero()) &&
+                numeral(toFixed(usdiBalance.mul(usdiPrice), BigNumber.from(10).pow(36), 2)).format('0,0.[00]')}
             </Loading>
             {vaultBufferUsdiBalance.gt(0) && (
               <span>
-                <span className="mx-1">+</span>
+                {(!usdiBalance.mul(usdiPrice).isZero() || vaultBufferUsdiBalance.isZero()) && <span className="mx-1">+</span>}
                 <Loading className="vertical-middle" loading={vaultBufferUsdiBalanceLoading}>
                   {numeral(
                     toFixed(vaultBufferUsdiBalance.mul(usdiPegTokenTicketPrice), BigNumber.from(10).pow(vaultBufferUsdiDecimals + ethiDecimals), 2)
@@ -208,11 +209,12 @@ const Pools = props => {
         depositAmount: (
           <span>
             <Loading className="vertical-middle" loading={ethiBalanceLoading}>
-              {numeral(toFixed(ethiBalance.mul(ethiPrice), BigNumber.from(10).pow(36), 4)).format('0,0.[0000]')}
+              {(!ethiBalance.mul(ethiPrice).isZero() || vaultBufferEthiBalance.isZero()) &&
+                numeral(toFixed(ethiBalance.mul(ethiPrice), BigNumber.from(10).pow(36), 4)).format('0,0.[0000]')}
             </Loading>
             {vaultBufferEthiBalance.gt(0) && (
               <span>
-                <span className="mx-1">+</span>
+                {(!ethiBalance.mul(ethiPrice).isZero() || vaultBufferEthiBalance.isZero()) && <span className="mx-1">+</span>}
                 <Loading className="vertical-middle" loading={vaultBufferEthiBalanceLoading}>
                   {numeral(
                     toFixed(vaultBufferEthiBalance.mul(ethiPegTokenTicketPrice), BigNumber.from(10).pow(vaultBufferEthiDecimals + ethiDecimals), 4)

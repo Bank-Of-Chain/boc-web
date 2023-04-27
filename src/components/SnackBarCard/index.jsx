@@ -171,7 +171,7 @@ const SnackBarCard = props => {
 
   return (
     <div
-      className={classnames('w-72 p-4 b-rd-1 shadow-xl shadow-dark-500 bg-truegray-900', {
+      className={classnames('w-72 p-4 b-rd-4 shadow-xl shadow-dark-500 bg-truegray-900', {
         hidden: isIgnore
       })}
     >

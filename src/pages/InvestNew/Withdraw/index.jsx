@@ -691,7 +691,7 @@ const Withdraw = props => {
           </GridItem>
         </GridContainer>
         <GridContainer>
-          <GridItem xs={12} sm={12} md={12} lg={12} className="pr-4">
+          <GridItem xs={12} sm={12} md={12} lg={12} className="pr-4 pt-8">
             <Button
               disabled={!isLogin || !isEmpty(penddingTx) || (isLogin && (isUndefined(isValidToValueFlag) || !isValidToValueFlag))}
               color="colorful"

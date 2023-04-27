@@ -56,7 +56,10 @@ import { USDT_ADDRESS, USDC_ADDRESS, DAI_ADDRESS, IERC20_ABI, MULTIPLE_OF_GAS, M
 import { VAULT_ABI_V2_0 as VAULT_ABI } from '@/constants/abi'
 
 // === Utils === //
+import get from 'lodash/get'
+import find from 'lodash/find'
 import isEqual from 'lodash/isEqual'
+import { short } from '@/helpers/string-utils'
 import { isValid as isValidNumber } from '@/helpers/number'
 
 // === Styles === //
@@ -73,20 +76,27 @@ const TOKEN = {
 const steps = [
   <>
     <div>Step1:</div>
-    <div>Deposit</div>
+    <div>Approve</div>
   </>,
-  'Pending USD',
   <>
     <div>Step2:</div>
-    <div>Allocation</div>
+    <div>Deposit</div>
   </>,
-  'Get USDi'
+  <>
+    <div>Step3:</div>
+    <div>Rebalance</div>
+  </>,
+  <>
+    <div>Step4:</div>
+    <div>Get USDi</div>
+  </>
 ]
 
 const Deposit = props => {
   const { reload } = props
   const classes = useStyles()
   const dispatch = useDispatch()
+  const [activeStep, setActiveStep] = useState(0)
   const [usdtValue, setUsdtValue] = useState('')
   const [usdcValue, setUsdcValue] = useState('')
   const [daiValue, setDaiValue] = useState('')
@@ -108,6 +118,12 @@ const Deposit = props => {
   const { minimumInvestmentAmount, redeemFeeBps, trusteeFeeBps } = useVault(VAULT_ADDRESS, VAULT_ABI, userProvider || provider)
 
   const address = useUserAddress(userProvider)
+
+  const [allowances, setAllowances] = useState([])
+
+  const isAllApproveEnough = useMemo(() => {
+    return every(allowances, i => i.enough === true)
+  }, [allowances])
 
   const {
     balance: usdtBalance,
@@ -245,7 +261,38 @@ const Deposit = props => {
   /**
    *
    */
-  const deposit = useCallback(async () => {
+  const isAllowanceEnough = useCallback(async () => {
+    const [nextTokens, nextAmounts] = getTokenAndAmonut()
+    const signer = userProvider.getSigner()
+    if (isEmpty(nextTokens)) {
+      setAllowances([])
+      return
+    }
+    // check approve values if not enough, must return
+    const allowanceCheckers = await Promise.all(
+      map(nextTokens, async (item, index) => {
+        // console.log('nextTokens[item]=', nextTokens, item, nextTokens[item])
+        const contract = new ethers.Contract(nextTokens[index], IERC20_ABI, userProvider)
+        const contractWithUser = contract.connect(signer)
+        // get allow amount
+        const allowanceAmount = await contractWithUser.allowance(address, VAULT_ADDRESS)
+        return allowanceAmount.gte(nextAmounts[index])
+      })
+    )
+    setAllowances(
+      map(nextTokens, (token, index) => {
+        return {
+          address: token,
+          enough: allowanceCheckers[index]
+        }
+      })
+    )
+  }, [getTokenAndAmonut, userProvider])
+
+  /**
+   *
+   */
+  const approveAll = useCallback(async () => {
     if (!isEmpty(penddingTx)) {
       dispatch(
         warmDialog({
@@ -398,30 +445,47 @@ const Deposit = props => {
             })
         }
       }
+      isAllowanceEnough()
     }
+  }, [getTokenAndAmonut, userProvider, isAllowanceEnough])
 
-    // check approve values if not enough, must return
-    const allowanceCheckers = await Promise.all(
-      map(nextTokens, async (item, index) => {
-        // console.log('nextTokens[item]=', nextTokens, item, nextTokens[item])
-        const contract = new ethers.Contract(nextTokens[index], IERC20_ABI, userProvider)
-        const contractWithUser = contract.connect(signer)
-        // get allow amount
-        const allowanceAmount = await contractWithUser.allowance(address, VAULT_ADDRESS)
-        return allowanceAmount.gte(nextAmounts[index])
-      })
-    )
-    if (some(allowanceCheckers, i => i === false)) {
+  /**
+   *
+   */
+  const deposit = useCallback(async () => {
+    if (!isEmpty(penddingTx)) {
       dispatch(
         warmDialog({
           open: true,
           type: 'warning',
-          message: 'Insufficient approved amounts!'
+          message: 'An existing transaction is executing. Please try again later!'
         })
       )
-      setIsLoading(false)
       return
     }
+    clearTimeout(loadingTimer.current)
+    // step1: valid three tokens
+    const isValidUsdtValue = isValidValue(TOKEN.USDT)
+    const isValidUsdcValue = isValidValue(TOKEN.USDC)
+    const isValidDaiValue = isValidValue(TOKEN.DAI)
+    if (
+      (tokenSelect.includes(USDT_ADDRESS) && isValidUsdtValue === false) ||
+      (tokenSelect.includes(USDC_ADDRESS) && isValidUsdcValue === false) ||
+      (tokenSelect.includes(DAI_ADDRESS) && isValidDaiValue === false)
+    ) {
+      return dispatch(
+        warmDialog({
+          open: true,
+          type: 'warning',
+          message: 'Please enter the correct value'
+        })
+      )
+    }
+    // step2: convert precision, approve three tokens
+    setIsLoading(true)
+    const [nextTokens, nextAmounts] = getTokenAndAmonut()
+    console.log('nextTokens=', nextTokens, nextAmounts)
+    const signer = userProvider.getSigner()
 
     // step3: deposit
     const vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, userProvider)
@@ -641,6 +705,21 @@ const Deposit = props => {
     reload()
   }, [reload, queryUsdtBalance, queryUsdcBalance, queryDaiBalance, queryVaultBufferBalance])
 
+  /**
+   *
+   */
+  const approveTextRender = useCallback(() => {
+    const firstNotEnoughAddress = get(find(allowances, { enough: false }), 'address', '')
+    if (isEmpty(firstNotEnoughAddress)) return 'Approve'
+
+    return (
+      <span className="flex items-center">
+        Approve
+        <img className="w-6 b-r-2 ml-2" src={`./images/${firstNotEnoughAddress}.png`} />
+      </span>
+    )
+  }, [allowances, formConfig])
+
   useEffect(() => {
     estimateMint()
     return () => estimateMint.cancel()
@@ -655,12 +734,24 @@ const Deposit = props => {
     }
   }, [VAULT_ADDRESS, VAULT_ABI, userProvider, handleMint])
 
+  useEffect(() => {
+    isAllowanceEnough()
+  }, [isAllowanceEnough])
+
+  useEffect(() => {
+    if (isAllApproveEnough) {
+      setActiveStep(1)
+    } else {
+      setActiveStep(0)
+    }
+  }, [isAllApproveEnough])
+
   const isLogin = !isEmpty(userProvider)
 
   return (
     <>
       <GridContainer>
-        <GridItem xs={6} sm={12} md={6} lg={6} className="p-8 pb-0">
+        <GridItem xs={6} sm={12} md={6} lg={6} className="p-8 pb-0 pt-4">
           <GridContainer>
             {map(formConfig, item => {
               if (tokenSelect.includes(item.address)) {
@@ -696,10 +787,11 @@ const Deposit = props => {
                   })
                 }
                 return (
-                  <GridItem key={item.name} xs={12} sm={12} md={12} lg={12} className="pb-4">
+                  <GridItem key={item.name} xs={12} sm={12} md={12} lg={12} className="pb-2">
                     <GridContainer>
-                      <GridItem xs={4} sm={4} md={4} lg={4}>
+                      <GridItem xs={4} sm={4} md={4} lg={4} className="!mt-2">
                         <SimpleSelect
+                          className="!h-full"
                           options={selectOptions}
                           value={'expand'}
                           onChange={v => {
@@ -714,28 +806,32 @@ const Deposit = props => {
                         />
                       </GridItem>
                       <GridItem xs={8} sm={8} md={8} lg={8} className="px-4">
-                        <CustomTextField
-                          classes={{ root: classes.input }}
-                          value={item.value}
-                          onChange={event => handleInputChange(event, item)}
-                          placeholder="deposit amount"
-                          maxEndAdornment
-                          onMaxClick={() => handleMaxClick(item)}
-                          error={!isUndefined(item.isValid) && !item.isValid}
-                        />
-                      </GridItem>
-                      <GridItem xs={12} sm={12} md={12} lg={12}>
-                        <div
-                          className="color-neutral-500 mt-2"
-                          title={formatBalance(item.balance, item.decimals, {
-                            showAll: true
-                          })}
-                        >
-                          Balance:&nbsp;&nbsp;
-                          <Loading className="vertical-middle" loading={item.loading}>
-                            {formatBalance(item.balance, item.decimals)}
-                          </Loading>
-                        </div>
+                        <GridContainer>
+                          <GridItem xs={12} sm={12} md={12} lg={12}>
+                            <div
+                              className="color-neutral-500 text-3 float-right mr-4"
+                              title={formatBalance(item.balance, item.decimals, {
+                                showAll: true
+                              })}
+                            >
+                              Balance:&nbsp;&nbsp;
+                              <Loading className="vertical-middle" loading={item.loading}>
+                                {formatBalance(item.balance, item.decimals)}
+                              </Loading>
+                            </div>
+                          </GridItem>
+                          <GridItem xs={12} sm={12} md={12} lg={12}>
+                            <CustomTextField
+                              InputProps={{ classes: { root: classes.input } }}
+                              value={item.value}
+                              onChange={event => handleInputChange(event, item)}
+                              placeholder="deposit amount"
+                              maxEndAdornment
+                              onMaxClick={() => handleMaxClick(item)}
+                              error={!isUndefined(item.isValid) && !item.isValid}
+                            />
+                          </GridItem>
+                        </GridContainer>
                       </GridItem>
                     </GridContainer>
                   </GridItem>
@@ -743,7 +839,7 @@ const Deposit = props => {
               }
             })}
           </GridContainer>
-          <GridContainer className="pr-4">
+          <GridContainer className="pr-4 pt-4">
             <GridItem xs={12} sm={12} md={12} lg={12}>
               <Button
                 disabled={
@@ -782,7 +878,7 @@ const Deposit = props => {
               root: classes.root
             }}
             alternativeLabel
-            activeStep={1}
+            activeStep={activeStep}
             connector={<BocStepConnector />}
           >
             {map(steps, (i, index) => {
@@ -794,16 +890,27 @@ const Deposit = props => {
             })}
           </BocStepper>
           <div className={classes.item}>
-            <div className={classes.title}>Deposit Amounts:</div>
+            {activeStep === 0 && (
+              <div className={classes.title}>
+                Approve tokens to Vault (<span className="color-fuchsia-700">{short(VAULT_ADDRESS)}</span>)
+              </div>
+            )}
+            {activeStep === 1 && <div className={classes.title}>Deposit tokens to Vault</div>}
             <div className={classes.tokens}>
               {map(formConfig, item => {
                 const { name, value, image, isValid, address } = item
                 if (!isValid) {
                   return
                 }
+                const enough = get(find(allowances, { address }), 'enough', false)
                 return (
                   <div className={classes.token} key={address}>
                     <img className={classes.ModalTokenLogo} alt="" src={image} />
+                    {enough ? (
+                      <span className="i-ep-circle-check-filled color-green-500 absolute mt-6 ml-6"></span>
+                    ) : (
+                      <span className="i-material-symbols-alarm-rounded absolute mt-6 ml-6"></span>
+                    )}
                     <span className={classes.name}>{name}: </span>
                     <span className={classes.name}>{Number(value).toFixed(2)}</span>
                   </div>
@@ -819,11 +926,17 @@ const Deposit = props => {
           </div>
           <div className={classes.buttonGroup}>
             <Button className={classes.cancelButton} color="danger" onClick={() => setIsOpenEstimateModal(false)}>
-              Cancel
+              <span className="leh-1.4">Cancel</span>
             </Button>
-            <Button className={classes.okButton} color="colorful" onClick={deposit}>
-              Continue
-            </Button>
+            {isAllApproveEnough ? (
+              <Button className={classes.okButton} color="colorful" onClick={deposit}>
+                Deposit
+              </Button>
+            ) : (
+              <Button className={classes.okButton} color="colorful" onClick={approveAll}>
+                {approveTextRender()}
+              </Button>
+            )}
           </div>
         </Paper>
       </Modal>
