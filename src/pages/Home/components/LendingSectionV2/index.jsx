@@ -226,7 +226,7 @@ export default function LendingSectionV2() {
                 )}
               </GridContainer>
             </GridItem>
-            <GridItem md={12} xs={12} sm={12}>
+            <GridItem md={12} xs={12} sm={12} className="hidden">
               <p style={{ color: '#94a3b8', background: '#1F2023', padding: '1rem', borderRadius: '1rem', margin: '1rem' }}>
                 <svg
                   style={{ verticalAlign: 'middle' }}

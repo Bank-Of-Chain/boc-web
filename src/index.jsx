@@ -18,7 +18,7 @@ ReactDOM.render(
   <Provider store={store}>
     <SnackbarProvider
       classes={{
-        contentRoot: '!p-0',
+        contentRoot: '!p-0 !bg-truegray-900',
         message: '!p-0',
         anchorOriginTopRight: '!top-25'
       }}
