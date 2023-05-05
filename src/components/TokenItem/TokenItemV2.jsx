@@ -21,11 +21,15 @@ import assign from 'lodash/assign'
 import isEmpty from 'lodash/isEmpty'
 import debounce from 'lodash/debounce'
 import { toFixed } from '@/helpers/number-format'
-import { getBestSwapInfo } from 'piggy-finance-utils'
+import * as pfUtils from 'piggy-finance-utils'
 import BN from 'bignumber.js'
 import { getProtocolsFromBestRouter } from '@/helpers/swap-util'
 
+// === Utils === //
+import { ONEINCH_V5, PARASWAP } from '@/helpers/swap-util'
+
 // === Constants === //
+import { ONE_INCH_ROUTER, PARA_ROUTER, PARA_TRANSFER_PROXY } from '@/constants'
 import { ETH_ADDRESS } from '@/constants/tokens'
 import { IERC20_ABI, EXCHANGE_EXTRA_PARAMS, ORACLE_ADDITIONAL_SLIPPAGE } from '@/constants'
 
@@ -33,10 +37,16 @@ import { IERC20_ABI, EXCHANGE_EXTRA_PARAMS, ORACLE_ADDITIONAL_SLIPPAGE } from '@
 import styles from './style'
 let sycIndex = 0
 
+const { getBestSwapInfo } = pfUtils
 const { Contract, BigNumber } = ethers
 const useStyles = makeStyles(styles)
 const MAX_RETRY_TIME = 2
 const BN_0 = BigNumber.from('0')
+
+const exchangePlatformAdapters = {
+  oneInchV5: ONE_INCH_ROUTER,
+  paraswap: PARA_TRANSFER_PROXY
+}
 
 const TokenItem = (props, ref) => {
   const classes = useStyles()
@@ -46,8 +56,6 @@ const TokenItem = (props, ref) => {
     userProvider,
     slippage,
     receiveToken,
-    exchangePlatformAdapters,
-    exchangeManager,
     EXCHANGE_AGGREGATOR_ABI,
     style,
     onChange,
@@ -79,6 +87,28 @@ const TokenItem = (props, ref) => {
   const isFetching = !isReciveToken && (isSwapInfoFetching || isStaticCalling)
   const isOverMaxRetry = retryTimes > MAX_RETRY_TIME
 
+  const { approveAddress, callAddress } = useMemo(() => {
+    if (isEmpty(swapInfo)) return {}
+
+    const {
+      bestSwapInfo: { name }
+    } = swapInfo
+
+    if (name === ONEINCH_V5) {
+      return {
+        approveAddress: ONE_INCH_ROUTER,
+        callAddress: ONE_INCH_ROUTER
+      }
+    } else if (name === PARASWAP) {
+      return {
+        approveAddress: PARA_TRANSFER_PROXY,
+        callAddress: PARA_ROUTER
+      }
+    }
+
+    return {}
+  }, [swapInfo])
+
   const options = [
     {
       label: symbol,
@@ -105,7 +135,6 @@ const TokenItem = (props, ref) => {
   // console.log('slippage=', slippage)
   // console.log('token=', token)
   // console.log('exchangePlatformAdapters=', exchangePlatformAdapters)
-  // console.log('exchangeManager=', exchangeManager)
   // console.log('receiveTokenDecimals=', receiveTokenDecimals.toString())
   // console.groupEnd(`init state:${address}:${sycIndex++}`)
 
@@ -144,20 +173,21 @@ const TokenItem = (props, ref) => {
     debounce(() => {
       console.groupCollapsed(`staticCall call:${address}:${++sycIndex}`)
       console.log('swapInfo=', swapInfo)
-      const constract = new Contract(exchangeManager, EXCHANGE_AGGREGATOR_ABI, userProvider)
       const signer = userProvider.getSigner()
-      const constractWithSigner = constract.connect(signer)
 
       const {
-        bestSwapInfo: { platform, method, encodeExchangeArgs },
+        bestSwapInfo: { encodeExchangeArgs },
         info
       } = swapInfo
 
       setIsStaticCalling(true)
       setIsSwapInfoFetching(false)
       onChange()
-      constractWithSigner.callStatic
-        .swap(platform, method, encodeExchangeArgs, info)
+      signer
+        .call({
+          to: callAddress,
+          data: encodeExchangeArgs
+        })
         .then(() => {
           console.log('staticCall success')
           console.groupEnd(`staticCall call:${address}:${sycIndex}`)
@@ -191,7 +221,7 @@ const TokenItem = (props, ref) => {
           onChange()
         })
     }, 500),
-    [userProvider, swapInfo, onChange, exclude, retryTimes, onStaticCallFinish, EXCHANGE_AGGREGATOR_ABI, address, exchangeManager]
+    [userProvider, swapInfo, onChange, exclude, retryTimes, onStaticCallFinish, EXCHANGE_AGGREGATOR_ABI, address, callAddress]
   )
 
   // item fetch swap path failed
@@ -246,14 +276,15 @@ const TokenItem = (props, ref) => {
    *
    */
   const reload = useCallback(async () => {
+    if (isEmpty(approveAddress)) return
     // console.groupCollapsed(`reload call:${address}:${++sycIndex}`)
     setIsReload(true)
 
-    const nextAllowance = (await queryAllowance(userAddress, exchangeManager).catch(() => BN_0)).toString()
+    const nextAllowance = (await queryAllowance(userAddress, approveAddress).catch(() => BN_0)).toString()
     setAllowances(nextAllowance)
     setIsReload(false)
     // console.groupEnd(`reload call:${address}:${sycIndex}`)
-  }, [userAddress, exchangeManager, queryAllowance])
+  }, [userAddress, queryAllowance, approveAddress])
 
   /**
    *
@@ -309,14 +340,13 @@ const TokenItem = (props, ref) => {
     }
     console.groupCollapsed(`fetch best swap path: ${fromToken.address}-${toToken.address}:${swapAmount}:${++sycIndex}`)
     let nextExchangeExtraParams = assign({}, EXCHANGE_EXTRA_PARAMS, isEmpty(exchangePlatformAdapters.testAdapter) ? {} : {})
-
     if (!isEmpty(exclude)) {
       console.log(`exclude=`, exclude)
-      const { oneInchV4 = [], paraswap = [] } = exclude
+      const { oneInchV5 = [], paraswap = [] } = exclude
       nextExchangeExtraParams = assign({}, nextExchangeExtraParams, {
-        oneInchV4: {
-          ...nextExchangeExtraParams.oneInchV4,
-          excludeProtocols: uniq(oneInchV4.concat(nextExchangeExtraParams.oneInchV4.excludeProtocols))
+        oneInchV5: {
+          ...nextExchangeExtraParams.oneInchV5,
+          excludeProtocols: uniq(oneInchV5.concat(nextExchangeExtraParams.oneInchV5.excludeProtocols))
         },
         paraswap: {
           ...nextExchangeExtraParams.paraswap,
@@ -478,7 +508,7 @@ const TokenItem = (props, ref) => {
     () => {
       return {
         approve: callback =>
-          approve(exchangeManager, BigNumber.from(new BN(value).multipliedBy(decimals.toString()).toFixed()), callback).then(reload),
+          approve(approveAddress, BigNumber.from(new BN(value).multipliedBy(decimals.toString()).toFixed()), callback).then(reload),
         value,
         tokenAddress: token.address,
         isApproving,
@@ -491,22 +521,7 @@ const TokenItem = (props, ref) => {
         isEmptyValue
       }
     },
-    [
-      token,
-      approve,
-      isEmptyValue,
-      isErrorValue,
-      done,
-      swapInfo,
-      isFetching,
-      isApproving,
-      value,
-      reload,
-      exchangeManager,
-      decimals,
-      isApproveEnough,
-      retryTimes
-    ]
+    [token, approve, isEmptyValue, isErrorValue, done, swapInfo, isFetching, isApproving, value, reload, decimals, isApproveEnough, retryTimes]
   )
 
   return (

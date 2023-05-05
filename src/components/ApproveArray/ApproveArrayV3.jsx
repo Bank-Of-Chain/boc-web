@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback, useMemo } from 'react'
+import React, { useState, useCallback, useMemo } from 'react'
 import { makeStyles } from '@material-ui/core/styles'
 import PropTypes from 'prop-types'
 
@@ -42,7 +42,7 @@ import { USDT_ADDRESS, USDC_ADDRESS, DAI_ADDRESS, MULTIPLE_OF_GAS, MAX_GAS_LIMIT
 import { ETH_ADDRESS } from '@/constants/tokens'
 import { BN_6, BN_18 } from '@/constants/big-number'
 import { TRANSACTION_REPLACED, CALL_EXCEPTION, ACTION_REJECTED } from '@/constants/metamask'
-import { EXCHANGE_ADAPTER_ABI_V1_5_9 as EXCHANGE_ADAPTER_ABI, EXCHANGE_AGGREGATOR_ABI_v1_6_0 as EXCHANGE_AGGREGATOR_ABI } from '@/constants/abi'
+import { EXCHANGE_AGGREGATOR_ABI_v1_6_0 as EXCHANGE_AGGREGATOR_ABI } from '@/constants/abi'
 
 // === Styles === //
 import styles from './style-v3'
@@ -59,7 +59,6 @@ const ApproveArrayV3 = props => {
   const { enqueueSnackbar, closeSnackbar } = useSnackbar()
 
   const refArray = useMemo(() => map(tokens, () => React.createRef(null)), [tokens])
-  const [exchangePlatformAdapters, setExchangePlatformAdapters] = useState({})
   const [receiveToken, setReceiveToken] = useState(isEthi ? ETH_ADDRESS : USDT_ADDRESS)
   const [slippage, setSlippage] = useState('0.5')
   const [isSwapping, setIsSwapping] = useState(false)
@@ -120,16 +119,6 @@ const ApproveArrayV3 = props => {
   )
 
   const noNeedSwap = size(tokens) === 1 && get(first(tokens), 'address', '') === receiveToken
-
-  const getExchangePlatformAdapters = async (exchangeAggregator, userProvider) => {
-    const { _exchangeAdapters: adapters } = await exchangeAggregator.getExchangeAdapters()
-    const exchangeAdapters = {}
-    for (const address of adapters) {
-      const contract = new ethers.Contract(address, EXCHANGE_ADAPTER_ABI, userProvider)
-      exchangeAdapters[await contract.identifier()] = address
-    }
-    return exchangeAdapters
-  }
 
   const selectOptions = isEthi
     ? [
@@ -449,18 +438,6 @@ const ApproveArrayV3 = props => {
     setReceiveToken(v)
   }
 
-  useEffect(() => {
-    async function getAdapters() {
-      // console.groupCollapsed(`getAdapters useEffect call:${++sycIndex}`)
-      const exchangeManagerContract = new Contract(exchangeManager, EXCHANGE_AGGREGATOR_ABI, userProvider)
-      const exchangeAdapters = await getExchangePlatformAdapters(exchangeManagerContract, userProvider)
-      // console.log('exchangeAdapters', exchangeAdapters)
-      setExchangePlatformAdapters(exchangeAdapters)
-      // console.groupEnd(`getAdapters useEffect call:${sycIndex}`)
-    }
-    getAdapters()
-  }, [exchangeManager])
-
   return (
     <div className={classes.main}>
       <div className={classes.approveContainer}>
@@ -480,8 +457,6 @@ const ApproveArrayV3 = props => {
               token={token}
               slippage={slippage}
               receiveToken={receiveToken}
-              exchangeManager={exchangeManager}
-              exchangePlatformAdapters={exchangePlatformAdapters}
               receiveTokenDecimals={receiveTokenDecimals}
               EXCHANGE_AGGREGATOR_ABI={EXCHANGE_AGGREGATOR_ABI}
               disabled={isSwapping}

@@ -851,9 +851,9 @@ const Withdraw = props => {
               <p>Receive:</p>
               <GridContainer>
                 <GridItem xs={12} sm={12} md={12} lg={12} className="flex justify-start flex-wrap">
-                  {map(burnTokens, item => {
+                  {map(burnTokens, (item, index) => {
                     return (
-                      <div className="flex text-center items-center p-2">
+                      <div key={index} className="flex text-center items-center p-2">
                         <img className="w-6 b-rd-3" src={`./images/${item.address}.png`} />
                         <span className="mx-2">{toFixed(item.amount, BigNumber.from(10).pow(item.decimals), 4)}</span>
                         <span>{item.symbol}</span>
