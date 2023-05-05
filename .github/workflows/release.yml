@@ -3,6 +3,7 @@ on:
   pull_request:
     branches:
       - master
+      - master2
     types: 
       [closed]
 jobs:
