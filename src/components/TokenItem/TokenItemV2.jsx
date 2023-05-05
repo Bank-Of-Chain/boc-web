@@ -176,8 +176,7 @@ const TokenItem = (props, ref) => {
       const signer = userProvider.getSigner()
 
       const {
-        bestSwapInfo: { encodeExchangeArgs },
-        info
+        bestSwapInfo: { encodeExchangeArgs }
       } = swapInfo
 
       setIsStaticCalling(true)
