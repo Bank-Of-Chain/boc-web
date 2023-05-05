@@ -329,3 +329,7 @@ export const IERC20_ABI = [
 
 // TODO: because exchangeManager in v2.0 has none adapter, so use the exchangeManager contract deploy on v1.6.9. Zhangyi's suggestion
 export const EXCHANGE_MANAGER = '0x921FE3dF4F2073f0d4d0B839B6068460397a04f9'
+
+export const ONE_INCH_ROUTER = '0x1111111254EEB25477B68fb85Ed929f73A960582'
+export const PARA_ROUTER = '0xDEF171Fe48CF0115B1d80b88dc8eAB59176FEe57'
+export const PARA_TRANSFER_PROXY = '0x216B4B4Ba9F3e719726886d34a177484278Bfcae'

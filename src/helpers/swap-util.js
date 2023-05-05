@@ -7,8 +7,9 @@ import reduce from 'lodash/reduce'
 
 export const ONEINCH_V4 = 'oneInchV4'
 export const PARASWAP = 'paraswap'
+export const ONEINCH_V5 = 'oneInchV5'
 
-export const SUPPORTS = [PARASWAP, ONEINCH_V4]
+export const SUPPORTS = [PARASWAP, ONEINCH_V4, ONEINCH_V5]
 export const getProtocolsFromBestRouter = (bestSwapInfo = {}) => {
   if (isEmpty(bestSwapInfo) || isNumber(bestSwapInfo) || isString(bestSwapInfo)) return []
   const { name, bestRoute } = bestSwapInfo
@@ -20,6 +21,9 @@ export const getProtocolsFromBestRouter = (bestSwapInfo = {}) => {
         break
       case PARASWAP:
         func = getProtocolsFromBestRouterForParaswap
+        break
+      case ONEINCH_V5:
+        func = getProtocolsFromBestRouterFor1inchV4
         break
       default:
     }
