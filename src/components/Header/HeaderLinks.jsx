@@ -99,6 +99,11 @@ export default function HeaderLinks(props) {
     <>
       <List className={classes.list}>
         <ListItem className={classes.listItem}>
+          <Button color="colorful-text" className="!m-4" target="_blank" href={'https://v1.bankofchain.io'} disableRipple={true}>
+            <span className="i-material-symbols-remove-shopping-cart color-red-500 mr-1"></span>V1.0
+          </Button>
+        </ListItem>
+        <ListItem className={classes.listItem}>
           <Button color="colorful-text" className={classes.m4} target="_blank" href={dashboardHost(1, 'ethi')} disableRipple={true}>
             Dashboard
           </Button>
