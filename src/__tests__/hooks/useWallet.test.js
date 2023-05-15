@@ -1,5 +1,8 @@
 import useWallet from '@/hooks/useWallet'
+import { describe, expect, it } from 'vitest'
 
-test('the useWallet hooks should be render correct', () => {
-  expect(1 === 1).toBe(true)
+describe('xxxxxxxx', () => {
+  it('the useWallet hooks should be render correct', () => {
+    expect(1 === 1).toBe(true)
+  })
 })

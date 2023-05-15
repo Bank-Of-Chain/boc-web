@@ -1,4 +1,6 @@
 import { getProtocolsFromBestRouter, getProtocolsFromBestRouterFor1inchV4, getProtocolsFromBestRouterForParaswap } from '@/helpers/swap-util'
+import { describe, expect, it } from 'vitest'
+
 const paraswapData = {
   name: 'paraswap',
   platform: '0x11111112542D85B3EF69AE05771c2dCCff4fAa26',
@@ -63,53 +65,55 @@ const oneInchData = {
   ]
 }
 
-test('getProtocolsFromBestRouter for paraswapData', () => {
-  const array = getProtocolsFromBestRouter(paraswapData)
-  expect(array).toEqual(['BalancerV2'])
-})
+describe('xxxxxxxx', () => {
+  it('getProtocolsFromBestRouter for paraswapData', () => {
+    const array = getProtocolsFromBestRouter(paraswapData)
+    expect(array).toEqual(['BalancerV2'])
+  })
 
-test('getProtocolsFromBestRouter for oneInchData', () => {
-  const array = getProtocolsFromBestRouter(oneInchData)
-  expect(array).toEqual(['UNISWAP_V3'])
-})
+  it('getProtocolsFromBestRouter for oneInchData', () => {
+    const array = getProtocolsFromBestRouter(oneInchData)
+    expect(array).toEqual(['UNISWAP_V3'])
+  })
 
-test('getProtocolsFromBestRouter for null', () => {
-  const array = getProtocolsFromBestRouter(null)
-  expect(array).toEqual([])
-})
+  it('getProtocolsFromBestRouter for null', () => {
+    const array = getProtocolsFromBestRouter(null)
+    expect(array).toEqual([])
+  })
 
-test('getProtocolsFromBestRouter for undefined', () => {
-  const array = getProtocolsFromBestRouter(undefined)
-  expect(array).toEqual([])
-})
+  it('getProtocolsFromBestRouter for undefined', () => {
+    const array = getProtocolsFromBestRouter(undefined)
+    expect(array).toEqual([])
+  })
 
-test('getProtocolsFromBestRouter for string type', () => {
-  const array = getProtocolsFromBestRouter('123')
-  expect(array).toEqual([])
-})
+  it('getProtocolsFromBestRouter for string type', () => {
+    const array = getProtocolsFromBestRouter('123')
+    expect(array).toEqual([])
+  })
 
-test('getProtocolsFromBestRouter for number type', () => {
-  const array = getProtocolsFromBestRouter(123)
-  expect(array).toEqual([])
-})
+  it('getProtocolsFromBestRouter for number type', () => {
+    const array = getProtocolsFromBestRouter(123)
+    expect(array).toEqual([])
+  })
 
-test('getProtocolsFromBestRouter for error platform', () => {
-  try {
-    getProtocolsFromBestRouter({
-      ...paraswapData,
-      name: 'gogogo'
-    })
-  } catch (error) {
-    expect(error.message).toBe('not support')
-  }
-})
+  it('getProtocolsFromBestRouter for error platform', () => {
+    try {
+      getProtocolsFromBestRouter({
+        ...paraswapData,
+        name: 'gogogo'
+      })
+    } catch (error) {
+      expect(error.message).toBe('not support')
+    }
+  })
 
-test('getProtocolsFromBestRouterFor1inchV4 for oneInchData', () => {
-  const array = getProtocolsFromBestRouterFor1inchV4(oneInchData.bestRoute)
-  expect(array).toEqual(['UNISWAP_V3'])
-})
+  it('getProtocolsFromBestRouterFor1inchV4 for oneInchData', () => {
+    const array = getProtocolsFromBestRouterFor1inchV4(oneInchData.bestRoute)
+    expect(array).toEqual(['UNISWAP_V3'])
+  })
 
-test('getProtocolsFromBestRouterForParaswap for paraswapData', () => {
-  const array = getProtocolsFromBestRouterForParaswap(paraswapData.bestRoute)
-  expect(array).toEqual(['BalancerV2'])
+  it('getProtocolsFromBestRouterForParaswap for paraswapData', () => {
+    const array = getProtocolsFromBestRouterForParaswap(paraswapData.bestRoute)
+    expect(array).toEqual(['BalancerV2'])
+  })
 })

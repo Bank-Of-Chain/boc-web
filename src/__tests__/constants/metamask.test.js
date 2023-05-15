@@ -1,5 +1,8 @@
 import metamask from '@/constants/metamask'
+import { describe, expect, it } from 'vitest'
 
-test('the metamask constants should be correct', () => {
-  expect(1 === 1).toBe(true)
+describe('xxxxxxxx', () => {
+  it('the metamask constants should be correct', () => {
+    expect(1 === 1).toBe(true)
+  })
 })

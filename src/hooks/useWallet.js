@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
-import { getWalletName } from '../helpers/wallet'
-import { setProvider } from '../reducers/wallet-reducer'
+import { getWalletName } from '@/helpers/wallet'
+import { setProvider } from '@/reducers/wallet-reducer'
 
 function useWallet() {
   const dispatch = useDispatch()

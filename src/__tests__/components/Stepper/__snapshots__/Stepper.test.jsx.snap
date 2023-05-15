@@ -1,6 +1,6 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`StepConnector Component Render 1`] = `
+exports[`xxxxxxxx > StepConnector Component Render 1`] = `
 <DocumentFragment>
   <div
     class="MuiStepConnector-root MuiStepConnector-horizontal"
@@ -12,7 +12,7 @@ exports[`StepConnector Component Render 1`] = `
 </DocumentFragment>
 `;
 
-exports[`StepIcon Component Render 1`] = `
+exports[`xxxxxxxx > StepIcon Component Render 1`] = `
 <DocumentFragment>
   <div
     class="makeStyles-root-6"
@@ -24,7 +24,7 @@ exports[`StepIcon Component Render 1`] = `
 </DocumentFragment>
 `;
 
-exports[`StepLabel Component Render 1`] = `
+exports[`xxxxxxxx > StepLabel Component Render 1`] = `
 <DocumentFragment>
   <span
     class="MuiStepLabel-root MuiStepLabel-horizontal"
@@ -36,7 +36,7 @@ exports[`StepLabel Component Render 1`] = `
 </DocumentFragment>
 `;
 
-exports[`Stepper Component Render 1`] = `
+exports[`xxxxxxxx > Stepper Component Render 1`] = `
 <DocumentFragment>
   <div
     class="MuiPaper-root MuiStepper-root WithStyles(ForwardRef(Stepper))-root-1 MuiStepper-horizontal MuiPaper-elevation0"

@@ -1,5 +1,8 @@
 import usePriceProvider from '@/hooks/usePriceProvider'
+import { describe, expect, it } from 'vitest'
 
-test('the usePriceProvider hooks should be render correct', () => {
-  expect(1 === 1).toBe(true)
+describe('xxxxxxxx', () => {
+  it('the usePriceProvider hooks should be render correct', () => {
+    expect(1 === 1).toBe(true)
+  })
 })

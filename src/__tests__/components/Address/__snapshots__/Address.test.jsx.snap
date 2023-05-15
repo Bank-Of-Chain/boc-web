@@ -1,6 +1,6 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`Address Component Render 1`] = `
+exports[`xxxxxxxx > Address Component Render 1`] = `
 <DocumentFragment>
   <span>
     0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266

@@ -1,5 +1,8 @@
 import { INVEST_TAB } from '@/constants/invest'
+import { describe, expect, it } from 'vitest'
 
-test('INVEST_TAB has 5 items', () => {
-  expect(Object.keys(INVEST_TAB).length).toBe(5)
+describe('xxxxxxxx', () => {
+  it('INVEST_TAB has 5 items', () => {
+    expect(Object.keys(INVEST_TAB).length).toBe(5)
+  })
 })

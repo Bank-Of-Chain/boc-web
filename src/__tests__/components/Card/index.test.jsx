@@ -1,7 +1,10 @@
 import React from 'react'
 import { render } from '@testing-library/react'
 import Card from '@/components/Card'
+import { describe, expect, it } from 'vitest'
 
-test('the component should be render', () => {
-  expect(1 === 1).toBe(true)
+describe('xxxxxxxx', () => {
+  it('the component should be render', () => {
+    expect(1 === 1).toBe(true)
+  })
 })

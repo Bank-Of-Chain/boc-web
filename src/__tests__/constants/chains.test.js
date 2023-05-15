@@ -1,5 +1,8 @@
 import chains from '@/constants/chains'
+import { describe, expect, it } from 'vitest'
 
-test('the chains constants should be correct', () => {
-  expect(1 === 1).toBe(true)
+describe('xxxxxxxx', () => {
+  it('the chains constants should be correct', () => {
+    expect(1 === 1).toBe(true)
+  })
 })

@@ -2,12 +2,16 @@ import React from 'react'
 import { render } from '@testing-library/react'
 import LoadingComponent from '@/components/LoadingComponent'
 
-test('LoadingComponent Component Render', () => {
-  const { asFragment } = render(<LoadingComponent>value</LoadingComponent>)
-  expect(asFragment()).toMatchSnapshot()
-})
+import { describe, expect, it } from 'vitest'
 
-test('LoadingComponent Component loading Render', () => {
-  const { asFragment } = render(<LoadingComponent loading>value</LoadingComponent>)
-  expect(asFragment()).toMatchSnapshot()
+describe('xxxxxxxx', () => {
+  it('LoadingComponent Component Render', () => {
+    const { asFragment } = render(<LoadingComponent>value</LoadingComponent>)
+    expect(asFragment()).toMatchSnapshot()
+  })
+
+  it('LoadingComponent Component loading Render', () => {
+    const { asFragment } = render(<LoadingComponent loading>value</LoadingComponent>)
+    expect(asFragment()).toMatchSnapshot()
+  })
 })
