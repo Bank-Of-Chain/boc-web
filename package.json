@@ -93,6 +93,8 @@
     "preview": "vite preview",
     "test": "vitest",
     "coverage": "vitest run --coverage",
+    "test1": "vitest --dir ./src/__tests__/helpers",
+    "coverage1": "vitest run --coverage --dir ./src/__tests__/helpers",
     "apollo:local": "node configs/apollo.js --env=local",
     "apollo:qa-sg": "node configs/apollo.js --env=qa-sg",
     "apollo:qa02-sg": "node configs/apollo.js --env=qa02-sg",
