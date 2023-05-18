@@ -115,3 +115,29 @@ describe('error-handle runs correctly', () => {
     expect(flag).toBe(text)
   })
 })
+
+describe('isMaxLoss', () => {
+  test('positive: returns true if error message includes "amount lower than minimum"', () => {
+    const result = isMaxLoss('amount lower than minimum')
+    expect(result).toBe(true)
+  })
+
+  test('positive: returns true if error message includes "loss much"', () => {
+    const result = isMaxLoss('loss much')
+    expect(result).toBe(true)
+  })
+
+  test('negative: returns false if error message does not include "amount lower than minimum" or "loss much"', () => {
+    const result = isMaxLoss('Invalid error message')
+    expect(result).toBe(false)
+  })
+
+  test('edge: returns false if error message is an empty string', () => {
+    const result = isMaxLoss('')
+    expect(result).toBe(false)
+  })
+
+  test('error: throws an error if no error message is provided', () => {
+    expect(isMaxLoss()).toBeFalsy()
+  })
+})
