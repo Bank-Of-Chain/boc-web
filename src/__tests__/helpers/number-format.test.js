@@ -32,8 +32,22 @@ describe('xxxxxxxx', () => {
     expect(text).toBe('0')
   })
 
+  it('number-format toFixed with float output', () => {
+    const text = toFixed('10000', '10000000')
+    expect(text).toBe('0.001')
+  })
+
   it('number-format toFixed formatBalance', () => {
     const text = formatBalance('10000', 2)
     expect(text).toBe('100')
+  })
+  it('number-format toFixed formatBalance', () => {
+    const text = formatBalance('10000', 2, { showAll: true })
+    expect(text).toBe('100')
+  })
+
+  it('number-format toFixed formatBalance', () => {
+    const text = formatBalance('1234567', 6, { showAll: true })
+    expect(text).toBe('1.234567')
   })
 })
