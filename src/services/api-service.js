@@ -1,7 +1,9 @@
 import axios from 'axios'
 
 // === Utils === //
+import get from 'lodash/get'
 import map from 'lodash/map'
+import isNil from 'lodash/isNil'
 import isEmpty from 'lodash/isEmpty'
 
 // === Constants === //
@@ -147,4 +149,18 @@ export const getSegmentProfit = (address, chainId, tokenType, segmentType) => {
  */
 export const getHomePageData = () => {
   return axios.get(`${BOC_SERVER}/home-page`).then(resp => resp.data)
+}
+
+/**
+ *
+ * @param {*} chainId
+ * @param {*} vaultAddress
+ * @returns
+ */
+export const getVirtualAPY = async (chainId = '1', vaultAddress) => {
+  const rs = await axios.get(`${BOC_SERVER}/officialApy/yearly/chain/${chainId}/vaults/${vaultAddress}`).then(resp => {
+    const value = 100 * get(resp, 'data.[0].apy')
+    return isNil(value) || isNaN(value) ? 0 : value
+  })
+  return rs
 }
