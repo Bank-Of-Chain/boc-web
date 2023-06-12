@@ -5,7 +5,7 @@ import get from 'lodash/get'
 import map from 'lodash/map'
 
 // === Services === //
-import { getDefiRate, getAPY } from '@/services/api-service'
+import { getDefiRate, getVirtualAPY } from '@/services/api-service'
 
 // === Constants === //
 import { BOC_TITLE, usdiArray, ethiArray, apyType } from '@/constants/apy'
@@ -19,7 +19,7 @@ export default function useApyFetch(chain = '1') {
     setLoading(true)
     const chainId = chain
     Promise.all([
-      getAPY({ chainId, tokenType: 'USDi' }).then((data = 0) => {
+      getVirtualAPY(chainId, '0x30D120f80D60E7b58CA9fFaf1aaB1815f000B7c3').then((data = 0) => {
         return {
           title: BOC_TITLE,
           imagePath: '/logo.png',
@@ -34,7 +34,7 @@ export default function useApyFetch(chain = '1') {
           svg: {}
         })
       ),
-      getAPY({ chainId, tokenType: 'ETHi' }).then((data = 0) => {
+      getVirtualAPY(chainId, '0x8f0Cb368C63fbEDF7a90E43fE50F7eb8B9411746').then((data = 0) => {
         return {
           title: BOC_TITLE,
           imagePath: '/logo.png',
