@@ -6,6 +6,8 @@ import GridItem from '@/components/Grid/GridItem'
 import EthiVault from './components/Vault/EthiVault'
 import UsdiVault from './components/Vault/UsdiVault'
 import Loading from '@/components/LoadingComponent'
+import Modal from '@material-ui/core/Modal'
+import Paper from '@material-ui/core/Paper'
 
 // === Hooks === //
 import { useAtom } from 'jotai'
@@ -39,6 +41,8 @@ const Pools = props => {
 
   const [penddingTx] = useAtom(penddingTxAtom)
   console.log('penddingTx=', penddingTx)
+
+  const [openGameModal, setOpenGameModal] = useState(false)
 
   // balances
   const {
@@ -279,6 +283,13 @@ const Pools = props => {
     [openIndex]
   )
 
+  /**
+   *
+   */
+  const openGameModalHandle = () => {
+    setOpenGameModal(true)
+  }
+
   useEffect(() => {
     if (isEmpty(address) || isEmpty(ethiTokenContract)) return
     ethiTokenContract.on('Transfer', queryEthiTotalAssetsIncludeVaultBuffer)
@@ -352,6 +363,32 @@ const Pools = props => {
           })}
         </GridItem>
       </GridContainer>
+      {/* todo: gif的格式再精细一些；iframe中自定义鼠标样式 */}
+      <img
+        onClick={openGameModalHandle}
+        className="absolute z-3 bottom-16 right-12 border-rd w-48 cursor-pointer opacity-60 hover:opacity-90 hover:transform-scale-120"
+        style={{ transition: 'all 0.3s' }}
+        src="./aviator.gif"
+      />
+      <Modal open={true} className={openGameModal ? '' : 'hidden'} aria-labelledby="simple-modal-title" aria-describedby="simple-modal-description">
+        <Paper elevation={3}>
+          <div className="h-full w-full absolute hover-box-border">
+            <iframe
+              className="h-full w-full"
+              style={{ backgroundColor: 'transparent' }}
+              src="https://jerrylib.github.io/TheAviator/"
+              frameBorder="0"
+            ></iframe>
+            <div className="fixed bottom-4 right-4">
+              <span
+                className="i-ic-outline-aspect-ratio color-amber-400 border-orange-500 p-2 cursor-pointer"
+                title="Exit"
+                onClick={() => setOpenGameModal(false)}
+              ></span>
+            </div>
+          </div>
+        </Paper>
+      </Modal>
     </div>
   )
 }
