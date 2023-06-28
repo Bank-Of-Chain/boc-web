@@ -2,6 +2,7 @@ import WalletConnectProvider from '@walletconnect/web3-provider'
 
 // === Utils === //
 import map from 'lodash/map'
+import omit from 'lodash/omit'
 
 // === Constants === //
 import { RPC_URL } from '@/constants'
@@ -34,4 +35,4 @@ export const WALLETS = {
   }
 }
 
-export const WALLET_OPTIONS = map(WALLETS, wallet => wallet.info)
+export const WALLET_OPTIONS = map(omit(WALLETS, 'WalletConnect'), wallet => wallet.info)
