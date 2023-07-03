@@ -35,10 +35,19 @@ export default defineConfig({
           } else if (id.includes('walletconnect')) {
             return 'vendor2'
           } else if (id.includes('ethersproject')) {
-            return 'vendor2'
-          } else if (id.includes('react-is')) {
-            return 'vendor2'
+            return 'vendor3'
           }
+          //  else if (id.includes('bn.js')) {
+          //   return 'vendor4'
+          // } else if (id.includes('qrcode')) {
+          //   return 'vendor5'
+          // } else if (id.includes('material-ui') || id.includes('popper.js')) {
+          //   return 'vendor6'
+          // } else if (id.includes('lodash')) {
+          //   return 'vendor7'
+          // } else if (id.includes('ethereumjs-abi')) {
+          //   return 'vendor8'
+          // }
         }
       }
     },
@@ -69,11 +78,7 @@ export default defineConfig({
           var: 'ethers',
           path: 'https://cdn.bootcdn.net/ajax/libs/ethers/5.4.4/ethers.umd.min.js'
         },
-        {
-          name: 'lodash-es',
-          var: '_',
-          path: 'https://cdn.bootcdn.net/ajax/libs/lodash.js/4.17.21/lodash.min.js'
-        },
+        autoComplete('lodash'),
         autoComplete('axios')
       ]
     }),
