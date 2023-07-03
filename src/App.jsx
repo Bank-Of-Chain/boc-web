@@ -20,9 +20,9 @@ import Alert from '@material-ui/lab/Alert'
 // === Utils === //
 import { NET_WORKS, LOCAL_CHAIN_ID } from './constants'
 import { makeStyles } from '@material-ui/core/styles'
-import isEmpty from 'lodash-es/isEmpty'
-import isUndefined from 'lodash-es/isUndefined'
-import map from 'lodash-es/map'
+import isEmpty from 'lodash/isEmpty'
+import isUndefined from 'lodash/isUndefined'
+import map from 'lodash/map'
 
 import { WALLETS } from './constants/wallet'
 import { isInMobileWalletApp, isInMobileH5, hasWalletInstalled } from './helpers/plugin-util'

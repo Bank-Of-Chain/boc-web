@@ -13,11 +13,11 @@ import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown'
 import ArrowDropUpIcon from '@material-ui/icons/ArrowDropUp'
 
 // === Utils === //
-import map from 'lodash-es/map'
-import maxBy from 'lodash-es/maxBy'
-import sortBy from 'lodash-es/sortBy'
-import findIndex from 'lodash-es/findIndex'
-import isUndefined from 'lodash-es/isUndefined'
+import map from 'lodash/map'
+import maxBy from 'lodash/maxBy'
+import sortBy from 'lodash/sortBy'
+import findIndex from 'lodash/findIndex'
+import isUndefined from 'lodash/isUndefined'
 import { toFixed } from '@/helpers/number-format'
 
 // === Services === //

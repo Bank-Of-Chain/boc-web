@@ -1,7 +1,7 @@
 import { useCallback } from 'react'
 // === Utils === //
 import * as ethers from 'ethers'
-import isEmpty from 'lodash-es/isEmpty'
+import isEmpty from 'lodash/isEmpty'
 
 const { Contract } = ethers
 

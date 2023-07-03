@@ -15,8 +15,8 @@ import useMetaMask from '@/hooks/useMetaMask'
 import { penddingTxAtom } from '@/jotai'
 
 // === Utils === //
-import filter from 'lodash-es/filter'
-import isEmpty from 'lodash-es/isEmpty'
+import filter from 'lodash/filter'
+import isEmpty from 'lodash/isEmpty'
 import { short } from '@/helpers/string-utils'
 import { toFixed } from '@/helpers/number-format'
 import { BigNumber } from 'ethers'

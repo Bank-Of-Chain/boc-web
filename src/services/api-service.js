@@ -1,8 +1,8 @@
 import axios from 'axios'
 
 // === Utils === //
-import map from 'lodash-es/map'
-import isEmpty from 'lodash-es/isEmpty'
+import map from 'lodash/map'
+import isEmpty from 'lodash/isEmpty'
 
 // === Constants === //
 import { BOC_SERVER, NET_WORKS, ENV_NETWORK_TYPE } from '@/constants'

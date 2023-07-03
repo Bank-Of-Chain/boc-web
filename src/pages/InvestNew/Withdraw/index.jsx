@@ -47,14 +47,14 @@ import { USDI_FOR_ETH as USDI_ADDRESS, USDI_VAULT_FOR_ETH as VAULT_ADDRESS } fro
 import { VAULT_ABI_V2_0 as VAULT_ABI } from '@/constants/abi'
 
 // === Utils === //
-import isUndefined from 'lodash-es/isUndefined'
-import map from 'lodash-es/map'
-import get from 'lodash-es/get'
-import debounce from 'lodash-es/debounce'
-import compact from 'lodash-es/compact'
-import isEmpty from 'lodash-es/isEmpty'
-import isEqual from 'lodash-es/isEqual'
-import isNumber from 'lodash-es/isNumber'
+import isUndefined from 'lodash/isUndefined'
+import map from 'lodash/map'
+import get from 'lodash/get'
+import debounce from 'lodash/debounce'
+import compact from 'lodash/compact'
+import isEmpty from 'lodash/isEmpty'
+import isEqual from 'lodash/isEqual'
+import isNumber from 'lodash/isNumber'
 import { isAd, isEs, isRp, isMaxLoss, isLossMuch, isExchangeFail, errorTextOutput, isRLTM } from '@/helpers/error-handler'
 
 // === Styles === //

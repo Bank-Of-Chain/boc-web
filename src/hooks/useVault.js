@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react'
 
 // === Utils === //
 import * as ethers from 'ethers'
-import isEmpty from 'lodash-es/isEmpty'
+import isEmpty from 'lodash/isEmpty'
 
 // === Hooks === //
 import useUserAddress from './useUserAddress'

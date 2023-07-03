@@ -5,9 +5,9 @@ import useUserAddress from '@/hooks/useUserAddress'
 
 // === Utils === //
 import * as ethers from 'ethers'
-import noop from 'lodash-es/noop'
-import isEmpty from 'lodash-es/isEmpty'
-import isEqual from 'lodash-es/isEqual'
+import noop from 'lodash/noop'
+import isEmpty from 'lodash/isEmpty'
+import isEqual from 'lodash/isEqual'
 
 // === Constants === //
 import { IERC20_ABI } from '@/constants'

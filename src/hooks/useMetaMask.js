@@ -1,8 +1,8 @@
 import { useEffect, useState, useCallback } from 'react'
 
 // === Utils === //
-import noop from 'lodash-es/noop'
-import isEmpty from 'lodash-es/isEmpty'
+import noop from 'lodash/noop'
+import isEmpty from 'lodash/isEmpty'
 
 const useMetaMask = userProvider => {
   const [gasPrice, setGasPrice] = useState(0)

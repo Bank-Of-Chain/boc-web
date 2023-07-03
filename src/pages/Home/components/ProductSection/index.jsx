@@ -6,7 +6,7 @@ import InfoArea from '@/components/InfoArea/InfoArea'
 import { FullAutoIcon, EaseUseIcon, SafeIcon, RiskControlIcon, DiverseIcon } from '@/components/SvgIcons'
 
 // === Utils === //
-import map from 'lodash-es/map'
+import map from 'lodash/map'
 import useMediaQuery from '@material-ui/core/useMediaQuery'
 
 // === Styles === //

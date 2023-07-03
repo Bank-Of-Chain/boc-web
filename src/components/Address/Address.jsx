@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import useLookupAddress from '@/hooks/useLookupAddress'
 
 // === Utils === //
-import isEmpty from 'lodash-es/isEmpty'
+import { isEmpty } from 'lodash'
 
 const Address = props => {
   const { ensProvider, address = '' } = props

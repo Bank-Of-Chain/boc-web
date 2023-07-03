@@ -1,7 +1,7 @@
 import WalletConnectProvider from '@walletconnect/web3-provider'
 
 // === Utils === //
-import map from 'lodash-es/map'
+import map from 'lodash/map'
 
 // === Constants === //
 import { RPC_URL } from '@/constants'

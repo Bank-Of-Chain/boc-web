@@ -1,9 +1,9 @@
 // === Utils === //
-import get from 'lodash-es/get'
-import isEmpty from 'lodash-es/isEmpty'
-import isNumber from 'lodash-es/isNumber'
-import isString from 'lodash-es/isString'
-import reduce from 'lodash-es/reduce'
+import get from 'lodash/get'
+import isEmpty from 'lodash/isEmpty'
+import isNumber from 'lodash/isNumber'
+import isString from 'lodash/isString'
+import reduce from 'lodash/reduce'
 
 export const ONEINCH_V4 = 'oneInchV4'
 export const PARASWAP = 'paraswap'

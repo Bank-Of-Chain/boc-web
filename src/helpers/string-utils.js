@@ -1,5 +1,5 @@
 // === Utils === //
-import isEmpty from 'lodash-es/isEmpty'
+import isEmpty from 'lodash/isEmpty'
 
 /**
  *

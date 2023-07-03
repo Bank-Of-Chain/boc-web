@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react'
 
 // === Utils === //
-import isEmpty from 'lodash-es/isEmpty'
+import isEmpty from 'lodash/isEmpty'
 
 /**
  *

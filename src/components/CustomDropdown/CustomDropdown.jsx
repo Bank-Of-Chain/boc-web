@@ -19,7 +19,7 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore'
 // core components
 import Button from '../CustomButtons/Button'
 
-import isFunction from 'lodash-es/isFunction'
+import isFunction from 'lodash/isFunction'
 
 import styles from './customDropdownStyle'
 
