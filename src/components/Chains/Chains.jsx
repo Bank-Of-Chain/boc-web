@@ -5,7 +5,7 @@ import { makeStyles } from '@material-ui/core/styles'
 import Tooltip from '@material-ui/core/Tooltip'
 
 // === Utils === //
-import map from 'lodash/map'
+import map from 'lodash-es/map'
 
 const styles = {
   img: {

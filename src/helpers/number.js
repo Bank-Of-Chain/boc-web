@@ -1,9 +1,9 @@
 // === Utils === //
 import { BigNumber } from 'ethers'
 import BN from 'bignumber.js'
-import isNaN from 'lodash/isNaN'
-import isEmpty from 'lodash/isEmpty'
-import isEqual from 'lodash/isEqual'
+import isNaN from 'lodash-es/isNaN'
+import isEmpty from 'lodash-es/isEmpty'
+import isEqual from 'lodash-es/isEqual'
 
 /**
  *

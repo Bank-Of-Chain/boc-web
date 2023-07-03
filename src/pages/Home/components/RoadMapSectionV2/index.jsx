@@ -8,7 +8,7 @@ import FiberManualRecordIcon from '@material-ui/icons/FiberManualRecord'
 import TripOriginIcon from '@material-ui/icons/TripOrigin'
 
 // === Utils === //
-import map from 'lodash/map'
+import map from 'lodash-es/map'
 import useMediaQuery from '@material-ui/core/useMediaQuery'
 
 // === Styles === //

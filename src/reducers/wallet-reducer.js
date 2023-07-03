@@ -1,5 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit'
-import keys from 'lodash/keys'
+import keys from 'lodash-es/keys'
 import { SafeAppWeb3Modal } from '@gnosis.pm/safe-apps-web3modal'
 import { Web3Provider } from '@ethersproject/providers'
 import { WALLETS } from '../constants/wallet'

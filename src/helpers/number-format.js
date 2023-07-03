@@ -1,7 +1,7 @@
 import BN from 'bignumber.js'
-import isEmpty from 'lodash/isEmpty'
-import padEnd from 'lodash/padEnd'
-import { isNil, isNull } from 'lodash'
+import isEmpty from 'lodash-es/isEmpty'
+import padEnd from 'lodash-es/padEnd'
+import { isNil, isNull } from 'lodash-es'
 
 export const toFixed = (value, precision = 1, ...args) => {
   if (isNil(value)) return undefined

@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react'
 
 // === Utils === //
-import get from 'lodash/get'
-import map from 'lodash/map'
+import get from 'lodash-es/get'
+import map from 'lodash-es/map'
 
 // === Services === //
 import { getDefiRate, getAPY } from '@/services/api-service'

@@ -34,14 +34,14 @@ import useErc20Token from '@/hooks/useErc20Token'
 import useUserAddress from '@/hooks/useUserAddress'
 
 // === Utils === //
-import isUndefined from 'lodash/isUndefined'
-import map from 'lodash/map'
-import get from 'lodash/get'
-import debounce from 'lodash/debounce'
-import compact from 'lodash/compact'
-import isEmpty from 'lodash/isEmpty'
-import isEqual from 'lodash/isEqual'
-import isNumber from 'lodash/isNumber'
+import isUndefined from 'lodash-es/isUndefined'
+import map from 'lodash-es/map'
+import get from 'lodash-es/get'
+import debounce from 'lodash-es/debounce'
+import compact from 'lodash-es/compact'
+import isEmpty from 'lodash-es/isEmpty'
+import isEqual from 'lodash-es/isEqual'
+import isNumber from 'lodash-es/isNumber'
 import { isValid } from '@/helpers/number'
 import { toFixed, formatBalance } from '@/helpers/number-format'
 import { isAd, isEs, isRp, isMaxLoss, isLossMuch, isExchangeFail, errorTextOutput, isRLTM } from '@/helpers/error-handler'
@@ -59,7 +59,7 @@ import { VAULT_ABI_V2_0 as VAULT_ABI, VALUE_INTERPRETER_ABI_V2_0 } from '@/const
 
 // === Styles === //
 import styles from './style'
-import { some } from 'lodash'
+import { some } from 'lodash-es'
 
 const { BigNumber, providers } = ethers
 const useStyles = makeStyles(styles)

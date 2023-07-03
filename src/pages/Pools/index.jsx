@@ -21,9 +21,9 @@ import { getAPY } from '@/services/api-service'
 import { penddingTxAtom } from '@/jotai'
 
 // === Utils === //
-import map from 'lodash/map'
+import map from 'lodash-es/map'
 import numeral from 'numeral'
-import isEmpty from 'lodash/isEmpty'
+import isEmpty from 'lodash-es/isEmpty'
 import { BigNumber, providers } from 'ethers'
 import { toFixed } from '@/helpers/number-format'
 

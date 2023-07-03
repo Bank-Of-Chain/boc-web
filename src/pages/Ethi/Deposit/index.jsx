@@ -2,11 +2,11 @@ import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react'
 import * as ethers from 'ethers'
 import BN from 'bignumber.js'
 import { useDispatch } from 'react-redux'
-import isUndefined from 'lodash/isUndefined'
-import debounce from 'lodash/debounce'
-import isEmpty from 'lodash/isEmpty'
-import map from 'lodash/map'
-import isNumber from 'lodash/isNumber'
+import isUndefined from 'lodash-es/isUndefined'
+import debounce from 'lodash-es/debounce'
+import isEmpty from 'lodash-es/isEmpty'
+import map from 'lodash-es/map'
+import isNumber from 'lodash-es/isNumber'
 import { makeStyles } from '@material-ui/core/styles'
 
 // === Components === //
@@ -29,7 +29,7 @@ import { isAd, isEs, isRp, isDistributing, errorTextOutput, isLessThanMinValue, 
 import { warmDialog } from '@/reducers/meta-reducer'
 import { toFixed, formatBalance } from '@/helpers/number-format'
 import { isValid as isValidNumber } from '@/helpers/number'
-import isEqual from 'lodash/isEqual'
+import isEqual from 'lodash-es/isEqual'
 
 // === Hooks === //
 import { useAtom } from 'jotai'

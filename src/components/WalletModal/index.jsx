@@ -1,5 +1,5 @@
 import React from 'react'
-import map from 'lodash/map'
+import map from 'lodash-es/map'
 import classNames from 'classnames'
 
 import { makeStyles } from '@material-ui/core/styles'

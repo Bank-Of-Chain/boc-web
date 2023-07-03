@@ -12,8 +12,8 @@ import CHAINS from '@/constants/chains'
 import STABLECOINS from '@/constants/tokens'
 
 // === Utils === //
-import map from 'lodash/map'
-import isEmpty from 'lodash/isEmpty'
+import map from 'lodash-es/map'
+import isEmpty from 'lodash-es/isEmpty'
 
 // === Styles === //
 import styles from './ammStyle'

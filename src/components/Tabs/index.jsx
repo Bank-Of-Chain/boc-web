@@ -7,7 +7,7 @@ import GridContainer from '@/components/Grid/GridContainer'
 import GridItem from '@/components/Grid/GridItem'
 
 // === Utils === //
-import { map } from 'lodash'
+import { map } from 'lodash-es'
 
 const CustomTabs = props => {
   const { tabs, contents, defaultKey = 0 } = props
