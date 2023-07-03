@@ -2,7 +2,7 @@ const fs = require('fs')
 const argv = require('minimist')(process.argv.slice(2))
 const axios = require('axios')
 const inquirer = require('inquirer')
-const { isEmpty } = require('lodash-es')
+const { isEmpty } = require('lodash')
 
 const { env, chain } = argv
 let nextEnv = env
