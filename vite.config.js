@@ -6,7 +6,7 @@ import Analyze from 'rollup-plugin-visualizer'
 import reactRefresh from '@vitejs/plugin-react-refresh'
 import nodePolyfills from 'rollup-plugin-polyfill-node'
 import { NodeGlobalsPolyfillPlugin } from '@esbuild-plugins/node-globals-polyfill'
-import importToCDN from 'vite-plugin-cdn-import'
+import importToCDN, { autoComplete } from 'vite-plugin-cdn-import'
 import { splitVendorChunkPlugin } from 'vite'
 
 // https://vitejs.dev/config/
@@ -32,29 +32,13 @@ export default defineConfig({
         manualChunks: id => {
           if (id.includes('web3modal')) {
             return 'vendor1'
-          } else if (id.includes('material-ui') || id.includes('swiper') || id.includes('walletconnect')) {
+          } else if (id.includes('walletconnect')) {
             return 'vendor2'
-          } else if (
-            id.includes('paraswap') ||
-            id.includes('elliptic') ||
-            id.includes('bn.js') ||
-            id.includes('lodash') ||
-            id.includes('bignumber.js')
-          ) {
-            return 'vendor3'
-          } else if (
-            id.includes('piggy-finance-utils') ||
-            id.includes('axios-cache-adapter') ||
-            id.includes('ethersproject') ||
-            id.includes('axios') ||
-            id.includes('ethereumjs-abi')
-          ) {
-            return 'vendor4'
-          } else if (id.includes('node_modules')) {
-            return 'vendor5'
+          } else if (id.includes('ethersproject')) {
+            return 'vendor2'
+          } else if (id.includes('react-is')) {
+            return 'vendor2'
           }
-
-          return 'vendor'
         }
       }
     },
@@ -73,21 +57,24 @@ export default defineConfig({
     eslint(),
     importToCDN({
       modules: [
-        {
-          name: 'react',
-          var: 'React',
-          path: 'https://cdn.bootcdn.net/ajax/libs/react/17.0.0/umd/react.production.min.js'
-        },
-        {
-          name: 'react-dom',
-          var: 'ReactDOM',
-          path: 'https://cdn.bootcdn.net/ajax/libs/react-dom/17.0.0/umd/react-dom.production.min.js'
-        },
+        autoComplete('react'),
+        autoComplete('react-dom'),
         {
           name: 'web3',
-          var: 'Web3',
+          var: 'web3',
           path: 'https://cdn.bootcdn.net/ajax/libs/web3/1.9.0/web3.min.js'
-        }
+        },
+        {
+          name: 'ethers',
+          var: 'ethers',
+          path: 'https://cdn.bootcdn.net/ajax/libs/ethers/5.4.4/ethers.umd.min.js'
+        },
+        {
+          name: 'lodash-es',
+          var: '_',
+          path: 'https://cdn.bootcdn.net/ajax/libs/lodash.js/4.17.21/lodash.min.js'
+        },
+        autoComplete('axios')
       ]
     }),
     splitVendorChunkPlugin(),
