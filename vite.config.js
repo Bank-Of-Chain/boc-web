@@ -68,11 +68,11 @@ export default defineConfig({
       modules: [
         autoComplete('react'),
         autoComplete('react-dom'),
-        {
-          name: 'web3',
-          var: 'web3',
-          path: 'https://cdn.bootcdn.net/ajax/libs/web3/1.9.0/web3.min.js'
-        },
+        // {
+        //   name: 'web3',
+        //   var: 'web3',
+        //   path: 'https://cdn.bootcdn.net/ajax/libs/web3/1.9.0/web3.min.js'
+        // },
         {
           name: 'ethers',
           var: 'ethers',
