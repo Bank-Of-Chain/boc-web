@@ -144,7 +144,7 @@ export default function LendingSectionV2() {
                   />
                   <span className={classes.label}>USD</span>
                   <IOSSwitch
-                    isUsdi
+                    isusdi="true"
                     checked={isUsdiEnable}
                     onChange={() => {
                       setIsUsdiEnable(!isUsdiEnable)
@@ -166,7 +166,7 @@ export default function LendingSectionV2() {
               </GridContainer>
             </GridItem>
             <GridItem>
-              <GridContainer className={classes.wrapper} justify="space-around">
+              <GridContainer className={classes.wrapper} justifyContent="space-around">
                 {loading ? (
                   <CircularProgress />
                 ) : (

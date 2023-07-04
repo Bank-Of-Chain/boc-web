@@ -56,7 +56,7 @@ const IOSSwitch = withStyles(theme => ({
       disableRipple
       classes={{
         root: classes.root,
-        switchBase: classNames(classes.switchBase, { [classes.switchBaseUsdi]: props.isUsdi }),
+        switchBase: classNames(classes.switchBase, { [classes.switchBaseUsdi]: props.isusdi }),
         thumb: classes.thumb,
         track: classes.track,
         checked: classes.checked
