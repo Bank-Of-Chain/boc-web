@@ -34,7 +34,7 @@ export default defineConfig({
             return 'vendor1'
           } else if (id.includes('walletconnect')) {
             return 'vendor2'
-          } else if (id.includes('ethersproject')) {
+          } else if (id.includes('ethersproject') || id.includes('bn.js')) {
             return 'vendor3'
           }
           //  else if (id.includes('bn.js')) {
