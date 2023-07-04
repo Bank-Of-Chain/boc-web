@@ -3,7 +3,7 @@ import UnoCSS from 'unocss/vite'
 import { defineConfig } from 'vite'
 import eslint from 'vite-plugin-eslint'
 import Analyze from 'rollup-plugin-visualizer'
-import reactRefresh from '@vitejs/plugin-react-refresh'
+import react from '@vitejs/plugin-react'
 import nodePolyfills from 'rollup-plugin-polyfill-node'
 import { NodeGlobalsPolyfillPlugin } from '@esbuild-plugins/node-globals-polyfill'
 import importToCDN, { autoComplete } from 'vite-plugin-cdn-import'
@@ -62,7 +62,7 @@ export default defineConfig({
   },
   plugins: [
     UnoCSS(),
-    reactRefresh(),
+    react(),
     eslint(),
     importToCDN({
       modules: [
