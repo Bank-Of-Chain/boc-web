@@ -1,7 +1,7 @@
 const productStyle = {
   section: {
     textAlign: 'center',
-    background: 'url(/images/home/bg-gradient.png) no-repeat center',
+    background: 'url(/images/home/bg-gradient.webp) no-repeat center',
     padding: '13rem 0'
   },
   text: {

@@ -40,12 +40,12 @@ const landingPageStyle = {
   grid: {
     padding: '4rem 0 15rem',
     textAlign: 'center',
-    background: '#1F2023 url(/images/home/bg-line.png) no-repeat center'
+    background: '#1F2023 url(/images/home/bg-line.webp) no-repeat center'
   },
   gridMobile: {
     padding: '5rem 0',
     textAlign: 'center',
-    background: '#1F2023 url(/images/home/bg-line.png) no-repeat center'
+    background: '#1F2023 url(/images/home/bg-line.webp) no-repeat center'
   },
   infoWrapper: {
     marginTop: '2.375rem',

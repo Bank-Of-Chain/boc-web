@@ -2,12 +2,12 @@ const auditedStyle = {
   section: {
     color: '#1F2023',
     padding: '16rem 0',
-    background: 'url(/images/home/bg-gradient.png) no-repeat center'
+    background: 'url(/images/home/bg-gradient.webp) no-repeat center'
   },
   sectionMobile: {
     color: '#1F2023',
     padding: '5rem 2.75rem',
-    background: 'url(/images/home/bg-gradient.png) no-repeat center'
+    background: 'url(/images/home/bg-gradient.webp) no-repeat center'
   },
   inner: {
     maxWidth: '75rem',
