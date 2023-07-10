@@ -110,6 +110,7 @@
     "prettier": "prettier -c -w \"src/**/*.{js,jsx}\"",
     "analyze": "source-map-explorer 'build/static/js/*.js'",
     "prepare": "husky install",
-    "unimported": "unimported --flow"
+    "unimported": "unimported --flow",
+    "codechecks": "codechecks"
   }
 }
