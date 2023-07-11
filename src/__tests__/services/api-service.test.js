@@ -1,4 +1,4 @@
-import { getDefiRate, getProfits, getHomePageData } from '@/services/api-service'
+import { getDefiRate, getHomePageData, getAPY } from '@/services/api-service'
 import { describe, expect, it, vi, beforeEach, afterEach } from 'vitest'
 
 import axios from 'axios'
@@ -47,5 +47,21 @@ describe('getHomePageData', () => {
     const result = await getHomePageData()
     expect(result).toBeUndefined()
     expect(axiosGetSpy).toHaveBeenCalledWith(`${BOC_SERVER}/home-page`)
+  })
+})
+
+describe('getAPY testcases', () => {
+  test('getAPY must return correct value', async () => {
+    const result = await getAPY({ chainId: 1, tokenType: 'ETHi' })
+    expect(result).not.toBeUndefined()
+    expect(result).not.toBeNull()
+  })
+})
+
+describe('getDefiRate testcases', () => {
+  test('getDefiRate must return correct value', async () => {
+    const result = await getDefiRate('1', 'ETHi')
+    expect(result).not.toBeUndefined()
+    expect(result).not.toBeNull()
   })
 })
