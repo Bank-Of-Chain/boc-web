@@ -3,9 +3,11 @@ import UnoCSS from 'unocss/vite'
 import { defineConfig } from 'vite'
 import eslint from 'vite-plugin-eslint'
 import Analyze from 'rollup-plugin-visualizer'
-import reactRefresh from '@vitejs/plugin-react-refresh'
+import react from '@vitejs/plugin-react'
 import nodePolyfills from 'rollup-plugin-polyfill-node'
 import { NodeGlobalsPolyfillPlugin } from '@esbuild-plugins/node-globals-polyfill'
+import importToCDN, { autoComplete } from 'vite-plugin-cdn-import'
+import { splitVendorChunkPlugin } from 'vite'
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -25,7 +27,29 @@ export default defineConfig({
   build: {
     outDir: 'build',
     rollupOptions: {
-      plugins: [nodePolyfills()]
+      plugins: [nodePolyfills()],
+      output: {
+        manualChunks: id => {
+          if (id.includes('web3modal')) {
+            return 'vendor1'
+          } else if (id.includes('walletconnect')) {
+            return 'vendor2'
+          } else if (id.includes('ethersproject') || id.includes('bn.js')) {
+            return 'vendor3'
+          }
+          //  else if (id.includes('bn.js')) {
+          //   return 'vendor4'
+          // } else if (id.includes('qrcode')) {
+          //   return 'vendor5'
+          // } else if (id.includes('material-ui') || id.includes('popper.js')) {
+          //   return 'vendor6'
+          // } else if (id.includes('lodash')) {
+          //   return 'vendor7'
+          // } else if (id.includes('ethereumjs-abi')) {
+          //   return 'vendor8'
+          // }
+        }
+      }
     },
     commonjsOptions: {
       transformMixedEsModules: true
@@ -36,7 +60,31 @@ export default defineConfig({
       '@': path.resolve(__dirname, './src')
     }
   },
-  plugins: [UnoCSS(), reactRefresh(), Analyze(), eslint()],
+  plugins: [
+    UnoCSS(),
+    react(),
+    eslint(),
+    importToCDN({
+      modules: [
+        autoComplete('react'),
+        autoComplete('react-dom'),
+        {
+          name: 'web3',
+          var: 'web3',
+          path: 'https://cdn.bootcdn.net/ajax/libs/web3/1.9.0/web3.min.js'
+        },
+        {
+          name: 'ethers',
+          var: 'ethers',
+          path: 'https://cdn.bootcdn.net/ajax/libs/ethers/5.4.4/ethers.umd.min.js'
+        },
+        autoComplete('lodash'),
+        autoComplete('axios')
+      ]
+    }),
+    splitVendorChunkPlugin(),
+    Analyze()
+  ],
   optimizeDeps: {
     esbuildOptions: {
       // Node.js global to browser globalThis

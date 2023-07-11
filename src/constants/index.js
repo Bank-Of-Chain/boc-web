@@ -4,7 +4,7 @@ import genConfig from '@/config/config'
 import get from 'lodash/get'
 
 // EXTERNAL CONTRACTS
-export const ENV_NETWORK_TYPE = get(process, 'env.REACT_APP_NETWORK_TYPE', localStorage.REACT_APP_NETWORK_TYPE)
+export const ENV_NETWORK_TYPE = get(import.meta.env, 'REACT_APP_NETWORK_TYPE', localStorage.REACT_APP_NETWORK_TYPE)
 const config = genConfig[ENV_NETWORK_TYPE] || genConfig[undefined]
 
 if (!config) {

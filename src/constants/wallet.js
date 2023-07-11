@@ -1,10 +1,5 @@
-import WalletConnectProvider from '@walletconnect/web3-provider'
-
 // === Utils === //
 import map from 'lodash/map'
-
-// === Constants === //
-import { RPC_URL } from '@/constants'
 
 export const WALLETS = {
   MetaMask: {
@@ -15,22 +10,6 @@ export const WALLETS = {
       logo: './images/wallets/MetaMask.png'
     },
     getProviderOption: () => {}
-  },
-  WalletConnect: {
-    info: {
-      name: 'WalletConnect',
-      value: 'walletconnect',
-      symbol: 'walletconnect',
-      logo: './images/wallets/WalletConnect.png'
-    },
-    getProviderOption: () => ({
-      walletconnect: {
-        package: WalletConnectProvider, // required
-        options: {
-          rpc: RPC_URL
-        }
-      }
-    })
   }
 }
 

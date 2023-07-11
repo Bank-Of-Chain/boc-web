@@ -1,7 +1,7 @@
 import React from 'react'
 import { makeStyles } from '@material-ui/core/styles'
 import Check from '@material-ui/icons/Check'
-import clsx from 'clsx'
+import classnames from 'classnames'
 
 const useQontoStepIconStyles = makeStyles({
   root: {
@@ -32,7 +32,7 @@ function BocStepIcon(props) {
 
   return (
     <div
-      className={clsx(classes.root, {
+      className={classnames(classes.root, {
         [classes.active]: active
       })}
     >
