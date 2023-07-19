@@ -29,6 +29,7 @@ import compact from 'lodash/compact'
 import find from 'lodash/find'
 import isNumber from 'lodash/isNumber'
 import isUndefined from 'lodash/isUndefined'
+import omit from 'lodash/omit'
 import { toFixed } from '@/helpers/number-format'
 import { warmDialog } from '@/reducers/meta-reducer'
 import { errorTextOutput, isLossMuch } from '@/helpers/error-handler'
@@ -392,7 +393,7 @@ const ApproveArrayV3 = props => {
       const exchangeManagerContract = new Contract(exchangeManager, EXCHANGE_AGGREGATOR_ABI, userProvider)
       const exchangeAdapters = await getExchangePlatformAdapters(exchangeManagerContract, userProvider)
       // console.log('exchangeAdapters', exchangeAdapters)
-      setExchangePlatformAdapters(exchangeAdapters)
+      setExchangePlatformAdapters(omit(exchangeAdapters, 'testAdapter'))
       // console.groupEnd(`getAdapters useEffect call:${sycIndex}`)
     }
     getAdapters()
