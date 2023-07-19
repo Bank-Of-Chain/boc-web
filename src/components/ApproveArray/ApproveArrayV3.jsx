@@ -444,7 +444,7 @@ const ApproveArrayV3 = props => {
           </GridItem>
           <GridItem xs={8} sm={8} md={8} className={classes.estimateBalance}>
             <Loading loading={someFetching} className={classes.reloadIcon}>
-              <div className={classes.textOverflow}>{toFixed(receiveAmount, receiveTokenDecimals, 6)} from token swap</div>
+              {disableTestAdapter && <div className={classes.textOverflow}>{toFixed(receiveAmount, receiveTokenDecimals, 6)} from token swap</div>}
               {receiveTokenAmount !== '0' && <div>{`+${toFixed(receiveTokenAmount, receiveTokenDecimals, 6)}`} from withdrawal</div>}
             </Loading>
           </GridItem>
