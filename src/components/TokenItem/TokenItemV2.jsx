@@ -70,6 +70,7 @@ const TokenItem = (props, ref) => {
   const isReciveToken = token.address === receiveToken
   const isFetching = !isReciveToken && (isSwapInfoFetching || isStaticCalling)
   const isOverMaxRetry = retryTimes > MAX_RETRY_TIME
+  const disableTestAdapter = isEmpty(exchangePlatformAdapters.testAdapter)
 
   const options = [
     {
@@ -347,8 +348,7 @@ const TokenItem = (props, ref) => {
       }
     }
     console.groupCollapsed(`fetch best swap path: ${fromToken.address}-${toToken.address}:${swapAmount}:${++sycIndex}`)
-    let nextExchangeExtraParams = assign({}, EXCHANGE_EXTRA_PARAMS, isEmpty(exchangePlatformAdapters.testAdapter) ? {} : {})
-
+    let nextExchangeExtraParams = assign({}, EXCHANGE_EXTRA_PARAMS, disableTestAdapter ? {} : { testAdapter: {} })
     if (!isEmpty(exclude)) {
       console.log(`exclude=`, exclude)
       const { oneInchV4 = [], paraswap = [] } = exclude
@@ -388,7 +388,7 @@ const TokenItem = (props, ref) => {
         receiver: userAddress
       }
     }
-  }, [token, value, decimals, exchangePlatformAdapters, exclude, receiveToken, isReciveToken, slippage, isEmptyValue, userAddress, userProvider])
+  }, [token, value, decimals, exchangePlatformAdapters, exclude, receiveToken, isReciveToken, slippage, isEmptyValue, userAddress, userProvider, disableTestAdapter])
 
   const estimateWithValue = useCallback(
     debounce(async () => {
@@ -559,19 +559,19 @@ const TokenItem = (props, ref) => {
           </span>
         </p>
       )}
-      {!isReciveToken && isSwapSuccess && (
+      {!isReciveToken && isSwapSuccess && disableTestAdapter && (
         // <p className={classes.swapSuccessContainer}>
         //   {`Swap into ${toFixed(swapInfo?.bestSwapInfo?.toTokenAmount, receiveTokenDecimals)} (done: ${done})`}
         // </p>
         <p className={classes.swapSuccessContainer}>{`Swap into ${toFixed(swapInfo?.bestSwapInfo?.toTokenAmount, receiveTokenDecimals)}`}</p>
       )}
-      {!isReciveToken && isSwapError && (
+      {!isReciveToken && isSwapError && disableTestAdapter && (
         <div className={classes.swapErrorContainer} onClick={reloadSwap}>
           <span>Swap path fetch error</span>&nbsp;&nbsp;
           <RefreshIcon className={classes.reloadIcon} fontSize="small" />
         </div>
       )}
-      {!isReciveToken && isFetching && (
+      {!isReciveToken && isFetching && disableTestAdapter && (
         <p className={classes.swappingContainer}>
           <Loading className={classes.reloadIcon} loading /> &nbsp;&nbsp;
           {/* <span>{`Swap path fetching (retryTimes: ${retryTimes}, fetching: ${isSwapInfoFetching}, calling: ${isStaticCalling})`}</span> */}
