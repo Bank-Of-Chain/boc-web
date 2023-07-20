@@ -16,10 +16,8 @@ const start = async () => {
     nextChain = await chooseLocalChainConfig()
   }
 
-  const isLinux = process.platform === 'linux'
-  const insideUrl = `http://apollo-config-public.bankofchain.io:8088/configfiles/json/boc-subgraph/${nextEnv}/boc1.application`
-  const outsideUrl = `http://54.179.161.168:8088/configfiles/json/boc-subgraph/${nextEnv}/boc1.application`
-  const { status, data } = await axios.get(isLinux ? insideUrl : outsideUrl).catch(() => {
+  const url = `http://apollo-config.bankofchain.io:8088/configfiles/json/boc-subgraph/${nextEnv}/boc1.application`
+  const { status, data } = await axios.get(url).catch(() => {
     console.error(`load ${nextEnv} config error`)
     return {
       status: 400
