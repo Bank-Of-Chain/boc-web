@@ -16,14 +16,16 @@ const start = async () => {
     nextChain = await chooseLocalChainConfig()
   }
 
+  const isLinux = process.platform === 'linux'
   const insideUrl = `http://apollo-config-public.bankofchain.io:8088/configfiles/json/boc-subgraph/${nextEnv}/boc1.application`
   const outsideUrl = `http://54.179.161.168:8088/configfiles/json/boc-subgraph/${nextEnv}/boc1.application`
-  const { status, data } = await Promise.any([axios.get(insideUrl), axios.get(outsideUrl)]).catch(() => {
+  const { status, data } = await axios.get(isLinux ? insideUrl : outsideUrl).catch(() => {
     console.error(`load ${nextEnv} config error`)
     return {
       status: 400
     }
   })
+  console.log('data', data)
   if (status === 200) {
     const USDI_VAULT_FOR_ETH = data['boc.networks.eth.vaultAddress'] || ''
     const USDI_FOR_ETH = data['boc.networks.eth.pegTokenAddress'] || ''
