@@ -23,7 +23,6 @@ const start = async () => {
       status: 400
     }
   })
-  console.log('data', data)
   if (status === 200) {
     const USDI_VAULT_FOR_ETH = data['boc.networks.eth.vaultAddress'] || ''
     const USDI_FOR_ETH = data['boc.networks.eth.pegTokenAddress'] || ''
