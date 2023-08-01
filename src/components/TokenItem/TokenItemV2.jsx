@@ -18,10 +18,10 @@ import assign from 'lodash/assign'
 import isEmpty from 'lodash/isEmpty'
 import debounce from 'lodash/debounce'
 import { toFixed } from '@/helpers/number-format'
-import { getBestSwapInfo } from 'piggy-finance-utils'
+import { getBestSwapInfo } from 'boc-common-utils'
 import BN from 'bignumber.js'
 import { getProtocolsFromBestRouter } from '@/helpers/swap-util'
-
+import { sleep } from '@/helpers/sleep'
 // === Constants === //
 import { IERC20_ABI, EXCHANGE_EXTRA_PARAMS, ORACLE_ADDITIONAL_SLIPPAGE } from '@/constants'
 import { ETH_ADDRESS, WETH_ADDRESS } from '@/constants/tokens'
@@ -38,6 +38,7 @@ const BN_0 = BigNumber.from('0')
 const TokenItem = (props, ref) => {
   const classes = useStyles()
   const {
+    index,
     token = {},
     userAddress,
     userProvider,
@@ -346,7 +347,7 @@ const TokenItem = (props, ref) => {
         address: receiveToken
       }
     }
-    console.groupCollapsed(`fetch best swap path: ${fromToken.address}-${toToken.address}:${swapAmount}:${++sycIndex}`)
+    console.groupCollapsed(`fetch best swap path: ${fromToken.address}-${toToken.address}:${swapAmount}:${sycIndex}`)
     let nextExchangeExtraParams = assign({}, EXCHANGE_EXTRA_PARAMS, isEmpty(exchangePlatformAdapters.testAdapter) ? {} : {})
 
     if (!isEmpty(exclude)) {
@@ -363,6 +364,7 @@ const TokenItem = (props, ref) => {
         }
       })
     }
+    await sleep(500 * index)
     const bestSwapInfo = await getBestSwapInfo(
       fromToken,
       toToken,
@@ -374,7 +376,7 @@ const TokenItem = (props, ref) => {
     ).catch(error => {
       throw new Error(error)
     })
-    console.groupEnd(`fetch best swap path: ${fromToken.address}-${toToken.address}:${swapAmount}:${sycIndex}`)
+    console.groupEnd(`fetch best swap path: ${fromToken.address}-${toToken.address}:${swapAmount}:${sycIndex++}`)
     if (isEmpty(bestSwapInfo)) {
       throw new Error('fetch error')
     }
@@ -392,10 +394,10 @@ const TokenItem = (props, ref) => {
 
   const estimateWithValue = useCallback(
     debounce(async () => {
-      if (isEmptyValue()) {
-        onChange()
-        return
-      }
+      // if (isEmptyValue()) {
+      //   onChange()
+      //   return
+      // }
       // console.groupCollapsed(`estimateWithValue call:${address}:${++sycIndex}`)
       setIsSwapInfoFetching(true)
       onChange()
@@ -473,7 +475,7 @@ const TokenItem = (props, ref) => {
     swapInfo,
     estimateWithValue,
     retryTimes,
-    isSwapInfoFetching,
+    // isSwapInfoFetching,
     isGetSwapInfoSuccess,
     exchangePlatformAdapters,
     isReciveToken,

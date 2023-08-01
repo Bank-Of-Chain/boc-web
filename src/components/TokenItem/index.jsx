@@ -18,7 +18,7 @@ import isEmpty from 'lodash/isEmpty'
 import debounce from 'lodash/debounce'
 import { addToken } from '@/helpers/wallet'
 import { toFixed } from '@/helpers/number-format'
-import { getBestSwapInfo } from 'piggy-finance-utils'
+import { getBestSwapInfo } from 'boc-common-utils'
 import BN from 'bignumber.js'
 import { getProtocolsFromBestRouter } from '@/helpers/swap-util'
 
