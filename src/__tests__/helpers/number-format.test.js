@@ -1,4 +1,4 @@
-import { toFixed, formatBalance } from '@/helpers/number-format'
+import { toFixed, formatBalance, numeralFormat } from '@/helpers/number-format'
 
 test('number-format toFixed', () => {
   const text = toFixed('10000', '100')
@@ -34,3 +34,113 @@ test('number-format toFixed formatBalance', () => {
   const text = formatBalance('10000', 2)
   expect(text).toBe('100')
 })
+
+const USDI_FORMATTER = '0,0.[00] a'
+const ETHI_FORMATTER = '0,0.[0000] a'
+const validBalances = [
+  {
+    balance: '0',
+    usdiExpect: '0',
+    ethiExpect: '0'
+  },
+  {
+    balance: '0.01',
+    usdiExpect: '0.01',
+    ethiExpect: '0.01'
+  },
+  {
+    balance: '0.001',
+    usdiExpect: '0',
+    ethiExpect: '0.001'
+  },
+  {
+    balance: '0.0001',
+    usdiExpect: '0',
+    ethiExpect: '0.0001'
+  },
+  {
+    balance: '0.00004',
+    usdiExpect: '0',
+    ethiExpect: '0'
+  },
+  {
+    balance: '0.00005',
+    usdiExpect: '0',
+    ethiExpect: '0.0001'
+  },
+  {
+    balance: '0.99998',
+    usdiExpect: '1',
+    ethiExpect: '1'
+  },
+  {
+    balance: '1',
+    usdiExpect: '1',
+    ethiExpect: '1'
+  },
+  {
+    balance: '9.99997',
+    usdiExpect: '10',
+    ethiExpect: '10'
+  },
+  {
+    balance: '10',
+    usdiExpect: '10',
+    ethiExpect: '10'
+  },
+  {
+    balance: '99.99996',
+    usdiExpect: '100',
+    ethiExpect: '100'
+  },
+  {
+    balance: '105',
+    usdiExpect: '105',
+    ethiExpect: '105'
+  },
+  {
+    balance: '999.98994',
+    usdiExpect: '999.99',
+    ethiExpect: '999.9899'
+  },
+  {
+    balance: '999.99995',
+    usdiExpect: '1 k',
+    ethiExpect: '1 k'
+  },
+  {
+    balance: '1000',
+    usdiExpect: '1 k',
+    ethiExpect: '1 k'
+  },
+  {
+    balance: '1564.78652',
+    usdiExpect: '1.56 k',
+    ethiExpect: '1.5648 k'
+  },
+  {
+    balance: '999999.99995',
+    usdiExpect: '1 m',
+    ethiExpect: '1 m'
+  },
+  {
+    balance: '999999999.99995',
+    usdiExpect: '1 b',
+    ethiExpect: '1 b'
+  },
+  {
+    balance: '999999999999.99995',
+    usdiExpect: '1 t',
+    ethiExpect: '1 t'
+  }
+]
+for (let i = 0; i < validBalances.length; i++) {
+  const { balance, usdiExpect, ethiExpect } = validBalances[i]
+  test('number-format numeralFormat', () => {
+    const usdiFormat = numeralFormat(balance, USDI_FORMATTER)
+    const ethiFormat = numeralFormat(balance, ETHI_FORMATTER)
+    console.log(`balance: ${balance}, USDi format: ${usdiFormat}, ETHi format: ${ethiFormat}`)
+    expect(usdiFormat.trim()).toBe(usdiExpect)
+    expect(ethiFormat.trim()).toBe(ethiExpect)
+  })
+}

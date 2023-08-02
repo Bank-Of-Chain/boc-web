@@ -29,7 +29,7 @@ import map from 'lodash/map'
 import reverse from 'lodash/reverse'
 import isEmpty from 'lodash/isEmpty'
 import findIndex from 'lodash/findIndex'
-import { toFixed, formatBalance } from '@/helpers/number-format'
+import { toFixed, formatBalance, numeralFormat } from '@/helpers/number-format'
 import { getLastPossibleRebaseTime } from '@/helpers/time-util'
 import { addToken } from '@/helpers/wallet'
 
@@ -215,7 +215,7 @@ const MyStatement = props => {
 
   const { day7Apy, day30Apy, profit, latestProfit = { profit: '0', tokenType: '' } } = dataSource
   const fullBalance = formatBalance(pegTokenBalance, pegTokenDecimals)
-  const balanceFormat = numeral(fullBalance).format(isUSDi ? '0,0.[00] a' : '0,0.[0000] a')
+  const balanceFormat = numeralFormat(fullBalance, isUSDi ? '0,0.[00] a' : '0,0.[0000] a')
   const [balanceText, balanceSymbol] = balanceFormat.split(' ')
   const cardProps = [
     {
