@@ -390,7 +390,7 @@ const TokenItem = (props, ref) => {
         receiver: userAddress
       }
     }
-  }, [token, value, decimals, exchangePlatformAdapters, exclude, receiveToken, isReciveToken, slippage, isEmptyValue, userAddress, userProvider])
+  }, [token, value, decimals, exchangePlatformAdapters, exclude, receiveToken, isReciveToken, slippage, isEmptyValue, userAddress, userProvider, index])
 
   const estimateWithValue = useCallback(
     debounce(async () => {
