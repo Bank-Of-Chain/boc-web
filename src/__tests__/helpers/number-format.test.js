@@ -1,4 +1,4 @@
-import { toFixed, formatBalance, numeralFormat } from '@/helpers/number-format'
+import { toFixed, formatBalance, customNumeral } from '@/helpers/number-format'
 
 test('number-format toFixed', () => {
   const text = toFixed('10000', '100')
@@ -35,8 +35,8 @@ test('number-format toFixed formatBalance', () => {
   expect(text).toBe('100')
 })
 
-const USDI_FORMATTER = '0,0.[00] a'
-const ETHI_FORMATTER = '0,0.[0000] a'
+const USDI_FORMATTER = 2
+const ETHI_FORMATTER = 4
 const validBalances = [
   {
     balance: '0',
@@ -116,12 +116,17 @@ const validBalances = [
   {
     balance: '1564.78652',
     usdiExpect: '1.56 k',
-    ethiExpect: '1.5648 k'
+    ethiExpect: '1.5647 k'
+  },
+  {
+    balance: '999999.99991',
+    usdiExpect: '1 m',
+    ethiExpect: '999.9999 k'
   },
   {
     balance: '999999.99995',
     usdiExpect: '1 m',
-    ethiExpect: '1 m'
+    ethiExpect: '999.9999 k'
   },
   {
     balance: '999999999.99995',
@@ -136,9 +141,9 @@ const validBalances = [
 ]
 for (let i = 0; i < validBalances.length; i++) {
   const { balance, usdiExpect, ethiExpect } = validBalances[i]
-  test('number-format numeralFormat', () => {
-    const usdiFormat = numeralFormat(balance, USDI_FORMATTER)
-    const ethiFormat = numeralFormat(balance, ETHI_FORMATTER)
+  test('number-format customNumeral', () => {
+    const usdiFormat = customNumeral(balance, USDI_FORMATTER)
+    const ethiFormat = customNumeral(balance, ETHI_FORMATTER)
     console.log(`balance: ${balance}, USDi format: ${usdiFormat}, ETHi format: ${ethiFormat}`)
     expect(usdiFormat.trim()).toBe(usdiExpect)
     expect(ethiFormat.trim()).toBe(ethiExpect)

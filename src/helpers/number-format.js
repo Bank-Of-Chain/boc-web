@@ -39,7 +39,7 @@ export const formatBalance = (balance, decimals, options = {}) => {
 }
 
 /**
- * Handle numeral bug
+ * Fix numeral bug
  * numeral('999.999').format('0,0.[00] a') return '1 '
  * numeral('999999.999').format('0,0.[00] a') return '1 k'
  * @param {*} value
@@ -51,14 +51,50 @@ export const numeralFormat = (value, formatter) => {
   if (value > 999 && result === '1 ') {
     return '1 k'
   }
-  if (value > 999999 && result === '1 k') {
+  if (value > 999990 && result === '1 k') {
     return '1 m'
   }
-  if (value > 999999999 && result === '1 m') {
+  if (value > 999990000 && result === '1 m') {
     return '1 b'
   }
-  if (value > 999999999999 && result === '1 b') {
+  if (value > 999990000000 && result === '1 b') {
     return '1 t'
   }
   return result
+}
+
+export const customNumeral = (value, precision) => {
+  let result = Number(value)
+  if (isNaN(result)) {
+    return ''
+  }
+  const THOUSAND = 1000
+  result = parseFloat(result.toFixed(precision))
+  if (result < THOUSAND) {
+    return String(result)
+  }
+  const MILLION = THOUSAND * THOUSAND
+  const BILLION = THOUSAND * MILLION
+  const TRILLION = THOUSAND * BILLION
+  let quotient = 0
+  let indexDot = -1
+  let unit = ''
+  if (result < MILLION) {
+    quotient = String(result / THOUSAND)
+    unit = 'k'
+  } else if (result < BILLION) {
+    quotient = String(result / MILLION)
+    unit = 'm'
+  } else if (result < TRILLION) {
+    quotient = String(result / BILLION)
+    unit = 'b'
+  } else {
+    quotient = String(result / TRILLION)
+    unit = 't'
+  }
+  indexDot = quotient.indexOf('.')
+  if (indexDot > -1 && indexDot < quotient.length - precision - 1) {
+    quotient = quotient.substring(0, indexDot + precision + 1)
+  }
+  return `${quotient} ${unit}`
 }
