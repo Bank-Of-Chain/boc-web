@@ -1,6 +1,40 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`Address Component Render 1`] = `
+exports[`Address Component > renders address with long size 1`] = `
+<DocumentFragment>
+  <span>
+    0x1234567890123456789012345678901234567890
+  </span>
+</DocumentFragment>
+`;
+
+exports[`Address Component > renders address with minimum length 1`] = `
+<DocumentFragment>
+  <span>
+    0x1234...1234
+  </span>
+</DocumentFragment>
+`;
+
+exports[`Address Component > renders address with short size and ENS 1`] = `
+<DocumentFragment>
+  <span>
+    0x1234...7890
+  </span>
+</DocumentFragment>
+`;
+
+exports[`Address Component > renders address with short size and without ENS 1`] = `
+<DocumentFragment>
+  <span>
+    0x1234...7890
+  </span>
+</DocumentFragment>
+`;
+
+exports[`Address Component > renders nothing when address is not provided 1`] = `<DocumentFragment />`;
+
+exports[`xxxxxxxx > Address Component Render 1`] = `
 <DocumentFragment>
   <span>
     0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266

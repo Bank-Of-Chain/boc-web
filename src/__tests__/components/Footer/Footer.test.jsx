@@ -1,11 +1,11 @@
 import React from 'react'
-import { describe, expect, test } from 'vitest'
+import { describe, expect, it } from 'vitest'
 
 import { render } from '@testing-library/react'
 import Footer from '@/components/Footer/Footer'
 
 describe('Accordion test', () => {
-  test('should show title all the time', () => {
+  it('should show title all the time', () => {
     const { asFragment } = render(<Footer />)
     expect(asFragment()).toMatchSnapshot()
   })

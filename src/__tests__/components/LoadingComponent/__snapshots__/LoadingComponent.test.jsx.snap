@@ -1,12 +1,12 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`LoadingComponent Component Render 1`] = `
+exports[`xxxxxxxx > LoadingComponent Component Render 1`] = `
 <DocumentFragment>
   value
 </DocumentFragment>
 `;
 
-exports[`LoadingComponent Component loading Render 1`] = `
+exports[`xxxxxxxx > LoadingComponent Component loading Render 1`] = `
 <DocumentFragment>
   <svg
     height="20px"

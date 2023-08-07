@@ -13,10 +13,12 @@ export default defineConfig({
     'process.env': {}
   },
   server: {
-    port: 3001
+    port: 3001,
+    host: '0.0.0.0'
   },
   preview: {
-    port: 3001
+    port: 3001,
+    host: '0.0.0.0'
   },
   // This changes the out put dir from dist to build
   // comment this out if that isn't relevant for your project

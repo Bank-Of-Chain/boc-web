@@ -29,7 +29,7 @@ export const errorTextOutput = error => {
  * @returns
  */
 export const isAd = (errorMsg = '') => {
-  return errorMsg.includes("'AD'") || errorMsg.includes('"AD"') || errorMsg === 'AD'
+  return errorMsg === 'AD' || errorMsg.includes('"AD"') || errorMsg.includes("'AD'")
 }
 
 /**
@@ -38,7 +38,7 @@ export const isAd = (errorMsg = '') => {
  * @returns
  */
 export const isEs = (errorMsg = '') => {
-  return errorMsg.includes("'ES or AD'") || errorMsg.includes("'ES'") || errorMsg.includes('"ES"') || errorMsg === 'ES'
+  return errorMsg === 'ES' || errorMsg.includes("'ES'") || errorMsg.includes('"ES"') || errorMsg.includes("'ES or AD'")
 }
 
 /**
@@ -47,7 +47,7 @@ export const isEs = (errorMsg = '') => {
  * @returns
  */
 export const isRp = (errorMsg = '') => {
-  return errorMsg.includes("'RP'") || errorMsg.includes('"RP"') || errorMsg === 'RP'
+  return errorMsg === 'RP' || errorMsg.includes('"RP"') || errorMsg.includes("'RP'")
 }
 
 /**
@@ -78,7 +78,7 @@ export const isLossMuch = (errorMsg = '') => {
  * @returns
  */
 export const isMaxLoss = (errorMsg = '') => {
-  return errorMsg.includes('loss much') || errorMsg.includes('amount lower than minimum')
+  return errorMsg.includes('amount lower than minimum') || errorMsg.includes('loss much')
 }
 
 /**
@@ -87,7 +87,7 @@ export const isMaxLoss = (errorMsg = '') => {
  * @returns
  */
 export const isExchangeFail = (errorMsg = '') => {
-  return errorMsg.endsWith('callBytes failed: Error(Call to adapter failed)')
+  return errorMsg.endsWith('callBytes failed: Error(Call to adapter failed)') || errorMsg.includes('callBytes failed: Error(Call to adapter failed)')
 }
 
 /**
@@ -96,7 +96,7 @@ export const isExchangeFail = (errorMsg = '') => {
  * @returns
  */
 export const isDistributing = (errorMsg = '') => {
-  return errorMsg.includes("'is distributing'") || errorMsg.includes('"is distributing"')
+  return errorMsg.includes('"is distributing"') || errorMsg.includes("'is distributing'")
 }
 
 /**
@@ -105,7 +105,7 @@ export const isDistributing = (errorMsg = '') => {
  * @returns
  */
 export const isLessThanMinValue = (errorMsg = '') => {
-  return errorMsg.includes("'Amount must be gt minimum Investment Amount'") || errorMsg.includes('"Amount must be gt minimum Investment Amount"')
+  return errorMsg.includes('"Amount must be gt minimum Investment Amount"') || errorMsg.includes("'Amount must be gt minimum Investment Amount'")
 }
 
 /**
@@ -114,7 +114,7 @@ export const isLessThanMinValue = (errorMsg = '') => {
  * @returns
  */
 export const isTransferNotEnough = (errorMsg = '') => {
-  return errorMsg.includes("'ERC20: transfer amount exceeds allowance'") || errorMsg.includes('"ERC20: transfer amount exceeds allowance"')
+  return errorMsg.includes('"ERC20: transfer amount exceeds allowance"') || errorMsg.includes("'ERC20: transfer amount exceeds allowance'")
 }
 
 /**

@@ -2,16 +2,24 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import useLookupAddress from '@/hooks/useLookupAddress'
 
-function Address(props) {
-  const ens = useLookupAddress(props.ensProvider, props.address)
+// === Utils === //
+import { isEmpty } from 'lodash'
 
-  let displayAddress = props.address.substr(0, 6)
+const Address = props => {
+  const { ensProvider, address = '' } = props
+  if (isEmpty(address)) {
+    return ''
+  }
+  const ens = useLookupAddress(ensProvider, address)
+
+  let displayAddress = address.substr(0, 6)
+
   if (ens && ens.indexOf('0x') < 0) {
     displayAddress = ens
   } else if (props.size === 'short') {
-    displayAddress += '...' + props.address.substr(-4)
+    displayAddress += '...' + address.substr(-4)
   } else if (props.size === 'long') {
-    displayAddress = props.address
+    displayAddress = address
   }
   return <span>{displayAddress}</span>
 }

@@ -1,36 +1,53 @@
 import { toFixed, formatBalance } from '@/helpers/number-format'
+import { describe, expect, it } from 'vitest'
 
-test('number-format toFixed', () => {
-  const text = toFixed('10000', '100')
-  expect(text).toBe('100')
-})
+describe('xxxxxxxx', () => {
+  it('number-format toFixed', () => {
+    const text = toFixed('10000', '100')
+    expect(text).toBe('100')
+  })
 
-test('number-format toFixed with value undefined', () => {
-  const text = toFixed(undefined, '100')
-  expect(text).toBe(undefined)
-})
+  it('number-format toFixed with value undefined', () => {
+    const text = toFixed(undefined, '100')
+    expect(text).toBe(undefined)
+  })
 
-test('number-format toFixed with value null', () => {
-  const text = toFixed(null, '100')
-  expect(text).toBe(undefined)
-})
+  it('number-format toFixed with value null', () => {
+    const text = toFixed(null, '100')
+    expect(text).toBe(undefined)
+  })
 
-test('number-format toFixed with decimals undefined', () => {
-  const text = toFixed('10000', undefined)
-  expect(text).toBe('10000')
-})
+  it('number-format toFixed with decimals undefined', () => {
+    const text = toFixed('10000', undefined)
+    expect(text).toBe('10000')
+  })
 
-test('number-format toFixed with decimals null', () => {
-  const text = toFixed('10000', null)
-  expect(text).toBe('10000')
-})
+  it('number-format toFixed with decimals null', () => {
+    const text = toFixed('10000', null)
+    expect(text).toBe('10000')
+  })
 
-test('number-format toFixed with decimals isZero', () => {
-  const text = toFixed('10000', 0)
-  expect(text).toBe('0')
-})
+  it('number-format toFixed with decimals isZero', () => {
+    const text = toFixed('10000', 0)
+    expect(text).toBe('0')
+  })
 
-test('number-format toFixed formatBalance', () => {
-  const text = formatBalance('10000', 2)
-  expect(text).toBe('100')
+  it('number-format toFixed with float output', () => {
+    const text = toFixed('10000', '10000000')
+    expect(text).toBe('0.001')
+  })
+
+  it('number-format toFixed formatBalance', () => {
+    const text = formatBalance('10000', 2)
+    expect(text).toBe('100')
+  })
+  it('number-format toFixed formatBalance', () => {
+    const text = formatBalance('10000', 2, { showAll: true })
+    expect(text).toBe('100')
+  })
+
+  it('number-format toFixed formatBalance', () => {
+    const text = formatBalance('1234567', 6, { showAll: true })
+    expect(text).toBe('1.234567')
+  })
 })

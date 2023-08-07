@@ -1,7 +1,10 @@
 import { PLATFORM_HOME_URL, STRATEGIES } from '@/constants/amms'
+import { describe, expect, it } from 'vitest'
 
-STRATEGIES.map(i => {
-  test(`${i} has platform link`, () => {
-    expect(PLATFORM_HOME_URL[i]).toBeTruthy()
+describe('xxxxxxxx', () => {
+  STRATEGIES.map(i => {
+    it(`${i} has platform link`, () => {
+      expect(PLATFORM_HOME_URL[i]).toBeTruthy()
+    })
   })
 })
