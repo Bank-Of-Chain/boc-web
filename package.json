@@ -49,14 +49,15 @@
     "web3modal": "1.9.5"
   },
   "devDependencies": {
-    "@types/react": "17.0.0",
-    "typescript": "^4.9.5",
+    "@codechecks/client": "^0.1.12",
+    "@codechecks/lighthouse-keeper": "^0.1.2",
     "@esbuild-plugins/node-globals-polyfill": "^0.2.3",
     "@iconify/json": "^2.2.48",
     "@testing-library/dom": "^6.12.2",
     "@testing-library/jest-dom": "^5.11.4",
     "@testing-library/react": "^11.1.0",
     "@testing-library/react-hooks": "^8.0.1",
+    "@types/react": "17.0.0",
     "@typescript-eslint/parser": "^5.57.0",
     "@vitejs/plugin-react": "^4.0.1",
     "@vitest/coverage-c8": "^0.29.8",
@@ -75,6 +76,7 @@
     "react-test-renderer": "17.0.0",
     "rollup-plugin-polyfill-node": "^0.12.0",
     "rollup-plugin-visualizer": "^5.9.0",
+    "typescript": "^4.9.5",
     "unimported": "^1.21.0",
     "unocss": "^0.50.6",
     "vite": "^4.3.9",
@@ -108,6 +110,7 @@
     "prettier": "prettier -c -w \"src/**/*.{js,jsx}\"",
     "analyze": "source-map-explorer 'build/static/js/*.js'",
     "prepare": "husky install",
-    "unimported": "unimported --flow"
+    "unimported": "unimported --flow",
+    "codechecks": "codechecks"
   }
 }
