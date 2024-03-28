@@ -131,7 +131,7 @@ export default function LendingSectionV2() {
             <GridItem>
               <GridContainer className={classes.headerWrapper} alignItems="center">
                 <GridItem md={6} xs={6} sm={6} className={classes.switchWrapper}>
-                  <span>ETH</span>
+                  <span>APT</span>
                   <IOSSwitch
                     checked={isEthiEnable}
                     onChange={() => {

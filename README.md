@@ -13,3 +13,9 @@
 # Build
 
 > `yarn build` and there is a zip file in /zip
+
+Node 18.15.0
+
+```
+set NODE_OPTIONS=--openssl-legacy-provider
+```

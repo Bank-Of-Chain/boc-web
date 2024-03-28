@@ -114,7 +114,7 @@ export default function HeaderLinks(props) {
   return (
     <>
       <List className={classes.list}>
-        <ListItem className={classes.listItem}>
+        <ListItem className={classes.listItem} style={{ display: 'none' }}>
           <Button color="colorful-text" className={classes.m4} disableRipple={true}>
             <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24">
               <path
@@ -184,7 +184,7 @@ export default function HeaderLinks(props) {
         )}
         {pathname === '/' ? (
           <ListItem className={classes.listItem}>
-            <Button color="colorful-border" href="/#/usdi" className={classes.m4}>
+            <Button color="colorful-border" href="http://localhost:3000" className={classes.m4}>
               Launch App
             </Button>
           </ListItem>
