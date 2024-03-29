@@ -1,19 +1,8 @@
 // current amms displayed in home page
 export const STRATEGIES = [
-  'Balancer',
-  'Dodo',
-  'Convex',
-  'Curve',
-  'Aave',
-  'Aura',
-  'UniswapV2',
-  'UniswapV3',
-  'Lido',
-  'RocketPool',
-  'Stargate',
-  'Euler',
-  'StakeWise',
-  'Frax'
+  'Aries',
+  'Amnis',
+  'LiquidSwap',
 ]
 
 export const PLATFORM_HOME_URL = {

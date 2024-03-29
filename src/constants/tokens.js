@@ -15,11 +15,6 @@ export const SUSD_ADDRESS = '0x57Ab1ec28D129707052df4dF418D58a2D46d5f51'
 
 const STABLECOINS = [
   {
-    id: 'dai',
-    symbol: 'DAI',
-    address: DAI_ADDRESS
-  },
-  {
     id: 'usdc',
     symbol: 'USDC',
     address: USDC_ADDRESS
@@ -28,36 +23,6 @@ const STABLECOINS = [
     id: 'usdt',
     symbol: 'USDT',
     address: USDT_ADDRESS
-  },
-  {
-    id: 'busd',
-    symbol: 'BUSD',
-    address: BUSD_ADDRESS
-  },
-  // {
-  //   id: 'pax-dollar',
-  //   symbol: 'USDP',
-  //   address: USDP_ADDRESS
-  // },
-  {
-    id: 'tusd',
-    symbol: 'TUSD',
-    address: TUSD_ADDRESS
-  },
-  {
-    id: 'lusd',
-    symbol: 'LUSD',
-    address: LUSD_ADDRESS
-  },
-  {
-    id: 'gusd',
-    symbol: 'GUSD',
-    address: GUSD_ADDRESS
-  },
-  {
-    id: 'susd',
-    symbol: 'SUSD',
-    address: SUSD_ADDRESS
   }
 ]
 

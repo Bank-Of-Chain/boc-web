@@ -73,10 +73,10 @@ export default function Home() {
       {/* <LendingSection /> */}
       <YieldSection />
       <AmmSection />
-      <SupportMembers />
-      <RoadMapSectionV2 />
+      {/* <SupportMembers /> */}
+      {/* <RoadMapSectionV2 /> */}
       <AuditedSection />
-      <SecurityAudits />
+      {/* <SecurityAudits /> */}
     </div>
   )
 }

@@ -63,19 +63,6 @@ export default function AmmSection() {
             )
           },
           {
-            tabName: 'Major Chain(s)',
-            tabContent: (
-              <GridItem xs={12} sm={12} md={12} className={classes.iconContainer}>
-                {map(CHAINS, c => (
-                  <div key={c.id} className={classes.item} onClick={() => window.open(c.url)}>
-                    <img className={`${classes.img} ${classes.transparentBg}`} src={`/images/chains/${c.id}.png`} alt={c.name} />
-                    <p className={classes.text}>{c.name}</p>
-                  </div>
-                ))}
-              </GridItem>
-            )
-          },
-          {
             tabName: 'Protocols',
             tabContent: (
               <GridItem xs={12} sm={12} md={12} className={classes.iconContainer}>

@@ -26,7 +26,7 @@ export default function Frame(props) {
         {...props}
       />
       <main className={classes.main}>{props.children}</main>
-      <Footer whiteFont />
+      {/* <Footer whiteFont /> */}
     </Fragment>
   )
 }

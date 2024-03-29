@@ -130,7 +130,7 @@ export default function HeaderLinks(props) {
             Dashboard
           </Button>
         </ListItem>
-        <ListItem className={classes.listItem}>
+        <ListItem className={classes.listItem} style={{ display: 'none' }}>
           <Button color="colorful-text" className={classes.m4} target="_blank" href={DOCUMENT_URL} disableRipple={true}>
             Docs
           </Button>
