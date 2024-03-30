@@ -42,7 +42,7 @@ export default function Home() {
     <div className={classes.container}>
       <GridContainer>
         <GridItem xs={12} sm={12} md={12} className={isLayoutSm ? classes.gridMobile : classes.grid}>
-          <h1 className={isLayoutSm ? classes.titleMobile : classes.title}>The Multichain</h1>
+          <h1 className={isLayoutSm ? classes.titleMobile : classes.title}>The Aptos'</h1>
           <h1 className={isLayoutSm ? classes.titleMobile : classes.title}>Yield Optimizer</h1>
           <h4 className={classes.text} style={{ marginTop: 40 }}>
             BoC is a DeFi protocol that provides the best long-term
@@ -53,11 +53,11 @@ export default function Home() {
             <ul className={classes.info}>
               <li>
                 <div className={classes.infoTitle}>Total Value Locked</div>
-                <div className={classes.infoText}>$238,482</div>
+                <div className={classes.infoText}>$28,482</div>
               </li>
               <li>
                 <div className={classes.infoTitle}>Holders</div>
-                <div className={classes.infoText}>231</div>
+                <div className={classes.infoText}>6</div>
               </li>
             </ul>
           </div>
